@@ -80,7 +80,7 @@ android {
     }
 
     signingConfigs {
-        dataentry {
+        debug {
             storeFile file("dataentry.jks")
             storePassword "android"
             keyAlias "android"
@@ -102,7 +102,7 @@ android {
             ext.enableCrashlytics = false
 
             // Using dataentry.jks to sign debug build type.
-            signingConfig = signingConfigs.dataentry
+            signingConfig = signingConfigs.debug
         }
         release {
             // enabling crashlytics for debug builds
