@@ -34,7 +34,7 @@ def getFabricKey = {
         properties.load(fabricPropertiesFile.newDataInputStream())
         return properties.getProperty("apiKey")
     } else {
-        return System.getenv("PAPER_FABRIC_KEY")
+        return System.getenv("DHIS_FABRIC_KEY")
     }
 }
 
