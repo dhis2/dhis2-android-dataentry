@@ -41,7 +41,7 @@ public class DhisApp extends Application {
                     .build();
 
             // Initialize Fabric with the debug-disabled crashlytics.
-            // Fabric.with(this, crashlyticsKit);
+            Fabric.with(this, crashlyticsKit);
         } else {
             Crashlytics crashlytics = new Crashlytics();
             crashlytics.core.setString(GIT_SHA, paperwork.get(GIT_SHA));
