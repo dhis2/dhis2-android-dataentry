@@ -123,12 +123,19 @@ dependencies {
         transitive = true;
     }
 
+    // Square libraries
+    debugCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"
+
+    // Jake Wharton libraries
+    compile "com.jakewharton.timber:timber:${libraries.timber}"
+
     // Test dependencies
     testCompile "junit:junit:${libraries.junit}"
     testCompile "org.assertj:assertj-core:${libraries.assertj}"
     testCompile "org.mockito:mockito-core:${libraries.mockito}"
 
-    // Spoon client which allows to capture screenshots
+    // Spoon client which allows to capture screenshots during instrumentation tests
     androidTestCompile "com.squareup.spoon:spoon-client:${libraries.spoon}"
 
     androidTestCompile "com.android.support.test.espresso:espresso-core:${libraries.espresso}"

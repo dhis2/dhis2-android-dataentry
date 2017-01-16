@@ -1,12 +1,15 @@
 package org.hisp.dhis.android.dataentry;
 
 import android.app.Application;
+import android.content.Context;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.core.CrashlyticsCore;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 import hu.supercluster.paperwork.Paperwork;
 import io.fabric.sdk.android.Fabric;
@@ -14,6 +17,12 @@ import io.fabric.sdk.android.Fabric;
 public class DhisApp extends Application {
     private static final String GIT_SHA = "gitSha";
     private static final String BUILD_DATE = "buildDate";
+
+    private RefWatcher refWatcher;
+
+    public static RefWatcher refWatcher(Context context) {
+        return ((DhisApp) context.getApplicationContext()).refWatcher;
+    }
 
     @Override
     public void onCreate() {
@@ -24,11 +33,22 @@ public class DhisApp extends Application {
 
         Paperwork paperwork = setUpPaperwork();
         setUpFabric(paperwork);
+
+        refWatcher = setUpLeakCanary();
     }
 
     @NonNull
     private Paperwork setUpPaperwork() {
         return new Paperwork(this);
+    }
+
+    @NonNull
+    private RefWatcher setUpLeakCanary() {
+        if (BuildConfig.DEBUG) {
+            return LeakCanary.install(this);
+        } else {
+            return RefWatcher.DISABLED;
+        }
     }
 
     private void setUpFabric(@NonNull Paperwork paperwork) {
