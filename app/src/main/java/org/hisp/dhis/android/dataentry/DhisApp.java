@@ -20,7 +20,7 @@ public class DhisApp extends Application {
         super.onCreate();
 
         // fail early on leaks
-        setStrictMode();
+        setUpStrictMode();
 
         Paperwork paperwork = setUpPaperwork();
         setUpFabric(paperwork);
@@ -51,17 +51,15 @@ public class DhisApp extends Application {
         }
     }
 
-    private void setStrictMode() {
+    private void setUpStrictMode() {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
-                    .penaltyDeath()
                     .build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
-                    .penaltyDeath()
                     .build());
         }
     }
