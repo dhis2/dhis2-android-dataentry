@@ -1,1 +1,9 @@
-/build
+# Excluding paperwork data file
+/src/main/assets/paperwork.json
+
+# Excluding crashlytics files
+/src/main/assets/crashlytics-build.properties
+/src/main/res/values/com_crashlytics_export_strings.xml
+
+# Excluding fabric properties
+fabric.properties

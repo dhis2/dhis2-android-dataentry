@@ -2,7 +2,7 @@
           package="org.hisp.dhis.android.dataentry">
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"

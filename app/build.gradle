@@ -1,23 +1,143 @@
-apply plugin: 'com.android.application'
+apply plugin: "com.android.application"
+apply plugin: "me.tatarka.retrolambda"
+apply plugin: "org.sonarqube"
+apply plugin: "io.fabric"
+apply plugin: "spoon"
+apply from: rootProject.file("plugins/android-checkstyle.gradle")
+apply from: rootProject.file("plugins/android-errorprone.gradle")
+apply from: rootProject.file("plugins/android-paperwork.gradle")
+apply from: rootProject.file("plugins/android-dexcount.gradle")
+apply from: rootProject.file("plugins/android-findbugs.gradle")
+apply from: rootProject.file("plugins/android-pmd.gradle")
+
+def versions = rootProject.ext.versions
+def libraries = rootProject.ext.libraries
+
+repositories {
+    // required by crashlytics
+    maven {
+        url("https://maven.fabric.io/public")
+    }
+
+    // used by sdk
+    maven {
+        url("https://oss.sonatype.org/content/repositories/snapshots")
+    }
+}
+
+def getFabricKey = {
+    def fabricPropertiesFile = file("fabric.properties")
+
+    // retrieve api key from file, otherwise look for a key in environment
+    if (fabricPropertiesFile.exists()) {
+        Properties properties = new Properties()
+        properties.load(fabricPropertiesFile.newDataInputStream())
+        return properties.getProperty("apiKey")
+    } else {
+        return System.getenv("PAPER_FABRIC_KEY")
+    }
+}
+
+def versionMajor = 0
+def versionMinor = 1
+def versionPatch = 0
+def versionBuild = 0
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion versions.sdk
+    buildToolsVersion versions.tools
+
     defaultConfig {
         applicationId "org.hisp.dhis.android.dataentry"
-        minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.sdk
+        versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+
+        // jUnit test runner for android
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // Fabric API key
+        manifestPlaceholders = [
+                fabricKey: getFabricKey()
+        ]
+
+        // Make generated apks contain version name and code.
+        archivesBaseName = "app-${versionName}-${versionCode}"
+    }
+
+    lintOptions {
+        warningsAsErrors true
+        abortOnError true
+
+        disable "GoogleAppIndexingWarning" // App does not have deep linking.
+        warning "InvalidPackage" // Okio references java.nio that does not presented in Android SDK.
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    signingConfigs {
+        dataentry {
+            storeFile file("dataentry.jks")
+            storePassword "android"
+            keyAlias "android"
+            keyPassword "android"
+        }
+    }
+
+    buildTypes {
+        debug {
+            // custom application suffix which allows to
+            // install debug and release builds at the same time
+            applicationIdSuffix = ".debug"
+
+            // jacoco test coverage reports both for
+            // androidTest and test source sets
+            testCoverageEnabled = true
+
+            // Disable fabric build ID generation for debug builds
+            ext.enableCrashlytics = false
+
+            // Using dataentry.jks to sign debug build type.
+            signingConfig = signingConfigs.dataentry
+        }
+        release {
+            // enabling crashlytics for debug builds
+            ext.enableCrashlytics = true
+        }
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    testCompile 'junit:junit:4.12'
+    compile "hu.supercluster:paperwork:${libraries.paperwork}"
+
+    // Support libraries
+    compile "com.android.support:appcompat-v7:${libraries.support}"
+    compile "com.android.support:support-annotations:${libraries.support}"
+
+    // Fabric tools
+    compile("com.crashlytics.sdk.android:crashlytics:${libraries.crashlytics}@aar") {
+        transitive = true;
+    }
+
+    // Test dependencies
+    testCompile "junit:junit:${libraries.junit}"
+    testCompile "org.assertj:assertj-core:${libraries.assertj}"
+    testCompile "org.mockito:mockito-core:${libraries.mockito}"
+
+    // Spoon client which allows to capture screenshots
+    androidTestCompile "com.squareup.spoon:spoon-client:${libraries.spoon}"
+
+    androidTestCompile "com.android.support.test.espresso:espresso-core:${libraries.espresso}"
+    androidTestCompile("com.android.support.test.espresso:espresso-contrib:${libraries.espresso}") {
+        // Causes IncompatibleClassChangeError
+        exclude module: "support-annotations"
+        exclude module: "recyclerview-v7"
+        exclude module: "appcompat-v7"
+        exclude module: "support-v4"
+        exclude module: "design"
+    }
 }
