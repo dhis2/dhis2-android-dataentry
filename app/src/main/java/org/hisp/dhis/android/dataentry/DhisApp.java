@@ -21,6 +21,7 @@ public class DhisApp extends Application {
     private static final String GIT_SHA = "gitSha";
     private static final String BUILD_DATE = "buildDate";
 
+    private AppComponent appComponent;
     private RefWatcher refWatcher;
 
     public static RefWatcher refWatcher(Context context) {
@@ -38,7 +39,17 @@ public class DhisApp extends Application {
         setUpFabric(paperwork);
         setUpTimber();
 
+        appComponent = prepareAppComponent().build();
         refWatcher = setUpLeakCanary();
+    }
+
+    public static AppComponent getAppComponent(Context context) {
+        return ((DhisApp) context.getApplicationContext()).appComponent;
+    }
+
+    protected DaggerAppComponent.Builder prepareAppComponent() {
+        return DaggerAppComponent.builder()
+                .appModule(new AppModule(this));
     }
 
     @NonNull
