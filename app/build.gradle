@@ -67,11 +67,17 @@ android {
     }
 
     lintOptions {
-        warningsAsErrors true
+        // fail early
         abortOnError true
 
-        disable "GoogleAppIndexingWarning" // App does not have deep linking.
-        warning "InvalidPackage" // Okio references java.nio that does not presented in Android SDK.
+        // App does not have deep linking.
+        disable "GoogleAppIndexingWarning"
+
+        // Okio references java.nio that does not presented in Android SDK.
+        warning "InvalidPackage"
+
+        // casting 'InvalidPackage' error to warning
+        warning 'InvalidPackage'
     }
 
     compileOptions {
@@ -86,6 +92,13 @@ android {
             keyAlias "android"
             keyPassword "android"
         }
+    }
+
+    // ToDo: Handle dependency on jackson in d2 properly
+    packagingOptions {
+        // excluding duplicate license files
+        // from jackson modules
+        exclude "META-INF/LICENSE"
     }
 
     buildTypes {
@@ -117,6 +130,9 @@ dependencies {
     // Support libraries
     compile "com.android.support:appcompat-v7:${libraries.support}"
     compile "com.android.support:support-annotations:${libraries.support}"
+
+    // dhis2 libraries
+    compile "org.hisp.dhis:android-core:${libraries.dhis2sdk}"
 
     // Fabric tools
     compile("com.crashlytics.sdk.android:crashlytics:${libraries.crashlytics}@aar") {
