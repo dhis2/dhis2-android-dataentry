@@ -1,0 +1,6 @@
+*
+!.gitignore
+!fileTemplates
+!fileTemplates/*
+!fileTemplates/internal/*
+!fileTemplates/includes/*
