@@ -1,0 +1,44 @@
+language: android
+
+sudo:
+  false
+
+jdk:
+  - oraclejdk8
+
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+  # sonarqube:
+    # token:
+        # secure: "Vk2w1uv/YFs10AiPvfNrHsNoOkPuF4lq5giAnoQ3H3aOLEr++3lGljNs6Miha0ZVqBAaYRLDreNxV6GDXnyxNG8AeBPgaXSk2BkIBxfRlzZCW1tw9k2HwgvfsXCgofnT8PCR8dUmoGIUS1pBzEo0KoDz/rQtDg1jxGqJmYWOpVwpJaze5tnQOIu68r4/29IqxzLiBlEu2hp1zdZrT7kGa0tSPS/w5VelkMcc3np5DlaDslZ9BJR8ExZRshVDiieDC8m+/HR5/jwkKv/HvL9RUYu3bmbb2vLITvwMNAhObDU7qsUNoiuZ0mw3n0VQkW3q5fFM6VrBueJEAsw89GIOjfbWxksaC73xYObSMp0o0+CnWrHMDih2QFRlR2r+exP+3QNVsAaNhMx9KH5xBsjiJKO8e1RutAWPGifB30W+EckQ0pFMB81ZwvCTYg/Pf30Vv2Cgua1jzzyEJR2L1yUdLpZJ21uq26C5mf9+DaI7LKkF0vNfMkMhILSkC3KSz+scAL7xS2BOsJy5M6lAxpUpRwWCjFOjkwz38QMyQb5AdLePH/7VKEse5bnW1A9tziib6l2jqn62KbPmzBQ50azQ3i2W6sccZCProVgKK/y1htiyteVRBtAbqxU7s7vd3ubjMOqO7k9mEbFY6cUyVJQyAC4mbvMjX9bZJyXkTnBuPRI="
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-25.0.2
+    - android-25
+    - extra-android-m2repository
+
+before_script:
+  - echo no | android create avd --force -n test -t android-18 --abi armeabi-v7a
+  - emulator -avd test -no-audio -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82
+
+script:
+  bash build.sh
+
+# after_script:
+  # ./gradlew sonarqube
+
+notifications:
+  email: true
+
+cache:
+  directories:
+    - $HOME/.m2
+    - $HOME/.gradle
+    # - $HOME/.sonar/cache
