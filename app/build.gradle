@@ -123,6 +123,10 @@ dependencies {
         transitive = true;
     }
 
+    // Google dagger
+    compile "com.google.dagger:dagger:${libraries.dagger}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${libraries.dagger}"
+
     // Square libraries
     debugCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"
     releaseCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"
