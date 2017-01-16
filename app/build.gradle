@@ -25,6 +25,19 @@ repositories {
     }
 }
 
+def getFabricKey = {
+    def fabricPropertiesFile = file("fabric.properties")
+
+    // retrieve api key from file, otherwise look for a key in environment
+    if (fabricPropertiesFile.exists()) {
+        Properties properties = new Properties()
+        properties.load(fabricPropertiesFile.newDataInputStream())
+        return properties.getProperty("apiKey")
+    } else {
+        return System.getenv("PAPER_FABRIC_KEY")
+    }
+}
+
 def versionMajor = 0
 def versionMinor = 1
 def versionPatch = 0
@@ -43,6 +56,11 @@ android {
 
         // jUnit test runner for android
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // Fabric API key
+        manifestPlaceholders = [
+                fabricKey: getFabricKey()
+        ]
 
         // Make generated apks contain version name and code.
         archivesBaseName = "app-${versionName}-${versionCode}"

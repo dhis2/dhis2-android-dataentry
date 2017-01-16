@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("org.hisp.dhis.android.dataentry", appContext.getPackageName());
+        assertEquals("org.hisp.dhis.android.dataentry.debug", appContext.getPackageName());
     }
 }
