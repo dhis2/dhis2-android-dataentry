@@ -11,8 +11,11 @@ import com.crashlytics.android.core.CrashlyticsCore;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
+import org.hisp.dhis.android.dataentry.utils.CrashReportingTree;
+
 import hu.supercluster.paperwork.Paperwork;
 import io.fabric.sdk.android.Fabric;
+import timber.log.Timber;
 
 public class DhisApp extends Application {
     private static final String GIT_SHA = "gitSha";
@@ -33,6 +36,7 @@ public class DhisApp extends Application {
 
         Paperwork paperwork = setUpPaperwork();
         setUpFabric(paperwork);
+        setUpTimber();
 
         refWatcher = setUpLeakCanary();
     }
@@ -68,6 +72,15 @@ public class DhisApp extends Application {
             crashlytics.core.setString(BUILD_DATE, paperwork.get(BUILD_DATE));
 
             Fabric.with(this, new Crashlytics(), new Answers());
+        }
+    }
+
+    private void setUpTimber() {
+        if (BuildConfig.DEBUG) {
+            // Verbose logging for debug builds.
+            Timber.plant(new Timber.DebugTree());
+        } else {
+            Timber.plant(new CrashReportingTree());
         }
     }
 
