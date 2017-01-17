@@ -139,13 +139,17 @@ dependencies {
         transitive = true;
     }
 
+    // ReactiveX
+    compile("io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}")
+    compile("io.reactivex.rxjava2:rxjava:${libraries.rxjava}")
+
     // Google dagger
     compile "com.google.dagger:dagger:${libraries.dagger}"
     annotationProcessor "com.google.dagger:dagger-compiler:${libraries.dagger}"
 
     // Square libraries
     debugCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"
-    releaseCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:${libraries.leakcanary}"
 
     // Jake Wharton libraries
     compile "com.jakewharton.timber:timber:${libraries.timber}"
