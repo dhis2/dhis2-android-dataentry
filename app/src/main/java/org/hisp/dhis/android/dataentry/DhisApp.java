@@ -1,7 +1,6 @@
 package org.hisp.dhis.android.dataentry;
 
 import android.app.Application;
-import android.content.Context;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 
@@ -11,6 +10,8 @@ import com.crashlytics.android.core.CrashlyticsCore;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
+import org.hisp.dhis.android.core.configuration.ConfigurationManager;
+import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.server.ServerModule;
 import org.hisp.dhis.android.dataentry.utils.CrashReportingTree;
@@ -24,13 +25,12 @@ public class DhisApp extends Application {
     private static final String GIT_SHA = "gitSha";
     private static final String BUILD_DATE = "buildDate";
 
-    private AppComponent appComponent;
-    private ServerComponent serverComponent;
-    private RefWatcher refWatcher;
+    /* Dagger components */
+    AppComponent appComponent;
+    ServerComponent serverComponent;
 
-    public static RefWatcher refWatcher(Context context) {
-        return ((DhisApp) context.getApplicationContext()).refWatcher;
-    }
+    // LeakCanary reference watcher
+    RefWatcher refWatcher;
 
     @Override
     public void onCreate() {
@@ -39,28 +39,44 @@ public class DhisApp extends Application {
         // fail early on leaks
         setUpStrictMode();
 
+        appComponent = prepareAppComponent().build();
+        ConfigurationManager configurationManager = appComponent.configurationManager();
+
+        // If there is no configuration, we cannot setup D2 instance
+        ConfigurationModel configuration = configurationManager.get();
+        if (configuration != null) {
+            serverComponent = appComponent.plus(new ServerModule(configuration));
+        }
+
+        // RefWatcher which can be used in debug
+        // builds to detect leaks
+        refWatcher = setUpLeakCanary();
+
+        // Logging and Crash reporting tools.
         Paperwork paperwork = setUpPaperwork();
         setUpFabric(paperwork);
         setUpTimber();
-
-        appComponent = prepareAppComponent().build();
-        refWatcher = setUpLeakCanary();
-    }
-
-    public static AppComponent getAppComponent(@NonNull Context context) {
-        return ((DhisApp) context.getApplicationContext()).appComponent;
-    }
-
-    public static ServerComponent createServerComponent(@NonNull Context context,
-                                                        @NonNull String serverUrl) {
-        DhisApp dhisApp = ((DhisApp) context.getApplicationContext());
-        dhisApp.serverComponent = dhisApp.appComponent.plus(new ServerModule(serverUrl));
-        return dhisApp.serverComponent;
     }
 
     protected DaggerAppComponent.Builder prepareAppComponent() {
         return DaggerAppComponent.builder()
                 .appModule(new AppModule(this, DATABASE_NAME));
+    }
+
+    public RefWatcher refWatcher() {
+        return refWatcher;
+    }
+
+    public AppComponent appComponent() {
+        return appComponent;
+    }
+
+    public ServerComponent serverComponent() {
+        return serverComponent;
+    }
+
+    public ServerComponent serverComponent(@NonNull ConfigurationModel configuration) {
+        return (serverComponent = appComponent.plus(new ServerModule(configuration)));
     }
 
     @NonNull

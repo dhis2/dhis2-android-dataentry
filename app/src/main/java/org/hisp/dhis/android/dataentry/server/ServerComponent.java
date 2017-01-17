@@ -9,4 +9,5 @@ import dagger.Subcomponent;
         }
 )
 public interface ServerComponent {
+    ConfigurationRepository configurationRepository();
 }

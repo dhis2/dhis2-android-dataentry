@@ -1,29 +1,23 @@
 package org.hisp.dhis.android.dataentry.server;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.configuration.ConfigurationManager;
-import org.hisp.dhis.android.core.configuration.ConfigurationManagerFactory;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.core.data.api.Authenticator;
 import org.hisp.dhis.android.core.data.api.BasicAuthenticatorFactory;
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
-import org.hisp.dhis.android.dataentry.AppModule;
 
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
 
-@Module(includes = AppModule.class)
+@Module
+@PerServer
 public class ServerModule {
-    private final String databaseName;
     private final ConfigurationModel configuration;
 
-    public ServerModule(@NonNull String databaseName,
-                        @NonNull ConfigurationModel configuration) {
-        this.databaseName = databaseName;
+    public ServerModule(@NonNull ConfigurationModel configuration) {
         this.configuration = configuration;
     }
 
@@ -39,18 +33,6 @@ public class ServerModule {
 
     @Provides
     @PerServer
-    DbOpenHelper providesDbOpenHelper(Context context) {
-        return new DbOpenHelper(context, databaseName);
-    }
-
-    @Provides
-    @PerServer
-    ConfigurationManager providesConfigurationManager(DbOpenHelper dbOpenHelper) {
-        return ConfigurationManagerFactory.create(dbOpenHelper);
-    }
-
-    @Provides
-    @PerServer
     Authenticator providesAuthenticator(DbOpenHelper dbOpenHelper) {
         return BasicAuthenticatorFactory.create(dbOpenHelper);
     }
@@ -61,5 +43,11 @@ public class ServerModule {
         return new OkHttpClient.Builder()
                 .addInterceptor(authenticator)
                 .build();
+    }
+
+    @Provides
+    @PerServer
+    ConfigurationRepository providesConfigurationRepository(D2 d2) {
+        return new ConfigurationRepositoryImpl(d2);
     }
 }

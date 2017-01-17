@@ -1,8 +1,7 @@
 package org.hisp.dhis.android.dataentry.launcher;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
-import org.hisp.dhis.android.dataentry.commons.ConfigurationRepository;
-import org.hisp.dhis.android.dataentry.user.UserRepository;
+import org.hisp.dhis.android.dataentry.server.ConfigurationRepository;
 import org.hisp.dhis.android.dataentry.utils.MockSchedulersProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 
 import io.reactivex.Observable;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,9 +26,6 @@ public class LauncherPresenterUnitTests {
     @Mock
     private ConfigurationRepository configurationRepository;
 
-    @Mock
-    private UserRepository userRepository;
-
     private ConfigurationModel configuration;
     private LauncherPresenter launcherPresenter;
 
@@ -36,23 +33,19 @@ public class LauncherPresenterUnitTests {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        configuration = ConfigurationModel.builder()
-                .serverUrl("test_server_url")
-                .build();
+        configuration = mock(ConfigurationModel.class);
+        when(configuration.serverUrl()).thenReturn("test_server_url");
 
-        launcherPresenter = new LauncherPresenterImpl(new MockSchedulersProvider(),
-                configurationRepository, userRepository);
+        launcherPresenter = new LauncherPresenterImpl(new MockSchedulersProvider(), configurationRepository);
         launcherPresenter.onAttach(launcherView);
     }
 
     @Test
     public void isUserLoggedIn_shouldCallNavigateToLoginView_ifConfigurationIsNotPresent() {
         // server is not configured
-        ConfigurationModel configuration = ConfigurationModel.builder()
-                .serverUrl("").build();
+        when(configuration.serverUrl()).thenReturn("");
 
-        when(configurationRepository.configuration()).thenReturn(Observable.just(configuration));
-        when(userRepository.isUserLoggedIn()).thenReturn(Observable.just(false));
+        when(configurationRepository.isUserLoggedIn()).thenReturn(Observable.just(false));
 
         launcherPresenter.isUserLoggedIn();
 
@@ -61,8 +54,7 @@ public class LauncherPresenterUnitTests {
 
     @Test
     public void isUserLoggedIn_shouldCallNavigateToLoginView_ifUserNotPresent() {
-        when(configurationRepository.configuration()).thenReturn(Observable.just(configuration));
-        when(userRepository.isUserLoggedIn()).thenReturn(Observable.just(false));
+        when(configurationRepository.isUserLoggedIn()).thenReturn(Observable.just(false));
 
         launcherPresenter.isUserLoggedIn();
 
@@ -71,8 +63,7 @@ public class LauncherPresenterUnitTests {
 
     @Test
     public void isUserLoggedIn_shouldCallNavigateToHomeView_ifUserPresent() {
-        when(configurationRepository.configuration()).thenReturn(Observable.just(configuration));
-        when(userRepository.isUserLoggedIn()).thenReturn(Observable.just(true));
+        when(configurationRepository.isUserLoggedIn()).thenReturn(Observable.just(true));
 
         launcherPresenter.isUserLoggedIn();
 
@@ -82,10 +73,8 @@ public class LauncherPresenterUnitTests {
     @Test
     public void isUserLoggedIn_shouldCallNavigationToHomeView_ifUserRepositoryIsNull() {
         LauncherPresenter launcherPresenter = new LauncherPresenterImpl(
-                new MockSchedulersProvider(), configurationRepository, null);
+                new MockSchedulersProvider(), null);
         launcherPresenter.onAttach(launcherView);
-
-        when(configurationRepository.configuration()).thenReturn(Observable.just(configuration));
 
         launcherPresenter.isUserLoggedIn();
 
@@ -102,8 +91,7 @@ public class LauncherPresenterUnitTests {
 
     @Test
     public void viewMethods_shouldNotBeCalled_afterDetach() {
-        when(configurationRepository.configuration()).thenReturn(Observable.just(configuration));
-        when(userRepository.isUserLoggedIn()).thenReturn(Observable.just(true));
+        when(configurationRepository.isUserLoggedIn()).thenReturn(Observable.just(true));
 
         launcherPresenter.onDetach();
         launcherPresenter.isUserLoggedIn();
