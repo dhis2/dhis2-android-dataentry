@@ -74,6 +74,7 @@ ext {
             support       : "25.1.0",
             crashlytics   : "2.6.5",
             paperwork     : "1.2.7",
+            progressbar   : "1.2.0",
 
             // test dependencies
             espresso      : "2.2.2",
