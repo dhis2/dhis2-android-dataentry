@@ -74,6 +74,12 @@ ext {
             support       : "25.1.0",
             crashlytics   : "2.6.5",
             paperwork     : "1.2.7",
+            dagger        : "2.8",
+            timber        : "4.5.0",
+            leakcanary    : "1.5",
+            dhis2sdk      : "0.0.3-SNAPSHOT",
+            rxjava        : "2.0.4",
+            rxandroid     : "2.0.1",
 
             // test dependencies
             espresso      : "2.2.2",

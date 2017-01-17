@@ -26,16 +26,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry;
+package org.hisp.dhis.android.dataentry.server;
 
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
 
-public class LauncherActivity extends AppCompatActivity {
+import io.reactivex.Observable;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launcher);
-    }
+public interface ConfigurationRepository {
+    @NonNull
+    Observable<Boolean> isUserLoggedIn();
 }

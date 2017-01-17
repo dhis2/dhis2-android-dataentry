@@ -67,11 +67,17 @@ android {
     }
 
     lintOptions {
-        warningsAsErrors true
+        // fail early
         abortOnError true
 
-        disable "GoogleAppIndexingWarning" // App does not have deep linking.
-        warning "InvalidPackage" // Okio references java.nio that does not presented in Android SDK.
+        // App does not have deep linking.
+        disable "GoogleAppIndexingWarning"
+
+        // Okio references java.nio that does not presented in Android SDK.
+        warning "InvalidPackage"
+
+        // casting 'InvalidPackage' error to warning
+        warning 'InvalidPackage'
     }
 
     compileOptions {
@@ -86,6 +92,13 @@ android {
             keyAlias "android"
             keyPassword "android"
         }
+    }
+
+    // ToDo: Handle dependency on jackson in d2 properly
+    packagingOptions {
+        // excluding duplicate license files
+        // from jackson modules
+        exclude "META-INF/LICENSE"
     }
 
     buildTypes {
@@ -118,17 +131,35 @@ dependencies {
     compile "com.android.support:appcompat-v7:${libraries.support}"
     compile "com.android.support:support-annotations:${libraries.support}"
 
+    // dhis2 libraries
+    compile "org.hisp.dhis:android-core:${libraries.dhis2sdk}"
+
     // Fabric tools
     compile("com.crashlytics.sdk.android:crashlytics:${libraries.crashlytics}@aar") {
         transitive = true;
     }
+
+    // ReactiveX
+    compile("io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}")
+    compile("io.reactivex.rxjava2:rxjava:${libraries.rxjava}")
+
+    // Google dagger
+    compile "com.google.dagger:dagger:${libraries.dagger}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${libraries.dagger}"
+
+    // Square libraries
+    debugCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:${libraries.leakcanary}"
+
+    // Jake Wharton libraries
+    compile "com.jakewharton.timber:timber:${libraries.timber}"
 
     // Test dependencies
     testCompile "junit:junit:${libraries.junit}"
     testCompile "org.assertj:assertj-core:${libraries.assertj}"
     testCompile "org.mockito:mockito-core:${libraries.mockito}"
 
-    // Spoon client which allows to capture screenshots
+    // Spoon client which allows to capture screenshots during instrumentation tests
     androidTestCompile "com.squareup.spoon:spoon-client:${libraries.spoon}"
 
     androidTestCompile "com.android.support.test.espresso:espresso-core:${libraries.espresso}"
