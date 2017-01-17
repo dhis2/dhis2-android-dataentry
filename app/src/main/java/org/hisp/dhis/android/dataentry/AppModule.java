@@ -11,9 +11,11 @@ import dagger.Provides;
 @Module
 public final class AppModule {
     private final Application application;
+    private final String databaseName;
 
-    public AppModule(@NonNull Application application) {
+    public AppModule(@NonNull Application application, @NonNull String databaseName) {
         this.application = application;
+        this.databaseName = databaseName;
     }
 
     @Provides

@@ -11,6 +11,8 @@ import com.crashlytics.android.core.CrashlyticsCore;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
+import org.hisp.dhis.android.dataentry.server.ServerComponent;
+import org.hisp.dhis.android.dataentry.server.ServerModule;
 import org.hisp.dhis.android.dataentry.utils.CrashReportingTree;
 
 import hu.supercluster.paperwork.Paperwork;
@@ -18,10 +20,12 @@ import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 public class DhisApp extends Application {
+    private static final String DATABASE_NAME = "dhis.db";
     private static final String GIT_SHA = "gitSha";
     private static final String BUILD_DATE = "buildDate";
 
     private AppComponent appComponent;
+    private ServerComponent serverComponent;
     private RefWatcher refWatcher;
 
     public static RefWatcher refWatcher(Context context) {
@@ -43,13 +47,20 @@ public class DhisApp extends Application {
         refWatcher = setUpLeakCanary();
     }
 
-    public static AppComponent getAppComponent(Context context) {
+    public static AppComponent getAppComponent(@NonNull Context context) {
         return ((DhisApp) context.getApplicationContext()).appComponent;
+    }
+
+    public static ServerComponent createServerComponent(@NonNull Context context,
+                                                        @NonNull String serverUrl) {
+        DhisApp dhisApp = ((DhisApp) context.getApplicationContext());
+        dhisApp.serverComponent = dhisApp.appComponent.plus(new ServerModule(serverUrl));
+        return dhisApp.serverComponent;
     }
 
     protected DaggerAppComponent.Builder prepareAppComponent() {
         return DaggerAppComponent.builder()
-                .appModule(new AppModule(this));
+                .appModule(new AppModule(this, DATABASE_NAME));
     }
 
     @NonNull
