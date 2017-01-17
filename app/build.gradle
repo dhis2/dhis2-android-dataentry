@@ -112,6 +112,10 @@ android {
 }
 
 dependencies {
+
+    // Local
+    compile project(":ui")
+
     compile "hu.supercluster:paperwork:${libraries.paperwork}"
 
     // Support libraries
