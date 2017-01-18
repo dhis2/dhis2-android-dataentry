@@ -125,11 +125,17 @@ android {
 }
 
 dependencies {
+
     compile "hu.supercluster:paperwork:${libraries.paperwork}"
 
     // Support libraries
     compile "com.android.support:appcompat-v7:${libraries.support}"
     compile "com.android.support:support-annotations:${libraries.support}"
+    compile "com.android.support:cardview-v7:${libraries.support}"
+    compile "com.android.support:design:${libraries.support}"
+
+    // Other
+    compile "com.github.castorflex.smoothprogressbar:library-circular:${libraries.progressbar}"
 
     // dhis2 libraries
     compile "org.hisp.dhis:android-core:${libraries.dhis2sdk}"

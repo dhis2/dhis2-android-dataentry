@@ -29,38 +29,19 @@
   -->
 
 <resources>
+    <declare-styleable name="ViewFont">
+        <attr name="font" format="reference" />
+    </declare-styleable>
 
-    <string name="app_name">dhis2-android-dataentry</string>
+    <declare-styleable name="ButtonHint">
+        <attr name="hint" format="string" />
+    </declare-styleable>
 
-    <!-- LoginActivity  -->
-    <string name="server_url">Server URL</string>
-    <string name="username">Username</string>
-    <string name="password">Password</string>
-    <string name="log_in">Log in</string>
-    <string name="confirm_user">Confirm user</string>
-    <string name="clear_and_logout">Clear and log out</string>
-    <string name="two">2</string>
-
-    <!-- Start Section: Forms -->
-    <!-- Input hints -->
-    <string name="enter_text">Enter text</string>
-    <string name="enter_long_text">Enter long text</string>
-    <string name="enter_number">Enter number</string>
-    <string name="enter_integer">Enter integer</string>
-    <string name="enter_negative_integer">Enter negative integer</string>
-    <string name="enter_positive_integer_or_zero">Enter positive integer or zero</string>
-    <string name="enter_positive_integer">Enter positive integer</string>
-    <string name="enter_date">Enter date</string>
-
-    <!-- Button labels: -->
-    <string name="today_date">Today\'s date</string>
-    <string name="pick_date">Pick date</string>
-    <!-- End section: Forms -->
-
-    <!-- Stub strings. These should generally be overridden in app:strings.xml -->
-    <string name="stub_description">Description</string>
-
-    <!-- Fonts  -->
-    <string name="font_name_regular">Roboto-Regular.ttf</string>
-    <string name="font_name_medium">Roboto-Medium.ttf</string>
+    <declare-styleable name="CircleView">
+        <attr name="stroke_color" format="color|reference" />
+        <attr name="stroke_width" format="dimension|reference" />
+        <attr name="circle_radius" format="dimension" />
+        <attr name="circle_gap" format="dimension" />
+        <attr name="fill_color" format="color|reference" />
+    </declare-styleable>
 </resources>

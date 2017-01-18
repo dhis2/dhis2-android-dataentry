@@ -28,39 +28,12 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<resources>
-
-    <string name="app_name">dhis2-android-dataentry</string>
-
-    <!-- LoginActivity  -->
-    <string name="server_url">Server URL</string>
-    <string name="username">Username</string>
-    <string name="password">Password</string>
-    <string name="log_in">Log in</string>
-    <string name="confirm_user">Confirm user</string>
-    <string name="clear_and_logout">Clear and log out</string>
-    <string name="two">2</string>
-
-    <!-- Start Section: Forms -->
-    <!-- Input hints -->
-    <string name="enter_text">Enter text</string>
-    <string name="enter_long_text">Enter long text</string>
-    <string name="enter_number">Enter number</string>
-    <string name="enter_integer">Enter integer</string>
-    <string name="enter_negative_integer">Enter negative integer</string>
-    <string name="enter_positive_integer_or_zero">Enter positive integer or zero</string>
-    <string name="enter_positive_integer">Enter positive integer</string>
-    <string name="enter_date">Enter date</string>
-
-    <!-- Button labels: -->
-    <string name="today_date">Today\'s date</string>
-    <string name="pick_date">Pick date</string>
-    <!-- End section: Forms -->
-
-    <!-- Stub strings. These should generally be overridden in app:strings.xml -->
-    <string name="stub_description">Description</string>
-
-    <!-- Fonts  -->
-    <string name="font_name_regular">Roboto-Regular.ttf</string>
-    <string name="font_name_medium">Roboto-Medium.ttf</string>
-</resources>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportHeight="24.0"
+    android:viewportWidth="24.0">
+    <path
+        android:fillColor="#FF727272"
+        android:pathData="M19,6.41L17.59,5 12,10.59 6.41,5 5,6.41 10.59,12 5,17.59 6.41,19 12,13.41 17.59,19 19,17.59 13.41,12z" />
+</vector>
