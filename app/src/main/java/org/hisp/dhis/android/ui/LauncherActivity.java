@@ -31,6 +31,8 @@ package org.hisp.dhis.android.ui;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import org.hisp.dhis.android.dataentry.R;
+
 public class LauncherActivity extends AppCompatActivity {
 
     @Override

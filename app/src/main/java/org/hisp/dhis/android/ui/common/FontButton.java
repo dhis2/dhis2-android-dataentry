@@ -33,34 +33,33 @@ import android.content.res.TypedArray;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.support.annotation.StringRes;
-import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
 
-import org.hisp.dhis.android.ui.R;
+import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.ui.utils.TypefaceManager;
 
 import static org.hisp.dhis.android.ui.utils.Preconditions.isNull;
 
-public class FontTextView extends AppCompatTextView {
+public class FontButton extends AppCompatButton {
 
-    public FontTextView(Context context) {
+    public FontButton(Context context) {
         super(context);
     }
 
-    public FontTextView(Context context, AttributeSet attributeSet) {
-        super(context, attributeSet);
-        init(context, attributeSet);
+    public FontButton(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context, attrs);
     }
 
-    public FontTextView(Context context, AttributeSet attributeSet, int defStyle) {
-        super(context, attributeSet, defStyle);
-        init(context, attributeSet);
+    public FontButton(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init(context, attrs);
     }
 
     private void init(Context context, AttributeSet attributeSet) {
         if (!isInEditMode()) {
-            TypedArray attrs = context.obtainStyledAttributes(
-                    attributeSet, R.styleable.ViewFont);
+            TypedArray attrs = context.obtainStyledAttributes(attributeSet, R.styleable.ViewFont);
             setFont(attrs.getString(R.styleable.ViewFont_font));
             attrs.recycle();
         }
@@ -71,7 +70,7 @@ public class FontTextView extends AppCompatTextView {
         setFont(name);
     }
 
-    public void setFont(final String fontName) {
+    private void setFont(final String fontName) {
         isNull(fontName, "fontName must not be null");
 
         if (getContext() != null && getContext().getAssets() != null) {

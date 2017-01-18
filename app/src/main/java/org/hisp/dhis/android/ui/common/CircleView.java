@@ -36,7 +36,7 @@ import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.view.View;
 
-import org.hisp.dhis.android.ui.R;
+import org.hisp.dhis.android.dataentry.R;
 
 public class CircleView extends View {
     private int strokeWidth;

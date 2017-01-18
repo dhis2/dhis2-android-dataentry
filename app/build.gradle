@@ -113,14 +113,16 @@ android {
 
 dependencies {
 
-    // Local
-    compile project(":ui")
-
     compile "hu.supercluster:paperwork:${libraries.paperwork}"
 
     // Support libraries
     compile "com.android.support:appcompat-v7:${libraries.support}"
     compile "com.android.support:support-annotations:${libraries.support}"
+    compile "com.android.support:cardview-v7:${libraries.support}"
+    compile "com.android.support:design:${libraries.support}"
+
+    // Other
+    compile "com.github.castorflex.smoothprogressbar:library-circular:${libraries.progressbar}"
 
     // Fabric tools
     compile("com.crashlytics.sdk.android:crashlytics:${libraries.crashlytics}@aar") {

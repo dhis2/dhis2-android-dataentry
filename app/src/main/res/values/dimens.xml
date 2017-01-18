@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!--
-  ~ Copyright (c) 2017, University of Oslo
+  ~ Copyright (c) 2016, University of Oslo
   ~
   ~ All rights reserved.
   ~ Redistribution and use in source and binary forms, with or without
@@ -28,7 +29,19 @@
   -->
 
 <resources>
+
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="circle_stroke_width">6dp</dimen>
+    <dimen name="progressbar_stroke_width">10dp</dimen>
+
+    <dimen name="keyline_default">16dp</dimen>
+
+    <!-- Text -->
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_large">17sp</dimen>
+
+    <integer name="activity_anim_duration">300</integer>
 </resources>

@@ -36,7 +36,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputEditText;
 import android.util.AttributeSet;
 
-import org.hisp.dhis.android.ui.R;
+import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.ui.utils.TypefaceManager;
 
 import static org.hisp.dhis.android.ui.utils.Preconditions.isNull;
