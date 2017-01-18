@@ -112,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param serverUrl       ServerUrl which will be set to serverUrl address and locked
      */
     public static void navigateTo(Activity currentActivity, Class<? extends Activity> target,
-                                  String serverUrl, String username) {
+            String serverUrl, String username) {
         isNull(currentActivity, "Activity must not be null");
         isNull(target, "Target activity class must not be null");
         isNull(serverUrl, "ServerUrl must not be null");
@@ -185,13 +185,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 loginButton.setText(R.string.confirm_user);
                 logoutButton.setVisibility(View.VISIBLE);
-                logoutButton.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        onLogoutButtonClicked();
-                    }
-                });
+                logoutButton.setOnClickListener((view) -> onLogoutButtonClicked());
             }
         }
 
@@ -212,14 +206,9 @@ public class LoginActivity extends AppCompatActivity {
         hideProgress();
         onTextChanged();
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
+        loginButton.setOnClickListener((view) ->
                 onLoginButtonClicked(serverUrl.getText(), username.getText(),
-                        password.getText());
-            }
-        });
+                        password.getText()));
     }
 
     /*
@@ -259,8 +248,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected final void onRestoreInstanceState(@Nullable Bundle savedInstanceState) {
-        if (savedInstanceState != null &&
-                savedInstanceState.getBoolean(IS_LOADING, false)) {
+        if (savedInstanceState != null && savedInstanceState.getBoolean(IS_LOADING, false)) {
             showProgress();
         } else {
             hideProgress();
@@ -348,31 +336,10 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    protected EditText getServerUrl() {
-        return serverUrl;
-    }
-
-    protected EditText getUsername() {
-        return username;
-    }
-
-    protected EditText getPassword() {
-        return password;
-    }
-
-    protected Button getLoginButton() {
-        return loginButton;
-    }
-
-    protected Button getLogoutButton() {
-        return logoutButton;
-    }
-
     /**
      * Override this in subclass. Login logic goes here
      */
-    protected void onLoginButtonClicked(
-            Editable serverUrl, Editable username, Editable password) {
+    protected void onLoginButtonClicked(Editable serverUrl, Editable username, Editable password) {
         showProgress();
     }
 
@@ -392,7 +359,7 @@ public class LoginActivity extends AppCompatActivity {
         private final boolean showProgress;
 
         public OnPostAnimationRunnable(OnAnimationFinishListener listener,
-                                       LoginActivity loginActivity, boolean showProgress) {
+                LoginActivity loginActivity, boolean showProgress) {
             this.listener = listener;
             this.loginActivity = loginActivity;
             this.showProgress = showProgress;
@@ -459,10 +426,8 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
-        public void endTransition(
-                LayoutTransition transition, ViewGroup container, View view, int type) {
-            if (LayoutTransition.CHANGE_APPEARING == type ||
-                    LayoutTransition.CHANGE_DISAPPEARING == type) {
+        public void endTransition(LayoutTransition transition, ViewGroup container, View view, int type) {
+            if (LayoutTransition.CHANGE_APPEARING == type || LayoutTransition.CHANGE_DISAPPEARING == type) {
                 onPostAnimation();
             }
         }

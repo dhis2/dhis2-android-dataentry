@@ -28,6 +28,7 @@
 
 package org.hisp.dhis.android.dataentry.launcher;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ import android.widget.Toast;
 import org.hisp.dhis.android.dataentry.AppComponent;
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.login.LoginActivity;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 
 import javax.inject.Inject;
@@ -57,8 +59,7 @@ public class LauncherActivity extends AppCompatActivity implements LauncherView 
         appComponent.plus(new LauncherModule(serverComponent))
                 .inject(this);
 
-        // Injection should happen here, but without constant interaction
-        // with application (you should not keep everything in your application class)
+        launcherPresenter.onAttach(this);
         launcherPresenter.isUserLoggedIn();
     }
 
@@ -76,7 +77,8 @@ public class LauncherActivity extends AppCompatActivity implements LauncherView 
 
     @Override
     public void navigateToLoginView() {
-        Toast.makeText(this, "navigateToLoginView()", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 
     @Override
