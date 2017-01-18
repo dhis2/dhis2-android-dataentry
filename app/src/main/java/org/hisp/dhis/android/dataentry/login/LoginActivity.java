@@ -41,6 +41,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -52,7 +53,6 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.AbsTextWatcher;
 
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 import fr.castorflex.android.circularprogressbar.CircularProgressDrawable;
@@ -247,11 +247,11 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected final void onSaveInstanceState(Bundle outState) {
-        if (onPostAnimationAction != null) {
+        if (onPostAnimationAction == null) {
+            outState.putBoolean(IS_LOADING, progressBar.isShown());
+        } else {
             outState.putBoolean(IS_LOADING,
                     onPostAnimationAction.isProgressBarWillBeShown());
-        } else {
-            outState.putBoolean(IS_LOADING, progressBar.isShown());
         }
 
         super.onSaveInstanceState(outState);
@@ -418,11 +418,21 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private class FieldTextWatcher extends AbsTextWatcher {
+    private class FieldTextWatcher implements TextWatcher {
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            // no-op
+        }
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             LoginActivity.this.onTextChanged();
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            // no-op
         }
     }
 

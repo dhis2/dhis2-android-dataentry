@@ -65,7 +65,7 @@ public class FontTextInputEditText extends TextInputEditText {
         }
     }
 
-    public void setFont(@StringRes int resId) {
+    public final void setFont(@StringRes int resId) {
         String name = getResources().getString(resId);
         setFont(name);
     }

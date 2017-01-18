@@ -27,7 +27,7 @@
  */
 package org.hisp.dhis.android.dataentry.utils;
 
-public class Preconditions {
+public final class Preconditions {
     private Preconditions() {
         // no instances
     }

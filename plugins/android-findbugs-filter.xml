@@ -24,4 +24,8 @@
         null-check.  -->
         <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
     </Match>
+    <Match>
+        <!-- Allow Unchecked/unconfirmed cast from android.view.View when using findViewById(id)  -->
+        <Bug pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" method="findViewById" returns="android.view.View" />
+    </Match>
 </FindBugsFilter>

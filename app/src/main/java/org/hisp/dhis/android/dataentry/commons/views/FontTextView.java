@@ -66,12 +66,12 @@ public class FontTextView extends AppCompatTextView {
         }
     }
 
-    public void setFont(@StringRes int resId) {
+    public final void setFont(@StringRes int resId) {
         String name = getResources().getString(resId);
         setFont(name);
     }
 
-    public void setFont(final String fontName) {
+    public final void setFont(final String fontName) {
         isNull(fontName, "fontName must not be null");
 
         if (getContext() != null && getContext().getAssets() != null) {
