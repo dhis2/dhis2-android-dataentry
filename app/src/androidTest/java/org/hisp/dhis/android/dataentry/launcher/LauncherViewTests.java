@@ -29,56 +29,60 @@
 package org.hisp.dhis.android.dataentry.launcher;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.intent.Intents;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
 
-import org.hisp.dhis.android.dataentry.AppComponent;
+import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.dataentry.DhisApp;
-import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.login.LoginActivity;
-import org.hisp.dhis.android.dataentry.server.ServerComponent;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import javax.inject.Inject;
+import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 
-public class LauncherActivity extends AppCompatActivity implements LauncherView {
+@RunWith(AndroidJUnit4.class)
+public class LauncherViewTests {
 
-    @Inject
-    LauncherPresenter launcherPresenter;
+    @Rule
+    public ActivityTestRule<LauncherActivity> launcherViewRule =
+            new ActivityTestRule<>(LauncherActivity.class, true, false);
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launcher);
+    private ConfigurationManager configurationManager;
 
-        AppComponent appComponent = ((DhisApp) getApplicationContext()).appComponent();
-        ServerComponent serverComponent = ((DhisApp) getApplicationContext()).serverComponent();
-
-        // injecting dependencies
-        appComponent.plus(new LauncherModule(serverComponent)).inject(this);
+    @Before
+    public void setUp() throws Exception {
+        configurationManager = getApp().appComponent().configurationManager();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        launcherPresenter.onAttach(this);
-        launcherPresenter.isUserLoggedIn();
+    @Test
+    public void launcherView_shouldNavigateToLoginView_ifServerIsNotConfigured() {
+        Intents.init();
+
+        launcherViewRule.launchActivity(new Intent());
+        intended(hasComponent(LoginActivity.class.getName()));
+
+        Intents.release();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        launcherPresenter.onDetach();
+    @Test
+    public void launcherView_shouldNavigateToLoginView_ifUserIsNotSignedIn() {
+        // configure sdk to point to fake server url
+        getApp().serverComponent(configurationManager.save("https://play.dhis2.org/demo/"));
+
+        Intents.init();
+
+        launcherViewRule.launchActivity(new Intent());
+        intended(hasComponent(LoginActivity.class.getName()));
+
+        Intents.release();
     }
 
-    @Override
-    public void navigateToLoginView() {
-        startActivity(new Intent(this, LoginActivity.class));
-        finish();
-    }
-
-    @Override
-    public void navigateToHomeView() {
-        Toast.makeText(this, "navigateToHomeView()", Toast.LENGTH_SHORT).show();
+    private DhisApp getApp() {
+        return ((DhisApp) InstrumentationRegistry.getTargetContext().getApplicationContext());
     }
 }

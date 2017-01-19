@@ -26,19 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.utils;
+package org.hisp.dhis.android.dataentry;
 
-import javax.inject.Singleton;
+public class DhisInstrumentationTestsApp extends DhisApp {
 
-import dagger.Module;
-import dagger.Provides;
-
-@Module
-public class SchedulersModule {
-
-    @Provides
-    @Singleton
-    SchedulerProvider schedulerProvider() {
-        return new SchedulersProviderImpl();
+    @Override
+    protected DaggerAppComponent.Builder prepareAppComponent() {
+        return super.prepareAppComponent().dbModule(new DbModule(null));
     }
 }

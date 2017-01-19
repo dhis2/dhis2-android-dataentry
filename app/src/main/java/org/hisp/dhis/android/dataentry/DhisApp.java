@@ -43,11 +43,14 @@ import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.server.ServerModule;
 import org.hisp.dhis.android.dataentry.utils.CrashReportingTree;
+import org.hisp.dhis.android.dataentry.utils.SchedulerModule;
 
 import hu.supercluster.paperwork.Paperwork;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
+// ToDo: Avoid reading / writing to the disk during dagger initialization
+// ToDo: Implement more tests for launcher activity, presenter
 public class DhisApp extends Application {
     private static final String DATABASE_NAME = "dhis.db";
     private static final String GIT_SHA = "gitSha";
@@ -88,7 +91,9 @@ public class DhisApp extends Application {
 
     protected DaggerAppComponent.Builder prepareAppComponent() {
         return DaggerAppComponent.builder()
-                .appModule(new AppModule(this, DATABASE_NAME));
+                .dbModule(new DbModule(DATABASE_NAME))
+                .appModule(new AppModule(this))
+                .schedulerModule(new SchedulerModule());
     }
 
     public RefWatcher refWatcher() {

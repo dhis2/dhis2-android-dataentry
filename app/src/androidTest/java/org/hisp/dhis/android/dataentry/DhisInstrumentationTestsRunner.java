@@ -26,19 +26,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.utils;
+package org.hisp.dhis.android.dataentry;
 
-import javax.inject.Singleton;
+import android.app.Application;
+import android.app.Instrumentation;
+import android.content.Context;
+import android.support.test.runner.AndroidJUnitRunner;
 
-import dagger.Module;
-import dagger.Provides;
+public class DhisInstrumentationTestsRunner extends AndroidJUnitRunner {
 
-@Module
-public class SchedulersModule {
-
-    @Provides
-    @Singleton
-    SchedulerProvider schedulerProvider() {
-        return new SchedulersProviderImpl();
+    @Override
+    public Application newApplication(ClassLoader classLoader, String className, Context context)
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        return Instrumentation.newApplication(DhisInstrumentationTestsApp.class, context);
     }
 }

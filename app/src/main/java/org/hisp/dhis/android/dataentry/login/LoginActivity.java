@@ -39,9 +39,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -54,6 +52,9 @@ import android.widget.RelativeLayout;
 
 import org.hisp.dhis.android.dataentry.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnTextChanged;
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 import fr.castorflex.android.circularprogressbar.CircularProgressDrawable;
 
@@ -69,40 +70,38 @@ public class LoginActivity extends AppCompatActivity {
     private static final String ARG_USERNAME = "arg:username";
     private static final String IS_LOADING = "state:isLoading";
 
-    //--------------------------------------------------------------------------------------
-    // Views
-    //--------------------------------------------------------------------------------------
-
     // ProgressBar.
-    private CircularProgressBar progressBar;
+    @BindView(R.id.progress_bar_circular)
+    CircularProgressBar progressBar;
 
     // Fields and corresponding container.
-    private ViewGroup loginViewsContainer;
-    private EditText serverUrl;
-    private EditText username;
-    private EditText password;
+    @BindView(R.id.layout_login_views)
+    ViewGroup loginViewsContainer;
 
-    private Button loginButton;
-    private Button logoutButton;
+    @BindView(R.id.edittext_server_url)
+    EditText serverUrl;
 
+    @BindView(R.id.edittext_username)
+    EditText username;
 
-    //--------------------------------------------------------------------------------------
-    // Animations
-    //--------------------------------------------------------------------------------------
+    @BindView(R.id.edittext_password)
+    EditText password;
+
+    @BindView(R.id.button_log_in)
+    Button loginButton;
+
+    @BindView(R.id.button_log_out)
+    Button logoutButton;
 
     // LayoutTransition (for JellyBean+ devices only)
-    private LayoutTransition layoutTransition;
+    LayoutTransition layoutTransition;
 
     // Animations for pre-JellyBean devices
-    private Animation layoutTransitionSlideIn;
-    private Animation layoutTransitionSlideOut;
+    Animation layoutTransitionSlideIn;
+    Animation layoutTransitionSlideOut;
 
     // Action which should be executed after animation is finished
-    private OnPostAnimationRunnable onPostAnimationAction;
-
-    //--------------------------------------------------------------------------------------
-    // Factory methods
-    //--------------------------------------------------------------------------------------
+    OnPostAnimationRunnable onPostAnimationAction;
 
     /**
      * Creates intent for LoginActivity to be launched in "User confirmation" mode.
@@ -112,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param serverUrl       ServerUrl which will be set to serverUrl address and locked
      */
     public static void navigateTo(Activity currentActivity, Class<? extends Activity> target,
-                                  String serverUrl, String username) {
+            String serverUrl, String username) {
         isNull(currentActivity, "Activity must not be null");
         isNull(target, "Target activity class must not be null");
         isNull(serverUrl, "ServerUrl must not be null");
@@ -130,15 +129,15 @@ public class LoginActivity extends AppCompatActivity {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
     }
 
-    //--------------------------------------------------------------------------------------
-    // Activity life-cycle callbacks
-    //--------------------------------------------------------------------------------------
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // ToDo: consider replacing setTheme() call with entry in styles
         setTheme(R.style.AppTheme_PrimaryColorBackground);
         setContentView(R.layout.activity_login);
+
+        ButterKnife.bind(this);
 
         // hide keyboard
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -146,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
         // Configuring progress bar (setting width of 6dp)
         float progressBarStrokeWidth = getResources()
                 .getDimensionPixelSize(R.dimen.progressbar_stroke_width);
-        progressBar = (CircularProgressBar) findViewById(R.id.progress_bar_circular);
+        // progressBar = (CircularProgressBar) findViewById(R.id.progress_bar_circular);
         progressBar.setIndeterminateDrawable(new CircularProgressDrawable.Builder(this)
                 .color(ContextCompat.getColor(this, R.color.color_primary))
                 .style(CircularProgressDrawable.STYLE_ROUNDED)
@@ -155,18 +154,6 @@ public class LoginActivity extends AppCompatActivity {
                 .sweepSpeed(1f)
                 .build());
 
-        loginViewsContainer = (CardView) findViewById(R.id.layout_login_views);
-        loginButton = (Button) findViewById(R.id.button_log_in);
-        logoutButton = (Button) findViewById(R.id.button_log_out);
-
-        serverUrl = (EditText) findViewById(R.id.edittext_server_url);
-        username = (EditText) findViewById(R.id.edittext_username);
-        password = (EditText) findViewById(R.id.edittext_password);
-
-        FieldTextWatcher watcher = new FieldTextWatcher();
-        serverUrl.addTextChangedListener(watcher);
-        username.addTextChangedListener(watcher);
-        password.addTextChangedListener(watcher);
         logoutButton.setVisibility(View.GONE);
 
         if (getIntent().getExtras() != null) {
@@ -185,13 +172,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 loginButton.setText(R.string.confirm_user);
                 logoutButton.setVisibility(View.VISIBLE);
-                logoutButton.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        onLogoutButtonClicked();
-                    }
-                });
+                logoutButton.setOnClickListener((view) -> onLogoutButtonClicked());
             }
         }
 
@@ -212,8 +193,17 @@ public class LoginActivity extends AppCompatActivity {
         hideProgress();
         onTextChanged();
 
-        loginButton.setOnClickListener(v -> onLoginButtonClicked(serverUrl.getText(), username.getText(),
-                password.getText()));
+        loginButton.setOnClickListener((view) ->
+                onLoginButtonClicked(serverUrl.getText(), username.getText(),
+                        password.getText()));
+    }
+
+    @OnTextChanged(callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED, value = {
+            R.id.edittext_server_url, R.id.edittext_username, R.id.edittext_password
+    })
+    public void onTextChanged() {
+        loginButton.setEnabled(!isEmpty(serverUrl.getText()) &&
+                !isEmpty(username.getText()) && !isEmpty(password.getText()));
     }
 
     /*
@@ -244,8 +234,7 @@ public class LoginActivity extends AppCompatActivity {
         if (onPostAnimationAction == null) {
             outState.putBoolean(IS_LOADING, progressBar.isShown());
         } else {
-            outState.putBoolean(IS_LOADING,
-                    onPostAnimationAction.isProgressBarWillBeShown());
+            outState.putBoolean(IS_LOADING, onPostAnimationAction.isProgressBarWillBeShown());
         }
 
         super.onSaveInstanceState(outState);
@@ -253,8 +242,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected final void onRestoreInstanceState(@Nullable Bundle savedInstanceState) {
-        if (savedInstanceState != null &&
-                savedInstanceState.getBoolean(IS_LOADING, false)) {
+        if (savedInstanceState != null && savedInstanceState.getBoolean(IS_LOADING, false)) {
             showProgress();
         } else {
             hideProgress();
@@ -290,13 +278,6 @@ public class LoginActivity extends AppCompatActivity {
 
         loginViewsContainer.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
-    }
-
-    private void onTextChanged() {
-        loginButton.setEnabled(
-                !isEmpty(serverUrl.getText()) &&
-                        !isEmpty(username.getText()) &&
-                        !isEmpty(password.getText()));
     }
 
     private boolean isAnimationInProgress() {
@@ -342,31 +323,10 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    protected EditText getServerUrl() {
-        return serverUrl;
-    }
-
-    protected EditText getUsername() {
-        return username;
-    }
-
-    protected EditText getPassword() {
-        return password;
-    }
-
-    protected Button getLoginButton() {
-        return loginButton;
-    }
-
-    protected Button getLogoutButton() {
-        return logoutButton;
-    }
-
     /**
      * Override this in subclass. Login logic goes here
      */
-    protected void onLoginButtonClicked(
-            Editable serverUrl, Editable username, Editable password) {
+    protected void onLoginButtonClicked(Editable serverUrl, Editable username, Editable password) {
         showProgress();
     }
 
@@ -386,7 +346,7 @@ public class LoginActivity extends AppCompatActivity {
         private final boolean showProgress;
 
         public OnPostAnimationRunnable(OnAnimationFinishListener listener,
-                                       LoginActivity loginActivity, boolean showProgress) {
+                LoginActivity loginActivity, boolean showProgress) {
             this.listener = listener;
             this.loginActivity = loginActivity;
             this.showProgress = showProgress;
@@ -409,24 +369,6 @@ public class LoginActivity extends AppCompatActivity {
 
         public boolean isProgressBarWillBeShown() {
             return showProgress;
-        }
-    }
-
-    private class FieldTextWatcher implements TextWatcher {
-
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            // no-op
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            LoginActivity.this.onTextChanged();
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-            // no-op
         }
     }
 
@@ -453,10 +395,8 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
-        public void endTransition(
-                LayoutTransition transition, ViewGroup container, View view, int type) {
-            if (LayoutTransition.CHANGE_APPEARING == type ||
-                    LayoutTransition.CHANGE_DISAPPEARING == type) {
+        public void endTransition(LayoutTransition transition, ViewGroup container, View view, int type) {
+            if (LayoutTransition.CHANGE_APPEARING == type || LayoutTransition.CHANGE_DISAPPEARING == type) {
                 onPostAnimation();
             }
         }

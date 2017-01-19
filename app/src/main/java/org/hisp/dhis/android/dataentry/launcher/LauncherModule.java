@@ -49,7 +49,7 @@ public final class LauncherModule {
 
     @Provides
     @PerActivity
-    LauncherPresenter providesLauncherPresenter(SchedulerProvider schedulerProvider) {
+    LauncherPresenter launcherPresenter(SchedulerProvider schedulerProvider) {
         return new LauncherPresenterImpl(schedulerProvider, configurationRepository);
     }
 }

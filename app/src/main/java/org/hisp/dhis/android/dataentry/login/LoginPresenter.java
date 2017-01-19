@@ -26,19 +26,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.utils;
+package org.hisp.dhis.android.dataentry.login;
 
-import javax.inject.Singleton;
+import android.support.annotation.NonNull;
 
-import dagger.Module;
-import dagger.Provides;
+import org.hisp.dhis.android.dataentry.commons.Presenter;
 
-@Module
-public class SchedulersModule {
-
-    @Provides
-    @Singleton
-    SchedulerProvider schedulerProvider() {
-        return new SchedulersProviderImpl();
-    }
+interface LoginPresenter extends Presenter {
+    void validateCredentials(@NonNull String url, @NonNull String username,
+            @NonNull String password);
 }

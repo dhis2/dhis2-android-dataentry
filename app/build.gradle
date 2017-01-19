@@ -55,7 +55,7 @@ android {
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 
         // jUnit test runner for android
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "org.hisp.dhis.android.dataentry.DhisInstrumentationTestsRunner"
 
         // Fabric API key
         manifestPlaceholders = [
@@ -94,7 +94,7 @@ android {
         }
     }
 
-    // ToDo: Handle dependency on jackson in d2 properly
+    // ToDo: Handle dependency on jackson in d2 properly (possibly replace with GSON)
     packagingOptions {
         // excluding duplicate license files
         // from jackson modules
@@ -159,6 +159,8 @@ dependencies {
 
     // Jake Wharton libraries
     compile "com.jakewharton.timber:timber:${libraries.timber}"
+    compile "com.jakewharton:butterknife:${libraries.butterknife}"
+    annotationProcessor "com.jakewharton:butterknife-compiler:${libraries.butterknife}"
 
     // Test dependencies
     testCompile "junit:junit:${libraries.junit}"
@@ -167,6 +169,7 @@ dependencies {
 
     // Spoon client which allows to capture screenshots during instrumentation tests
     androidTestCompile "com.squareup.spoon:spoon-client:${libraries.spoon}"
+    androidTestCompile "org.mockito:mockito-android:${libraries.mockito}"
 
     androidTestCompile "com.android.support.test.espresso:espresso-core:${libraries.espresso}"
     androidTestCompile "com.android.support.test.espresso:espresso-intents:${libraries.espresso}"

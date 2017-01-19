@@ -51,7 +51,7 @@ public class ServerModule {
 
     @Provides
     @PerServer
-    public D2 providesSdkInstance(DbOpenHelper openHelper, OkHttpClient client) {
+    public D2 sdkInstance(DbOpenHelper openHelper, OkHttpClient client) {
         return new D2.Builder()
                 .configuration(configuration)
                 .dbOpenHelper(openHelper)
@@ -61,13 +61,13 @@ public class ServerModule {
 
     @Provides
     @PerServer
-    Authenticator providesAuthenticator(DbOpenHelper dbOpenHelper) {
+    Authenticator authenticator(DbOpenHelper dbOpenHelper) {
         return BasicAuthenticatorFactory.create(dbOpenHelper);
     }
 
     @Provides
     @PerServer
-    OkHttpClient providesOkHttpClient(Authenticator authenticator) {
+    OkHttpClient okHttpClient(Authenticator authenticator) {
         return new OkHttpClient.Builder()
                 .addInterceptor(authenticator)
                 .build();
@@ -75,7 +75,7 @@ public class ServerModule {
 
     @Provides
     @PerServer
-    ConfigurationRepository providesConfigurationRepository(D2 d2) {
+    ConfigurationRepository configurationRepository(D2 d2) {
         return new ConfigurationRepositoryImpl(d2);
     }
 }

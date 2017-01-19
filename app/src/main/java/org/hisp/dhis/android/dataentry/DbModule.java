@@ -26,7 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.utils;
+package org.hisp.dhis.android.dataentry;
+
+import android.content.Context;
+import android.support.annotation.Nullable;
+
+import org.hisp.dhis.android.core.data.database.DbOpenHelper;
 
 import javax.inject.Singleton;
 
@@ -34,11 +39,16 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class SchedulersModule {
+public class DbModule {
+    private final String databaseName;
+
+    public DbModule(@Nullable String databaseName) {
+        this.databaseName = databaseName;
+    }
 
     @Provides
     @Singleton
-    SchedulerProvider schedulerProvider() {
-        return new SchedulersProviderImpl();
+    DbOpenHelper providesDbOpenHelper(Context context) {
+        return new DbOpenHelper(context, databaseName);
     }
 }

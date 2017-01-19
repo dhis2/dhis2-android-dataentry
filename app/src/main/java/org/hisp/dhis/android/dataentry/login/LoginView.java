@@ -26,19 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.utils;
+package org.hisp.dhis.android.dataentry.login;
 
-import javax.inject.Singleton;
+import android.support.annotation.NonNull;
 
-import dagger.Module;
-import dagger.Provides;
+import org.hisp.dhis.android.dataentry.commons.View;
 
-@Module
-public class SchedulersModule {
+interface LoginView extends View {
+    void showProgress();
 
-    @Provides
-    @Singleton
-    SchedulerProvider schedulerProvider() {
-        return new SchedulersProviderImpl();
+    void hideProgress(@NonNull OnProgressFinishedListener listener);
+
+    void showServerError(@NonNull String message);
+
+    void showInvalidCredentialsError(@NonNull String message);
+
+    void showUnexpectedError(@NonNull String message);
+
+    void navigateToHome();
+
+    interface OnProgressFinishedListener {
+        void onProgressFinished();
     }
 }
