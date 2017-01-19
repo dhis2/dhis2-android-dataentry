@@ -169,6 +169,7 @@ dependencies {
     androidTestCompile "com.squareup.spoon:spoon-client:${libraries.spoon}"
 
     androidTestCompile "com.android.support.test.espresso:espresso-core:${libraries.espresso}"
+    androidTestCompile "com.android.support.test.espresso:espresso-intents:${libraries.espresso}"
     androidTestCompile("com.android.support.test.espresso:espresso-contrib:${libraries.espresso}") {
         // Causes IncompatibleClassChangeError
         exclude module: "support-annotations"

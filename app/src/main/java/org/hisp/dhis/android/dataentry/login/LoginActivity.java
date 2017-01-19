@@ -212,14 +212,8 @@ public class LoginActivity extends AppCompatActivity {
         hideProgress();
         onTextChanged();
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                onLoginButtonClicked(serverUrl.getText(), username.getText(),
-                        password.getText());
-            }
-        });
+        loginButton.setOnClickListener(v -> onLoginButtonClicked(serverUrl.getText(), username.getText(),
+                password.getText()));
     }
 
     /*
