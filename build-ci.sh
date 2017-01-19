@@ -8,4 +8,4 @@ PROJECT_DIR=$DIR/
 # This will: compile the project, run lint, run tests under JVM, package apk, check the code quality and run tests on the device/emulator.
 "$PROJECT_DIR"/gradlew --no-daemon --info clean
 "$PROJECT_DIR"/gradlew --no-daemon --info build -Dscan
-"$PROJECT_DIR"/gradlew --no-daemon --info spoon
+"$PROJECT_DIR"/gradlew --no-daemon --stacktrace spoon
