@@ -40,7 +40,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -55,6 +54,7 @@ import org.hisp.dhis.android.dataentry.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnTextChanged;
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 import fr.castorflex.android.circularprogressbar.CircularProgressDrawable;
 
@@ -133,6 +133,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // ToDo: consider replacing setTheme() call with entry in styles
         setTheme(R.style.AppTheme_PrimaryColorBackground);
         setContentView(R.layout.activity_login);
 
@@ -152,20 +153,6 @@ public class LoginActivity extends AppCompatActivity {
                 .rotationSpeed(1f)
                 .sweepSpeed(1f)
                 .build());
-
-        // loginViewsContainer = (CardView) findViewById(R.id.layout_login_views);
-        // loginButton = (Button) findViewById(R.id.button_log_in);
-        // logoutButton = (Button) findViewById(R.id.button_log_out);
-
-        // serverUrl = (EditText) findViewById(R.id.edittext_server_url);
-        // username = (EditText) findViewById(R.id.edittext_username);
-        // password = (EditText) findViewById(R.id.edittext_password);
-
-        FieldTextWatcher watcher = new FieldTextWatcher();
-
-        serverUrl.addTextChangedListener(watcher);
-        username.addTextChangedListener(watcher);
-        password.addTextChangedListener(watcher);
 
         logoutButton.setVisibility(View.GONE);
 
@@ -209,6 +196,14 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener((view) ->
                 onLoginButtonClicked(serverUrl.getText(), username.getText(),
                         password.getText()));
+    }
+
+    @OnTextChanged(callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED, value = {
+            R.id.edittext_server_url, R.id.edittext_username, R.id.edittext_password
+    })
+    public void onTextChanged() {
+        loginButton.setEnabled(!isEmpty(serverUrl.getText()) &&
+                !isEmpty(username.getText()) && !isEmpty(password.getText()));
     }
 
     /*
@@ -283,13 +278,6 @@ public class LoginActivity extends AppCompatActivity {
 
         loginViewsContainer.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
-    }
-
-    private void onTextChanged() {
-        loginButton.setEnabled(
-                !isEmpty(serverUrl.getText()) &&
-                        !isEmpty(username.getText()) &&
-                        !isEmpty(password.getText()));
     }
 
     private boolean isAnimationInProgress() {
@@ -381,24 +369,6 @@ public class LoginActivity extends AppCompatActivity {
 
         public boolean isProgressBarWillBeShown() {
             return showProgress;
-        }
-    }
-
-    private class FieldTextWatcher implements TextWatcher {
-
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            // no-op
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            LoginActivity.this.onTextChanged();
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-            // no-op
         }
     }
 
