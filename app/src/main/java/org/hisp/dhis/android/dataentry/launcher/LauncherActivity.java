@@ -54,18 +54,15 @@ public class LauncherActivity extends AppCompatActivity implements LauncherView 
         AppComponent appComponent = ((DhisApp) getApplicationContext()).appComponent();
         ServerComponent serverComponent = ((DhisApp) getApplicationContext()).serverComponent();
 
-        // creating instance of LauncherComponent and
-        // injecting dependencies into activity
+        // injecting dependencies
         appComponent.plus(new LauncherModule(serverComponent)).inject(this);
-
-        launcherPresenter.onAttach(this);
-        launcherPresenter.isUserLoggedIn();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         launcherPresenter.onAttach(this);
+        launcherPresenter.isUserLoggedIn();
     }
 
     @Override

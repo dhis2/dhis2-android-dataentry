@@ -55,7 +55,7 @@ android {
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 
         // jUnit test runner for android
-        testInstrumentationRunner "org.hisp.dhis.android.dataentry.DhisInstrumentationTestsApp"
+        testInstrumentationRunner "org.hisp.dhis.android.dataentry.DhisInstrumentationTestsRunner"
 
         // Fabric API key
         manifestPlaceholders = [
@@ -172,6 +172,7 @@ dependencies {
     androidTestCompile "org.mockito:mockito-android:${libraries.mockito}"
 
     androidTestCompile "com.android.support.test.espresso:espresso-core:${libraries.espresso}"
+    androidTestCompile "com.android.support.test.espresso:espresso-intents:${libraries.espresso}"
     androidTestCompile("com.android.support.test.espresso:espresso-contrib:${libraries.espresso}") {
         // Causes IncompatibleClassChangeError
         exclude module: "support-annotations"

@@ -61,12 +61,12 @@ class LauncherPresenterImpl implements LauncherPresenter {
 
     @Override
     public void isUserLoggedIn() {
-        /* in case if user repository is null,
-        it means that d2 has not been configured */
+        /* in case if user repository is null, it means that d2 has not been configured */
         if (configurationRepository == null) {
             navigateToLoginView();
             return;
         }
+
         compositeDisposable.add(configurationRepository.isUserLoggedIn()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
