@@ -26,38 +26,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry;
+package org.hisp.dhis.android.dataentry.launcher;
 
-import android.app.Application;
-import android.content.Context;
-import android.support.annotation.NonNull;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
 
-import org.hisp.dhis.android.core.configuration.ConfigurationManager;
-import org.hisp.dhis.android.core.configuration.ConfigurationManagerFactory;
-import org.hisp.dhis.android.core.data.database.DbOpenHelper;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import javax.inject.Singleton;
+@RunWith(AndroidJUnit4.class)
+public class LauncherViewTests {
 
-import dagger.Module;
-import dagger.Provides;
+    @Rule
+    public ActivityTestRule<LauncherActivity> launcherViewRule =
+            new ActivityTestRule<>(LauncherActivity.class);
 
-@Module
-public final class AppModule {
-    private final Application application;
+    @Test
+    public void launcherView_shouldNavigateToLoginView_ifServerNotConfigured() {
 
-    public AppModule(@NonNull Application application) {
-        this.application = application;
-    }
-
-    @Provides
-    @Singleton
-    Context providesContext() {
-        return application;
-    }
-
-    @Provides
-    @Singleton
-    ConfigurationManager providesConfigurationManager(DbOpenHelper dbOpenHelper) {
-        return ConfigurationManagerFactory.create(dbOpenHelper);
     }
 }

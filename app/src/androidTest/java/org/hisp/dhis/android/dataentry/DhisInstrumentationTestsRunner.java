@@ -29,35 +29,15 @@
 package org.hisp.dhis.android.dataentry;
 
 import android.app.Application;
+import android.app.Instrumentation;
 import android.content.Context;
-import android.support.annotation.NonNull;
+import android.support.test.runner.AndroidJUnitRunner;
 
-import org.hisp.dhis.android.core.configuration.ConfigurationManager;
-import org.hisp.dhis.android.core.configuration.ConfigurationManagerFactory;
-import org.hisp.dhis.android.core.data.database.DbOpenHelper;
+public class DhisInstrumentationTestsRunner extends AndroidJUnitRunner {
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-
-@Module
-public final class AppModule {
-    private final Application application;
-
-    public AppModule(@NonNull Application application) {
-        this.application = application;
-    }
-
-    @Provides
-    @Singleton
-    Context providesContext() {
-        return application;
-    }
-
-    @Provides
-    @Singleton
-    ConfigurationManager providesConfigurationManager(DbOpenHelper dbOpenHelper) {
-        return ConfigurationManagerFactory.create(dbOpenHelper);
+    @Override
+    public Application newApplication(ClassLoader classLoader, String className, Context context)
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        return Instrumentation.newApplication(DhisInstrumentationTestsApp.class, context);
     }
 }

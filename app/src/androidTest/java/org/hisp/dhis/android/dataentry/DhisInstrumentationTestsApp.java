@@ -28,36 +28,10 @@
 
 package org.hisp.dhis.android.dataentry;
 
-import android.app.Application;
-import android.content.Context;
-import android.support.annotation.NonNull;
+public class DhisInstrumentationTestsApp extends DhisApp {
 
-import org.hisp.dhis.android.core.configuration.ConfigurationManager;
-import org.hisp.dhis.android.core.configuration.ConfigurationManagerFactory;
-import org.hisp.dhis.android.core.data.database.DbOpenHelper;
-
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-
-@Module
-public final class AppModule {
-    private final Application application;
-
-    public AppModule(@NonNull Application application) {
-        this.application = application;
-    }
-
-    @Provides
-    @Singleton
-    Context providesContext() {
-        return application;
-    }
-
-    @Provides
-    @Singleton
-    ConfigurationManager providesConfigurationManager(DbOpenHelper dbOpenHelper) {
-        return ConfigurationManagerFactory.create(dbOpenHelper);
+    @Override
+    protected DaggerAppComponent.Builder prepareAppComponent() {
+        return super.prepareAppComponent().dbModule(new DbModule(null));
     }
 }

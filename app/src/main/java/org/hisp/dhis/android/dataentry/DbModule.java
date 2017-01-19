@@ -28,12 +28,9 @@
 
 package org.hisp.dhis.android.dataentry;
 
-import android.app.Application;
 import android.content.Context;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import org.hisp.dhis.android.core.configuration.ConfigurationManager;
-import org.hisp.dhis.android.core.configuration.ConfigurationManagerFactory;
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
 
 import javax.inject.Singleton;
@@ -42,22 +39,16 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public final class AppModule {
-    private final Application application;
+public class DbModule {
+    private final String databaseName;
 
-    public AppModule(@NonNull Application application) {
-        this.application = application;
+    public DbModule(@Nullable String databaseName) {
+        this.databaseName = databaseName;
     }
 
     @Provides
     @Singleton
-    Context providesContext() {
-        return application;
-    }
-
-    @Provides
-    @Singleton
-    ConfigurationManager providesConfigurationManager(DbOpenHelper dbOpenHelper) {
-        return ConfigurationManagerFactory.create(dbOpenHelper);
+    DbOpenHelper providesDbOpenHelper(Context context) {
+        return new DbOpenHelper(context, databaseName);
     }
 }

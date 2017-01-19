@@ -56,8 +56,7 @@ public class LauncherActivity extends AppCompatActivity implements LauncherView 
 
         // creating instance of LauncherComponent and
         // injecting dependencies into activity
-        appComponent.plus(new LauncherModule(serverComponent))
-                .inject(this);
+        appComponent.plus(new LauncherModule(serverComponent)).inject(this);
 
         launcherPresenter.onAttach(this);
         launcherPresenter.isUserLoggedIn();
