@@ -32,6 +32,8 @@ import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.squareup.spoon.Spoon;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,11 +59,15 @@ public class LoginViewTests {
 
     @Test
     public void enableLoginButtonOnlyWhenAllFieldsAreFilled() {
+        Spoon.screenshot(loginViewRule.getActivity(), "initial_state");
         loginRobot.typeServerUrl(SERVER_URL)
                 .typeUsername(USERNAME)
                 .typePassword(PASSWORD)
                 .isLoginButtonEnabled()
                 .eraseServerUrl()
-                .isLoginButtonDisabled();
+                .isLoginButtonDisabled()
+                .typeServerUrl(SERVER_URL)
+                .isLoginButtonEnabled();
+        Spoon.screenshot(loginViewRule.getActivity(), "login_button_should_be_enabled");
     }
 }
