@@ -51,6 +51,7 @@ import android.widget.RelativeLayout;
 
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.home.HomeActivity;
 
 import javax.inject.Inject;
 
@@ -215,6 +216,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
                         .plus(new LoginModule())
                         .inject(this);
 
+                loginPresenter.onAttach(this);
                 loginPresenter.validateCredentials(username.getText().toString(),
                         password.getText().toString());
                 break;
@@ -319,7 +321,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     @Override
     public void navigateToHome() {
-
+        ActivityCompat.startActivity(this, HomeActivity.createIntent(this), null);
+        finish();
     }
 
     private boolean isAnimationInProgress() {

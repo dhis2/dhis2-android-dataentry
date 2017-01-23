@@ -53,7 +53,7 @@ class LauncherPresenterImpl implements LauncherPresenter {
     private LauncherView launcherView;
 
     public LauncherPresenterImpl(@NonNull SchedulerProvider schedulerProvider,
-            @Nullable ConfigurationRepository configurationRepository) {
+                                 @Nullable ConfigurationRepository configurationRepository) {
         this.schedulerProvider = schedulerProvider;
         this.configurationRepository = configurationRepository;
         this.compositeDisposable = new CompositeDisposable();
@@ -81,7 +81,9 @@ class LauncherPresenterImpl implements LauncherPresenter {
 
     @Override
     public void onAttach(@NonNull View view) {
-        launcherView = (LauncherView) view;
+        if (view instanceof LauncherView) {
+            launcherView = (LauncherView) view;
+        }
     }
 
     @Override

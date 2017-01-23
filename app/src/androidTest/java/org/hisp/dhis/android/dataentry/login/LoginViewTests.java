@@ -38,6 +38,8 @@ import com.squareup.spoon.Spoon;
 
 import org.hisp.dhis.android.dataentry.DhisInstrumentationTestsApp;
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.home.HomeActivity;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +47,9 @@ import org.junit.runner.RunWith;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+
+import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 
 @RunWith(AndroidJUnit4.class)
 public class LoginViewTests {
@@ -67,9 +72,14 @@ public class LoginViewTests {
         mockWebServer.start();
 
         ((DhisInstrumentationTestsApp) InstrumentationRegistry.getTargetContext().getApplicationContext())
-                .setBaseUrl(mockWebServer.url("http://test.dhis.org"));
+                .setBaseUrl(mockWebServer.url("/"));
 
         loginRobot = new LoginRobot();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        mockWebServer.shutdown();
     }
 
     @Test
@@ -107,46 +117,46 @@ public class LoginViewTests {
 
     @Test
     public void loginShouldSuccessfullyNavigateToHome() {
-        MockResponse mockResponse = new MockResponse();
-        mockResponse.setBody("{\n" +
-                "\n" +
-                "    \"created\": \"2015-03-31T13:31:09.324\",\n" +
-                "    \"lastUpdated\": \"2016-04-06T00:05:57.495\",\n" +
-                "    \"name\": \"John Barnes\",\n" +
-                "    \"id\": \"DXyJmlo9rge\",\n" +
-                "    \"displayName\": \"John Barnes\",\n" +
-                "    \"firstName\": \"John\",\n" +
-                "    \"surname\": \"Barnes\",\n" +
-                "    \"email\": \"john@hmail.com\",\n" +
-                "    \"userCredentials\": {\n" +
-                "        \"lastUpdated\": \"2016-12-20T15:04:21.254\",\n" +
-                "        \"code\": \"android\",\n" +
-                "        \"created\": \"2015-03-31T13:31:09.206\",\n" +
-                "        \"name\": \"John Traore\",\n" +
-                "        \"id\": \"M0fCOxtkURr\",\n" +
-                "        \"displayName\": \"John Traore\",\n" +
-                "        \"username\": \"android\"\n" +
-                "    },\n" +
-                "    \"organisationUnits\": [\n" +
-                "        {\n" +
-                "            \"code\": \"OU_559\",\n" +
-                "            \"level\": 4,\n" +
-                "            \"created\": \"2012-02-17T15:54:39.987\",\n" +
-                "            \"lastUpdated\": \"2014-11-25T09:37:54.924\",\n" +
-                "            \"name\": \"Ngelehun CHC\",\n" +
-                "            \"id\": \"DiszpKrYNg8\",\n" +
-                "            \"shortName\": \"Ngelehun CHC\",\n" +
-                "            \"displayName\": \"Ngelehun CHC\",\n" +
-                "            \"displayShortName\": \"Ngelehun CHC\",\n" +
-                "            \"path\": \"/ImspTQPwCqd/O6uvpzGd5pu/YuQRtpLP10I/DiszpKrYNg8\",\n" +
-                "            \"openingDate\": \"1970-01-01T00:00:00.000\",\n" +
-                "            \"parent\": {\n" +
-                "                \"id\": \"YuQRtpLP10I\"\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
-                "\n" +
-                "}");
+        MockResponse mockResponse = new MockResponse()
+                .setBody("{\n" +
+                        "\n" +
+                        "    \"created\": \"2015-03-31T13:31:09.324\",\n" +
+                        "    \"lastUpdated\": \"2016-04-06T00:05:57.495\",\n" +
+                        "    \"name\": \"John Barnes\",\n" +
+                        "    \"id\": \"DXyJmlo9rge\",\n" +
+                        "    \"displayName\": \"John Barnes\",\n" +
+                        "    \"firstName\": \"John\",\n" +
+                        "    \"surname\": \"Barnes\",\n" +
+                        "    \"email\": \"john@hmail.com\",\n" +
+                        "    \"userCredentials\": {\n" +
+                        "        \"lastUpdated\": \"2016-12-20T15:04:21.254\",\n" +
+                        "        \"code\": \"android\",\n" +
+                        "        \"created\": \"2015-03-31T13:31:09.206\",\n" +
+                        "        \"name\": \"John Traore\",\n" +
+                        "        \"id\": \"M0fCOxtkURr\",\n" +
+                        "        \"displayName\": \"John Traore\",\n" +
+                        "        \"username\": \"android\"\n" +
+                        "    },\n" +
+                        "    \"organisationUnits\": [\n" +
+                        "        {\n" +
+                        "            \"code\": \"OU_559\",\n" +
+                        "            \"level\": 4,\n" +
+                        "            \"created\": \"2012-02-17T15:54:39.987\",\n" +
+                        "            \"lastUpdated\": \"2014-11-25T09:37:54.924\",\n" +
+                        "            \"name\": \"Ngelehun CHC\",\n" +
+                        "            \"id\": \"DiszpKrYNg8\",\n" +
+                        "            \"shortName\": \"Ngelehun CHC\",\n" +
+                        "            \"displayName\": \"Ngelehun CHC\",\n" +
+                        "            \"displayShortName\": \"Ngelehun CHC\",\n" +
+                        "            \"path\": \"/ImspTQPwCqd/O6uvpzGd5pu/YuQRtpLP10I/DiszpKrYNg8\",\n" +
+                        "            \"openingDate\": \"1970-01-01T00:00:00.000\",\n" +
+                        "            \"parent\": {\n" +
+                        "                \"id\": \"YuQRtpLP10I\"\n" +
+                        "            }\n" +
+                        "        }\n" +
+                        "    ]\n" +
+                        "\n" +
+                        "}");
         mockWebServer.enqueue(mockResponse);
 
         Intents.init();
@@ -155,6 +165,8 @@ public class LoginViewTests {
                 .typePassword(PASSWORD)
                 .clickOnLoginButton();
 
-        // intended(hasComponent());
+        // if login is successful, home activity should be started
+        intended(hasComponent(HomeActivity.class.getName()));
+        Intents.release();
     }
 }
