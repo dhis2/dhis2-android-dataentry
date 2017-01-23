@@ -28,10 +28,27 @@
 
 package org.hisp.dhis.android.dataentry;
 
+import android.support.annotation.NonNull;
+
+import org.hisp.dhis.android.dataentry.server.ServerComponent;
+
+import okhttp3.HttpUrl;
+
 public class DhisInstrumentationTestsApp extends DhisApp {
+    private HttpUrl baseUrl;
+
+    public void setBaseUrl(@NonNull HttpUrl baseUrl) {
+        this.baseUrl = baseUrl;
+    }
 
     @Override
     protected DaggerAppComponent.Builder prepareAppComponent() {
         return super.prepareAppComponent().dbModule(new DbModule(null));
+    }
+
+    @Override
+    public ServerComponent createServerComponent(@NonNull HttpUrl url) {
+        // instead of injecting actual base url, inject the mocked one
+        return super.createServerComponent(baseUrl);
     }
 }

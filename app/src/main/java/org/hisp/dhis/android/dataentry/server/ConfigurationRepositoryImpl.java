@@ -31,8 +31,10 @@ package org.hisp.dhis.android.dataentry.server;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.core.user.User;
 
 import io.reactivex.Observable;
+import retrofit2.Response;
 
 // ToDo: tests
 class ConfigurationRepositoryImpl implements ConfigurationRepository {
@@ -40,6 +42,12 @@ class ConfigurationRepositoryImpl implements ConfigurationRepository {
 
     public ConfigurationRepositoryImpl(@NonNull D2 d2) {
         this.d2 = d2;
+    }
+
+    @NonNull
+    @Override
+    public Observable<Response<User>> logIn(@NonNull String username, @NonNull String password) {
+        return Observable.defer(() -> Observable.fromCallable(d2.logIn(username, password)));
     }
 
     @NonNull

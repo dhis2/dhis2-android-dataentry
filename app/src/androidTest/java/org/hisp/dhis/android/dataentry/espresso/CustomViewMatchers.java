@@ -26,28 +26,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.login;
+package org.hisp.dhis.android.dataentry.espresso;
 
-import android.support.annotation.UiThread;
+import android.support.design.widget.TextInputLayout;
+import android.support.test.espresso.matcher.BoundedMatcher;
+import android.view.View;
 
-import org.hisp.dhis.android.dataentry.commons.View;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 
-interface LoginView extends View {
-    @UiThread
-    void showProgress();
+public final class CustomViewMatchers {
+    private CustomViewMatchers() {
+        // no instances
+    }
 
-    @UiThread
-    void hideProgress();
+    public static Matcher<View> withHint(final Matcher<String> hintMatcher) {
+        return new BoundedMatcher<View, TextInputLayout>(TextInputLayout.class) {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Hint should be: ");
+                hintMatcher.describeTo(description);
+            }
 
-    @UiThread
-    void showInvalidServerUrlError();
-
-    @UiThread
-    void showInvalidCredentialsError();
-
-    @UiThread
-    void showUnexpectedError();
-
-    @UiThread
-    void navigateToHome();
+            @Override
+            protected boolean matchesSafely(TextInputLayout item) {
+                return hintMatcher.matches(item.getHint());
+            }
+        };
+    }
 }

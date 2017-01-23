@@ -28,26 +28,21 @@
 
 package org.hisp.dhis.android.dataentry.login;
 
-import android.support.annotation.UiThread;
+import org.hisp.dhis.android.dataentry.commons.PerActivity;
+import org.hisp.dhis.android.dataentry.server.ConfigurationRepository;
+import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 
-import org.hisp.dhis.android.dataentry.commons.View;
+import dagger.Module;
+import dagger.Provides;
 
-interface LoginView extends View {
-    @UiThread
-    void showProgress();
+@Module
+@PerActivity
+public class LoginModule {
 
-    @UiThread
-    void hideProgress();
-
-    @UiThread
-    void showInvalidServerUrlError();
-
-    @UiThread
-    void showInvalidCredentialsError();
-
-    @UiThread
-    void showUnexpectedError();
-
-    @UiThread
-    void navigateToHome();
+    @Provides
+    @PerActivity
+    LoginPresenter loginPresenter(ConfigurationRepository configurationRepository,
+            SchedulerProvider schedulerProvider) {
+        return new LoginPresenterImpl(configurationRepository, schedulerProvider);
+    }
 }

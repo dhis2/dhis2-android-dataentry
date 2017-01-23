@@ -28,18 +28,24 @@
 
 package org.hisp.dhis.android.dataentry.login;
 
-import android.support.test.filters.LargeTest;
+import android.content.res.Resources;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.squareup.spoon.Spoon;
 
+import org.hisp.dhis.android.dataentry.DhisInstrumentationTestsApp;
+import org.hisp.dhis.android.dataentry.R;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@LargeTest
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+
 @RunWith(AndroidJUnit4.class)
 public class LoginViewTests {
     private static final String SERVER_URL = "http://play.dhis2.org/demo";
@@ -50,24 +56,105 @@ public class LoginViewTests {
     public ActivityTestRule<LoginActivity> loginViewRule =
             new ActivityTestRule<>(LoginActivity.class);
 
+    private MockWebServer mockWebServer;
     private LoginRobot loginRobot;
 
     @Before
     public void setUp() throws Exception {
+        // initialize web server which will be
+        // intercepting all requests
+        mockWebServer = new MockWebServer();
+        mockWebServer.start();
+
+        ((DhisInstrumentationTestsApp) InstrumentationRegistry.getTargetContext().getApplicationContext())
+                .setBaseUrl(mockWebServer.url("http://test.dhis.org"));
+
         loginRobot = new LoginRobot();
+    }
+
+    @Test
+    public void hintsShouldBeDisplayedWhenEmpty() {
+        Resources resources = (InstrumentationRegistry.getTargetContext()).getResources();
+
+        // Note: this tests have to be adapted in case
+        // if translations are added to the app
+        loginRobot
+                .checkServerUrlHint(resources.getString(R.string.server_url))
+                .checkUsernameHint(resources.getString(R.string.username))
+                .checkPasswordHint(resources.getString(R.string.password))
+                .checkLoginButtonLabel(resources.getString(R.string.log_in));
     }
 
     @Test
     public void enableLoginButtonOnlyWhenAllFieldsAreFilled() {
         Spoon.screenshot(loginViewRule.getActivity(), "initial_state");
+
+        // check if button is enabled when all fields are present
         loginRobot.typeServerUrl(SERVER_URL)
                 .typeUsername(USERNAME)
                 .typePassword(PASSWORD)
-                .isLoginButtonEnabled()
-                .eraseServerUrl()
-                .isLoginButtonDisabled()
-                .typeServerUrl(SERVER_URL)
+                .isLoginButtonEnabled();
+
+        // try erasing / typing fields and check the
+        // state of the button alongside
+        loginRobot
+                .eraseServerUrl().isLoginButtonDisabled().typeServerUrl(SERVER_URL)
+                .eraseUsername().isLoginButtonDisabled().typeUsername(USERNAME)
+                .erasePassword().isLoginButtonDisabled().typePassword(PASSWORD)
                 .isLoginButtonEnabled();
         Spoon.screenshot(loginViewRule.getActivity(), "login_button_should_be_enabled");
+    }
+
+    @Test
+    public void loginShouldSuccessfullyNavigateToHome() {
+        MockResponse mockResponse = new MockResponse();
+        mockResponse.setBody("{\n" +
+                "\n" +
+                "    \"created\": \"2015-03-31T13:31:09.324\",\n" +
+                "    \"lastUpdated\": \"2016-04-06T00:05:57.495\",\n" +
+                "    \"name\": \"John Barnes\",\n" +
+                "    \"id\": \"DXyJmlo9rge\",\n" +
+                "    \"displayName\": \"John Barnes\",\n" +
+                "    \"firstName\": \"John\",\n" +
+                "    \"surname\": \"Barnes\",\n" +
+                "    \"email\": \"john@hmail.com\",\n" +
+                "    \"userCredentials\": {\n" +
+                "        \"lastUpdated\": \"2016-12-20T15:04:21.254\",\n" +
+                "        \"code\": \"android\",\n" +
+                "        \"created\": \"2015-03-31T13:31:09.206\",\n" +
+                "        \"name\": \"John Traore\",\n" +
+                "        \"id\": \"M0fCOxtkURr\",\n" +
+                "        \"displayName\": \"John Traore\",\n" +
+                "        \"username\": \"android\"\n" +
+                "    },\n" +
+                "    \"organisationUnits\": [\n" +
+                "        {\n" +
+                "            \"code\": \"OU_559\",\n" +
+                "            \"level\": 4,\n" +
+                "            \"created\": \"2012-02-17T15:54:39.987\",\n" +
+                "            \"lastUpdated\": \"2014-11-25T09:37:54.924\",\n" +
+                "            \"name\": \"Ngelehun CHC\",\n" +
+                "            \"id\": \"DiszpKrYNg8\",\n" +
+                "            \"shortName\": \"Ngelehun CHC\",\n" +
+                "            \"displayName\": \"Ngelehun CHC\",\n" +
+                "            \"displayShortName\": \"Ngelehun CHC\",\n" +
+                "            \"path\": \"/ImspTQPwCqd/O6uvpzGd5pu/YuQRtpLP10I/DiszpKrYNg8\",\n" +
+                "            \"openingDate\": \"1970-01-01T00:00:00.000\",\n" +
+                "            \"parent\": {\n" +
+                "                \"id\": \"YuQRtpLP10I\"\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n" +
+                "\n" +
+                "}");
+        mockWebServer.enqueue(mockResponse);
+
+        Intents.init();
+        loginRobot.typeServerUrl(SERVER_URL)
+                .typeUsername(USERNAME)
+                .typePassword(PASSWORD)
+                .clickOnLoginButton();
+
+        // intended(hasComponent());
     }
 }

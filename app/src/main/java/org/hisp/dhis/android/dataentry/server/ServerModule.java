@@ -31,29 +31,29 @@ package org.hisp.dhis.android.dataentry.server;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.core.data.api.Authenticator;
 import org.hisp.dhis.android.core.data.api.BasicAuthenticatorFactory;
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 
 @Module
 @PerServer
 public class ServerModule {
-    private final ConfigurationModel configuration;
+    private final HttpUrl baseUrl;
 
-    public ServerModule(@NonNull ConfigurationModel configuration) {
-        this.configuration = configuration;
+    public ServerModule(@NonNull HttpUrl baseUrl) {
+        this.baseUrl = baseUrl;
     }
 
     @Provides
     @PerServer
     public D2 sdkInstance(DbOpenHelper openHelper, OkHttpClient client) {
         return new D2.Builder()
-                .configuration(configuration)
+                .baseUrl(baseUrl)
                 .dbOpenHelper(openHelper)
                 .okHttpClient(client)
                 .build();

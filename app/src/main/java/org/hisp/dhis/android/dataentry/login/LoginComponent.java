@@ -28,26 +28,12 @@
 
 package org.hisp.dhis.android.dataentry.login;
 
-import android.support.annotation.UiThread;
+import org.hisp.dhis.android.dataentry.commons.PerActivity;
 
-import org.hisp.dhis.android.dataentry.commons.View;
+import dagger.Subcomponent;
 
-interface LoginView extends View {
-    @UiThread
-    void showProgress();
-
-    @UiThread
-    void hideProgress();
-
-    @UiThread
-    void showInvalidServerUrlError();
-
-    @UiThread
-    void showInvalidCredentialsError();
-
-    @UiThread
-    void showUnexpectedError();
-
-    @UiThread
-    void navigateToHome();
+@PerActivity
+@Subcomponent(modules = LoginModule.class)
+public interface LoginComponent {
+    void inject(LoginActivity loginActivity);
 }

@@ -47,7 +47,10 @@ import org.hisp.dhis.android.dataentry.utils.SchedulerModule;
 
 import hu.supercluster.paperwork.Paperwork;
 import io.fabric.sdk.android.Fabric;
+import okhttp3.HttpUrl;
 import timber.log.Timber;
+
+import static org.hisp.dhis.android.dataentry.utils.StringUtils.isEmpty;
 
 // ToDo: Avoid reading / writing to the disk during dagger initialization
 // ToDo: Implement more tests for launcher activity, presenter
@@ -75,8 +78,9 @@ public class DhisApp extends Application {
 
         // If there is no configuration, we cannot setup D2 instance
         ConfigurationModel configuration = configurationManager.get();
-        if (configuration != null) {
-            serverComponent = appComponent.plus(new ServerModule(configuration));
+        if (configuration != null && !isEmpty(configuration.serverUrl())) {
+            HttpUrl baseUrl = HttpUrl.parse(configuration.serverUrl());
+            serverComponent = appComponent.plus(new ServerModule(baseUrl));
         }
 
         // RefWatcher which can be used in debug
@@ -96,20 +100,20 @@ public class DhisApp extends Application {
                 .schedulerModule(new SchedulerModule());
     }
 
-    public RefWatcher refWatcher() {
-        return refWatcher;
-    }
-
-    public AppComponent appComponent() {
-        return appComponent;
+    public ServerComponent createServerComponent(@NonNull HttpUrl baseUrl) {
+        return (serverComponent = appComponent.plus(new ServerModule(baseUrl)));
     }
 
     public ServerComponent serverComponent() {
         return serverComponent;
     }
 
-    public ServerComponent serverComponent(@NonNull ConfigurationModel configuration) {
-        return (serverComponent = appComponent.plus(new ServerModule(configuration)));
+    public AppComponent appComponent() {
+        return appComponent;
+    }
+
+    public RefWatcher refWatcher() {
+        return refWatcher;
     }
 
     @NonNull

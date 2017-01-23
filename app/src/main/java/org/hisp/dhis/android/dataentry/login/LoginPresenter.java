@@ -29,10 +29,11 @@
 package org.hisp.dhis.android.dataentry.login;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
 
 import org.hisp.dhis.android.dataentry.commons.Presenter;
 
 interface LoginPresenter extends Presenter {
-    void validateCredentials(@NonNull String url, @NonNull String username,
-            @NonNull String password);
+    @UiThread
+    void validateCredentials(@NonNull String username, @NonNull String password);
 }

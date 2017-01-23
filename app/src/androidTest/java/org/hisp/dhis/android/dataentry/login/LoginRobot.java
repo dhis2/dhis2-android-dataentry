@@ -32,13 +32,17 @@ import org.hisp.dhis.android.dataentry.R;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.clearText;
+import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hisp.dhis.android.dataentry.espresso.CustomViewMatchers.withHint;
 
 public class LoginRobot {
     LoginRobot typeServerUrl(String serverUrl) {
@@ -53,6 +57,26 @@ public class LoginRobot {
 
     LoginRobot typePassword(String password) {
         onView(withId(R.id.edittext_password)).perform(typeText(password), closeSoftKeyboard());
+        return this;
+    }
+
+    LoginRobot checkServerUrlHint(String expectedServerUrlHint) {
+        onView(withId(R.id.layout_edittext_server_url)).check(matches(withHint(is(expectedServerUrlHint))));
+        return this;
+    }
+
+    LoginRobot checkUsernameHint(String expectedUsernameHint) {
+        onView(withId(R.id.layout_edittext_username)).check(matches(withHint(is(expectedUsernameHint))));
+        return this;
+    }
+
+    LoginRobot checkPasswordHint(String expectedPasswordHint) {
+        onView(withId(R.id.layout_edittext_password)).check(matches(withHint(is(expectedPasswordHint))));
+        return this;
+    }
+
+    LoginRobot checkLoginButtonLabel(String expectedLoginButtonLabel) {
+        onView(withId(R.id.button_log_in)).check(matches(withText(expectedLoginButtonLabel)));
         return this;
     }
 
@@ -82,6 +106,11 @@ public class LoginRobot {
         onView(withId(R.id.button_log_in))
                 .check(matches(isDisplayed()))
                 .check(matches(not(isEnabled())));
+        return this;
+    }
+
+    LoginRobot clickOnLoginButton() {
+        onView(withId(R.id.button_log_in)).perform(click());
         return this;
     }
 }

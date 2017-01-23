@@ -42,6 +42,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import okhttp3.HttpUrl;
+
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 
@@ -72,7 +74,7 @@ public class LauncherViewTests {
     @Test
     public void launcherView_shouldNavigateToLoginView_ifUserIsNotSignedIn() {
         // configure sdk to point to fake server url
-        getApp().serverComponent(configurationManager.save("https://play.dhis2.org/demo/"));
+        getApp().createServerComponent(HttpUrl.parse("https://play.dhis2.org/demo"));
 
         Intents.init();
 

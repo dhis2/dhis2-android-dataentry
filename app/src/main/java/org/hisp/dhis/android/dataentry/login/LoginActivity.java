@@ -39,7 +39,6 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -50,18 +49,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 import fr.castorflex.android.circularprogressbar.CircularProgressDrawable;
+import okhttp3.HttpUrl;
 
 import static android.text.TextUtils.isEmpty;
 import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements LoginView {
     private static final String ARG_LOGIN_ACTIVITY_LAUNCH_MODE = "arg:launchMode";
     private static final String ARG_LAUNCH_MODE_LOGIN_USER = "mode:loginUser";
     private static final String ARG_LAUNCH_MODE_CONFIRM_USER = "mode:confirmUser";
@@ -91,6 +95,9 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.button_log_out)
     Button logoutButton;
 
+    @Inject
+    LoginPresenter loginPresenter;
+
     // LayoutTransition (for JellyBean+ devices only)
     LayoutTransition layoutTransition;
 
@@ -108,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param target          Implementation of LoginActivity
      * @param serverUrl       ServerUrl which will be set to serverUrl address and locked
      */
-    public static void navigateTo(Activity currentActivity, Class<? extends Activity> target,
+    public static Intent createIntent(Activity currentActivity, Class<? extends Activity> target,
             String serverUrl, String username) {
         isNull(currentActivity, "Activity must not be null");
         isNull(target, "Target activity class must not be null");
@@ -120,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
         intent.putExtra(ARG_SERVER_URL, serverUrl);
         intent.putExtra(ARG_USERNAME, username);
 
-        ActivityCompat.startActivity(currentActivity, intent, null);
+        return intent;
     }
 
     private static boolean isGreaterThanOrJellyBean() {
@@ -140,7 +147,6 @@ public class LoginActivity extends AppCompatActivity {
         // Configuring progress bar (setting width of 6dp)
         float progressBarStrokeWidth = getResources()
                 .getDimensionPixelSize(R.dimen.progressbar_stroke_width);
-        // progressBar = (CircularProgressBar) findViewById(R.id.progress_bar_circular);
         progressBar.setIndeterminateDrawable(new CircularProgressDrawable.Builder(this)
                 .color(ContextCompat.getColor(this, R.color.color_primary))
                 .style(CircularProgressDrawable.STYLE_ROUNDED)
@@ -167,7 +173,6 @@ public class LoginActivity extends AppCompatActivity {
 
                 loginButton.setText(R.string.confirm_user);
                 logoutButton.setVisibility(View.VISIBLE);
-                logoutButton.setOnClickListener((view) -> onLogoutButtonClicked());
             }
         }
 
@@ -187,10 +192,6 @@ public class LoginActivity extends AppCompatActivity {
 
         hideProgress();
         onTextChanged();
-
-        loginButton.setOnClickListener((view) ->
-                onLoginButtonClicked(serverUrl.getText(), username.getText(),
-                        password.getText()));
     }
 
     @OnTextChanged(callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED, value = {
@@ -199,6 +200,30 @@ public class LoginActivity extends AppCompatActivity {
     public void onTextChanged() {
         loginButton.setEnabled(!isEmpty(serverUrl.getText()) &&
                 !isEmpty(username.getText()) && !isEmpty(password.getText()));
+    }
+
+    @OnClick(value = {
+            R.id.button_log_in, R.id.button_log_out
+    })
+    public void onButtonClicked(View view) {
+        switch (view.getId()) {
+            case R.id.button_log_in: {
+                // you have to call configure first
+                HttpUrl httpUrl = HttpUrl.parse("https://play.dhis2.org/demo/");
+                ((DhisApp) getApplicationContext())
+                        .createServerComponent(httpUrl)
+                        .plus(new LoginModule())
+                        .inject(this);
+
+                loginPresenter.validateCredentials(username.getText().toString(),
+                        password.getText().toString());
+                break;
+            }
+            case R.id.button_log_out: {
+                // ToDo: log-out logic
+                break;
+            }
+        }
     }
 
     /*
@@ -257,7 +282,8 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    private void showProgress() {
+    @Override
+    public void showProgress() {
         if (layoutTransitionSlideOut != null) {
             loginViewsContainer.startAnimation(layoutTransitionSlideOut);
         }
@@ -266,13 +292,34 @@ public class LoginActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    private void hideProgress() {
+    @Override
+    public void hideProgress() {
         if (layoutTransitionSlideIn != null) {
             loginViewsContainer.startAnimation(layoutTransitionSlideIn);
         }
 
         loginViewsContainer.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showInvalidServerUrlError() {
+
+    }
+
+    @Override
+    public void showInvalidCredentialsError() {
+
+    }
+
+    @Override
+    public void showUnexpectedError() {
+
+    }
+
+    @Override
+    public void navigateToHome() {
+
     }
 
     private boolean isAnimationInProgress() {
@@ -316,17 +363,6 @@ public class LoginActivity extends AppCompatActivity {
         if (listener != null) {
             listener.onFinish();
         }
-    }
-
-    /**
-     * Override this in subclass. Login logic goes here
-     */
-    protected void onLoginButtonClicked(Editable serverUrl, Editable username, Editable password) {
-        showProgress();
-    }
-
-    protected void onLogoutButtonClicked() {
-        // empty implementation for subclasses to override
     }
 
     protected interface OnAnimationFinishListener {

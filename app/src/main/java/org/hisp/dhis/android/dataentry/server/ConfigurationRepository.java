@@ -30,9 +30,16 @@ package org.hisp.dhis.android.dataentry.server;
 
 import android.support.annotation.NonNull;
 
+import org.hisp.dhis.android.core.user.User;
+
 import io.reactivex.Observable;
+import retrofit2.Response;
 
 public interface ConfigurationRepository {
+
+    @NonNull
+    Observable<Response<User>> logIn(@NonNull String username, @NonNull String password);
+
     @NonNull
     Observable<Boolean> isUserLoggedIn();
 }
