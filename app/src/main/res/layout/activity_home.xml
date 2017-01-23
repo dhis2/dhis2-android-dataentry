@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2016, University of Oslo
   ~
   ~ All rights reserved.
@@ -27,25 +25,24 @@
   ~ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
+<android.support.v4.widget.DrawerLayout
+    android:id="@+id/drawer_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-<resources>
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navigation_view"
+        android:layout_width="@dimen/navigation_drawer_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true">
+    </android.support.design.widget.NavigationView>
 
-    <dimen name="circle_stroke_width">6dp</dimen>
-    <dimen name="progressbar_stroke_width">10dp</dimen>
-
-    <dimen name="keyline_default">16dp</dimen>
-
-    <!-- Text -->
-    <dimen name="text_size_medium">14sp</dimen>
-    <dimen name="text_size_large">17sp</dimen>
-
-    <integer name="activity_anim_duration">300</integer>
-
-    <dimen name="navigation_header_height">192dp</dimen>
-    <dimen name="navigation_avatar_radius">32dp</dimen>
-    <dimen name="navigation_drawer_width">304dp</dimen>
-</resources>
+</android.support.v4.widget.DrawerLayout>

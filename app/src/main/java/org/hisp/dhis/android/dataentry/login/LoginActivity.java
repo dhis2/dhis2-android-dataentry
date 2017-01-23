@@ -133,8 +133,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // ToDo: consider replacing setTheme() call with entry in styles
-        setTheme(R.style.AppTheme_PrimaryColorBackground);
         setContentView(R.layout.activity_login);
 
         ButterKnife.bind(this);
