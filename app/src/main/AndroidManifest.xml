@@ -19,7 +19,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".login.LoginActivity"/>
+        <activity
+            android:name=".login.LoginActivity"
+            android:theme="@style/AppTheme.PrimaryColorBackground"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"

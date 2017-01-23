@@ -70,11 +70,9 @@ public class LoginActivity extends AppCompatActivity {
     private static final String ARG_USERNAME = "arg:username";
     private static final String IS_LOADING = "state:isLoading";
 
-    // ProgressBar.
     @BindView(R.id.progress_bar_circular)
     CircularProgressBar progressBar;
 
-    // Fields and corresponding container.
     @BindView(R.id.layout_login_views)
     ViewGroup loginViewsContainer;
 
@@ -132,9 +130,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // ToDo: consider replacing setTheme() call with entry in styles
-        setTheme(R.style.AppTheme_PrimaryColorBackground);
         setContentView(R.layout.activity_login);
 
         ButterKnife.bind(this);
