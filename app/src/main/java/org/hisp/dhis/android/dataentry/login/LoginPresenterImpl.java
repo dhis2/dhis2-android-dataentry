@@ -41,6 +41,7 @@ import java.net.HttpURLConnection;
 
 import io.reactivex.disposables.CompositeDisposable;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class LoginPresenterImpl implements LoginPresenter {
 
@@ -95,6 +96,8 @@ public class LoginPresenterImpl implements LoginPresenter {
     }
 
     private void handleResponse(@NonNull Response<User> userResponse) {
+        Timber.d("Authentication response url: %s", userResponse.raw().request().url().toString());
+        Timber.d("Authentication response code: %s", userResponse.code());
         if (userResponse.isSuccessful()) {
             navigateToHome();
         } else if (userResponse.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
@@ -131,6 +134,7 @@ public class LoginPresenterImpl implements LoginPresenter {
     }
 
     private void handleError(@NonNull Throwable throwable) {
+        Timber.e(throwable);
         if (loginView != null) {
             loginView.hideProgress();
         }

@@ -210,7 +210,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         switch (view.getId()) {
             case R.id.button_log_in: {
                 // you have to call configure first
-                HttpUrl httpUrl = HttpUrl.parse("https://play.dhis2.org/demo/");
+                HttpUrl httpUrl = HttpUrl.parse(serverUrl.getText().toString());
                 ((DhisApp) getApplicationContext())
                         .createServerComponent(httpUrl)
                         .plus(new LoginModule())

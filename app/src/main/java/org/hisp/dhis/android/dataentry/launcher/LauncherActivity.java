@@ -62,8 +62,7 @@ public class LauncherActivity extends AppCompatActivity implements LauncherView 
     protected void onResume() {
         super.onResume();
         launcherPresenter.onAttach(this);
-        navigateToHomeView();
-        //launcherPresenter.isUserLoggedIn();
+        launcherPresenter.isUserLoggedIn();
     }
 
     @Override

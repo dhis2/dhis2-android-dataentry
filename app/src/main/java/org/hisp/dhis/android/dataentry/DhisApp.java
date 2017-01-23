@@ -62,6 +62,7 @@ public class DhisApp extends Application {
     /* Dagger components */
     AppComponent appComponent;
     ServerComponent serverComponent;
+    ConfigurationManager configurationManager;
 
     // LeakCanary reference watcher
     RefWatcher refWatcher;
@@ -74,7 +75,7 @@ public class DhisApp extends Application {
         setUpStrictMode();
 
         appComponent = prepareAppComponent().build();
-        ConfigurationManager configurationManager = appComponent.configurationManager();
+        configurationManager = appComponent.configurationManager();
 
         // If there is no configuration, we cannot setup D2 instance
         ConfigurationModel configuration = configurationManager.get();
@@ -101,6 +102,7 @@ public class DhisApp extends Application {
     }
 
     public ServerComponent createServerComponent(@NonNull HttpUrl baseUrl) {
+        configurationManager.save(baseUrl.toString());
         return (serverComponent = appComponent.plus(new ServerModule(baseUrl)));
     }
 
