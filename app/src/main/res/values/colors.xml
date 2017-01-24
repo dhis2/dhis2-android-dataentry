@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2017, University of Oslo
   ~
   ~ All rights reserved.
@@ -40,4 +39,5 @@
     <color name="color_material_red_default">#FFF44336</color>
     <color name="color_material_red_light">#FFFFCDD2</color>
 
+    <color name="color_divider">#FFB6B6B6</color>
 </resources>

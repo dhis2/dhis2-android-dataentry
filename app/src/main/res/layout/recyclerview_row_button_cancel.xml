@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ Copyright (c) 2017, University of Oslo
+  ~ Copyright (c) 2016, University of Oslo
   ~
   ~ All rights reserved.
   ~ Redistribution and use in source and binary forms, with or without
@@ -28,29 +28,12 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/color_primary</item>
-        <item name="colorPrimaryDark">@color/color_primary_dark</item>
-        <item name="colorAccent">@color/color_accent</item>
-    </style>
-
-    <style name="AppTheme.PrimaryColorBackground" parent="AppTheme">
-        <item name="android:windowBackground">@color/color_primary</item>
-    </style>
-
-    <style name="AppTheme.SelectableItemBackground" parent="AppTheme">
-        <!-- General properties -->
-        <item name="android:windowBackground">?attr/selectableItemBackground</item>
-    </style>
-
-    <!-- This theme is used to avoid overdraw when the root element of a layout file has its
-     background set from both the theme and the layout. Do not use this theme for Activity
-     layout files, as a black background will appear when content view is loading. -->
-    <style name="AppTheme.NoWindowBackground" parent="AppTheme">
-        <item name="android:windowBackground">@null</item>
-    </style>
-
-</resources>
+<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/button_clear"
+    android:layout_width="64dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:adjustViewBounds="true"
+    android:background="@drawable/button_background_light"
+    android:contentDescription="@string/clear_field_content_description"
+    android:src="@drawable/ic_cancel_grey" />

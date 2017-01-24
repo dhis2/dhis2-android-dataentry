@@ -67,9 +67,10 @@
     <string name="enter_positive_integer">Enter positive integer</string>
     <string name="enter_date">Enter date</string>
 
-    <!-- Button labels: -->
+    <!-- Buttons: -->
     <string name="today_date">Today\'s date</string>
     <string name="pick_date">Pick date</string>
+    <string name="clear_field_content_description">Clear field</string>
     <!-- End section: Forms -->
 
     <!-- SyncDateWrapper strings: -->
@@ -82,4 +83,5 @@
     <!-- Fonts  -->
     <string name="font_name_regular">Roboto-Regular.ttf</string>
     <string name="font_name_medium">Roboto-Medium.ttf</string>
+    <string name="font_name_condensed">Roboto-Condensed.ttf</string>
 </resources>
