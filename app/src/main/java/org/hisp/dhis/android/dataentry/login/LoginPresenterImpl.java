@@ -58,7 +58,7 @@ public class LoginPresenterImpl implements LoginPresenter {
     private LoginView loginView;
 
     public LoginPresenterImpl(@NonNull ConfigurationRepository configurationRepository,
-            @NonNull SchedulerProvider schedulerProvider) {
+                              @NonNull SchedulerProvider schedulerProvider) {
         this.configurationRepository = configurationRepository;
         this.schedulerProvider = schedulerProvider;
         this.disposable = new CompositeDisposable();
@@ -77,15 +77,17 @@ public class LoginPresenterImpl implements LoginPresenter {
     @UiThread
     @Override
     public void onAttach(@NonNull View view) {
-        loginView = (LoginView) view;
-        disposable.add(configurationRepository.isUserLoggedIn()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe((isUserLoggedIn) -> {
-                    if (isUserLoggedIn) {
-                        navigateToHome();
-                    }
-                }));
+        if (view instanceof LoginView) {
+            loginView = (LoginView) view;
+            disposable.add(configurationRepository.isUserLoggedIn()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe((isUserLoggedIn) -> {
+                        if (isUserLoggedIn) {
+                            navigateToHome();
+                        }
+                    }));
+        }
     }
 
     @UiThread
