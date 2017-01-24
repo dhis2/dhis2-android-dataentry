@@ -66,6 +66,7 @@ import okhttp3.HttpUrl;
 import static android.text.TextUtils.isEmpty;
 import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 
+@SuppressWarnings({"PMD.ExcessiveImports"}) // This activity needs a lot of android.* imports
 public class LoginActivity extends AppCompatActivity implements LoginView {
     private static final String ARG_LOGIN_ACTIVITY_LAUNCH_MODE = "arg:launchMode";
     private static final String ARG_LAUNCH_MODE_LOGIN_USER = "mode:loginUser";
@@ -117,7 +118,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
      * @param serverUrl       ServerUrl which will be set to serverUrl address and locked
      */
     public static Intent createIntent(Activity currentActivity, Class<? extends Activity> target,
-            String serverUrl, String username) {
+                                      String serverUrl, String username) {
         isNull(currentActivity, "Activity must not be null");
         isNull(target, "Target activity class must not be null");
         isNull(serverUrl, "ServerUrl must not be null");
@@ -380,7 +381,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         private final boolean showProgress;
 
         public OnPostAnimationRunnable(OnAnimationFinishListener listener,
-                LoginActivity loginActivity, boolean showProgress) {
+                                       LoginActivity loginActivity, boolean showProgress) {
             this.listener = listener;
             this.loginActivity = loginActivity;
             this.showProgress = showProgress;
