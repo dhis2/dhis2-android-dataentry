@@ -144,12 +144,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
     protected void attachFragmentDelayed(final Fragment fragment) {
         isNull(fragment, "Fragment must not be null");
 
-        pendingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                attachFragment(fragment);
-            }
-        };
+        pendingRunnable = () -> attachFragment(fragment);
     }
 
     protected MenuItem addMenuItem(int menuItemId, Drawable icon, CharSequence title) {
