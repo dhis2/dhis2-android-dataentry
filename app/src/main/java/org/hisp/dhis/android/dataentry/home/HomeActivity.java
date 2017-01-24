@@ -156,12 +156,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem menuItem) {
-
-        if (menuItem == null) {
-            // Menu item not found. No-op
-            return false;
-        }
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
         boolean isSelected = false;
 
@@ -245,45 +240,21 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
 
     @Override
     public void setUsername(CharSequence username) {
-        getUsernameTextView().setText(username);
+        this.username.setText(username);
     }
 
     @Override
     public void setUserInfo(CharSequence userInfo) {
-        getUserInfoTextView().setText(userInfo);
+        this.userInfo.setText(userInfo);
     }
 
     @Override
     public void setUserInitials(CharSequence userInitials) {
-        getUsernameLetterTextView().setText(userInitials);
+        this.usernameInitials.setText(userInitials);
     }
 
     public void setHomePresenter(HomePresenter homePresenter) {
         this.homePresenter = homePresenter;
-    }
-
-    protected NavigationView getNavigationView() {
-        return navigationView;
-    }
-
-    @NonNull
-    protected DrawerLayout getDrawerLayout() {
-        return drawerLayout;
-    }
-
-    @NonNull
-    protected TextView getUsernameTextView() {
-        return username;
-    }
-
-    @NonNull
-    protected TextView getUserInfoTextView() {
-        return userInfo;
-    }
-
-    @NonNull
-    protected TextView getUsernameLetterTextView() {
-        return usernameInitials;
     }
 
     protected Fragment getInformationFragment() {
