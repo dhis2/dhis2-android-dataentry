@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.drawerform.form.text.datepicker;
+package org.hisp.dhis.android.dataentry.drawerform.form.datepicker;
 
 import android.app.DatePickerDialog;
 import android.support.v4.app.FragmentManager;
@@ -41,16 +41,19 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.sdk.ui.common.AbsTextWatcher;
-import org.hisp.dhis.android.sdk.ui.common.RaisedButton;
-import org.hisp.dhis.android.dataentry.drawerform.forms.FormEntity;
-import org.hisp.dhis.android.dataentry.drawerform.forms.RowView;
+import org.hisp.dhis.android.dataentry.commons.views.RaisedButton;
+import org.hisp.dhis.android.dataentry.drawerform.form.common.FormEntity;
+import org.hisp.dhis.android.dataentry.drawerform.form.common.RowView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import static org.hisp.dhis.android.sdk.utils.Preconditions.isNull;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnTextChanged;
+
+import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 
 
 public class DatePickerRowView implements RowView {
@@ -75,41 +78,39 @@ public class DatePickerRowView implements RowView {
         ((DatePickerRowViewHolder) viewHolder).update(entity);
     }
 
-    private static class DatePickerRowViewHolder extends RecyclerView.ViewHolder {
-        public final TextView textViewLabel;
-        public final EditText editText;
+    protected static class DatePickerRowViewHolder extends RecyclerView.ViewHolder {
 
-        public final RaisedButton datePickerButtonNow;
-        public final RaisedButton datePickerButton;
-        public final ImageButton clearButton;
+        private FormEntityDate formEntity;
 
-        public final OnValueChangedListener onValueChangedListener;
-        public final OnDateSetListener onDateSetListener;
-        public final OnButtonClickListener onButtonClickListener;
+        // TextViews
+        @BindView(R.id.textview_row_label)
+        TextView textViewLabel;
+
+        @BindView(R.id.row_date_picker_edit_text)
+        EditText editText;
+
+        // Buttons
+        @BindView(R.id.row_date_picker_button_today)
+        RaisedButton datePickerButtonNow;
+
+        @BindView(R.id.row_date_picker_button_pick)
+        RaisedButton datePickerButton;
+
+        @BindView(R.id.button_clear)
+        ImageButton clearButton;
+
+        final OnDateSetListener onDateSetListener;
+        final OnButtonClickListener onButtonClickListener;
 
         public DatePickerRowViewHolder(View itemView, FragmentManager fragmentManager) {
             super(itemView);
 
-            // TextViews
-            textViewLabel = (TextView) itemView
-                    .findViewById(R.id.textview_row_label);
-            editText = (EditText) itemView
-                    .findViewById(R.id.row_date_picker_edit_text);
+            ButterKnife.bind(this, itemView);
 
-            // Buttons
-            datePickerButtonNow = (RaisedButton) itemView
-                    .findViewById(R.id.row_date_picker_button_today);
-            datePickerButton = (RaisedButton) itemView
-                    .findViewById(R.id.row_date_picker_button_pick);
-            clearButton = (ImageButton) itemView
-                    .findViewById(R.id.button_clear);
-
-            onValueChangedListener = new OnValueChangedListener();
             onDateSetListener = new OnDateSetListener(editText);
             onButtonClickListener = new OnButtonClickListener(
                     editText, fragmentManager, onDateSetListener);
 
-            editText.addTextChangedListener(onValueChangedListener);
             editText.setOnClickListener(onButtonClickListener);
 
             clearButton.setOnClickListener(onButtonClickListener);
@@ -118,24 +119,17 @@ public class DatePickerRowView implements RowView {
         }
 
         public void update(FormEntityDate formEntity) {
-            // update callbacks with current entities
-            onValueChangedListener.setDataEntity(formEntity);
+            this.formEntity = formEntity;
             textViewLabel.setText(formEntity.getLabel());
             editText.setText(formEntity.getValue());
         }
-    }
 
-    private static class OnValueChangedListener extends AbsTextWatcher {
-        private FormEntityDate dataEntity;
-
-        public void setDataEntity(FormEntityDate dataEntity) {
-            this.dataEntity = dataEntity;
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-            if (dataEntity != null) {
-                dataEntity.setValue(editable.toString(), true);
+        @OnTextChanged(callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED, value = {
+                R.id.row_date_picker_edit_text
+        })
+        public void onTextChanged(Editable editable) {
+            if (formEntity != null) {
+                formEntity.setValue(editable.toString(), true);
             }
         }
     }

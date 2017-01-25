@@ -26,68 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.drawerform.form.text;
+package org.hisp.dhis.android.dataentry.drawerform.form;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.text.InputType;
+import org.hisp.dhis.android.dataentry.R;
 
-public abstract class FormEntityEditText extends FormEntityCharSequence {
+public class FormEntityIntegerZeroOrPositiveEditText extends FormEntityIntegerEditText {
 
-    /* number of lines for TEXT */
-    public static final int SHORT_TEXT_LINE_COUNT = 1;
+    public FormEntityIntegerZeroOrPositiveEditText(String id, String label, String hint, Object tag) {
+        super(id, label, hint, tag);
+    }
 
-    /* number of lines for LONG_TEXT */
-    public static final int LONG_TEXT_LINE_COUNT = 3;
+    public FormEntityIntegerZeroOrPositiveEditText(String id, String label) {
+        super(id, label);
+    }
 
-    private final String hint;
-    private boolean isLocked;
-
-    FormEntityEditText(String id, String label, String hint, Object tag) {
+    public FormEntityIntegerZeroOrPositiveEditText(String id, String label, Object tag) {
         super(id, label, tag);
-        this.hint = hint;
     }
 
-    FormEntityEditText(String id, String label) {
-        this(id, label, null, null);
-    }
-
-    FormEntityEditText(String id, String label, Object tag) {
-        this(id, label, null, tag);
-    }
-
-    @NonNull
     @Override
-    public Type getType() {
-        return Type.EDITTEXT;
+    public int getHintResourceId() {
+        return R.string.enter_positive_integer_or_zero;
     }
-
-    @Nullable
-    public String getHint() {
-        return hint;
-    }
-
-    public boolean isLocked() {
-        return isLocked;
-    }
-
-    public void setLocked(boolean locked) {
-        isLocked = locked;
-    }
-
-    public int getAndroidInputType() {
-        return InputType.TYPE_CLASS_TEXT;
-    }
-
-    public int getMaxLines() {
-        return SHORT_TEXT_LINE_COUNT;
-    }
-
-    /**
-     * This is used for precaching hint texts in the ViewHolder in case one is not provided
-     */
-    @StringRes
-    public abstract int getHintResourceId();
-
 }
