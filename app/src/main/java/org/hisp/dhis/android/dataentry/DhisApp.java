@@ -31,6 +31,7 @@ package org.hisp.dhis.android.dataentry;
 import android.app.Application;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
@@ -44,95 +45,63 @@ import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.server.ServerModule;
 import org.hisp.dhis.android.dataentry.utils.CrashReportingTree;
 import org.hisp.dhis.android.dataentry.utils.SchedulerModule;
+import org.hisp.dhis.android.dataentry.utils.SchedulersProviderImpl;
+
+import javax.inject.Inject;
 
 import hu.supercluster.paperwork.Paperwork;
 import io.fabric.sdk.android.Fabric;
 import okhttp3.HttpUrl;
 import timber.log.Timber;
 
-import static org.hisp.dhis.android.dataentry.utils.StringUtils.isEmpty;
-
 // ToDo: Avoid reading / writing to the disk during dagger initialization
 // ToDo: Implement more tests for launcher activity, presenter
+// ToDo: Do not allow wrong / malformed urls to be persisted in configuration manager
 public class DhisApp extends Application {
     private static final String DATABASE_NAME = "dhis.db";
     private static final String GIT_SHA = "gitSha";
     private static final String BUILD_DATE = "buildDate";
 
-    /* Dagger components */
-    AppComponent appComponent;
-    ServerComponent serverComponent;
+    @Inject
+    Paperwork paperwork;
+
+    @Inject
     ConfigurationManager configurationManager;
 
-    // LeakCanary reference watcher
+    @Nullable
+    AppComponent appComponent;
+
+    @Nullable
+    ServerComponent serverComponent;
+
+    @Nullable
     RefWatcher refWatcher;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        // fail early on leaks
-        setUpStrictMode();
+        // application component
+        setUpAppComponent();
+        setUpServerComponent();
 
-        appComponent = prepareAppComponent().build();
-        configurationManager = appComponent.configurationManager();
-
-        // If there is no configuration, we cannot setup D2 instance
-        ConfigurationModel configuration = configurationManager.get();
-        if (configuration != null && !isEmpty(configuration.serverUrl())) {
-            HttpUrl baseUrl = HttpUrl.parse(configuration.serverUrl());
-            serverComponent = appComponent.plus(new ServerModule(baseUrl));
-        }
-
-        // RefWatcher which can be used in debug
-        // builds to detect leaks
-        refWatcher = setUpLeakCanary();
-
-        // Logging and Crash reporting tools.
-        Paperwork paperwork = setUpPaperwork();
-        setUpFabric(paperwork);
+        setUpLeakCanary();
+        setUpFabric();
         setUpTimber();
+
+        // do not allow to do work on main thread
+        setUpStrictMode();
     }
 
-    protected DaggerAppComponent.Builder prepareAppComponent() {
-        return DaggerAppComponent.builder()
-                .dbModule(new DbModule(DATABASE_NAME))
-                .appModule(new AppModule(this))
-                .schedulerModule(new SchedulerModule());
-    }
-
-    public ServerComponent createServerComponent(@NonNull HttpUrl baseUrl) {
-        configurationManager.save(baseUrl.toString());
-        return (serverComponent = appComponent.plus(new ServerModule(baseUrl)));
-    }
-
-    public ServerComponent serverComponent() {
-        return serverComponent;
-    }
-
-    public AppComponent appComponent() {
-        return appComponent;
-    }
-
-    public RefWatcher refWatcher() {
-        return refWatcher;
-    }
-
-    @NonNull
-    private Paperwork setUpPaperwork() {
-        return new Paperwork(this);
-    }
-
-    @NonNull
-    private RefWatcher setUpLeakCanary() {
+    private void setUpLeakCanary() {
         if (BuildConfig.DEBUG) {
-            return LeakCanary.install(this);
+            refWatcher = LeakCanary.install(this);
         } else {
-            return RefWatcher.DISABLED;
+            refWatcher = RefWatcher.DISABLED;
         }
     }
 
-    private void setUpFabric(@NonNull Paperwork paperwork) {
+    private void setUpFabric() {
         if (BuildConfig.DEBUG) {
             // Set up Crashlytics, disabled for debug builds
             Crashlytics crashlyticsKit = new Crashlytics.Builder()
@@ -148,7 +117,7 @@ public class DhisApp extends Application {
             crashlytics.core.setString(GIT_SHA, paperwork.get(GIT_SHA));
             crashlytics.core.setString(BUILD_DATE, paperwork.get(BUILD_DATE));
 
-            Fabric.with(this, new Crashlytics(), new Answers());
+            Fabric.with(this, crashlytics, new Answers());
         }
     }
 
@@ -172,5 +141,42 @@ public class DhisApp extends Application {
                     .penaltyLog()
                     .build());
         }
+    }
+
+    private void setUpAppComponent() {
+        appComponent = prepareAppComponent().build();
+        appComponent.inject(this);
+    }
+
+    private void setUpServerComponent() {
+        ConfigurationModel configuration = configurationManager.get();
+        if (configuration != null) {
+            serverComponent = appComponent.plus(new ServerModule(configuration.serverUrl()));
+        }
+    }
+
+    @NonNull
+    protected DaggerAppComponent.Builder prepareAppComponent() {
+        return DaggerAppComponent.builder()
+                .dbModule(new DbModule(DATABASE_NAME))
+                .appModule(new AppModule(this))
+                .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()));
+    }
+
+    public ServerComponent createServerComponent(@NonNull HttpUrl baseUrl) {
+        return (serverComponent = appComponent.plus(new ServerModule(baseUrl)));
+    }
+
+    @Nullable
+    public ServerComponent serverComponent() {
+        return serverComponent;
+    }
+
+    public AppComponent appComponent() {
+        return appComponent;
+    }
+
+    public RefWatcher refWatcher() {
+        return refWatcher;
     }
 }

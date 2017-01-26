@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import io.reactivex.Observable;
+import okhttp3.HttpUrl;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -34,7 +35,7 @@ public class LauncherPresenterUnitTests {
         MockitoAnnotations.initMocks(this);
 
         configuration = mock(ConfigurationModel.class);
-        when(configuration.serverUrl()).thenReturn("test_server_url");
+        when(configuration.serverUrl()).thenReturn(HttpUrl.parse("https://play.dhis2.org/demo/"));
 
         launcherPresenter = new LauncherPresenterImpl(new MockSchedulersProvider(), configurationRepository);
         launcherPresenter.onAttach(launcherView);
@@ -43,7 +44,7 @@ public class LauncherPresenterUnitTests {
     @Test
     public void isUserLoggedIn_shouldCallNavigateToLoginView_ifConfigurationIsNotPresent() {
         // server is not configured
-        when(configuration.serverUrl()).thenReturn("");
+        when(configuration.serverUrl()).thenReturn(HttpUrl.parse("https://play.dhis2.org/demo/"));
 
         when(configurationRepository.isUserLoggedIn()).thenReturn(Observable.just(false));
 

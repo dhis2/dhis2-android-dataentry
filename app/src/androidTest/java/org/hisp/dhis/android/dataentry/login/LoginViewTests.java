@@ -66,13 +66,12 @@ public class LoginViewTests {
 
     @Before
     public void setUp() throws Exception {
-        // initialize web server which will be
-        // intercepting all requests
         mockWebServer = new MockWebServer();
         mockWebServer.start();
 
-        ((DhisInstrumentationTestsApp) InstrumentationRegistry.getTargetContext().getApplicationContext())
-                .setBaseUrl(mockWebServer.url("/"));
+        DhisInstrumentationTestsApp dhisApp = ((DhisInstrumentationTestsApp)
+                InstrumentationRegistry.getTargetContext().getApplicationContext());
+        dhisApp.overrideBaseUrl(mockWebServer.url("/"));
 
         loginRobot = new LoginRobot();
     }

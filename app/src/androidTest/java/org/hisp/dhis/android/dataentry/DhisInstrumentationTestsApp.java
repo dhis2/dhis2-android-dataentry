@@ -31,24 +31,33 @@ package org.hisp.dhis.android.dataentry;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
+import org.hisp.dhis.android.dataentry.utils.IdlingSchedulerProvider;
+import org.hisp.dhis.android.dataentry.utils.SchedulerModule;
 
 import okhttp3.HttpUrl;
 
 public class DhisInstrumentationTestsApp extends DhisApp {
     private HttpUrl baseUrl;
 
-    public void setBaseUrl(@NonNull HttpUrl baseUrl) {
+    public void overrideBaseUrl(@NonNull HttpUrl baseUrl) {
         this.baseUrl = baseUrl;
     }
 
+    @NonNull
     @Override
     protected DaggerAppComponent.Builder prepareAppComponent() {
-        return super.prepareAppComponent().dbModule(new DbModule(null));
+        return super.prepareAppComponent()
+                .dbModule(new DbModule(null))
+                .schedulerModule(new SchedulerModule(new IdlingSchedulerProvider()));
     }
 
     @Override
     public ServerComponent createServerComponent(@NonNull HttpUrl url) {
-        // instead of injecting actual base url, inject the mocked one
-        return super.createServerComponent(baseUrl);
+        if (baseUrl != null) {
+            // base url set through overrideBaseUrl() should prioritized
+            return super.createServerComponent(baseUrl);
+        }
+
+        return super.createServerComponent(url);
     }
 }

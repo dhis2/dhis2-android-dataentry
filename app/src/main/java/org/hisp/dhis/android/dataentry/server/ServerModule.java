@@ -51,7 +51,7 @@ public class ServerModule {
 
     @Provides
     @PerServer
-    public D2 sdkInstance(DbOpenHelper openHelper, OkHttpClient client) {
+    D2 sdk(DbOpenHelper openHelper, OkHttpClient client) {
         return new D2.Builder()
                 .baseUrl(baseUrl)
                 .dbOpenHelper(openHelper)

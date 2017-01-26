@@ -58,7 +58,7 @@ public class LoginPresenterImpl implements LoginPresenter {
     private LoginView loginView;
 
     public LoginPresenterImpl(@NonNull ConfigurationRepository configurationRepository,
-                              @NonNull SchedulerProvider schedulerProvider) {
+            @NonNull SchedulerProvider schedulerProvider) {
         this.configurationRepository = configurationRepository;
         this.schedulerProvider = schedulerProvider;
         this.disposable = new CompositeDisposable();

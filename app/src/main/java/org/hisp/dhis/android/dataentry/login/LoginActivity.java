@@ -118,7 +118,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
      * @param serverUrl       ServerUrl which will be set to serverUrl address and locked
      */
     public static Intent createIntent(Activity currentActivity, Class<? extends Activity> target,
-                                      String serverUrl, String username) {
+            String serverUrl, String username) {
         isNull(currentActivity, "Activity must not be null");
         isNull(target, "Target activity class must not be null");
         isNull(serverUrl, "ServerUrl must not be null");
@@ -208,35 +208,31 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             R.id.button_log_in, R.id.button_log_out
     })
     public void onButtonClicked(View view) {
-        switch (view.getId()) {
-            case R.id.button_log_in: {
-                // you have to call configure first
-                HttpUrl httpUrl = HttpUrl.parse(serverUrl.getText().toString());
-                ((DhisApp) getApplicationContext())
-                        .createServerComponent(httpUrl)
-                        .plus(new LoginModule())
-                        .inject(this);
+        if (view.getId() == R.id.button_log_in) {
+            // you have to call configure first
+            HttpUrl httpUrl = HttpUrl.parse(serverUrl.getText().toString());
+            ((DhisApp) getApplicationContext())
+                    .createServerComponent(httpUrl)
+                    .plus(new LoginModule())
+                    .inject(this);
 
-                loginPresenter.onAttach(this);
-                loginPresenter.validateCredentials(username.getText().toString(),
-                        password.getText().toString());
-                break;
-            }
-            case R.id.button_log_out: {
-                // ToDo: log-out logic
-                break;
-            }
+            loginPresenter.onAttach(this);
+            loginPresenter.validateCredentials(username.getText().toString(),
+                    password.getText().toString());
         }
+//        else if (view.getId() == R.id.button_log_out) {
+//            // ToDo: log-out logic
+//        }
     }
 
     /*
     * @RequiresApi annotation needed to pass lint checks run outside of Android Studio
     * */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void setLayoutTransitionOnJellyBeanAndGreater(OnPostAnimationListener onPostAnimationListener) {
+    private void setLayoutTransitionOnJellyBeanAndGreater(OnPostAnimationListener animationListener) {
         layoutTransition = new LayoutTransition();
         layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
-        layoutTransition.addTransitionListener(onPostAnimationListener);
+        layoutTransition.addTransitionListener(animationListener);
 
         RelativeLayout loginLayoutContent = (RelativeLayout) findViewById(R.id.layout_content);
         loginLayoutContent.setLayoutTransition(layoutTransition);
@@ -307,17 +303,17 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     @Override
     public void showInvalidServerUrlError() {
-
+        // stub
     }
 
     @Override
     public void showInvalidCredentialsError() {
-
+        // stub
     }
 
     @Override
     public void showUnexpectedError() {
-
+        // stub
     }
 
     @Override
@@ -381,7 +377,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         private final boolean showProgress;
 
         public OnPostAnimationRunnable(OnAnimationFinishListener listener,
-                                       LoginActivity loginActivity, boolean showProgress) {
+                LoginActivity loginActivity, boolean showProgress) {
             this.listener = listener;
             this.loginActivity = loginActivity;
             this.showProgress = showProgress;

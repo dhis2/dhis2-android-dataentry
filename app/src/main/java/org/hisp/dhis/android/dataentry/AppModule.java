@@ -40,6 +40,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import hu.supercluster.paperwork.Paperwork;
 
 @Module
 public final class AppModule {
@@ -51,13 +52,19 @@ public final class AppModule {
 
     @Provides
     @Singleton
-    Context providesContext() {
+    Context context() {
         return application;
     }
 
     @Provides
     @Singleton
-    ConfigurationManager providesConfigurationManager(DbOpenHelper dbOpenHelper) {
+    Paperwork paperwork(Context context) {
+        return new Paperwork(context);
+    }
+
+    @Provides
+    @Singleton
+    ConfigurationManager configurationManager(DbOpenHelper dbOpenHelper) {
         return ConfigurationManagerFactory.create(dbOpenHelper);
     }
 }

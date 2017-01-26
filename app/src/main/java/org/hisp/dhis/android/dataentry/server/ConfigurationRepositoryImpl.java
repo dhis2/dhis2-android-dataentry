@@ -40,7 +40,7 @@ import retrofit2.Response;
 class ConfigurationRepositoryImpl implements ConfigurationRepository {
     private final D2 d2;
 
-    public ConfigurationRepositoryImpl(@NonNull D2 d2) {
+    ConfigurationRepositoryImpl(@NonNull D2 d2) {
         this.d2 = d2;
     }
 
