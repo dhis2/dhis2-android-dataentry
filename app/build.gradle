@@ -160,6 +160,7 @@ dependencies {
     // Square libraries
     debugCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:${libraries.leakcanary}"
+    compile "com.squareup.sqlbrite:sqlbrite:${libraries.sqlbrite}"
 
     // Jake Wharton libraries
     compile "com.jakewharton.timber:timber:${libraries.timber}"

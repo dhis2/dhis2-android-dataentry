@@ -83,6 +83,7 @@ ext {
             progressbar   : "1.2.0",
             butterknife   : "8.4.1-SNAPSHOT",
             okhttp        : "3.5.0",
+            sqlbrite      : "1.1.1",
 
             // test dependencies
             espresso      : "2.2.2",
