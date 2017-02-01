@@ -54,7 +54,6 @@ import io.fabric.sdk.android.Fabric;
 import okhttp3.HttpUrl;
 import timber.log.Timber;
 
-// ToDo: Avoid reading / writing to the disk during dagger initialization
 // ToDo: Implement more tests for launcher activity, presenter
 // ToDo: Do not allow wrong / malformed urls to be persisted in configuration manager
 public class DhisApp extends Application {
