@@ -32,7 +32,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.dataentry.commons.View;
-import org.hisp.dhis.android.dataentry.server.ConfigurationRepository;
+import org.hisp.dhis.android.dataentry.server.UserManager;
 import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -47,27 +47,27 @@ class LauncherPresenterImpl implements LauncherPresenter {
     private final CompositeDisposable compositeDisposable;
 
     @Nullable
-    private final ConfigurationRepository configurationRepository;
+    private final UserManager userManager;
 
     @Nullable
     private LauncherView launcherView;
 
     public LauncherPresenterImpl(@NonNull SchedulerProvider schedulerProvider,
-            @Nullable ConfigurationRepository configurationRepository) {
+            @Nullable UserManager userManager) {
         this.schedulerProvider = schedulerProvider;
-        this.configurationRepository = configurationRepository;
+        this.userManager = userManager;
         this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void isUserLoggedIn() {
-        /* in case if user repository is null, it means that d2 has not been configured */
-        if (configurationRepository == null) {
+        /* in case if user repository is null, it means that d2 has not been configured yet */
+        if (userManager == null) {
             navigateToLoginView();
             return;
         }
 
-        compositeDisposable.add(configurationRepository.isUserLoggedIn()
+        compositeDisposable.add(userManager.isUserLoggedIn()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe((isUserLoggedIn) -> {
