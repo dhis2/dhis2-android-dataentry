@@ -113,7 +113,7 @@ public class LoginPresenterUnitTests {
 
     @Test
     public void onAttachShouldNotCallViewIfError() {
-        when(userManager.isUserLoggedIn()).thenReturn(Observable.error(new IllegalStateException()));
+        when(userManager.isUserLoggedIn()).thenReturn(Observable.error(IllegalStateException::new));
         when(injectHandler.serverComponent().userManager()).thenReturn(userManager);
 
         loginPresenter.onAttach(loginView);
@@ -257,7 +257,7 @@ public class LoginPresenterUnitTests {
         when(userManager.isUserLoggedIn())
                 .thenReturn(Observable.just(false));
         when(userManager.logIn("test_user_name", "test_password"))
-                .thenReturn(Observable.error(new IOException()));
+                .thenReturn(Observable.error(IOException::new));
         when(configurationRepository.configure(any()))
                 .thenReturn(Observable.just(configuration));
         when(injectHandler.createServerComponent(configuration).userManager())
@@ -331,7 +331,7 @@ public class LoginPresenterUnitTests {
         when(userManager.isUserLoggedIn())
                 .thenReturn(Observable.just(false));
         when(userManager.logIn("test_user_name", "test_password"))
-                .thenReturn(Observable.error(new Exception()));
+                .thenReturn(Observable.error(Exception::new));
         when(configurationRepository.configure(any()))
                 .thenReturn(Observable.just(configuration));
         when(injectHandler.createServerComponent(configuration).userManager())

@@ -112,7 +112,7 @@ public class LoginPresenterImpl implements LoginPresenter {
                         if (isUserLoggedIn) {
                             navigateToHome();
                         }
-                    }));
+                    }, Timber::e));
         }
     }
 
