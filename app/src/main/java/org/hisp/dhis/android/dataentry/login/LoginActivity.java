@@ -61,7 +61,6 @@ import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 import fr.castorflex.android.circularprogressbar.CircularProgressDrawable;
-import okhttp3.HttpUrl;
 
 import static android.text.TextUtils.isEmpty;
 import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
@@ -209,16 +208,12 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     })
     public void onButtonClicked(View view) {
         if (view.getId() == R.id.button_log_in) {
-            // you have to call configure first
-            HttpUrl httpUrl = HttpUrl.parse(serverUrl.getText().toString());
-            ((DhisApp) getApplicationContext())
-                    .createServerComponent(httpUrl)
-                    .plus(new LoginModule())
-                    .inject(this);
+            ((DhisApp) getApplicationContext()).appComponent()
+                    .plus(new LoginModule()).inject(this);
 
             loginPresenter.onAttach(this);
-            loginPresenter.validateCredentials(username.getText().toString(),
-                    password.getText().toString());
+            loginPresenter.validateCredentials(serverUrl.getText().toString(),
+                    username.getText().toString(), password.getText().toString());
         }
 //        else if (view.getId() == R.id.button_log_out) {
 //            // ToDo: log-out logic
@@ -317,6 +312,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     }
 
     @Override
+    public void showServerError() {
+
+    }
+
+    @Override
     public void navigateToHome() {
         ActivityCompat.startActivity(this, HomeActivity.createIntent(this), null);
         finish();
@@ -376,7 +376,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         private final LoginActivity loginActivity;
         private final boolean showProgress;
 
-        public OnPostAnimationRunnable(OnAnimationFinishListener listener,
+        OnPostAnimationRunnable(OnAnimationFinishListener listener,
                 LoginActivity loginActivity, boolean showProgress) {
             this.listener = listener;
             this.loginActivity = loginActivity;
@@ -398,7 +398,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             }
         }
 
-        public boolean isProgressBarWillBeShown() {
+        boolean isProgressBarWillBeShown() {
             return showProgress;
         }
     }

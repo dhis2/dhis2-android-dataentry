@@ -49,5 +49,8 @@ interface LoginView extends View {
     void showUnexpectedError();
 
     @UiThread
+    void showServerError();
+
+    @UiThread
     void navigateToHome();
 }
