@@ -96,7 +96,7 @@ public class LoginViewTests {
 
     @Test
     public void enableLoginButtonOnlyWhenAllFieldsAreFilled() {
-        Spoon.screenshot(loginViewRule.getActivity(), "initial_state");
+        Spoon.screenshot(loginViewRule.getActivity(), "login_initial_state");
 
         // check if button is enabled when all fields are present
         loginRobot.typeServerUrl(SERVER_URL)
@@ -116,6 +116,8 @@ public class LoginViewTests {
 
     @Test
     public void loginShouldSuccessfullyNavigateToHome() {
+        Spoon.screenshot(loginViewRule.getActivity(), "login_initial_state");
+
         MockResponse mockResponse = new MockResponse()
                 .setBody("{\n" +
                         "\n" +
@@ -167,5 +169,7 @@ public class LoginViewTests {
         // if login is successful, home activity should be started
         intended(hasComponent(HomeActivity.class.getName()));
         Intents.release();
+
+        Spoon.screenshot(loginViewRule.getActivity(), "logged_in_state");
     }
 }
