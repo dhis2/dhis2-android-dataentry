@@ -30,6 +30,7 @@ package org.hisp.dhis.android.dataentry;
 
 import android.support.annotation.NonNull;
 
+import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.utils.IdlingSchedulerProvider;
 import org.hisp.dhis.android.dataentry.utils.SchedulerModule;
@@ -52,12 +53,12 @@ public class DhisInstrumentationTestsApp extends DhisApp {
     }
 
     @Override
-    public ServerComponent createServerComponent(@NonNull HttpUrl url) {
+    public ServerComponent createServerComponent(@NonNull ConfigurationModel configuration) {
         if (baseUrl != null) {
             // base url set through overrideBaseUrl() should prioritized
-            return super.createServerComponent(baseUrl);
+            // return super.createServerComponent(baseUrl);
         }
 
-        return super.createServerComponent(url);
+        return super.createServerComponent(configuration);
     }
 }

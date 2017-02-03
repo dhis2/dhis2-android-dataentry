@@ -34,13 +34,12 @@ import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.dataentry.DhisInstrumentationTestsApp;
 import org.hisp.dhis.android.dataentry.login.LoginActivity;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import okhttp3.HttpUrl;
 
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
@@ -64,7 +63,9 @@ public class LauncherViewTests {
 
     @Test
     public void launcherView_shouldNavigateToLoginView_ifUserIsNotSignedIn() {
-        app().createServerComponent(HttpUrl.parse("https://play.dhis2.org/demo/"));
+        ConfigurationModel configuration = null;
+        // app().createServerComponent(HttpUrl.parse("https://play.dhis2.org/demo/"));
+        app().createServerComponent(configuration);
 
         Intents.init();
 
