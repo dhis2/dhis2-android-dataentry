@@ -56,7 +56,10 @@ public class DhisInstrumentationTestsApp extends DhisApp {
     public ServerComponent createServerComponent(@NonNull ConfigurationModel configuration) {
         if (baseUrl != null) {
             // base url set through overrideBaseUrl() should prioritized
-            // return super.createServerComponent(baseUrl);
+            return super.createServerComponent(
+                    ConfigurationModel.builder()
+                            .serverUrl(baseUrl)
+                            .build());
         }
 
         return super.createServerComponent(configuration);
