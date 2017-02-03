@@ -51,12 +51,11 @@ import javax.inject.Inject;
 
 import hu.supercluster.paperwork.Paperwork;
 import io.fabric.sdk.android.Fabric;
-import okhttp3.HttpUrl;
 import timber.log.Timber;
 
 // ToDo: Implement more tests for launcher activity, presenter
 // ToDo: Do not allow wrong / malformed urls to be persisted in configuration manager
-public class DhisApp extends Application {
+public class DhisApp extends Application implements org.hisp.dhis.android.dataentry.Inject {
     private static final String DATABASE_NAME = "dhis.db";
     private static final String GIT_SHA = "gitSha";
     private static final String BUILD_DATE = "buildDate";
@@ -150,7 +149,7 @@ public class DhisApp extends Application {
     private void setUpServerComponent() {
         ConfigurationModel configuration = configurationManager.get();
         if (configuration != null) {
-            serverComponent = appComponent.plus(new ServerModule(configuration.serverUrl()));
+            serverComponent = appComponent.plus(new ServerModule(configuration));
         }
     }
 
@@ -162,15 +161,18 @@ public class DhisApp extends Application {
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()));
     }
 
-    public ServerComponent createServerComponent(@NonNull HttpUrl baseUrl) {
-        return (serverComponent = appComponent.plus(new ServerModule(baseUrl)));
+    @Override
+    public ServerComponent createServerComponent(@NonNull ConfigurationModel configuration) {
+        return (serverComponent = appComponent.plus(new ServerModule(configuration)));
     }
 
     @Nullable
+    @Override
     public ServerComponent serverComponent() {
         return serverComponent;
     }
 
+    @Override
     public AppComponent appComponent() {
         return appComponent;
     }
