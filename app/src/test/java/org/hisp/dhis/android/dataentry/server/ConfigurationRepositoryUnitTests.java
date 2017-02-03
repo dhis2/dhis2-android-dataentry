@@ -1,4 +1,4 @@
 package org.hisp.dhis.android.dataentry.server;
 
-public class ConfigurationRepositoryImpl {
+public class ConfigurationRepositoryUnitTests {
 }
