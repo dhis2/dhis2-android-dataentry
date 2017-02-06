@@ -157,18 +157,6 @@
                     android:textSize="17sp"
                     app:font="@string/font_name_medium"/>
 
-                <org.hisp.dhis.android.dataentry.commons.views.FontButton
-                    android:id="@+id/button_log_out"
-                    android:layout_width="196dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/button_selector_red"
-                    android:text="@string/clear_and_logout"
-                    android:textAllCaps="true"
-                    android:textColor="@android:color/white"
-                    android:textSize="17sp"
-                    app:font="@string/font_name_medium"/>
-
             </LinearLayout>
 
         </android.support.v7.widget.CardView>

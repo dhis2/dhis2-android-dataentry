@@ -37,9 +37,13 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="log_in">Log in</string>
-    <string name="confirm_user">Confirm user</string>
-    <string name="clear_and_logout">Clear and log out</string>
     <string name="two">2</string>
+
+    <!-- Warnings and error messages -->
+    <string name="error_wrong_server_url">Wrong server url</string>
+    <string name="error_wrong_credentials">Wrong credentials</string>
+    <string name="error_unexpected_error">Unexpected error</string>
+    <string name="error_internal_server_error">Internal server error</string>
 
     <!-- HomeActivity -->
     <string name="drawer_item_help">Help</string>
