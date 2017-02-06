@@ -33,7 +33,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
 import org.hisp.dhis.android.core.user.User;
-import org.hisp.dhis.android.dataentry.Inject;
+import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.commons.View;
 import org.hisp.dhis.android.dataentry.server.ConfigurationRepository;
 import org.hisp.dhis.android.dataentry.server.UserManager;
@@ -50,7 +50,7 @@ import timber.log.Timber;
 public class LoginPresenterImpl implements LoginPresenter {
 
     @NonNull
-    private final Inject injectHandler;
+    private final Components componentsHandler;
 
     @NonNull
     private final SchedulerProvider schedulerProvider;
@@ -64,10 +64,10 @@ public class LoginPresenterImpl implements LoginPresenter {
     @Nullable
     private LoginView loginView;
 
-    public LoginPresenterImpl(@NonNull Inject inject,
+    public LoginPresenterImpl(@NonNull Components components,
             @NonNull SchedulerProvider schedulerProvider,
             @NonNull ConfigurationRepository configurationRepository) {
-        this.injectHandler = inject;
+        this.componentsHandler = components;
         this.schedulerProvider = schedulerProvider;
         this.configurationRepository = configurationRepository;
         this.disposable = new CompositeDisposable();
@@ -75,7 +75,8 @@ public class LoginPresenterImpl implements LoginPresenter {
 
     @UiThread
     @Override
-    public void validateCredentials(@NonNull String server, @NonNull String user, @NonNull String pass) {
+    public void validateCredentials(@NonNull String server,
+            @NonNull String user, @NonNull String password) {
         HttpUrl baseUrl = HttpUrl.parse(canonizeUrl(server));
         if (baseUrl == null) {
             showInvalidServerUrlError();
@@ -85,8 +86,8 @@ public class LoginPresenterImpl implements LoginPresenter {
         showProgress();
 
         disposable.add(configurationRepository.configure(baseUrl)
-                .map((config) -> injectHandler.createServerComponent(config).userManager())
-                .switchMap((userManager) -> userManager.logIn(user, pass))
+                .map((config) -> componentsHandler.createServerComponent(config).userManager())
+                .switchMap((userManager) -> userManager.logIn(user, password))
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(this::handleResponse, this::handleError));
@@ -100,8 +101,8 @@ public class LoginPresenterImpl implements LoginPresenter {
         }
 
         UserManager userManager = null;
-        if (injectHandler.serverComponent() != null) {
-            userManager = injectHandler.serverComponent().userManager();
+        if (componentsHandler.serverComponent() != null) {
+            userManager = componentsHandler.serverComponent().userManager();
         }
 
         if (userManager != null) {
@@ -142,12 +143,6 @@ public class LoginPresenterImpl implements LoginPresenter {
     private void showProgress() {
         if (loginView != null) {
             loginView.showProgress();
-        }
-    }
-
-    private void hideProgress() {
-        if (loginView != null) {
-            loginView.hideProgress();
         }
     }
 

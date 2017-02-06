@@ -45,6 +45,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hisp.dhis.android.dataentry.espresso.CustomViewMatchers.withErrorText;
 import static org.hisp.dhis.android.dataentry.espresso.CustomViewMatchers.withHint;
 
 public class LoginRobot {
@@ -105,6 +106,27 @@ public class LoginRobot {
         onView(withId(R.id.edittext_password))
                 .perform(scrollTo())
                 .check(matches(withText(is(expectedPassword))));
+        return this;
+    }
+
+    LoginRobot checkServerUrlError(String errorMessage) {
+        onView(withId(R.id.edittext_server_url))
+                .perform(scrollTo())
+                .check(matches(withErrorText(is(errorMessage))));
+        return this;
+    }
+
+    LoginRobot checkUsernameError(String errorMessage) {
+        onView(withId(R.id.edittext_username))
+                .perform(scrollTo())
+                .check(matches(withErrorText(is(errorMessage))));
+        return this;
+    }
+
+    LoginRobot checkPasswordError(String errorMessage) {
+        onView(withId(R.id.edittext_password))
+                .perform(scrollTo())
+                .check(matches(withErrorText(is(errorMessage))));
         return this;
     }
 

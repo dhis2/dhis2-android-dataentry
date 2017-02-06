@@ -30,7 +30,7 @@ package org.hisp.dhis.android.dataentry.login;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.core.user.User;
-import org.hisp.dhis.android.dataentry.Inject;
+import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.server.ConfigurationRepository;
 import org.hisp.dhis.android.dataentry.server.UserManager;
 import org.hisp.dhis.android.dataentry.utils.MockSchedulersProvider;
@@ -62,7 +62,7 @@ import static org.mockito.Mockito.when;
 public class LoginPresenterUnitTests {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private Inject injectHandler;
+    private Components componentsHandler;
 
     @Mock
     private User user;
@@ -85,14 +85,14 @@ public class LoginPresenterUnitTests {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        loginPresenter = new LoginPresenterImpl(injectHandler,
+        loginPresenter = new LoginPresenterImpl(componentsHandler,
                 new MockSchedulersProvider(), configurationRepository);
     }
 
     @Test
     public void onAttachShouldNotCallViewIfUserIsNotLoggedIn() {
         when(userManager.isUserLoggedIn()).thenReturn(Observable.just(false));
-        when(injectHandler.serverComponent().userManager()).thenReturn(userManager);
+        when(componentsHandler.serverComponent().userManager()).thenReturn(userManager);
 
         loginPresenter.onAttach(loginView);
 
@@ -103,7 +103,7 @@ public class LoginPresenterUnitTests {
     @Test
     public void onAttachShouldCallViewIfUserIsLoggedIn() {
         when(userManager.isUserLoggedIn()).thenReturn(Observable.just(true));
-        when(injectHandler.serverComponent().userManager()).thenReturn(userManager);
+        when(componentsHandler.serverComponent().userManager()).thenReturn(userManager);
 
         loginPresenter.onAttach(loginView);
 
@@ -114,7 +114,7 @@ public class LoginPresenterUnitTests {
     @Test
     public void onAttachShouldNotCallViewIfError() {
         when(userManager.isUserLoggedIn()).thenReturn(Observable.error(IllegalStateException::new));
-        when(injectHandler.serverComponent().userManager()).thenReturn(userManager);
+        when(componentsHandler.serverComponent().userManager()).thenReturn(userManager);
 
         loginPresenter.onAttach(loginView);
 
@@ -131,7 +131,7 @@ public class LoginPresenterUnitTests {
                 .thenReturn(Observable.just(userResponse));
         when(configurationRepository.configure(any()))
                 .thenReturn(Observable.just(configuration));
-        when(injectHandler.createServerComponent(configuration).userManager())
+        when(componentsHandler.createServerComponent(configuration).userManager())
                 .thenReturn(userManager);
 
         loginPresenter.onAttach(loginView);
@@ -156,17 +156,17 @@ public class LoginPresenterUnitTests {
                 .thenReturn(Observable.just(userResponse));
         when(configurationRepository.configure(any()))
                 .thenReturn(Observable.just(configuration));
-        when(injectHandler.createServerComponent(configuration).userManager())
+        when(componentsHandler.createServerComponent(configuration).userManager())
                 .thenReturn(userManager);
 
         loginPresenter.onAttach(loginView);
         loginPresenter.validateCredentials("https://play.dhis2.org/demo/",
                 "test_user_name", "test_password");
 
-        InOrder mocksInOrder = inOrder(injectHandler, configurationRepository, userManager, loginView);
+        InOrder mocksInOrder = inOrder(componentsHandler, configurationRepository, userManager, loginView);
         mocksInOrder.verify(loginView).showProgress();
         mocksInOrder.verify(configurationRepository).configure(any());
-        mocksInOrder.verify(injectHandler).createServerComponent(configuration);
+        mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).navigateToHome();
     }
@@ -181,17 +181,17 @@ public class LoginPresenterUnitTests {
                 .thenReturn(Observable.just(userResponse));
         when(configurationRepository.configure(any()))
                 .thenReturn(Observable.just(configuration));
-        when(injectHandler.createServerComponent(configuration).userManager())
+        when(componentsHandler.createServerComponent(configuration).userManager())
                 .thenReturn(userManager);
 
         loginPresenter.onAttach(loginView);
         loginPresenter.validateCredentials("https://play.dhis2.org/demo/",
                 "test_user_name", "test_password");
 
-        InOrder mocksInOrder = inOrder(injectHandler, configurationRepository, userManager, loginView);
+        InOrder mocksInOrder = inOrder(componentsHandler, configurationRepository, userManager, loginView);
         mocksInOrder.verify(loginView).showProgress();
         mocksInOrder.verify(configurationRepository).configure(any());
-        mocksInOrder.verify(injectHandler).createServerComponent(configuration);
+        mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showInvalidCredentialsError();
@@ -208,17 +208,17 @@ public class LoginPresenterUnitTests {
                 .thenReturn(Observable.just(userResponse));
         when(configurationRepository.configure(any()))
                 .thenReturn(Observable.just(configuration));
-        when(injectHandler.createServerComponent(configuration).userManager())
+        when(componentsHandler.createServerComponent(configuration).userManager())
                 .thenReturn(userManager);
 
         loginPresenter.onAttach(loginView);
         loginPresenter.validateCredentials("https://play.dhis2.org/demo/",
                 "test_user_name", "test_password");
 
-        InOrder mocksInOrder = inOrder(injectHandler, configurationRepository, userManager, loginView);
+        InOrder mocksInOrder = inOrder(componentsHandler, configurationRepository, userManager, loginView);
         mocksInOrder.verify(loginView).showProgress();
         mocksInOrder.verify(configurationRepository).configure(any());
-        mocksInOrder.verify(injectHandler).createServerComponent(configuration);
+        mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showInvalidServerUrlError();
@@ -235,17 +235,17 @@ public class LoginPresenterUnitTests {
                 .thenReturn(Observable.just(userResponse));
         when(configurationRepository.configure(any()))
                 .thenReturn(Observable.just(configuration));
-        when(injectHandler.createServerComponent(configuration).userManager())
+        when(componentsHandler.createServerComponent(configuration).userManager())
                 .thenReturn(userManager);
 
         loginPresenter.onAttach(loginView);
         loginPresenter.validateCredentials("https://play.dhis2.org/demo/",
                 "test_user_name", "test_password");
 
-        InOrder mocksInOrder = inOrder(injectHandler, configurationRepository, userManager, loginView);
+        InOrder mocksInOrder = inOrder(componentsHandler, configurationRepository, userManager, loginView);
         mocksInOrder.verify(loginView).showProgress();
         mocksInOrder.verify(configurationRepository).configure(any());
-        mocksInOrder.verify(injectHandler).createServerComponent(configuration);
+        mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showUnexpectedError();
@@ -260,17 +260,17 @@ public class LoginPresenterUnitTests {
                 .thenReturn(Observable.error(IOException::new));
         when(configurationRepository.configure(any()))
                 .thenReturn(Observable.just(configuration));
-        when(injectHandler.createServerComponent(configuration).userManager())
+        when(componentsHandler.createServerComponent(configuration).userManager())
                 .thenReturn(userManager);
 
         loginPresenter.onAttach(loginView);
         loginPresenter.validateCredentials("https://play.dhis2.org/demo/",
                 "test_user_name", "test_password");
 
-        InOrder mocksInOrder = inOrder(injectHandler, configurationRepository, userManager, loginView);
+        InOrder mocksInOrder = inOrder(componentsHandler, configurationRepository, userManager, loginView);
         mocksInOrder.verify(loginView).showProgress();
         mocksInOrder.verify(configurationRepository).configure(any());
-        mocksInOrder.verify(injectHandler).createServerComponent(configuration);
+        mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showInvalidServerUrlError();
@@ -285,17 +285,17 @@ public class LoginPresenterUnitTests {
                 .thenReturn(Observable.error(new MalformedURLException()));
         when(configurationRepository.configure(any()))
                 .thenReturn(Observable.just(configuration));
-        when(injectHandler.createServerComponent(configuration).userManager())
+        when(componentsHandler.createServerComponent(configuration).userManager())
                 .thenReturn(userManager);
 
         loginPresenter.onAttach(loginView);
         loginPresenter.validateCredentials("https://play.dhis2.org/demo/",
                 "test_user_name", "test_password");
 
-        InOrder mocksInOrder = inOrder(injectHandler, configurationRepository, userManager, loginView);
+        InOrder mocksInOrder = inOrder(componentsHandler, configurationRepository, userManager, loginView);
         mocksInOrder.verify(loginView).showProgress();
         mocksInOrder.verify(configurationRepository).configure(any());
-        mocksInOrder.verify(injectHandler).createServerComponent(configuration);
+        mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showInvalidServerUrlError();
@@ -311,17 +311,17 @@ public class LoginPresenterUnitTests {
                 .thenReturn(Observable.just(userResponse));
         when(configurationRepository.configure(any()))
                 .thenReturn(Observable.just(configuration));
-        when(injectHandler.createServerComponent(configuration).userManager())
+        when(componentsHandler.createServerComponent(configuration).userManager())
                 .thenReturn(userManager);
 
         // we don't call attach
         loginPresenter.validateCredentials("https://play.dhis2.org/demo/",
                 "test_user_name", "test_password");
 
-        InOrder mocksInOrder = inOrder(injectHandler, configurationRepository, userManager, loginView);
+        InOrder mocksInOrder = inOrder(componentsHandler, configurationRepository, userManager, loginView);
         mocksInOrder.verify(loginView, never()).showProgress();
         mocksInOrder.verify(configurationRepository).configure(any());
-        mocksInOrder.verify(injectHandler).createServerComponent(configuration);
+        mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView, never()).navigateToHome();
     }
@@ -334,17 +334,17 @@ public class LoginPresenterUnitTests {
                 .thenReturn(Observable.error(Exception::new));
         when(configurationRepository.configure(any()))
                 .thenReturn(Observable.just(configuration));
-        when(injectHandler.createServerComponent(configuration).userManager())
+        when(componentsHandler.createServerComponent(configuration).userManager())
                 .thenReturn(userManager);
 
         loginPresenter.onAttach(loginView);
         loginPresenter.validateCredentials("https://play.dhis2.org/demo/",
                 "test_user_name", "test_password");
 
-        InOrder mocksInOrder = inOrder(injectHandler, configurationRepository, userManager, loginView);
+        InOrder mocksInOrder = inOrder(componentsHandler, configurationRepository, userManager, loginView);
         mocksInOrder.verify(loginView).showProgress();
         mocksInOrder.verify(configurationRepository).configure(any());
-        mocksInOrder.verify(injectHandler).createServerComponent(configuration);
+        mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showUnexpectedError();
@@ -361,17 +361,17 @@ public class LoginPresenterUnitTests {
                 .thenReturn(Observable.just(userResponse));
         when(configurationRepository.configure(any()))
                 .thenReturn(Observable.just(configuration));
-        when(injectHandler.createServerComponent(configuration).userManager())
+        when(componentsHandler.createServerComponent(configuration).userManager())
                 .thenReturn(userManager);
 
         loginPresenter.onAttach(loginView);
         loginPresenter.validateCredentials("https://play.dhis2.org/demo/",
                 "test_user_name", "test_password");
 
-        InOrder mocksInOrder = inOrder(injectHandler, configurationRepository, userManager, loginView);
+        InOrder mocksInOrder = inOrder(componentsHandler, configurationRepository, userManager, loginView);
         mocksInOrder.verify(loginView).showProgress();
         mocksInOrder.verify(configurationRepository).configure(any());
-        mocksInOrder.verify(injectHandler).createServerComponent(configuration);
+        mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showServerError();
