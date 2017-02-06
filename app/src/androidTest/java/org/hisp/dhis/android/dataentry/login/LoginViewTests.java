@@ -45,6 +45,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
@@ -111,12 +113,21 @@ public class LoginViewTests {
                 .eraseUsername().isLoginButtonDisabled().typeUsername(USERNAME)
                 .erasePassword().isLoginButtonDisabled().typePassword(PASSWORD)
                 .isLoginButtonEnabled();
+
+        // perform configuration change and make sure that
+        // views are in correct state
+        loginRobot.rotateToLandscape()
+                .checkServerUrl(SERVER_URL)
+                .checkUsername(USERNAME)
+                .checkPassword(PASSWORD)
+                .isLoginButtonEnabled();
+
         Spoon.screenshot(loginViewRule.getActivity(), "login_button_should_be_enabled");
     }
 
     @Test
     public void loginShouldSuccessfullyNavigateToHome() {
-        Spoon.screenshot(loginViewRule.getActivity(), "login_initial_state");
+        // Spoon.screenshot(loginViewRule.getActivity(), "login_initial_state");
 
         MockResponse mockResponse = new MockResponse()
                 .setBody("{\n" +
@@ -158,18 +169,39 @@ public class LoginViewTests {
                         "    ]\n" +
                         "\n" +
                         "}");
+        mockResponse.setBodyDelay(4, TimeUnit.SECONDS);
         mockWebServer.enqueue(mockResponse);
 
         Intents.init();
+
+        // List<IdlingResource> idlingResources = muteIdlingResources();
         loginRobot.typeServerUrl(SERVER_URL)
                 .typeUsername(USERNAME)
                 .typePassword(PASSWORD)
                 .clickOnLoginButton();
+        // .rotateToLandscape();
+
+        // ToDo: decide on the lifecycle of the presenters
+        // ToDo: find a way to test configuration changes
+        // ToDo: design component registry
+        // unmuteIdlingResources(idlingResources);
 
         // if login is successful, home activity should be started
         intended(hasComponent(HomeActivity.class.getName()));
         Intents.release();
 
-        Spoon.screenshot(loginViewRule.getActivity(), "logged_in_state");
+        // Spoon.screenshot(loginViewRule.getActivity(), "logged_in_state");
     }
+
+//    private List<IdlingResource> muteIdlingResources() {
+//        List<IdlingResource> idlingResources = Espresso.getIdlingResources();
+//        Espresso.unregisterIdlingResources(idlingResources
+//                .toArray(new IdlingResource[idlingResources.size()]));
+//        return idlingResources;
+//    }
+//
+//    private void unmuteIdlingResources(List<IdlingResource> idlingResources) {
+//        Espresso.registerIdlingResources(idlingResources
+//                .toArray(new IdlingResource[idlingResources.size()]));
+//    }
 }

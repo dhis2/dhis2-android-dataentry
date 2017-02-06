@@ -377,4 +377,9 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(loginView).showServerError();
         verify(loginView, never()).navigateToHome();
     }
+
+    @Test
+    public void validateCredentialsShouldCallViewOnTimeOut() {
+        // ToDo
+    }
 }

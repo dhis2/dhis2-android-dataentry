@@ -65,7 +65,9 @@ import fr.castorflex.android.circularprogressbar.CircularProgressDrawable;
 import static android.text.TextUtils.isEmpty;
 import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 
-@SuppressWarnings({"PMD.ExcessiveImports"}) // This activity needs a lot of android.* imports
+@SuppressWarnings({
+        "PMD.ExcessiveImports"
+}) // This activity needs a lot of android.* imports
 public class LoginActivity extends AppCompatActivity implements LoginView {
     private static final String ARG_LOGIN_ACTIVITY_LAUNCH_MODE = "arg:launchMode";
     private static final String ARG_LAUNCH_MODE_LOGIN_USER = "mode:loginUser";
@@ -193,6 +195,16 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
         hideProgress();
         onTextChanged();
+
+        ((DhisApp) getApplicationContext()).appComponent()
+                .plus(new LoginModule()).inject(this);
+
+        // cache component somewhere? DhisApp?
+//        if (savedInstanceState == null) {
+//
+//        } else {
+//            // use the cached version
+//        }
     }
 
     @OnTextChanged(callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED, value = {
@@ -208,10 +220,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     })
     public void onButtonClicked(View view) {
         if (view.getId() == R.id.button_log_in) {
-            ((DhisApp) getApplicationContext()).appComponent()
-                    .plus(new LoginModule()).inject(this);
-
-            loginPresenter.onAttach(this);
             loginPresenter.validateCredentials(serverUrl.getText().toString(),
                     username.getText().toString(), password.getText().toString());
         }
@@ -234,7 +242,15 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        loginPresenter.onAttach(this);
+    }
+
+    @Override
     protected void onPause() {
+        loginPresenter.onDetach();
+
         if (onPostAnimationAction != null) {
             onPostAnimationAction.run();
             onPostAnimationAction = null;
@@ -320,6 +336,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     public void navigateToHome() {
         ActivityCompat.startActivity(this, HomeActivity.createIntent(this), null);
         finish();
+
+        // clean-up the component instance, since we don't need it anymore.
     }
 
     private boolean isAnimationInProgress() {

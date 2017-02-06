@@ -119,8 +119,8 @@ public class LoginPresenterImpl implements LoginPresenter {
     @UiThread
     @Override
     public void onDetach() {
+        // in order not to leak reference to the view (activity)
         loginView = null;
-        disposable.clear();
     }
 
     private void handleResponse(@NonNull Response<User> userResponse) {
