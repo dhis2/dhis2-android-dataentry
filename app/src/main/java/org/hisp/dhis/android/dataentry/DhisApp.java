@@ -41,6 +41,10 @@ import com.squareup.leakcanary.RefWatcher;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
+import org.hisp.dhis.android.dataentry.commons.PerActivity;
+import org.hisp.dhis.android.dataentry.login.LoginComponent;
+import org.hisp.dhis.android.dataentry.login.LoginModule;
+import org.hisp.dhis.android.dataentry.server.PerServer;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.server.ServerModule;
 import org.hisp.dhis.android.dataentry.utils.CrashReportingTree;
@@ -48,14 +52,13 @@ import org.hisp.dhis.android.dataentry.utils.SchedulerModule;
 import org.hisp.dhis.android.dataentry.utils.SchedulersProviderImpl;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import hu.supercluster.paperwork.Paperwork;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
-// ToDo: Implement more tests for launcher activity, presenter
-// ToDo: Do not allow wrong / malformed urls to be persisted in configuration manager
-public class DhisApp extends Application implements org.hisp.dhis.android.dataentry.Inject {
+public class DhisApp extends Application implements Components {
     private static final String DATABASE_NAME = "dhis.db";
     private static final String GIT_SHA = "gitSha";
     private static final String BUILD_DATE = "buildDate";
@@ -66,11 +69,17 @@ public class DhisApp extends Application implements org.hisp.dhis.android.dataen
     @Inject
     ConfigurationManager configurationManager;
 
-    @Nullable
+    @NonNull
+    @Singleton
     AppComponent appComponent;
 
     @Nullable
+    @PerServer
     ServerComponent serverComponent;
+
+    @Nullable
+    @PerActivity
+    LoginComponent loginComponent;
 
     @Nullable
     RefWatcher refWatcher;
@@ -79,7 +88,6 @@ public class DhisApp extends Application implements org.hisp.dhis.android.dataen
     public void onCreate() {
         super.onCreate();
 
-        // application component
         setUpAppComponent();
         setUpServerComponent();
 
@@ -153,6 +161,14 @@ public class DhisApp extends Application implements org.hisp.dhis.android.dataen
         }
     }
 
+    public RefWatcher refWatcher() {
+        return refWatcher;
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // App component
+    ////////////////////////////////////////////////////////////////////////
+
     @NonNull
     protected DaggerAppComponent.Builder prepareAppComponent() {
         return DaggerAppComponent.builder()
@@ -161,6 +177,38 @@ public class DhisApp extends Application implements org.hisp.dhis.android.dataen
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()));
     }
 
+    @NonNull
+    @Override
+    public AppComponent appComponent() {
+        return appComponent;
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // Login component
+    ////////////////////////////////////////////////////////////////////////
+
+    @NonNull
+    @Override
+    public LoginComponent createLoginComponent() {
+        return (loginComponent = appComponent.plus(new LoginModule()));
+    }
+
+    @Nullable
+    @Override
+    public LoginComponent loginComponent() {
+        return loginComponent;
+    }
+
+    @Override
+    public void releaseLoginComponent() {
+        loginComponent = null;
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // Server component
+    ////////////////////////////////////////////////////////////////////////
+
+    @NonNull
     @Override
     public ServerComponent createServerComponent(@NonNull ConfigurationModel configuration) {
         return (serverComponent = appComponent.plus(new ServerModule(configuration)));
@@ -170,14 +218,5 @@ public class DhisApp extends Application implements org.hisp.dhis.android.dataen
     @Override
     public ServerComponent serverComponent() {
         return serverComponent;
-    }
-
-    @Override
-    public AppComponent appComponent() {
-        return appComponent;
-    }
-
-    public RefWatcher refWatcher() {
-        return refWatcher;
     }
 }
