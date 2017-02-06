@@ -30,7 +30,6 @@ package org.hisp.dhis.android.dataentry.login;
 
 import android.animation.LayoutTransition;
 import android.animation.LayoutTransition.TransitionListener;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,8 +47,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
-import org.hisp.dhis.android.dataentry.DhisApp;
+import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.home.HomeActivity;
 
@@ -63,19 +63,12 @@ import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 import fr.castorflex.android.circularprogressbar.CircularProgressDrawable;
 
 import static android.text.TextUtils.isEmpty;
-import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 
 @SuppressWarnings({
         "PMD.ExcessiveImports"
 }) // This activity needs a lot of android.* imports
 public class LoginActivity extends AppCompatActivity implements LoginView {
-    private static final String ARG_LOGIN_ACTIVITY_LAUNCH_MODE = "arg:launchMode";
-    private static final String ARG_LAUNCH_MODE_LOGIN_USER = "mode:loginUser";
-    private static final String ARG_LAUNCH_MODE_CONFIRM_USER = "mode:confirmUser";
-
-    private static final String ARG_SERVER_URL = "arg:serverUrl";
-    private static final String ARG_USERNAME = "arg:username";
-    private static final String IS_LOADING = "state:isLoading";
+    private static final String STATE_IS_LOADING = "state:isLoading";
 
     @BindView(R.id.progress_bar_circular)
     CircularProgressBar progressBar;
@@ -95,9 +88,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     @BindView(R.id.button_log_in)
     Button loginButton;
 
-    @BindView(R.id.button_log_out)
-    Button logoutButton;
-
     @Inject
     LoginPresenter loginPresenter;
 
@@ -110,28 +100,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     // Action which should be executed after animation is finished
     OnPostAnimationRunnable onPostAnimationAction;
-
-    /**
-     * Creates intent for LoginActivity to be launched in "User confirmation" mode.
-     *
-     * @param currentActivity Activity from which we want to fire LoginActivity
-     * @param target          Implementation of LoginActivity
-     * @param serverUrl       ServerUrl which will be set to serverUrl address and locked
-     */
-    public static Intent createIntent(Activity currentActivity, Class<? extends Activity> target,
-            String serverUrl, String username) {
-        isNull(currentActivity, "Activity must not be null");
-        isNull(target, "Target activity class must not be null");
-        isNull(serverUrl, "ServerUrl must not be null");
-        isNull(username, "Username must not be null");
-
-        Intent intent = new Intent(currentActivity, target);
-        intent.putExtra(ARG_LOGIN_ACTIVITY_LAUNCH_MODE, ARG_LAUNCH_MODE_CONFIRM_USER);
-        intent.putExtra(ARG_SERVER_URL, serverUrl);
-        intent.putExtra(ARG_USERNAME, username);
-
-        return intent;
-    }
 
     private static boolean isGreaterThanOrJellyBean() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
@@ -158,28 +126,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
                 .sweepSpeed(1f)
                 .build());
 
-        logoutButton.setVisibility(View.GONE);
-
-        if (getIntent().getExtras() != null) {
-            String launchMode = getIntent().getExtras().getString(
-                    ARG_LOGIN_ACTIVITY_LAUNCH_MODE, ARG_LAUNCH_MODE_LOGIN_USER);
-
-            if (ARG_LAUNCH_MODE_CONFIRM_USER.equals(launchMode)) {
-                String predefinedServerUrl = getIntent().getExtras().getString(ARG_SERVER_URL);
-                String predefinedUsername = getIntent().getExtras().getString(ARG_USERNAME);
-
-                serverUrl.setText(predefinedServerUrl);
-                serverUrl.setEnabled(false);
-
-                username.setText(predefinedUsername);
-                username.setEnabled(false);
-
-                loginButton.setText(R.string.confirm_user);
-                logoutButton.setVisibility(View.VISIBLE);
-            }
-        }
-
-        // Callback which will be triggered when animations are finished
         OnPostAnimationListener onPostAnimationListener = new OnPostAnimationListener();
 
         /* adding transition animations to root layout */
@@ -196,15 +142,13 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         hideProgress();
         onTextChanged();
 
-        ((DhisApp) getApplicationContext()).appComponent()
-                .plus(new LoginModule()).inject(this);
+        LoginComponent loginComponent = ((Components) getApplicationContext()).loginComponent();
+        if (loginComponent == null) {
+            // in case if we don't have cached presenter
+            loginComponent = ((Components) getApplicationContext()).createLoginComponent();
+        }
 
-        // cache component somewhere? DhisApp?
-//        if (savedInstanceState == null) {
-//
-//        } else {
-//            // use the cached version
-//        }
+        loginComponent.inject(this);
     }
 
     @OnTextChanged(callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED, value = {
@@ -216,16 +160,13 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     }
 
     @OnClick(value = {
-            R.id.button_log_in, R.id.button_log_out
+            R.id.button_log_in
     })
     public void onButtonClicked(View view) {
         if (view.getId() == R.id.button_log_in) {
             loginPresenter.validateCredentials(serverUrl.getText().toString(),
                     username.getText().toString(), password.getText().toString());
         }
-//        else if (view.getId() == R.id.button_log_out) {
-//            // ToDo: log-out logic
-//        }
     }
 
     /*
@@ -262,9 +203,9 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     @Override
     protected final void onSaveInstanceState(Bundle outState) {
         if (onPostAnimationAction == null) {
-            outState.putBoolean(IS_LOADING, progressBar.isShown());
+            outState.putBoolean(STATE_IS_LOADING, progressBar.isShown());
         } else {
-            outState.putBoolean(IS_LOADING, onPostAnimationAction.isProgressBarWillBeShown());
+            outState.putBoolean(STATE_IS_LOADING, onPostAnimationAction.isProgressBarWillBeShown());
         }
 
         super.onSaveInstanceState(outState);
@@ -272,7 +213,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     @Override
     protected final void onRestoreInstanceState(@Nullable Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.getBoolean(IS_LOADING, false)) {
+        if (savedInstanceState != null && savedInstanceState.getBoolean(STATE_IS_LOADING, false)) {
             showProgress();
         } else {
             hideProgress();
@@ -281,63 +222,80 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         super.onRestoreInstanceState(savedInstanceState);
     }
 
-    public void navigateTo(final Class<? extends Activity> activityClass) {
-        isNull(activityClass, "Target activity must not be null");
+    @Override
+    public void showProgress() {
+        progressBar.setVisibility(View.VISIBLE);
+        if (isAnimationInProgress()) {
+            onPostAnimationAction = new OnPostAnimationRunnable(this, true);
+        } else {
+            onStartLoading();
+        }
+    }
 
-        Intent intent = new Intent(this, activityClass);
+    @Override
+    public void hideProgress() {
+        if (isAnimationInProgress()) {
+            onPostAnimationAction = new OnPostAnimationRunnable(this, false);
+            return;
+        }
+
+        onFinishLoading();
+    }
+
+    @Override
+    public void showInvalidServerUrlError() {
+        serverUrl.setError(getResources().getString(R.string.error_wrong_server_url));
+    }
+
+    @Override
+    public void showInvalidCredentialsError() {
+        username.setError(getString(R.string.error_wrong_credentials));
+        password.setError(getString(R.string.error_wrong_credentials));
+    }
+
+    @Override
+    public void showUnexpectedError() {
+        Toast.makeText(this, getResources().getString(
+                R.string.error_unexpected_error), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showServerError() {
+        Toast.makeText(this, getResources().getString(
+                R.string.error_internal_server_error), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void navigateToHome() {
+        Intent intent = new Intent(this, HomeActivity.class);
         ActivityCompat.startActivity(this, intent, null);
         overridePendingTransition(
                 R.anim.activity_open_enter,
                 R.anim.activity_open_exit);
         finish();
+
+        // clean-up the component instance, since we don't need it anymore.
+        ((Components) getApplicationContext()).releaseLoginComponent();
     }
 
-    @Override
-    public void showProgress() {
+    /**
+     * Should be called in order to show progressbar.
+     */
+    private void onStartLoading() {
         if (layoutTransitionSlideOut != null) {
             loginViewsContainer.startAnimation(layoutTransitionSlideOut);
         }
 
         loginViewsContainer.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void hideProgress() {
+    private void onFinishLoading() {
         if (layoutTransitionSlideIn != null) {
             loginViewsContainer.startAnimation(layoutTransitionSlideIn);
         }
 
         loginViewsContainer.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void showInvalidServerUrlError() {
-        // stub
-    }
-
-    @Override
-    public void showInvalidCredentialsError() {
-        // stub
-    }
-
-    @Override
-    public void showUnexpectedError() {
-        // stub
-    }
-
-    @Override
-    public void showServerError() {
-
-    }
-
-    @Override
-    public void navigateToHome() {
-        ActivityCompat.startActivity(this, HomeActivity.createIntent(this), null);
-        finish();
-
-        // clean-up the component instance, since we don't need it anymore.
     }
 
     private boolean isAnimationInProgress() {
@@ -353,50 +311,13 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
                 layoutTransitionAnimationSlideOutInProgress;
     }
 
-    /**
-     * Should be called in order to show progressbar.
-     */
-    protected final void onStartLoading() {
-        if (isAnimationInProgress()) {
-            onPostAnimationAction = new OnPostAnimationRunnable(null, this, true);
-        } else {
-            showProgress();
-        }
-    }
-
-    protected final void onFinishLoading() {
-        onFinishLoading(null);
-    }
-
-    /**
-     * Should be called after the loading is complete.
-     */
-    protected final void onFinishLoading(OnAnimationFinishListener listener) {
-        if (isAnimationInProgress()) {
-            onPostAnimationAction = new OnPostAnimationRunnable(listener, this, false);
-            return;
-        }
-
-        hideProgress();
-        if (listener != null) {
-            listener.onFinish();
-        }
-    }
-
-    protected interface OnAnimationFinishListener {
-        void onFinish();
-    }
-
     /* since this runnable is intended to be executed on UI (not main) thread, we should
     be careful and not keep any implicit references to activities */
     private static class OnPostAnimationRunnable implements Runnable {
-        private final OnAnimationFinishListener listener;
         private final LoginActivity loginActivity;
         private final boolean showProgress;
 
-        OnPostAnimationRunnable(OnAnimationFinishListener listener,
-                LoginActivity loginActivity, boolean showProgress) {
-            this.listener = listener;
+        OnPostAnimationRunnable(LoginActivity loginActivity, boolean showProgress) {
             this.loginActivity = loginActivity;
             this.showProgress = showProgress;
         }
@@ -409,10 +330,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
                 } else {
                     loginActivity.hideProgress();
                 }
-            }
-
-            if (listener != null) {
-                listener.onFinish();
             }
         }
 
@@ -439,13 +356,16 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         }
 
         @Override
-        public void startTransition(LayoutTransition transition, ViewGroup container, View view, int type) {
+        public void startTransition(LayoutTransition transition,
+                ViewGroup container, View view, int type) {
             // stub implementation
         }
 
         @Override
-        public void endTransition(LayoutTransition transition, ViewGroup container, View view, int type) {
-            if (LayoutTransition.CHANGE_APPEARING == type || LayoutTransition.CHANGE_DISAPPEARING == type) {
+        public void endTransition(LayoutTransition transition,
+                ViewGroup container, View view, int type) {
+            if (LayoutTransition.CHANGE_APPEARING == type
+                    || LayoutTransition.CHANGE_DISAPPEARING == type) {
                 onPostAnimation();
             }
         }

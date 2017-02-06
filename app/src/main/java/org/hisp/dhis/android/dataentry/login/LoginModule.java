@@ -28,7 +28,7 @@
 
 package org.hisp.dhis.android.dataentry.login;
 
-import org.hisp.dhis.android.dataentry.Inject;
+import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.commons.PerActivity;
 import org.hisp.dhis.android.dataentry.server.ConfigurationRepository;
 import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
@@ -42,8 +42,8 @@ public class LoginModule {
 
     @Provides
     @PerActivity
-    LoginPresenter loginPresenter(Inject inject, SchedulerProvider schedulerProvider,
+    LoginPresenter loginPresenter(Components components, SchedulerProvider schedulerProvider,
             ConfigurationRepository configurationRepository) {
-        return new LoginPresenterImpl(inject, schedulerProvider, configurationRepository);
+        return new LoginPresenterImpl(components, schedulerProvider, configurationRepository);
     }
 }
