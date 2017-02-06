@@ -28,10 +28,41 @@
 
 package org.hisp.dhis.android.dataentry;
 
-public class DhisInstrumentationTestsApp extends DhisApp {
+import android.support.annotation.NonNull;
 
+import org.hisp.dhis.android.core.configuration.ConfigurationModel;
+import org.hisp.dhis.android.dataentry.server.ServerComponent;
+import org.hisp.dhis.android.dataentry.utils.IdlingSchedulerProvider;
+import org.hisp.dhis.android.dataentry.utils.SchedulerModule;
+
+import okhttp3.HttpUrl;
+
+public class DhisInstrumentationTestsApp extends DhisApp {
+    private HttpUrl baseUrl;
+
+    public void overrideBaseUrl(@NonNull HttpUrl baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    @NonNull
     @Override
     protected DaggerAppComponent.Builder prepareAppComponent() {
-        return super.prepareAppComponent().dbModule(new DbModule(null));
+        return super.prepareAppComponent()
+                .dbModule(new DbModule(null))
+                .schedulerModule(new SchedulerModule(new IdlingSchedulerProvider()));
+    }
+
+    @NonNull
+    @Override
+    public ServerComponent createServerComponent(@NonNull ConfigurationModel configuration) {
+        if (baseUrl != null) {
+            // base url set through overrideBaseUrl() should prioritized
+            return super.createServerComponent(
+                    ConfigurationModel.builder()
+                            .serverUrl(baseUrl)
+                            .build());
+        }
+
+        return super.createServerComponent(configuration);
     }
 }

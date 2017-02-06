@@ -28,36 +28,56 @@
 
 package org.hisp.dhis.android.dataentry;
 
-import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationManagerFactory;
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
+import org.hisp.dhis.android.dataentry.server.ConfigurationRepository;
+import org.hisp.dhis.android.dataentry.server.ConfigurationRepositoryImpl;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import hu.supercluster.paperwork.Paperwork;
 
 @Module
-public final class AppModule {
-    private final Application application;
+final class AppModule {
+    private final DhisApp application;
 
-    public AppModule(@NonNull Application application) {
+    AppModule(@NonNull DhisApp application) {
         this.application = application;
     }
 
     @Provides
     @Singleton
-    Context providesContext() {
+    Context context() {
         return application;
     }
 
     @Provides
     @Singleton
-    ConfigurationManager providesConfigurationManager(DbOpenHelper dbOpenHelper) {
+    Components application() {
+        return application;
+    }
+
+    @Provides
+    @Singleton
+    Paperwork paperwork(Context context) {
+        return new Paperwork(context);
+    }
+
+    @Provides
+    @Singleton
+    ConfigurationManager configurationManager(DbOpenHelper dbOpenHelper) {
         return ConfigurationManagerFactory.create(dbOpenHelper);
+    }
+
+    @Provides
+    @Singleton
+    ConfigurationRepository configurationRepository(ConfigurationManager configurationManager) {
+        return new ConfigurationRepositoryImpl(configurationManager);
     }
 }

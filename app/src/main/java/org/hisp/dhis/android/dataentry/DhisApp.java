@@ -31,6 +31,7 @@ package org.hisp.dhis.android.dataentry;
 import android.app.Application;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
@@ -40,93 +41,73 @@ import com.squareup.leakcanary.RefWatcher;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
+import org.hisp.dhis.android.dataentry.commons.PerActivity;
+import org.hisp.dhis.android.dataentry.login.LoginComponent;
+import org.hisp.dhis.android.dataentry.login.LoginModule;
+import org.hisp.dhis.android.dataentry.server.PerServer;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.server.ServerModule;
 import org.hisp.dhis.android.dataentry.utils.CrashReportingTree;
 import org.hisp.dhis.android.dataentry.utils.SchedulerModule;
+import org.hisp.dhis.android.dataentry.utils.SchedulersProviderImpl;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import hu.supercluster.paperwork.Paperwork;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
-// ToDo: Avoid reading / writing to the disk during dagger initialization
-// ToDo: Implement more tests for launcher activity, presenter
-public class DhisApp extends Application {
+public class DhisApp extends Application implements Components {
     private static final String DATABASE_NAME = "dhis.db";
     private static final String GIT_SHA = "gitSha";
     private static final String BUILD_DATE = "buildDate";
 
-    /* Dagger components */
+    @Inject
+    Paperwork paperwork;
+
+    @Inject
+    ConfigurationManager configurationManager;
+
+    @NonNull
+    @Singleton
     AppComponent appComponent;
+
+    @Nullable
+    @PerServer
     ServerComponent serverComponent;
 
-    // LeakCanary reference watcher
+    @Nullable
+    @PerActivity
+    LoginComponent loginComponent;
+
+    @Nullable
     RefWatcher refWatcher;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        // fail early on leaks
-        setUpStrictMode();
+        setUpAppComponent();
+        setUpServerComponent();
 
-        appComponent = prepareAppComponent().build();
-        ConfigurationManager configurationManager = appComponent.configurationManager();
-
-        // If there is no configuration, we cannot setup D2 instance
-        ConfigurationModel configuration = configurationManager.get();
-        if (configuration != null) {
-            serverComponent = appComponent.plus(new ServerModule(configuration));
-        }
-
-        // RefWatcher which can be used in debug
-        // builds to detect leaks
-        refWatcher = setUpLeakCanary();
-
-        // Logging and Crash reporting tools.
-        Paperwork paperwork = setUpPaperwork();
-        setUpFabric(paperwork);
+        setUpLeakCanary();
+        setUpFabric();
         setUpTimber();
+
+        // do not allow to do work on main thread
+        setUpStrictMode();
     }
 
-    protected DaggerAppComponent.Builder prepareAppComponent() {
-        return DaggerAppComponent.builder()
-                .dbModule(new DbModule(DATABASE_NAME))
-                .appModule(new AppModule(this))
-                .schedulerModule(new SchedulerModule());
-    }
-
-    public RefWatcher refWatcher() {
-        return refWatcher;
-    }
-
-    public AppComponent appComponent() {
-        return appComponent;
-    }
-
-    public ServerComponent serverComponent() {
-        return serverComponent;
-    }
-
-    public ServerComponent serverComponent(@NonNull ConfigurationModel configuration) {
-        return (serverComponent = appComponent.plus(new ServerModule(configuration)));
-    }
-
-    @NonNull
-    private Paperwork setUpPaperwork() {
-        return new Paperwork(this);
-    }
-
-    @NonNull
-    private RefWatcher setUpLeakCanary() {
+    private void setUpLeakCanary() {
         if (BuildConfig.DEBUG) {
-            return LeakCanary.install(this);
+            refWatcher = LeakCanary.install(this);
         } else {
-            return RefWatcher.DISABLED;
+            refWatcher = RefWatcher.DISABLED;
         }
     }
 
-    private void setUpFabric(@NonNull Paperwork paperwork) {
+    private void setUpFabric() {
         if (BuildConfig.DEBUG) {
             // Set up Crashlytics, disabled for debug builds
             Crashlytics crashlyticsKit = new Crashlytics.Builder()
@@ -142,7 +123,7 @@ public class DhisApp extends Application {
             crashlytics.core.setString(GIT_SHA, paperwork.get(GIT_SHA));
             crashlytics.core.setString(BUILD_DATE, paperwork.get(BUILD_DATE));
 
-            Fabric.with(this, new Crashlytics(), new Answers());
+            Fabric.with(this, crashlytics, new Answers());
         }
     }
 
@@ -166,5 +147,76 @@ public class DhisApp extends Application {
                     .penaltyLog()
                     .build());
         }
+    }
+
+    private void setUpAppComponent() {
+        appComponent = prepareAppComponent().build();
+        appComponent.inject(this);
+    }
+
+    private void setUpServerComponent() {
+        ConfigurationModel configuration = configurationManager.get();
+        if (configuration != null) {
+            serverComponent = appComponent.plus(new ServerModule(configuration));
+        }
+    }
+
+    public RefWatcher refWatcher() {
+        return refWatcher;
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // App component
+    ////////////////////////////////////////////////////////////////////////
+
+    @NonNull
+    protected DaggerAppComponent.Builder prepareAppComponent() {
+        return DaggerAppComponent.builder()
+                .dbModule(new DbModule(DATABASE_NAME))
+                .appModule(new AppModule(this))
+                .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()));
+    }
+
+    @NonNull
+    @Override
+    public AppComponent appComponent() {
+        return appComponent;
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // Login component
+    ////////////////////////////////////////////////////////////////////////
+
+    @NonNull
+    @Override
+    public LoginComponent createLoginComponent() {
+        return (loginComponent = appComponent.plus(new LoginModule()));
+    }
+
+    @Nullable
+    @Override
+    public LoginComponent loginComponent() {
+        return loginComponent;
+    }
+
+    @Override
+    public void releaseLoginComponent() {
+        loginComponent = null;
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // Server component
+    ////////////////////////////////////////////////////////////////////////
+
+    @NonNull
+    @Override
+    public ServerComponent createServerComponent(@NonNull ConfigurationModel configuration) {
+        return (serverComponent = appComponent.plus(new ServerModule(configuration)));
+    }
+
+    @Nullable
+    @Override
+    public ServerComponent serverComponent() {
+        return serverComponent;
     }
 }

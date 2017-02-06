@@ -34,13 +34,14 @@ import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import org.hisp.dhis.android.core.configuration.ConfigurationManager;
-import org.hisp.dhis.android.dataentry.DhisApp;
+import org.hisp.dhis.android.core.configuration.ConfigurationModel;
+import org.hisp.dhis.android.dataentry.DhisInstrumentationTestsApp;
 import org.hisp.dhis.android.dataentry.login.LoginActivity;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import okhttp3.HttpUrl;
 
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
@@ -51,13 +52,6 @@ public class LauncherViewTests {
     @Rule
     public ActivityTestRule<LauncherActivity> launcherViewRule =
             new ActivityTestRule<>(LauncherActivity.class, true, false);
-
-    private ConfigurationManager configurationManager;
-
-    @Before
-    public void setUp() throws Exception {
-        configurationManager = getApp().appComponent().configurationManager();
-    }
 
     @Test
     public void launcherView_shouldNavigateToLoginView_ifServerIsNotConfigured() {
@@ -71,8 +65,10 @@ public class LauncherViewTests {
 
     @Test
     public void launcherView_shouldNavigateToLoginView_ifUserIsNotSignedIn() {
-        // configure sdk to point to fake server url
-        getApp().serverComponent(configurationManager.save("https://play.dhis2.org/demo/"));
+        ConfigurationModel configuration = ConfigurationModel.builder()
+                .serverUrl(HttpUrl.parse("https://play.dhis2.org/demo/"))
+                .build();
+        app().createServerComponent(configuration);
 
         Intents.init();
 
@@ -82,7 +78,8 @@ public class LauncherViewTests {
         Intents.release();
     }
 
-    private DhisApp getApp() {
-        return ((DhisApp) InstrumentationRegistry.getTargetContext().getApplicationContext());
+    private DhisInstrumentationTestsApp app() {
+        return ((DhisInstrumentationTestsApp) InstrumentationRegistry
+                .getTargetContext().getApplicationContext());
     }
 }

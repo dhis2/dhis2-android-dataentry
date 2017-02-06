@@ -28,24 +28,29 @@
 
 package org.hisp.dhis.android.dataentry.login;
 
-import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
 
 import org.hisp.dhis.android.dataentry.commons.View;
 
 interface LoginView extends View {
+    @UiThread
     void showProgress();
 
-    void hideProgress(@NonNull OnProgressFinishedListener listener);
+    @UiThread
+    void hideProgress();
 
-    void showServerError(@NonNull String message);
+    @UiThread
+    void showInvalidServerUrlError();
 
-    void showInvalidCredentialsError(@NonNull String message);
+    @UiThread
+    void showInvalidCredentialsError();
 
-    void showUnexpectedError(@NonNull String message);
+    @UiThread
+    void showUnexpectedError();
 
+    @UiThread
+    void showServerError();
+
+    @UiThread
     void navigateToHome();
-
-    interface OnProgressFinishedListener {
-        void onProgressFinished();
-    }
 }

@@ -31,11 +31,11 @@ package org.hisp.dhis.android.dataentry.launcher;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import org.hisp.dhis.android.dataentry.AppComponent;
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.home.HomeActivity;
 import org.hisp.dhis.android.dataentry.login.LoginActivity;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 
@@ -79,6 +79,7 @@ public class LauncherActivity extends AppCompatActivity implements LauncherView 
 
     @Override
     public void navigateToHomeView() {
-        Toast.makeText(this, "navigateToHomeView()", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this, HomeActivity.class));
+        finish();
     }
 }

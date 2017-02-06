@@ -169,8 +169,10 @@ dependencies {
 
     // Spoon client which allows to capture screenshots during instrumentation tests
     androidTestCompile "com.squareup.spoon:spoon-client:${libraries.spoon}"
+    androidTestCompile "com.squareup.okhttp3:mockwebserver:${libraries.okhttp}"
     androidTestCompile "org.mockito:mockito-android:${libraries.mockito}"
 
+    androidTestCompile "com.android.support.test.espresso:espresso-idling-resource:${libraries.espresso}"
     androidTestCompile "com.android.support.test.espresso:espresso-core:${libraries.espresso}"
     androidTestCompile "com.android.support.test.espresso:espresso-intents:${libraries.espresso}"
     androidTestCompile("com.android.support.test.espresso:espresso-contrib:${libraries.espresso}") {

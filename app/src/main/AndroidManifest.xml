@@ -19,7 +19,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".login.LoginActivity"/>
+        <activity
+            android:name=".login.LoginActivity"
+            android:theme="@style/AppTheme.PrimaryColorBackground"/>
+
+        <activity
+            android:name=".home.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"

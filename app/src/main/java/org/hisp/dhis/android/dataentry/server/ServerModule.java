@@ -51,7 +51,7 @@ public class ServerModule {
 
     @Provides
     @PerServer
-    public D2 sdkInstance(DbOpenHelper openHelper, OkHttpClient client) {
+    D2 sdk(DbOpenHelper openHelper, OkHttpClient client) {
         return new D2.Builder()
                 .configuration(configuration)
                 .dbOpenHelper(openHelper)
@@ -75,7 +75,7 @@ public class ServerModule {
 
     @Provides
     @PerServer
-    ConfigurationRepository configurationRepository(D2 d2) {
-        return new ConfigurationRepositoryImpl(d2);
+    UserManager configurationRepository(D2 d2) {
+        return new UserManagerImpl(d2);
     }
 }

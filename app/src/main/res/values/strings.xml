@@ -37,9 +37,28 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="log_in">Log in</string>
-    <string name="confirm_user">Confirm user</string>
-    <string name="clear_and_logout">Clear and log out</string>
     <string name="two">2</string>
+
+    <!-- Warnings and error messages -->
+    <string name="error_wrong_server_url">Wrong server url</string>
+    <string name="error_wrong_credentials">Wrong credentials</string>
+    <string name="error_unexpected_error">Unexpected error</string>
+    <string name="error_internal_server_error">Internal server error</string>
+
+    <!-- HomeActivity -->
+    <string name="drawer_item_help">Help</string>
+    <string name="drawer_item_apps">Apps</string>
+    <string name="drawer_item_information">Information</string>
+    <string name="drawer_item_other">Other</string>
+    <string name="drawer_item_status">Status</string>
+    <string name="drawer_item_profile">Profile</string>
+    <string name="drawer_item_settings">Settings</string>
+    <string name="drawer_item_dashboard">Dashboard</string>
+    <string name="drawer_item_data_capture">Data capture</string>
+    <string name="drawer_item_event_capture">Event capture</string>
+    <string name="drawer_item_tracker_capture">Tracker capture</string>
+    <string name="drawer_item_tracker_capture_reports">BID reports</string>
+    <string name="drawer_item_synchronized">Synchronized: %s</string>
 
     <!-- Start Section: Forms -->
     <!-- Input hints -->
@@ -57,8 +76,12 @@
     <string name="pick_date">Pick date</string>
     <!-- End section: Forms -->
 
-    <!-- Stub strings. These should generally be overridden in app:strings.xml -->
-    <string name="stub_description">Description</string>
+    <!-- SyncDateWrapper strings: -->
+    <string name="date_format">dd/MM/yy HH:mm</string>
+    <string name="never">never</string>
+    <string name="min_ago">m ago</string>
+    <string name="hours">h</string>
+    <string name="now">now</string>
 
     <!-- Fonts  -->
     <string name="font_name_regular">Roboto-Regular.ttf</string>
