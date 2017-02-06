@@ -37,6 +37,7 @@ import io.reactivex.Observable;
 import okhttp3.HttpUrl;
 
 public class ConfigurationRepositoryImpl implements ConfigurationRepository {
+    @NonNull
     private final ConfigurationManager configurationManager;
 
     public ConfigurationRepositoryImpl(@NonNull ConfigurationManager configurationManager) {
@@ -66,6 +67,6 @@ public class ConfigurationRepositoryImpl implements ConfigurationRepository {
     @NonNull
     @Override
     public Observable<Integer> remove() {
-        return Observable.defer(() -> Observable.fromCallable(configurationManager::remove));
+        return Observable.defer(() -> Observable.fromCallable(() -> configurationManager.remove()));
     }
 }

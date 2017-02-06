@@ -36,7 +36,6 @@ import org.hisp.dhis.android.core.user.User;
 import io.reactivex.Observable;
 import retrofit2.Response;
 
-// ToDo: tests
 class UserManagerImpl implements UserManager {
     private final D2 d2;
 

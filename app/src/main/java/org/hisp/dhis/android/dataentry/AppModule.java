@@ -59,7 +59,7 @@ final class AppModule {
 
     @Provides
     @Singleton
-    Inject application() {
+    Components application() {
         return application;
     }
 
