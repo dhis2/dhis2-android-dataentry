@@ -52,6 +52,7 @@ public class DhisInstrumentationTestsApp extends DhisApp {
                 .schedulerModule(new SchedulerModule(new IdlingSchedulerProvider()));
     }
 
+    @NonNull
     @Override
     public ServerComponent createServerComponent(@NonNull ConfigurationModel configuration) {
         if (baseUrl != null) {
