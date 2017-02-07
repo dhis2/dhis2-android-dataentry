@@ -34,10 +34,12 @@ import android.support.annotation.NonNull;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
 
+import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
 
 import rx.schedulers.Schedulers;
 
+// TODO: tests
 public class SqlBriteDatabaseAdapter implements DatabaseAdapter {
 
     private final BriteDatabase sqlBriteDatabase;
