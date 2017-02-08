@@ -31,9 +31,12 @@ package org.hisp.dhis.android.dataentry;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import com.squareup.sqlbrite.SqlBrite;
+
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
 import org.hisp.dhis.android.dataentry.database.SqlBriteDatabaseAdapter;
+import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 
 import javax.inject.Singleton;
 
@@ -50,7 +53,10 @@ class DbModule {
 
     @Provides
     @Singleton
-    DatabaseAdapter providesDatabaseAdapter(Context context) {
-        return new SqlBriteDatabaseAdapter(new DbOpenHelper(context, databaseName));
+    DatabaseAdapter databaseAdapter(Context context, SchedulerProvider schedulerProvider) {
+        return new SqlBriteDatabaseAdapter(
+                new DbOpenHelper(context, databaseName),
+                new SqlBrite.Builder().build(),
+                schedulerProvider);
     }
 }

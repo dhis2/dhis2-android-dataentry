@@ -56,6 +56,13 @@ public class IdlingSchedulerProvider implements SchedulerProvider {
 
     @NonNull
     @Override
+    public rx.Scheduler legacyIo() {
+        // TODO: return idling scheduler
+        return rx.schedulers.Schedulers.io();
+    }
+
+    @NonNull
+    @Override
     public Scheduler io() {
         return io;
     }

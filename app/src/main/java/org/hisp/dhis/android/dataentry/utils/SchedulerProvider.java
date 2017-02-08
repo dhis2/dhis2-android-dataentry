@@ -37,6 +37,9 @@ public interface SchedulerProvider {
     Scheduler computation();
 
     @NonNull
+    rx.Scheduler legacyIo();
+
+    @NonNull
     Scheduler io();
 
     @NonNull

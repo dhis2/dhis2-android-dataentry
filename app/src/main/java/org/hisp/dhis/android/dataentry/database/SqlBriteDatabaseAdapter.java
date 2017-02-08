@@ -36,8 +36,7 @@ import com.squareup.sqlbrite.SqlBrite;
 
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
-
-import rx.schedulers.Schedulers;
+import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 
 // TODO: tests
 public class SqlBriteDatabaseAdapter implements DatabaseAdapter {
@@ -45,9 +44,19 @@ public class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     private final BriteDatabase sqlBriteDatabase;
     private BriteDatabase.Transaction transaction;
 
-    public SqlBriteDatabaseAdapter(@NonNull DbOpenHelper dbOpenHelper) {
-        SqlBrite sqlBrite = new SqlBrite.Builder().build();
-        sqlBriteDatabase = sqlBrite.wrapDatabaseHelper(dbOpenHelper, Schedulers.io());
+    public SqlBriteDatabaseAdapter(@NonNull DbOpenHelper dbOpenHelper, @NonNull SqlBrite sqlBrite,
+                                   @NonNull SchedulerProvider schedulerProvider) {
+        if (dbOpenHelper == null) {
+            throw new IllegalArgumentException("dbOpenHelper == null");
+        }
+        if (sqlBrite == null) {
+            throw new IllegalArgumentException("sqlBrite == null");
+        }
+        if (schedulerProvider == null) {
+            throw new IllegalArgumentException("schedulerProvider == null");
+        }
+        
+        sqlBriteDatabase = sqlBrite.wrapDatabaseHelper(dbOpenHelper, schedulerProvider.legacyIo());
     }
 
     @Override
