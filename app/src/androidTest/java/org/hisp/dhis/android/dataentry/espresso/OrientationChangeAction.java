@@ -29,6 +29,7 @@ package org.hisp.dhis.android.dataentry.espresso;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
 import android.view.View;
@@ -60,7 +61,15 @@ public class OrientationChangeAction implements ViewAction {
     @Override
     public void perform(UiController uiController, View view) {
         uiController.loopMainThreadUntilIdle();
-        ((Activity) view.getContext()).setRequestedOrientation(orientation);
+        Activity activity;
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            activity = ((Activity) view.getContext());
+        } else {
+            activity = (Activity) view.findViewById(android.R.id.content).getContext();
+        }
+
+        activity.setRequestedOrientation(orientation);
     }
 
     public static ViewAction orientationLandscape() {
