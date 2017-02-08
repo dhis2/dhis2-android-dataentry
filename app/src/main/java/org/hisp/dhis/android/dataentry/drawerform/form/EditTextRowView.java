@@ -103,7 +103,8 @@ public final class EditTextRowView implements RowView {
             hintCache.append(R.string.enter_number, context.getString(R.string.enter_number));
             hintCache.append(R.string.enter_integer, context.getString(R.string.enter_integer));
             hintCache.append(R.string.enter_positive_integer, context.getString(R.string.enter_positive_integer));
-            hintCache.append(R.string.enter_positive_integer_or_zero, context.getString(R.string.enter_positive_integer_or_zero));
+            hintCache.append(R.string.enter_positive_integer_or_zero,
+                    context.getString(R.string.enter_positive_integer_or_zero));
             hintCache.append(R.string.enter_negative_integer, context.getString(R.string.enter_negative_integer));
 
             onFocusChangeListener = new OnFocusChangeListener(textInputLayout, editText);
