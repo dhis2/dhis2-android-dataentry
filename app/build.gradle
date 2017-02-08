@@ -171,6 +171,8 @@ dependencies {
     testCompile "junit:junit:${libraries.junit}"
     testCompile "org.assertj:assertj-core:${libraries.assertj}"
     testCompile "org.mockito:mockito-core:${libraries.mockito}"
+    testCompile "org.powermock:powermock-module-junit4:${libraries.powermock}"
+    testCompile "org.powermock:powermock-api-mockito2:${libraries.powermock}"
 
     // Spoon client which allows to capture screenshots during instrumentation tests
     androidTestCompile "com.squareup.spoon:spoon-client:${libraries.spoon}"
