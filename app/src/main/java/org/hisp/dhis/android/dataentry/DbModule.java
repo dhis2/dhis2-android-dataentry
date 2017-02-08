@@ -31,7 +31,9 @@ package org.hisp.dhis.android.dataentry;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
+import org.hisp.dhis.android.dataentry.database.SqlBriteDatabaseAdapter;
 
 import javax.inject.Singleton;
 
@@ -48,7 +50,7 @@ public class DbModule {
 
     @Provides
     @Singleton
-    DbOpenHelper providesDbOpenHelper(Context context) {
-        return new DbOpenHelper(context, databaseName);
+    DatabaseAdapter providesDatabaseAdapter(Context context) {
+        return new SqlBriteDatabaseAdapter(new DbOpenHelper(context, databaseName));
     }
 }

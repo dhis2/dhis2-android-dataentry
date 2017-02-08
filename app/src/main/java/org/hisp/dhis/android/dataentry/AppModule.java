@@ -34,7 +34,7 @@ import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationManagerFactory;
-import org.hisp.dhis.android.core.data.database.DbOpenHelper;
+import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 
 import javax.inject.Singleton;
 
@@ -57,7 +57,7 @@ public final class AppModule {
 
     @Provides
     @Singleton
-    ConfigurationManager providesConfigurationManager(DbOpenHelper dbOpenHelper) {
-        return ConfigurationManagerFactory.create(dbOpenHelper);
+    ConfigurationManager providesConfigurationManager(DatabaseAdapter databaseAdapter) {
+        return ConfigurationManagerFactory.create(databaseAdapter);
     }
 }
