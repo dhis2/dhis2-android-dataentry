@@ -126,10 +126,6 @@ android {
             ext.enableCrashlytics = true
         }
     }
-
-    testOptions {
-        unitTests.returnDefaultValues = true
-    }
 }
 
 dependencies {
