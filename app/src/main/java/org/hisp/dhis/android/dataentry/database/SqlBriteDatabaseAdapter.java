@@ -57,7 +57,6 @@ public class SqlBriteDatabaseAdapter implements DatabaseAdapter {
 
     @Override
     public Cursor query(String sql, String... selectionArgs) {
-
         return sqlBriteDatabase.query(sql, selectionArgs);
     }
 
