@@ -28,9 +28,6 @@
 
 package org.hisp.dhis.android.dataentry.server;
 
-import org.hisp.dhis.android.dataentry.login.LoginComponent;
-import org.hisp.dhis.android.dataentry.login.LoginModule;
-
 import dagger.Subcomponent;
 
 @PerServer
@@ -40,8 +37,5 @@ import dagger.Subcomponent;
         }
 )
 public interface ServerComponent {
-    // exposing dependency for testing
-    ConfigurationRepository configurationRepository();
-
-    LoginComponent plus(LoginModule loginModule);
+    UserManager userManager();
 }

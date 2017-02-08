@@ -26,26 +26,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.utils;
+package org.hisp.dhis.android.dataentry;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import javax.inject.Singleton;
+import org.hisp.dhis.android.core.configuration.ConfigurationModel;
+import org.hisp.dhis.android.dataentry.login.LoginComponent;
+import org.hisp.dhis.android.dataentry.server.ServerComponent;
 
-import dagger.Module;
-import dagger.Provides;
+public interface Components {
 
-@Module
-public class SchedulerModule {
-    private final SchedulerProvider schedulerProvider;
+    @NonNull
+    AppComponent appComponent();
 
-    public SchedulerModule(@NonNull SchedulerProvider schedulerProvider) {
-        this.schedulerProvider = schedulerProvider;
-    }
+    ///////////////////////////////////////////////////////////////////
+    // Login component
+    ///////////////////////////////////////////////////////////////////
 
-    @Provides
-    @Singleton
-    SchedulerProvider schedulerProvider() {
-        return schedulerProvider;
-    }
+    @Nullable
+    LoginComponent loginComponent();
+
+    @NonNull
+    LoginComponent createLoginComponent();
+
+    void releaseLoginComponent();
+
+    ////////////////////////////////////////////////////////////////////
+    // Server component
+    ////////////////////////////////////////////////////////////////////
+
+    @Nullable
+    ServerComponent serverComponent();
+
+    @NonNull
+    ServerComponent createServerComponent(@NonNull ConfigurationModel configuration);
 }

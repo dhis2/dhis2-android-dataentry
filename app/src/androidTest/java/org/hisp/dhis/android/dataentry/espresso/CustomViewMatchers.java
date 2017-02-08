@@ -28,9 +28,11 @@
 
 package org.hisp.dhis.android.dataentry.espresso;
 
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.view.View;
+import android.widget.TextView;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -40,6 +42,7 @@ public final class CustomViewMatchers {
         // no instances
     }
 
+    @NonNull
     public static Matcher<View> withHint(final Matcher<String> hintMatcher) {
         return new BoundedMatcher<View, TextInputLayout>(TextInputLayout.class) {
             @Override
@@ -51,6 +54,28 @@ public final class CustomViewMatchers {
             @Override
             protected boolean matchesSafely(TextInputLayout item) {
                 return hintMatcher.matches(item.getHint());
+            }
+        };
+    }
+
+    /**
+     * Returns a matcher that matches {@link TextView}s based on text property value.
+     *
+     * @param stringMatcher {@link Matcher} of {@link String} with text to match
+     */
+    @NonNull
+    public static Matcher<View> withErrorText(final Matcher<String> stringMatcher) {
+        return new BoundedMatcher<View, TextView>(TextView.class) {
+
+            @Override
+            public void describeTo(final Description description) {
+                description.appendText("With error text: ");
+                stringMatcher.describeTo(description);
+            }
+
+            @Override
+            public boolean matchesSafely(final TextView textView) {
+                return stringMatcher.matches(textView.getError().toString());
             }
         };
     }

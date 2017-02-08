@@ -25,27 +25,49 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package org.hisp.dhis.android.dataentry.espresso;
 
-package org.hisp.dhis.android.dataentry.utils;
+import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.support.test.espresso.UiController;
+import android.support.test.espresso.ViewAction;
+import android.view.View;
 
-import android.support.annotation.NonNull;
+import org.hamcrest.Matcher;
 
-import javax.inject.Singleton;
+import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 
-import dagger.Module;
-import dagger.Provides;
+/**
+ * An Espresso ViewAction that changes the orientation of the screen
+ */
+public class OrientationChangeAction implements ViewAction {
+    private final int orientation;
 
-@Module
-public class SchedulerModule {
-    private final SchedulerProvider schedulerProvider;
-
-    public SchedulerModule(@NonNull SchedulerProvider schedulerProvider) {
-        this.schedulerProvider = schedulerProvider;
+    private OrientationChangeAction(int orientation) {
+        this.orientation = orientation;
     }
 
-    @Provides
-    @Singleton
-    SchedulerProvider schedulerProvider() {
-        return schedulerProvider;
+    @Override
+    public Matcher<View> getConstraints() {
+        return isRoot();
+    }
+
+    @Override
+    public String getDescription() {
+        return "change orientation to " + orientation;
+    }
+
+    @Override
+    public void perform(UiController uiController, View view) {
+        uiController.loopMainThreadUntilIdle();
+        ((Activity) view.getContext()).setRequestedOrientation(orientation);
+    }
+
+    public static ViewAction orientationLandscape() {
+        return new OrientationChangeAction(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    }
+
+    public static ViewAction orientationPortrait() {
+        return new OrientationChangeAction(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 }

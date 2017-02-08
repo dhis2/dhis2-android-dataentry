@@ -26,26 +26,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.utils;
+package org.hisp.dhis.android.dataentry.server;
 
 import android.support.annotation.NonNull;
 
-import javax.inject.Singleton;
+import org.hisp.dhis.android.core.user.User;
 
-import dagger.Module;
-import dagger.Provides;
+import io.reactivex.Observable;
+import retrofit2.Response;
 
-@Module
-public class SchedulerModule {
-    private final SchedulerProvider schedulerProvider;
+public interface UserManager {
 
-    public SchedulerModule(@NonNull SchedulerProvider schedulerProvider) {
-        this.schedulerProvider = schedulerProvider;
-    }
+    @NonNull
+    Observable<Response<User>> logIn(@NonNull String username, @NonNull String password);
 
-    @Provides
-    @Singleton
-    SchedulerProvider schedulerProvider() {
-        return schedulerProvider;
-    }
+    @NonNull
+    Observable<Boolean> isUserLoggedIn();
 }

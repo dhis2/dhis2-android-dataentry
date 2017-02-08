@@ -99,6 +99,10 @@ android {
         // excluding duplicate license files
         // from jackson modules
         exclude "META-INF/LICENSE"
+
+        // excluding duplicate rxjava properties file
+        // see https://github.com/ReactiveX/RxJava/issues/4445#issuecomment-243591879
+        exclude 'META-INF/rxjava.properties'
     }
 
     buildTypes {
@@ -177,7 +181,7 @@ dependencies {
     androidTestCompile "com.squareup.okhttp3:mockwebserver:${libraries.okhttp}"
     androidTestCompile "org.mockito:mockito-android:${libraries.mockito}"
 
-    compile "com.android.support.test.espresso:espresso-idling-resource:${libraries.espresso}"
+    androidTestCompile "com.android.support.test.espresso:espresso-idling-resource:${libraries.espresso}"
     androidTestCompile "com.android.support.test.espresso:espresso-core:${libraries.espresso}"
     androidTestCompile "com.android.support.test.espresso:espresso-intents:${libraries.espresso}"
     androidTestCompile("com.android.support.test.espresso:espresso-contrib:${libraries.espresso}") {

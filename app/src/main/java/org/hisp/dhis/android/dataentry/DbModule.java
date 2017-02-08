@@ -41,10 +41,10 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class DbModule {
+class DbModule {
     private final String databaseName;
 
-    public DbModule(@Nullable String databaseName) {
+    DbModule(@Nullable String databaseName) {
         this.databaseName = databaseName;
     }
 

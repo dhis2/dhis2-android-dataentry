@@ -29,23 +29,40 @@
 package org.hisp.dhis.android.dataentry.utils;
 
 import android.support.annotation.NonNull;
+import android.support.test.espresso.Espresso;
 
-import javax.inject.Singleton;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
-import dagger.Module;
-import dagger.Provides;
+public class IdlingSchedulerProvider implements SchedulerProvider {
+    private final DelegatingIdlingResourceScheduler computation;
+    private final DelegatingIdlingResourceScheduler io;
 
-@Module
-public class SchedulerModule {
-    private final SchedulerProvider schedulerProvider;
+    public IdlingSchedulerProvider() {
+        computation = new DelegatingIdlingResourceScheduler(
+                "RxJava computation scheduler", Schedulers.computation());
+        io = new DelegatingIdlingResourceScheduler(
+                "RxJava I/O scheduler", Schedulers.io());
 
-    public SchedulerModule(@NonNull SchedulerProvider schedulerProvider) {
-        this.schedulerProvider = schedulerProvider;
+        Espresso.registerIdlingResources(computation, io);
     }
 
-    @Provides
-    @Singleton
-    SchedulerProvider schedulerProvider() {
-        return schedulerProvider;
+    @NonNull
+    @Override
+    public Scheduler computation() {
+        return computation;
+    }
+
+    @NonNull
+    @Override
+    public Scheduler io() {
+        return io;
+    }
+
+    @NonNull
+    @Override
+    public Scheduler ui() {
+        return AndroidSchedulers.mainThread();
     }
 }

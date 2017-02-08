@@ -30,6 +30,8 @@ package org.hisp.dhis.android.dataentry.login;
 
 import android.content.res.Resources;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -45,12 +47,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.net.HttpURLConnection;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 
+// ToDo: check that progress bar is visible
 @RunWith(AndroidJUnit4.class)
 public class LoginViewTests {
     private static final String SERVER_URL = "http://play.dhis2.org/demo";
@@ -61,18 +68,20 @@ public class LoginViewTests {
     public ActivityTestRule<LoginActivity> loginViewRule =
             new ActivityTestRule<>(LoginActivity.class);
 
+    private Resources resources;
     private MockWebServer mockWebServer;
     private LoginRobot loginRobot;
 
     @Before
     public void setUp() throws Exception {
-        // initialize web server which will be
-        // intercepting all requests
+        resources = (InstrumentationRegistry.getTargetContext()).getResources();
+
         mockWebServer = new MockWebServer();
         mockWebServer.start();
 
-        ((DhisInstrumentationTestsApp) InstrumentationRegistry.getTargetContext().getApplicationContext())
-                .setBaseUrl(mockWebServer.url("/"));
+        DhisInstrumentationTestsApp dhisApp = ((DhisInstrumentationTestsApp)
+                InstrumentationRegistry.getTargetContext().getApplicationContext());
+        dhisApp.overrideBaseUrl(mockWebServer.url("/"));
 
         loginRobot = new LoginRobot();
     }
@@ -84,8 +93,6 @@ public class LoginViewTests {
 
     @Test
     public void hintsShouldBeDisplayedWhenEmpty() {
-        Resources resources = (InstrumentationRegistry.getTargetContext()).getResources();
-
         // Note: this tests have to be adapted in case
         // if translations are added to the app
         loginRobot
@@ -97,7 +104,7 @@ public class LoginViewTests {
 
     @Test
     public void enableLoginButtonOnlyWhenAllFieldsAreFilled() {
-        Spoon.screenshot(loginViewRule.getActivity(), "initial_state");
+        Spoon.screenshot(loginViewRule.getActivity(), "login_initial_state");
 
         // check if button is enabled when all fields are present
         loginRobot.typeServerUrl(SERVER_URL)
@@ -112,11 +119,22 @@ public class LoginViewTests {
                 .eraseUsername().isLoginButtonDisabled().typeUsername(USERNAME)
                 .erasePassword().isLoginButtonDisabled().typePassword(PASSWORD)
                 .isLoginButtonEnabled();
+
+        // perform configuration change and make sure that
+        // views are in correct state
+        loginRobot.rotateToLandscape()
+                .checkServerUrl(SERVER_URL)
+                .checkUsername(USERNAME)
+                .checkPassword(PASSWORD)
+                .isLoginButtonEnabled();
+
         Spoon.screenshot(loginViewRule.getActivity(), "login_button_should_be_enabled");
     }
 
     @Test
     public void loginShouldSuccessfullyNavigateToHome() {
+        Spoon.screenshot(loginViewRule.getActivity(), "login_initial_state");
+
         MockResponse mockResponse = new MockResponse()
                 .setBody("{\n" +
                         "\n" +
@@ -157,16 +175,53 @@ public class LoginViewTests {
                         "    ]\n" +
                         "\n" +
                         "}");
+        mockResponse.setBodyDelay(2, TimeUnit.SECONDS);
         mockWebServer.enqueue(mockResponse);
 
         Intents.init();
+
+        List<IdlingResource> idlingResources = muteIdlingResources();
         loginRobot.typeServerUrl(SERVER_URL)
                 .typeUsername(USERNAME)
                 .typePassword(PASSWORD)
-                .clickOnLoginButton();
+                .clickOnLoginButton()
+                .rotateToLandscape();
+        unmuteIdlingResources(idlingResources);
 
         // if login is successful, home activity should be started
         intended(hasComponent(HomeActivity.class.getName()));
         Intents.release();
+
+        Spoon.screenshot(loginViewRule.getActivity(), "logged_in_state");
+    }
+
+    @Test
+    public void loginShouldShowWrongUsernameMessageIf401() {
+        Spoon.screenshot(loginViewRule.getActivity(), "login_initial_state");
+
+        MockResponse mockResponse = new MockResponse();
+        mockResponse.setResponseCode(HttpURLConnection.HTTP_UNAUTHORIZED);
+        mockWebServer.enqueue(mockResponse);
+
+        loginRobot.typeServerUrl(SERVER_URL)
+                .typeUsername(USERNAME)
+                .typePassword(PASSWORD)
+                .clickOnLoginButton()
+                .checkUsernameError(resources.getString(R.string.error_wrong_credentials))
+                .checkPasswordError(resources.getString(R.string.error_wrong_credentials));
+
+        Spoon.screenshot(loginViewRule.getActivity(), "wrong_server_url_state");
+    }
+
+    private List<IdlingResource> muteIdlingResources() {
+        List<IdlingResource> idlingResources = Espresso.getIdlingResources();
+        Espresso.unregisterIdlingResources(idlingResources
+                .toArray(new IdlingResource[idlingResources.size()]));
+        return idlingResources;
+    }
+
+    private void unmuteIdlingResources(List<IdlingResource> idlingResources) {
+        Espresso.registerIdlingResources(idlingResources
+                .toArray(new IdlingResource[idlingResources.size()]));
     }
 }
