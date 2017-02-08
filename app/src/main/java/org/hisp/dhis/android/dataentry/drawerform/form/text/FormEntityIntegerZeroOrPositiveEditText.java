@@ -26,26 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.drawerform.form;
+package org.hisp.dhis.android.dataentry.drawerform.form.text;
 
 import org.hisp.dhis.android.dataentry.R;
 
-public class FormEntityIntegerNegativeEditText extends FormEntityIntegerEditText {
+public class FormEntityIntegerZeroOrPositiveEditText extends FormEntityIntegerEditText {
 
-    public FormEntityIntegerNegativeEditText(String id, String label, String hint, Object tag) {
+    public FormEntityIntegerZeroOrPositiveEditText(String id, String label, String hint, Object tag) {
         super(id, label, hint, tag);
     }
 
-    public FormEntityIntegerNegativeEditText(String id, String label) {
+    public FormEntityIntegerZeroOrPositiveEditText(String id, String label) {
         super(id, label);
     }
 
-    public FormEntityIntegerNegativeEditText(String id, String label, Object tag) {
+    public FormEntityIntegerZeroOrPositiveEditText(String id, String label, Object tag) {
         super(id, label, tag);
     }
 
     @Override
     public int getHintResourceId() {
-        return R.string.enter_negative_integer;
+        return R.string.enter_positive_integer_or_zero;
     }
 }

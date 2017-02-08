@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.drawerform.form;
+package org.hisp.dhis.android.dataentry.drawerform.form.text;
 
 import org.hisp.dhis.android.dataentry.R;
 

@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.drawerform.form.checkbox;
+package org.hisp.dhis.android.dataentry.drawerform.form.text.checkbox;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -39,9 +39,6 @@ import android.widget.TextView;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.drawerform.form.common.FormEntity;
 import org.hisp.dhis.android.dataentry.drawerform.form.common.RowView;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class CheckBoxRowView implements RowView {
     private static final String TRUE = "true";
@@ -63,18 +60,16 @@ public class CheckBoxRowView implements RowView {
         ((CheckBoxRowViewHolder) viewHolder).update(entity);
     }
 
-    protected static class CheckBoxRowViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.checkbox_row_checkbox)
-        CheckBox checkBox;
-        @BindView(R.id.textview_row_label)
-        TextView textViewLabel;
-
-        private final OnCheckBoxListener onCheckBoxListener;
+    private static class CheckBoxRowViewHolder extends RecyclerView.ViewHolder {
+        public final CheckBox checkBox;
+        public final TextView textViewLabel;
+        public final OnCheckBoxListener onCheckBoxListener;
 
         public CheckBoxRowViewHolder(View itemView) {
             super(itemView);
 
-            ButterKnife.bind(this, itemView);
+            checkBox = (CheckBox) itemView.findViewById(R.id.checkbox_row_checkbox);
+            textViewLabel = (TextView) itemView.findViewById(R.id.textview_row_label);
 
             onCheckBoxListener = new OnCheckBoxListener();
             checkBox.setOnCheckedChangeListener(onCheckBoxListener);

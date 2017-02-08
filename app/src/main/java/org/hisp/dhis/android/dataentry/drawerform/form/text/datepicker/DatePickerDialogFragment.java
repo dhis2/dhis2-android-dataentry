@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.drawerform.form.datepicker;
+package org.hisp.dhis.android.dataentry.drawerform.form.text.datepicker;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;

@@ -26,59 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.drawerform.form;
+package org.hisp.dhis.android.dataentry.drawerform.form.text;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.text.InputType;
+import org.hisp.dhis.android.dataentry.R;
 
-public abstract class FormEntityEditText extends FormEntityCharSequence {
+public class FormEntityIntegerNegativeEditText extends FormEntityIntegerEditText {
 
-    /* number of lines for TEXT */
-    public static final int SHORT_TEXT_LINE_COUNT = 1;
+    public FormEntityIntegerNegativeEditText(String id, String label, String hint, Object tag) {
+        super(id, label, hint, tag);
+    }
 
-    /* number of lines for LONG_TEXT */
-    public static final int LONG_TEXT_LINE_COUNT = 3;
+    public FormEntityIntegerNegativeEditText(String id, String label) {
+        super(id, label);
+    }
 
-    private final String hint;
-
-    FormEntityEditText(String id, String label, String hint, Object tag) {
+    public FormEntityIntegerNegativeEditText(String id, String label, Object tag) {
         super(id, label, tag);
-        this.hint = hint;
     }
 
-    FormEntityEditText(String id, String label) {
-        this(id, label, null, null);
-    }
-
-    FormEntityEditText(String id, String label, Object tag) {
-        this(id, label, null, tag);
-    }
-
-    @NonNull
     @Override
-    public Type getType() {
-        return Type.EDITTEXT;
+    public int getHintResourceId() {
+        return R.string.enter_negative_integer;
     }
-
-    @Nullable
-    public String getHint() {
-        return hint;
-    }
-
-    public int getAndroidInputType() {
-        return InputType.TYPE_CLASS_TEXT;
-    }
-
-    public int getMaxLines() {
-        return SHORT_TEXT_LINE_COUNT;
-    }
-
-    /**
-     * This is used for precaching hint texts in the ViewHolder in case one is not provided
-     */
-    @StringRes
-    public abstract int getHintResourceId();
-
 }

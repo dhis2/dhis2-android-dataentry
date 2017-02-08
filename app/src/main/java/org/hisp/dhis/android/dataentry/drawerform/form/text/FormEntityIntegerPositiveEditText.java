@@ -26,25 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.drawerform.form.datepicker;
+package org.hisp.dhis.android.dataentry.drawerform.form.text;
 
-import android.support.annotation.NonNull;
+import org.hisp.dhis.android.dataentry.R;
 
-import org.hisp.dhis.android.dataentry.drawerform.form.FormEntityCharSequence;
+public class FormEntityIntegerPositiveEditText extends FormEntityIntegerEditText {
 
-public class FormEntityDate extends FormEntityCharSequence {
-
-    public FormEntityDate(String id, String label) {
-        this(id, label, null);
+    public FormEntityIntegerPositiveEditText(String id, String label, String hint, Object tag) {
+        super(id, label, hint, tag);
     }
 
-    public FormEntityDate(String id, String label, Object tag) {
+    public FormEntityIntegerPositiveEditText(String id, String label) {
+        super(id, label);
+    }
+
+    public FormEntityIntegerPositiveEditText(String id, String label, Object tag) {
         super(id, label, tag);
     }
 
-    @NonNull
     @Override
-    public Type getType() {
-        return Type.DATE;
+    public int getHintResourceId() {
+        return R.string.enter_positive_integer;
     }
 }
