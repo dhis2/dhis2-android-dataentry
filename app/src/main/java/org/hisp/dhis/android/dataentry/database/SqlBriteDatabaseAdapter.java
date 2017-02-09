@@ -46,7 +46,7 @@ public class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     private BriteDatabase.Transaction transaction;
 
     public SqlBriteDatabaseAdapter(@NonNull DbOpenHelper dbOpenHelper, @NonNull SqlBrite sqlBrite,
-                                   @NonNull SchedulerProvider schedulerProvider) {
+            @NonNull SchedulerProvider schedulerProvider) {
         if (dbOpenHelper == null) {
             throw new IllegalArgumentException("dbOpenHelper == null");
         }
@@ -56,7 +56,7 @@ public class SqlBriteDatabaseAdapter implements DatabaseAdapter {
         if (schedulerProvider == null) {
             throw new IllegalArgumentException("schedulerProvider == null");
         }
-        
+
         sqlBriteDatabase = sqlBrite.wrapDatabaseHelper(dbOpenHelper, schedulerProvider.legacyIo());
     }
 
@@ -86,7 +86,7 @@ public class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     }
 
     @Override
-    public void deleteTable(String s) {
+    public void delete(String s) {
         Timber.d(s);
     }
 
