@@ -44,11 +44,6 @@ public class HomePresenterImpl implements HomePresenter {
     }
 
     @Override
-    public void calculateLastSyncedPeriod() {
-        homeView.showLastSyncedMessage("Syncronised: Yesterday");
-    }
-
-    @Override
     public void onAttach(@NonNull View view) {
         isNull(view, "HomeView must not be null");
         if (view instanceof HomeView) {
@@ -59,6 +54,11 @@ public class HomePresenterImpl implements HomePresenter {
         homeView.setUsername("Jan Garbarek");
         homeView.setUserInfo("jan@garbarek.com");
         homeView.setUserInitials("JG");
+    }
+
+    @Override
+    public void showLastSyncedDate() {
+        homeView.showLastSyncedMessage("Syncronised: Yesterday");
     }
 
     @Override

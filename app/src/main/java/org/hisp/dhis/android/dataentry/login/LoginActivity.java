@@ -30,9 +30,11 @@ package org.hisp.dhis.android.dataentry.login;
 
 import android.animation.LayoutTransition;
 import android.animation.LayoutTransition.TransitionListener;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
@@ -100,6 +102,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     // Action which should be executed after animation is finished
     OnPostAnimationRunnable onPostAnimationAction;
+
+    @NonNull
+    public static Intent create(@NonNull Activity activity) {
+        return new Intent(activity, LoginActivity.class);
+    }
 
     private static boolean isGreaterThanOrJellyBean() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
@@ -267,7 +274,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     @Override
     public void navigateToHome() {
-        Intent intent = new Intent(this, HomeActivity.class);
+        Intent intent = HomeActivity.create(this);
         ActivityCompat.startActivity(this, intent, null);
         overridePendingTransition(
                 R.anim.activity_open_enter,

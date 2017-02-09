@@ -26,22 +26,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.utils;
+package org.hisp.dhis.android.dataentry.user;
 
-import android.support.annotation.NonNull;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-import io.reactivex.Scheduler;
+import javax.inject.Scope;
 
-public interface SchedulerProvider {
-    @NonNull
-    Scheduler computation();
-
-    @NonNull
-    rx.Scheduler legacyIo();
-
-    @NonNull
-    Scheduler io();
-
-    @NonNull
-    Scheduler ui();
+@Scope
+@Retention(RetentionPolicy.RUNTIME)
+public @interface PerUser {
 }

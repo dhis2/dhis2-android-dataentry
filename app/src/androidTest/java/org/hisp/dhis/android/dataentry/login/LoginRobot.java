@@ -171,6 +171,36 @@ public class LoginRobot {
         return this;
     }
 
+    LoginRobot progressBarIsVisible() {
+        onView(withId(R.id.progress_bar_circular))
+                .check(matches(isDisplayed()));
+        return this;
+    }
+
+    LoginRobot serverUrlIsHidden() {
+        onView(withId(R.id.edittext_server_url))
+                .check(matches(not(isDisplayed())));
+        return this;
+    }
+
+    LoginRobot usernameIsHidden() {
+        onView(withId(R.id.edittext_username))
+                .check(matches(not(isDisplayed())));
+        return this;
+    }
+
+    LoginRobot passwordIsHidden() {
+        onView(withId(R.id.edittext_password))
+                .check(matches(not(isDisplayed())));
+        return this;
+    }
+
+    LoginRobot loginButtonIsHidden() {
+        onView(withId(R.id.edittext_password))
+                .check(matches(not(isDisplayed())));
+        return this;
+    }
+
     LoginRobot rotateToPortrait() {
         onView(isRoot()).perform(OrientationChangeAction.orientationPortrait());
         return this;

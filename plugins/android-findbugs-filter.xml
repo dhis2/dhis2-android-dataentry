@@ -10,6 +10,11 @@
         <Class name="~.*ViewBinding.*"/>
     </Match>
 
+    <!-- Do not check auto-generated classes (Dagger puts $ into class names) -->
+    <Match>
+        <Class name="~.*Dagger*.*"/>
+    </Match>
+
     <Match>
         <!-- This rule fails the build in case if any anonymous
         classes can be converted to static inner classes. The reason why

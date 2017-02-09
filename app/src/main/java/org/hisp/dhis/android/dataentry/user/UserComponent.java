@@ -26,22 +26,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.utils;
+package org.hisp.dhis.android.dataentry.user;
 
 import android.support.annotation.NonNull;
 
-import io.reactivex.Scheduler;
+import org.hisp.dhis.android.dataentry.home.HomeComponent;
+import org.hisp.dhis.android.dataentry.home.HomeModule;
 
-public interface SchedulerProvider {
-    @NonNull
-    Scheduler computation();
+import dagger.Subcomponent;
+
+@PerUser
+@Subcomponent(modules = {
+        UserModule.class
+})
+public interface UserComponent {
 
     @NonNull
-    rx.Scheduler legacyIo();
-
-    @NonNull
-    Scheduler io();
-
-    @NonNull
-    Scheduler ui();
+    HomeComponent plus(@NonNull HomeModule homeModule);
 }

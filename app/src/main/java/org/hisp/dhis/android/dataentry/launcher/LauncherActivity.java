@@ -28,7 +28,6 @@
 
 package org.hisp.dhis.android.dataentry.launcher;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -73,13 +72,13 @@ public class LauncherActivity extends AppCompatActivity implements LauncherView 
 
     @Override
     public void navigateToLoginView() {
-        startActivity(new Intent(this, LoginActivity.class));
+        startActivity(LoginActivity.create(this));
         finish();
     }
 
     @Override
     public void navigateToHomeView() {
-        startActivity(new Intent(this, HomeActivity.class));
+        startActivity(HomeActivity.create(this));
         finish();
     }
 }

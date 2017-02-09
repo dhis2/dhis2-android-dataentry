@@ -30,10 +30,10 @@ package org.hisp.dhis.android.dataentry.home;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -41,44 +41,35 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dataentry.R;
-
-import butterknife.BindView;
 
 import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 
 public class HomeActivity extends AppCompatActivity implements HomeView,
         NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener {
-    //NavigationCallback,
-    //OnBackPressedFromFragmentCallback
 
-    private HomePresenter homePresenter;
-
-    private static final int DEFAULT_ORDER_IN_CATEGORY = 100;
-
-    // Drawer layout
-    @BindView(R.id.drawer_layout)
+    // drawer layout
     DrawerLayout drawerLayout;
-
-    // Showing information about user in navigation drawer
-    @BindView(R.id.navigation_view)
     NavigationView navigationView;
 
-    @BindView(R.id.textview_username_initials)
+    // navigation header views
     TextView usernameInitials;
-    @BindView(R.id.textview_username)
     TextView username;
-    @BindView(R.id.textview_user_info)
     TextView userInfo;
+
+//    @Inject
+//    HomePresenter homePresenter;
 
     // Delaying attachment of fragment
     // in order to avoid animation lag
-    private Runnable pendingRunnable;
+    @Nullable
+    Runnable pendingRunnable;
 
     @NonNull
-    public static Intent createIntent(Activity activity) {
+    public static Intent create(@NonNull Activity activity) {
         return new Intent(activity, HomeActivity.class);
     }
 
@@ -87,34 +78,41 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-//
-//        homePresenter = new HomePresenterImpl();
-//
-//        drawerLayout.addDrawerListener(this);
-//        navigationView.setNavigationItemSelectedListener(this);
-//        navigationView.inflateMenu(R.menu.menu_drawer_default);
-//
-//        ViewGroup navigationHeader = (ViewGroup) getLayoutInflater()
-//                .inflate(R.layout.navigation_header, navigationView, false);
-//
-//        navigationView.addHeaderView(navigationHeader);
-//
-//        toggleNavigationDrawer();
+//        ((Components) getApplicationContext()).userComponent()
+//                .plus(new HomeModule())
+//                .inject(this);
 
-        /* select HomeFragment as default
-        if (savedInstanceState == null) {
-            onNavigationItemSelected(getNavigationView().getMenu()
-                    .findItem(DRAWER_ITEM_EVENTS_ID));
-        }*/
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+
+        drawerLayout.addDrawerListener(this);
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.inflateMenu(R.menu.menu_drawer);
+
+        ViewGroup navigationHeader = (ViewGroup) getLayoutInflater()
+                .inflate(R.layout.navigation_header, navigationView, false);
+
+        usernameInitials = (TextView) navigationHeader
+                .findViewById(R.id.textview_username_initials);
+        username = (TextView) navigationHeader
+                .findViewById(R.id.textview_username);
+        userInfo = (TextView) navigationHeader
+                .findViewById(R.id.textview_user_info);
+
+        navigationView.addHeaderView(navigationHeader);
     }
 
-    public void toggleNavigationDrawer() {
-        if (drawerLayout.isDrawerOpen(navigationView)) {
-            drawerLayout.closeDrawer(navigationView);
-        } else {
-            drawerLayout.openDrawer(navigationView);
-        }
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        // homePresenter.onAttach(this);
+//    }
+//
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        // homePresenter.onDetach();
+//    }
 
     @Override
     public void onBackPressed() {
@@ -126,64 +124,10 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
         super.onBackPressed();
     }
 
-    public boolean onBackPressedFromFragment() {
-        // When back button is pressed from a fragment, show the first menu item
-        MenuItem firstMenuItem = navigationView.getMenu().getItem(0);
-        onNavigationItemSelected(firstMenuItem);
-        return true;
-    }
-
-    protected void attachFragment(Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .commit();
-    }
-
-    protected void attachFragmentDelayed(final Fragment fragment) {
-        isNull(fragment, "Fragment must not be null");
-
-        pendingRunnable = () -> attachFragment(fragment);
-    }
-
-    protected MenuItem addMenuItem(int menuItemId, Drawable icon, CharSequence title) {
-        MenuItem menuItem = navigationView.getMenu().add(
-                R.id.drawer_group_main, menuItemId, DEFAULT_ORDER_IN_CATEGORY, title);
-        menuItem.setIcon(icon);
-        menuItem.setCheckable(true);
-        return menuItem;
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
-        boolean isSelected = false;
-
-        int menuItemId = menuItem.getItemId();
-
-        if (menuItemId == R.id.drawer_item_profile) {
-            attachFragmentDelayed(getProfileFragment());
-            isSelected = true;
-        } else if (menuItemId == R.id.drawer_item_settings) {
-            attachFragmentDelayed(getSettingsFragment());
-            isSelected = true;
-        } else if (menuItemId == R.id.drawer_item_information) {
-            attachFragment(getInformationFragment());
-            isSelected = true;
-        }
-
-        if (isSelected) {
-            navigationView.setCheckedItem(menuItemId);
-            drawerLayout.closeDrawers();
-        }
-
-        return isSelected;
-    }
-
     @Override
     public void onDrawerOpened(View drawerView) {
         pendingRunnable = null;
-        homePresenter.calculateLastSyncedPeriod();
+        // homePresenter.showLastSyncedDate();
     }
 
     @Override
@@ -205,67 +149,72 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
         // no-op
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        homePresenter.onAttach(this);
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        homePresenter.onDetach();
-//    }
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+//        switch (menuItem.getItemId()) {
+////            case R.id.drawer_item_forms: {
+////                attachFragmentDelayed(new Fragment());
+////                break;
+////            }
+////            case R.id.drawer_item_profile: {
+////                attachFragmentDelayed(new Fragment());
+////                break;
+////            }
+////            case R.id.drawer_item_settings: {
+////                attachFragmentDelayed(new Fragment());
+////                break;
+////            }
+//            default: {
+//                throw new IllegalArgumentException();
+//            }
+//        }
+
+        attachFragmentDelayed(new Fragment());
+
+        navigationView.setCheckedItem(menuItem.getItemId());
+        drawerLayout.closeDrawers();
+
+        return true;
+    }
 
     @Override
     public void showLastSyncedMessage(String message) {
-        navigationView.getMenu().findItem(R.id.drawer_item_synchronized)
-                .setTitle(message);
-    }
-
-    @NonNull
-    protected Fragment getProfileFragment() {
-        /*return WrapperFragment.newInstance(DefaultProfileFragment.class,
-                getString(R.string.drawer_item_profile));*/
-        return new Fragment();
-    }
-
-    @NonNull
-    protected Fragment getSettingsFragment() {
-        /*return WrapperFragment.newInstance(DefaultSettingsFragment.class,
-                getString(R.string.drawer_item_settings));*/
-        return new Fragment();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setUsername(CharSequence username) {
-        this.username.setText(username);
+        // username.setText(username);
     }
 
     @Override
     public void setUserInfo(CharSequence userInfo) {
-        this.userInfo.setText(userInfo);
+        // userInfo.setText(userInfo);
     }
 
     @Override
     public void setUserInitials(CharSequence userInitials) {
-        this.usernameInitials.setText(userInitials);
+        // usernameInitials.setText(userInitials);
     }
 
-    public void setHomePresenter(HomePresenter homePresenter) {
-        this.homePresenter = homePresenter;
+//    private void toggleNavigationDrawer() {
+//        if (drawerLayout.isDrawerOpen(navigationView)) {
+//            drawerLayout.closeDrawer(navigationView);
+//        } else {
+//            drawerLayout.openDrawer(navigationView);
+//        }
+//    }
+
+    protected void attachFragment(Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .commit();
     }
 
-    protected Fragment getInformationFragment() {
-        /*Bundle args = new Bundle();
-        args.putString(InformationFragment.USERNAME,
-        D2.me().userCredentials().toBlocking().first().getUsername());
-        args.putString(InformationFragment.URL,
-        new PreferencesModuleImpl(getContext()).getConfigurationPreferences().get().getServerUrl());
+    protected void attachFragmentDelayed(final Fragment fragment) {
+        isNull(fragment, "Fragment must not be null");
 
-        return WrapperFragment.newInstance(InformationFragment.class,
-                getString(R.string.drawer_item_information),
-                args);*/
-        return new Fragment();
+        pendingRunnable = () -> attachFragment(fragment);
     }
 }

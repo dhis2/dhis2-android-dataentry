@@ -34,7 +34,7 @@ import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.core.data.api.Authenticator;
 import org.hisp.dhis.android.core.data.api.BasicAuthenticatorFactory;
-import org.hisp.dhis.android.core.data.database.DbOpenHelper;
+import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 
 import dagger.Module;
 import dagger.Provides;
@@ -51,18 +51,18 @@ public class ServerModule {
 
     @Provides
     @PerServer
-    D2 sdk(DbOpenHelper openHelper, OkHttpClient client) {
+    D2 sdk(DatabaseAdapter databaseAdapter, OkHttpClient client) {
         return new D2.Builder()
                 .configuration(configuration)
-                .dbOpenHelper(openHelper)
+                .databaseAdapter(databaseAdapter)
                 .okHttpClient(client)
                 .build();
     }
 
     @Provides
     @PerServer
-    Authenticator authenticator(DbOpenHelper dbOpenHelper) {
-        return BasicAuthenticatorFactory.create(dbOpenHelper);
+    Authenticator authenticator(DatabaseAdapter databaseAdapter) {
+        return BasicAuthenticatorFactory.create(databaseAdapter);
     }
 
     @Provides

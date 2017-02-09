@@ -23,6 +23,12 @@ public final class MockSchedulersProvider implements SchedulerProvider {
 
     @NonNull
     @Override
+    public rx.Scheduler legacyIo() {
+        return rx.schedulers.Schedulers.from(executor);
+    }
+
+    @NonNull
+    @Override
     public Scheduler io() {
         return Schedulers.from(executor);
     }

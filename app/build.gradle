@@ -99,6 +99,10 @@ android {
         // excluding duplicate license files
         // from jackson modules
         exclude "META-INF/LICENSE"
+
+        // excluding duplicate rxjava properties file
+        // see https://github.com/ReactiveX/RxJava/issues/4445#issuecomment-243591879
+        exclude 'META-INF/rxjava.properties'
     }
 
     buildTypes {
@@ -156,6 +160,7 @@ dependencies {
     // Square libraries
     debugCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:${libraries.leakcanary}"
+    compile "com.squareup.sqlbrite:sqlbrite:${libraries.sqlbrite}"
 
     // Jake Wharton libraries
     compile "com.jakewharton.timber:timber:${libraries.timber}"
@@ -166,6 +171,8 @@ dependencies {
     testCompile "junit:junit:${libraries.junit}"
     testCompile "org.assertj:assertj-core:${libraries.assertj}"
     testCompile "org.mockito:mockito-core:${libraries.mockito}"
+    testCompile "org.powermock:powermock-module-junit4:${libraries.powermock}"
+    testCompile "org.powermock:powermock-api-mockito2:${libraries.powermock}"
 
     // Spoon client which allows to capture screenshots during instrumentation tests
     androidTestCompile "com.squareup.spoon:spoon-client:${libraries.spoon}"

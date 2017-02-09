@@ -34,6 +34,7 @@ import android.support.annotation.Nullable;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.dataentry.login.LoginComponent;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
+import org.hisp.dhis.android.dataentry.user.UserComponent;
 
 public interface Components {
 
@@ -44,11 +45,12 @@ public interface Components {
     // Login component
     ///////////////////////////////////////////////////////////////////
 
-    @Nullable
-    LoginComponent loginComponent();
 
     @NonNull
     LoginComponent createLoginComponent();
+
+    @Nullable
+    LoginComponent loginComponent();
 
     void releaseLoginComponent();
 
@@ -56,9 +58,21 @@ public interface Components {
     // Server component
     ////////////////////////////////////////////////////////////////////
 
+    @NonNull
+    ServerComponent createServerComponent(@NonNull ConfigurationModel configuration);
+
     @Nullable
     ServerComponent serverComponent();
 
+    ////////////////////////////////////////////////////////////////////
+    // User component
+    ////////////////////////////////////////////////////////////////////
+
     @NonNull
-    ServerComponent createServerComponent(@NonNull ConfigurationModel configuration);
+    UserComponent createUserComponent();
+
+    @Nullable
+    UserComponent userComponent();
+
+    void releaseUserComponent();
 }
