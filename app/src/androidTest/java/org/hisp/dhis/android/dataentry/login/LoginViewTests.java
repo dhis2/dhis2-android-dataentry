@@ -57,7 +57,6 @@ import okhttp3.mockwebserver.MockWebServer;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 
-// ToDo: check that progress bar is visible
 @RunWith(AndroidJUnit4.class)
 public class LoginViewTests {
     private static final String SERVER_URL = "http://play.dhis2.org/demo";
@@ -181,11 +180,27 @@ public class LoginViewTests {
         Intents.init();
 
         List<IdlingResource> idlingResources = muteIdlingResources();
+
+        // kick of login
         loginRobot.typeServerUrl(SERVER_URL)
                 .typeUsername(USERNAME)
                 .typePassword(PASSWORD)
-                .clickOnLoginButton()
+                .clickOnLoginButton();
+
+        // check if views are hidden and trigger configuration change
+        loginRobot.progressBarIsVisible()
+                .serverUrlIsHidden()
+                .usernameIsHidden()
+                .passwordIsHidden()
+                .loginButtonIsHidden()
                 .rotateToLandscape();
+
+        // check if state is correctly restored after configuration change
+        loginRobot.progressBarIsVisible()
+                .serverUrlIsHidden()
+                .usernameIsHidden()
+                .passwordIsHidden()
+                .loginButtonIsHidden();
         unmuteIdlingResources(idlingResources);
 
         // if login is successful, home activity should be started

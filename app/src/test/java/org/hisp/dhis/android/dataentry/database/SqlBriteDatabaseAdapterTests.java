@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({BriteDatabase.class, SqlBrite.class})
+// ToDo: research other ways of testing DatabaseAdapter
 public class SqlBriteDatabaseAdapterTests {
 
     BriteDatabase sqlBriteDatabase;
