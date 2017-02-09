@@ -28,13 +28,17 @@
 
 package org.hisp.dhis.android.dataentry.home;
 
+import org.hisp.dhis.android.dataentry.commons.PerActivity;
+
 import dagger.Module;
 import dagger.Provides;
 
 @Module
+@PerActivity
 public class HomeModule {
 
     @Provides
+    @PerActivity
     public HomePresenter homePresenter() {
         return new HomePresenterImpl();
     }

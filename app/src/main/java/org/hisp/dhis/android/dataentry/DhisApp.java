@@ -47,6 +47,9 @@ import org.hisp.dhis.android.dataentry.login.LoginModule;
 import org.hisp.dhis.android.dataentry.server.PerServer;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.server.ServerModule;
+import org.hisp.dhis.android.dataentry.user.PerUser;
+import org.hisp.dhis.android.dataentry.user.UserComponent;
+import org.hisp.dhis.android.dataentry.user.UserModule;
 import org.hisp.dhis.android.dataentry.utils.CrashReportingTree;
 import org.hisp.dhis.android.dataentry.utils.SchedulerModule;
 import org.hisp.dhis.android.dataentry.utils.SchedulersProviderImpl;
@@ -76,6 +79,10 @@ public class DhisApp extends Application implements Components {
     @Nullable
     @PerServer
     ServerComponent serverComponent;
+
+    @Nullable
+    @PerUser
+    UserComponent userComponent;
 
     @Nullable
     @PerActivity
@@ -218,5 +225,26 @@ public class DhisApp extends Application implements Components {
     @Override
     public ServerComponent serverComponent() {
         return serverComponent;
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // User component
+    ////////////////////////////////////////////////////////////////////////
+
+    @NonNull
+    @Override
+    public UserComponent createUserComponent() {
+        return (userComponent = serverComponent.plus(new UserModule()));
+    }
+
+    @Nullable
+    @Override
+    public UserComponent userComponent() {
+        return userComponent;
+    }
+
+    @Override
+    public void releaseUserComponent() {
+        userComponent = null;
     }
 }

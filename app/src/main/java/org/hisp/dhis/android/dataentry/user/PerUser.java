@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, University of Oslo
+ * Copyright (c) 2017, University of Oslo
  *
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
@@ -26,43 +26,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.user;
 
-import android.support.annotation.NonNull;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-import org.hisp.dhis.android.dataentry.commons.View;
+import javax.inject.Scope;
 
-import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
-
-
-public class HomePresenterImpl implements HomePresenter {
-
-    private HomeView homeView;
-
-    public HomePresenterImpl() {
-        // Put in dependencies here
-    }
-
-    @Override
-    public void onAttach(@NonNull View view) {
-        isNull(view, "HomeView must not be null");
-        if (view instanceof HomeView) {
-            homeView = (HomeView) view;
-        }
-
-        // TODO: query db here
-        homeView.setUsername("Jan Garbarek");
-        homeView.setUserInfo("jan@garbarek.com");
-        homeView.setUserInitials("JG");
-    }
-
-    @Override
-    public void showLastSyncedDate() {
-        homeView.showLastSyncedMessage("Syncronised: Yesterday");
-    }
-
-    @Override
-    public void onDetach() {
-        homeView = null;
-    }
+@Scope
+@Retention(RetentionPolicy.RUNTIME)
+public @interface PerUser {
 }

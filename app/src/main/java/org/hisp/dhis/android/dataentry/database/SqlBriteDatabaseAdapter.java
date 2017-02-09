@@ -38,9 +38,10 @@ import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
 import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 
+import timber.log.Timber;
+
 // TODO: tests
 public class SqlBriteDatabaseAdapter implements DatabaseAdapter {
-
     private final BriteDatabase sqlBriteDatabase;
     private BriteDatabase.Transaction transaction;
 
@@ -82,6 +83,11 @@ public class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     @Override
     public int delete(String table, String whereClause, String[] whereArgs) {
         return sqlBriteDatabase.delete(table, whereClause, whereArgs);
+    }
+
+    @Override
+    public void deleteTable(String s) {
+        Timber.d(s);
     }
 
     @Override

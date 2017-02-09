@@ -41,4 +41,7 @@
 
     <color name="color_divider">#FFB6B6B6</color>
 
+    <!-- Custom colors -->
+    <color name="color_white_transparent">#CCFFFFFF</color>
+
 </resources>

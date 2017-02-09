@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, University of Oslo
+ * Copyright (c) 2017, University of Oslo
  *
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
@@ -26,43 +26,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.user;
 
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.dataentry.commons.View;
+import org.hisp.dhis.android.dataentry.home.HomeComponent;
+import org.hisp.dhis.android.dataentry.home.HomeModule;
 
-import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
+import dagger.Subcomponent;
 
+@PerUser
+@Subcomponent(modules = {
+        UserModule.class
+})
+public interface UserComponent {
 
-public class HomePresenterImpl implements HomePresenter {
-
-    private HomeView homeView;
-
-    public HomePresenterImpl() {
-        // Put in dependencies here
-    }
-
-    @Override
-    public void onAttach(@NonNull View view) {
-        isNull(view, "HomeView must not be null");
-        if (view instanceof HomeView) {
-            homeView = (HomeView) view;
-        }
-
-        // TODO: query db here
-        homeView.setUsername("Jan Garbarek");
-        homeView.setUserInfo("jan@garbarek.com");
-        homeView.setUserInitials("JG");
-    }
-
-    @Override
-    public void showLastSyncedDate() {
-        homeView.showLastSyncedMessage("Syncronised: Yesterday");
-    }
-
-    @Override
-    public void onDetach() {
-        homeView = null;
-    }
+    @NonNull
+    HomeComponent plus(@NonNull HomeModule homeModule);
 }
