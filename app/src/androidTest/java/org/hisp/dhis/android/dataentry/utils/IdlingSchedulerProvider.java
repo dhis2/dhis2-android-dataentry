@@ -38,14 +38,17 @@ import io.reactivex.schedulers.Schedulers;
 public class IdlingSchedulerProvider implements SchedulerProvider {
     private final DelegatingIdlingResourceScheduler computation;
     private final DelegatingIdlingResourceScheduler io;
+    private final LegacyDelegatingIdlingResourceScheduler legacyIo;
 
     public IdlingSchedulerProvider() {
         computation = new DelegatingIdlingResourceScheduler(
                 "RxJava computation scheduler", Schedulers.computation());
         io = new DelegatingIdlingResourceScheduler(
                 "RxJava I/O scheduler", Schedulers.io());
+        legacyIo = new LegacyDelegatingIdlingResourceScheduler(
+                "Legacy RXJava I/O scheduler", rx.schedulers.Schedulers.io());
 
-        Espresso.registerIdlingResources(computation, io);
+        Espresso.registerIdlingResources(computation, io, legacyIo);
     }
 
     @NonNull
@@ -57,8 +60,7 @@ public class IdlingSchedulerProvider implements SchedulerProvider {
     @NonNull
     @Override
     public rx.Scheduler legacyIo() {
-        // TODO: return idling scheduler
-        return rx.schedulers.Schedulers.io();
+        return legacyIo;
     }
 
     @NonNull
