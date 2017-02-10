@@ -39,14 +39,16 @@ import com.crashlytics.android.core.CrashlyticsCore;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
-import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.dataentry.commons.PerActivity;
+import org.hisp.dhis.android.dataentry.database.DbModule;
 import org.hisp.dhis.android.dataentry.login.LoginComponent;
 import org.hisp.dhis.android.dataentry.login.LoginModule;
+import org.hisp.dhis.android.dataentry.server.ConfigurationRepository;
 import org.hisp.dhis.android.dataentry.server.PerServer;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.server.ServerModule;
+import org.hisp.dhis.android.dataentry.server.UserManager;
 import org.hisp.dhis.android.dataentry.user.PerUser;
 import org.hisp.dhis.android.dataentry.user.UserComponent;
 import org.hisp.dhis.android.dataentry.user.UserModule;
@@ -70,7 +72,7 @@ public class DhisApp extends Application implements Components {
     Paperwork paperwork;
 
     @Inject
-    ConfigurationManager configurationManager;
+    ConfigurationRepository configurationRepository;
 
     @NonNull
     @Singleton
@@ -97,6 +99,7 @@ public class DhisApp extends Application implements Components {
 
         setUpAppComponent();
         setUpServerComponent();
+        setUpUserComponent();
 
         setUpLeakCanary();
         setUpFabric();
@@ -162,9 +165,17 @@ public class DhisApp extends Application implements Components {
     }
 
     private void setUpServerComponent() {
-        ConfigurationModel configuration = configurationManager.get();
+        ConfigurationModel configuration = configurationRepository.get().blockingFirst();
         if (configuration != null) {
             serverComponent = appComponent.plus(new ServerModule(configuration));
+        }
+    }
+
+    private void setUpUserComponent() {
+        UserManager userManager = serverComponent == null
+                ? null : serverComponent.userManager();
+        if (userManager != null && userManager.isUserLoggedIn().blockingFirst()) {
+            userComponent = serverComponent.plus(new UserModule());
         }
     }
 

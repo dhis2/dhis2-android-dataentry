@@ -31,6 +31,7 @@ package org.hisp.dhis.android.dataentry;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
+import org.hisp.dhis.android.dataentry.database.DbModule;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.utils.IdlingSchedulerProvider;
 import org.hisp.dhis.android.dataentry.utils.SchedulerModule;

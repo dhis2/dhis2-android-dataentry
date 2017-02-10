@@ -47,7 +47,7 @@ import okhttp3.HttpUrl;
 import retrofit2.Response;
 import timber.log.Timber;
 
-public class LoginPresenterImpl implements LoginPresenter {
+class LoginPresenterImpl implements LoginPresenter {
 
     @NonNull
     private final Components componentsHandler;
@@ -64,7 +64,7 @@ public class LoginPresenterImpl implements LoginPresenter {
     @Nullable
     private LoginView loginView;
 
-    public LoginPresenterImpl(@NonNull Components components,
+    LoginPresenterImpl(@NonNull Components components,
             @NonNull SchedulerProvider schedulerProvider,
             @NonNull ConfigurationRepository configurationRepository) {
         this.componentsHandler = components;
@@ -148,6 +148,7 @@ public class LoginPresenterImpl implements LoginPresenter {
 
     private void navigateToHome() {
         if (loginView != null) {
+            componentsHandler.createUserComponent();
             loginView.navigateToHome();
         }
     }
