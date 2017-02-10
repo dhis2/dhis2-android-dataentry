@@ -29,6 +29,8 @@
 package org.hisp.dhis.android.dataentry.home;
 
 import org.hisp.dhis.android.dataentry.commons.PerActivity;
+import org.hisp.dhis.android.dataentry.user.UserRepository;
+import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 
 import dagger.Module;
 import dagger.Provides;
@@ -39,7 +41,8 @@ public class HomeModule {
 
     @Provides
     @PerActivity
-    public HomePresenter homePresenter() {
-        return new HomePresenterImpl();
+    HomePresenter homePresenter(SchedulerProvider schedulerProvider,
+            UserRepository userRepository) {
+        return new HomePresenterImpl(schedulerProvider, userRepository);
     }
 }

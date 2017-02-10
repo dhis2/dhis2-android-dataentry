@@ -28,14 +28,18 @@
 
 package org.hisp.dhis.android.dataentry.home;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
+
 import org.hisp.dhis.android.dataentry.commons.View;
 
 public interface HomeView extends View {
-    void setUsername(CharSequence username);
+    @UiThread
+    void showUsername(@NonNull String username);
 
-    void setUserInfo(CharSequence userInfo);
+    @UiThread
+    void showUserInfo(@NonNull String userInfo);
 
-    void setUserInitials(CharSequence userInitials);
-
-    void showLastSyncedMessage(String message);
+    @UiThread
+    void showUserInitials(@NonNull String userInitials);
 }
