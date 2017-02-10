@@ -36,6 +36,6 @@ public final class StringUtils {
     }
 
     public static boolean isEmpty(@Nullable CharSequence charSequence) {
-        return charSequence != null && charSequence.length() == 0;
+        return charSequence == null || charSequence.length() == 0;
     }
 }
