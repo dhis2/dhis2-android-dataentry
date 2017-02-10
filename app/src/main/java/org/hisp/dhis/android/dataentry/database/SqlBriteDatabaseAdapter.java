@@ -32,32 +32,21 @@ import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite.BriteDatabase;
-import com.squareup.sqlbrite.SqlBrite;
 
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
-import org.hisp.dhis.android.core.data.database.DbOpenHelper;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 
 import timber.log.Timber;
 
+import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
+
 // TODO: tests
-public class SqlBriteDatabaseAdapter implements DatabaseAdapter {
+class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     private final BriteDatabase sqlBriteDatabase;
     private BriteDatabase.Transaction transaction;
 
-    public SqlBriteDatabaseAdapter(@NonNull DbOpenHelper dbOpenHelper, @NonNull SqlBrite sqlBrite,
-            @NonNull SchedulerProvider schedulerProvider) {
-        if (dbOpenHelper == null) {
-            throw new IllegalArgumentException("dbOpenHelper == null");
-        }
-        if (sqlBrite == null) {
-            throw new IllegalArgumentException("sqlBrite == null");
-        }
-        if (schedulerProvider == null) {
-            throw new IllegalArgumentException("schedulerProvider == null");
-        }
-
-        sqlBriteDatabase = sqlBrite.wrapDatabaseHelper(dbOpenHelper, schedulerProvider.legacyIo());
+    SqlBriteDatabaseAdapter(@NonNull BriteDatabase briteDatabase) {
+        isNull(briteDatabase, "Brite");
+        sqlBriteDatabase = briteDatabase;
     }
 
     @Override
