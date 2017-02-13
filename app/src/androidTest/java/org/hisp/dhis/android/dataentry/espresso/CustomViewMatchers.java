@@ -31,6 +31,7 @@ package org.hisp.dhis.android.dataentry.espresso;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.test.espresso.matcher.BoundedMatcher;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
@@ -76,6 +77,24 @@ public final class CustomViewMatchers {
             @Override
             public boolean matchesSafely(final TextView textView) {
                 return stringMatcher.matches(textView.getError().toString());
+            }
+        };
+    }
+
+    @NonNull
+    public static Matcher<Object> withToolbarTitle(
+            @NonNull final Matcher<CharSequence> textMatcher) {
+        return new BoundedMatcher<Object, Toolbar>(Toolbar.class) {
+
+            @Override
+            public boolean matchesSafely(Toolbar toolbar) {
+                return textMatcher.matches(toolbar.getTitle());
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with toolbar title: ");
+                textMatcher.describeTo(description);
             }
         };
     }
