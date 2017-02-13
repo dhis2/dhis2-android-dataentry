@@ -33,8 +33,10 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.user.UserModel;
-import org.hisp.dhis.android.dataentry.commons.AbsRepositoryTestCase;
+import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
+import org.hisp.dhis.android.dataentry.utils.ImmediateScheduler;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -46,17 +48,17 @@ import io.reactivex.observers.TestObserver;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(AndroidJUnit4.class)
-public class UserRepositoryIntegrationTests extends AbsRepositoryTestCase {
+public class UserRepositoryIntegrationTests {
     private Date created;
     private Date lastUpdated;
     private ContentValues user;
     private UserRepository userRepository;
 
-    @Before
-    @Override
-    public void setUp() throws IOException {
-        super.setUp();
+    @Rule
+    public DatabaseRule databaseRule = new DatabaseRule(ImmediateScheduler.create());
 
+    @Before
+    public void setUp() throws IOException {
         created = new Date();
         lastUpdated = new Date();
 
@@ -82,12 +84,12 @@ public class UserRepositoryIntegrationTests extends AbsRepositoryTestCase {
         user.put(UserModel.Columns.PHONE_NUMBER, "test_phone_number");
         user.put(UserModel.Columns.NATIONALITY, "test_nationality");
 
-        userRepository = new UserRepositoryImpl(briteDatabase());
+        userRepository = new UserRepositoryImpl(databaseRule.briteDatabase());
     }
 
     @Test
     public void meShouldReturnUserAndObserveChanges() {
-        database().insert(UserModel.TABLE, null, user);
+        databaseRule.database().insert(UserModel.TABLE, null, user);
 
         TestObserver<UserModel> testObserver = userRepository.me().test();
         assertThat(testObserver.values().size()).isEqualTo(1);
@@ -116,7 +118,7 @@ public class UserRepositoryIntegrationTests extends AbsRepositoryTestCase {
 
         user.put(UserModel.Columns.FIRST_NAME, "test_another_first_name");
 
-        int updated = briteDatabase().update(UserModel.TABLE, user,
+        int updated = databaseRule.briteDatabase().update(UserModel.TABLE, user,
                 UserModel.Columns.ID + " = ?", String.valueOf(55L));
 
         assertThat(updated).isEqualTo(1);

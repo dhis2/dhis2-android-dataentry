@@ -26,55 +26,64 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.commons;
+package org.hisp.dhis.android.dataentry.rules;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
 
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.rules.ExternalResource;
 
-import java.io.IOException;
-import java.util.concurrent.Executor;
+import rx.Scheduler;
 
-import rx.schedulers.Schedulers;
+public final class DatabaseRule extends ExternalResource {
+    private final Scheduler scheduler;
 
-public abstract class AbsRepositoryTestCase {
+    @Nullable
     private BriteDatabase briteDatabase;
 
-    @Before
-    public void setUp() throws IOException {
-        DbOpenHelper dbOpenHelper = new DbOpenHelper(InstrumentationRegistry
-                .getTargetContext(), null);
+    public DatabaseRule(@NonNull Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
+
+    @Override
+    protected void before() throws Throwable {
+        // create a new in-memory database before running test
+        DbOpenHelper dbOpenHelper = new DbOpenHelper(
+                InstrumentationRegistry.getTargetContext(), null);
 
         SqlBrite sqlBrite = new SqlBrite.Builder().build();
-        briteDatabase = sqlBrite.wrapDatabaseHelper(dbOpenHelper,
-                Schedulers.from(new SynchronousExecutor()));
+        briteDatabase = sqlBrite.wrapDatabaseHelper(dbOpenHelper, scheduler);
     }
 
-    @After
-    public void tearDown() throws IOException {
-        briteDatabase.close();
+    @Override
+    protected void after() {
+        // closing database will purge all data
+        if (briteDatabase != null) {
+            briteDatabase.close();
+        }
     }
 
-    protected SQLiteDatabase database() {
+    @NonNull
+    public SQLiteDatabase database() {
+        if (briteDatabase == null) {
+            throw new IllegalStateException("Database has not been created yet");
+        }
+
         return briteDatabase.getWritableDatabase();
     }
 
-    protected BriteDatabase briteDatabase() {
-        return briteDatabase;
-    }
-
-    private static class SynchronousExecutor implements Executor {
-
-        @Override
-        public void execute(@NonNull Runnable command) {
-            command.run();
+    @NonNull
+    public BriteDatabase briteDatabase() {
+        if (briteDatabase == null) {
+            throw new IllegalStateException("Database has not been created yet");
         }
+
+        return briteDatabase;
     }
 }
