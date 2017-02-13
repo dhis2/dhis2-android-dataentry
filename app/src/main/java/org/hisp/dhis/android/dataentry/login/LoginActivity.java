@@ -170,10 +170,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             R.id.button_log_in
     })
     public void onButtonClicked(View view) {
-        if (view.getId() == R.id.button_log_in) {
-            loginPresenter.validateCredentials(serverUrl.getText().toString(),
-                    username.getText().toString(), password.getText().toString());
-        }
+        loginPresenter.validateCredentials(serverUrl.getText().toString(),
+                username.getText().toString(), password.getText().toString());
     }
 
     /*

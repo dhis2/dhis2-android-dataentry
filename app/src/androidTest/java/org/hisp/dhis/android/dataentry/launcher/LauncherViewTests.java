@@ -37,6 +37,7 @@ import android.support.test.runner.AndroidJUnit4;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.dataentry.DhisInstrumentationTestsApp;
 import org.hisp.dhis.android.dataentry.login.LoginActivity;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,7 +69,8 @@ public class LauncherViewTests {
         ConfigurationModel configuration = ConfigurationModel.builder()
                 .serverUrl(HttpUrl.parse("https://play.dhis2.org/demo/"))
                 .build();
-        app().createServerComponent(configuration);
+        ((DhisInstrumentationTestsApp) InstrumentationRegistry.getTargetContext()
+                .getApplicationContext()).createServerComponent(configuration);
 
         Intents.init();
 
@@ -78,8 +80,9 @@ public class LauncherViewTests {
         Intents.release();
     }
 
-    private DhisInstrumentationTestsApp app() {
-        return ((DhisInstrumentationTestsApp) InstrumentationRegistry
-                .getTargetContext().getApplicationContext());
+    @After
+    public void tearDown() throws Exception {
+        ((DhisInstrumentationTestsApp) InstrumentationRegistry
+                .getTargetContext().getApplicationContext()).clear();
     }
 }

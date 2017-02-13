@@ -26,23 +26,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.user;
 
-import org.hisp.dhis.android.dataentry.commons.PerActivity;
-import org.hisp.dhis.android.dataentry.user.UserRepository;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+import android.support.annotation.NonNull;
 
-import dagger.Module;
-import dagger.Provides;
+import com.squareup.sqlbrite.BriteDatabase;
 
-@Module
-@PerActivity
-public class HomeModule {
+import org.hisp.dhis.android.core.user.UserModel;
 
-    @Provides
-    @PerActivity
-    HomePresenter homePresenter(SchedulerProvider schedulerProvider,
-            UserRepository userRepository) {
-        return new HomePresenterImpl(schedulerProvider, userRepository);
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.Observable;
+
+class UserRepositoryImpl implements UserRepository {
+    private static final String SELECT = "SELECT * FROM " + UserModel.TABLE + " LIMIT 1";
+
+    private final BriteDatabase briteDatabase;
+
+    UserRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
+        this.briteDatabase = briteDatabase;
+    }
+
+    @NonNull
+    @Override
+    public Observable<UserModel> me() {
+        return RxJavaInterop.toV2Observable(briteDatabase
+                .createQuery(UserModel.TABLE, SELECT)
+                .mapToOne(UserModel::create));
     }
 }

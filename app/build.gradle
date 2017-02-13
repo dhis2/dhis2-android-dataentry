@@ -150,8 +150,9 @@ dependencies {
     }
 
     // ReactiveX
-    compile("io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}")
-    compile("io.reactivex.rxjava2:rxjava:${libraries.rxjava}")
+    compile "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+    compile "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    compile "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
 
     // Google dagger
     compile "com.google.dagger:dagger:${libraries.dagger}"
@@ -178,6 +179,7 @@ dependencies {
     androidTestCompile "com.squareup.spoon:spoon-client:${libraries.spoon}"
     androidTestCompile "com.squareup.okhttp3:mockwebserver:${libraries.okhttp}"
     androidTestCompile "org.mockito:mockito-android:${libraries.mockito}"
+    androidTestCompile "org.assertj:assertj-core:${libraries.assertj}"
 
     androidTestCompile "com.android.support.test.espresso:espresso-idling-resource:${libraries.espresso}"
     androidTestCompile "com.android.support.test.espresso:espresso-core:${libraries.espresso}"

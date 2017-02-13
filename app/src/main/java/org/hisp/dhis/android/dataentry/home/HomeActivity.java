@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -44,9 +45,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.commons.ToolbarFragment;
 
-import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
+import javax.inject.Inject;
 
 public class HomeActivity extends AppCompatActivity implements HomeView,
         NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener {
@@ -60,8 +63,8 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
     TextView username;
     TextView userInfo;
 
-//    @Inject
-//    HomePresenter homePresenter;
+    @Inject
+    HomePresenter homePresenter;
 
     // Delaying attachment of fragment
     // in order to avoid animation lag
@@ -78,9 +81,9 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-//        ((Components) getApplicationContext()).userComponent()
-//                .plus(new HomeModule())
-//                .inject(this);
+        ((Components) getApplicationContext()).userComponent()
+                .plus(new HomeModule())
+                .inject(this);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -100,19 +103,24 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
                 .findViewById(R.id.textview_user_info);
 
         navigationView.addHeaderView(navigationHeader);
+
+        if (savedInstanceState == null) {
+            onNavigationItemSelected(navigationView.getMenu()
+                    .findItem(R.id.drawer_item_forms));
+        }
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        // homePresenter.onAttach(this);
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        // homePresenter.onDetach();
-//    }
+    @Override
+    protected void onResume() {
+        homePresenter.onAttach(this);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        homePresenter.onDetach();
+        super.onPause();
+    }
 
     @Override
     public void onBackPressed() {
@@ -127,7 +135,6 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
     @Override
     public void onDrawerOpened(View drawerView) {
         pendingRunnable = null;
-        // homePresenter.showLastSyncedDate();
     }
 
     @Override
@@ -151,25 +158,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-//        switch (menuItem.getItemId()) {
-////            case R.id.drawer_item_forms: {
-////                attachFragmentDelayed(new Fragment());
-////                break;
-////            }
-////            case R.id.drawer_item_profile: {
-////                attachFragmentDelayed(new Fragment());
-////                break;
-////            }
-////            case R.id.drawer_item_settings: {
-////                attachFragmentDelayed(new Fragment());
-////                break;
-////            }
-//            default: {
-//                throw new IllegalArgumentException();
-//            }
-//        }
-
-        attachFragmentDelayed(new Fragment());
+        attachFragment(ToolbarFragment.create(menuItem.getTitle().toString()));
 
         navigationView.setCheckedItem(menuItem.getItemId());
         drawerLayout.closeDrawers();
@@ -177,44 +166,28 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
         return true;
     }
 
+    @UiThread
     @Override
-    public void showLastSyncedMessage(String message) {
+    public void showUsername(@NonNull String name) {
+        username.setText(name);
+    }
+
+    @UiThread
+    @Override
+    public void showUserInfo(@NonNull String info) {
         throw new UnsupportedOperationException();
     }
 
+    @UiThread
     @Override
-    public void setUsername(CharSequence username) {
-        // username.setText(username);
+    public void showUserInitials(@NonNull String initials) {
+        usernameInitials.setText(initials);
     }
-
-    @Override
-    public void setUserInfo(CharSequence userInfo) {
-        // userInfo.setText(userInfo);
-    }
-
-    @Override
-    public void setUserInitials(CharSequence userInitials) {
-        // usernameInitials.setText(userInitials);
-    }
-
-//    private void toggleNavigationDrawer() {
-//        if (drawerLayout.isDrawerOpen(navigationView)) {
-//            drawerLayout.closeDrawer(navigationView);
-//        } else {
-//            drawerLayout.openDrawer(navigationView);
-//        }
-//    }
 
     protected void attachFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content_frame, fragment)
                 .commit();
-    }
-
-    protected void attachFragmentDelayed(final Fragment fragment) {
-        isNull(fragment, "Fragment must not be null");
-
-        pendingRunnable = () -> attachFragment(fragment);
     }
 }

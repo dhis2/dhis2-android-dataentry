@@ -54,7 +54,6 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
-import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 
 @RunWith(AndroidJUnit4.class)
@@ -88,6 +87,9 @@ public class LoginViewTests {
     @After
     public void tearDown() throws Exception {
         mockWebServer.shutdown();
+
+        ((DhisInstrumentationTestsApp) InstrumentationRegistry
+                .getTargetContext().getApplicationContext()).clear();
     }
 
     @Test
@@ -131,7 +133,7 @@ public class LoginViewTests {
     }
 
     @Test
-    public void loginShouldSuccessfullyNavigateToHome() {
+    public void loginShouldSuccessfullyNavigateToHome() throws InterruptedException {
         Spoon.screenshot(loginViewRule.getActivity(), "login_initial_state");
 
         MockResponse mockResponse = new MockResponse()
@@ -177,8 +179,6 @@ public class LoginViewTests {
         mockResponse.setBodyDelay(2, TimeUnit.SECONDS);
         mockWebServer.enqueue(mockResponse);
 
-        Intents.init();
-
         List<IdlingResource> idlingResources = muteIdlingResources();
 
         // kick of login
@@ -201,10 +201,13 @@ public class LoginViewTests {
                 .usernameIsHidden()
                 .passwordIsHidden()
                 .loginButtonIsHidden();
+
         unmuteIdlingResources(idlingResources);
 
+        Intents.init();
+
         // if login is successful, home activity should be started
-        intended(hasComponent(HomeActivity.class.getName()));
+        Intents.intended(hasComponent(HomeActivity.class.getName()));
         Intents.release();
 
         Spoon.screenshot(loginViewRule.getActivity(), "logged_in_state");

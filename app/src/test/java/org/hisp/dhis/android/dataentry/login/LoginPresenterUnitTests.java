@@ -97,6 +97,7 @@ public class LoginPresenterUnitTests {
         loginPresenter.onAttach(loginView);
 
         verify(userManager).isUserLoggedIn();
+        verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
 
@@ -108,6 +109,7 @@ public class LoginPresenterUnitTests {
         loginPresenter.onAttach(loginView);
 
         verify(userManager).isUserLoggedIn();
+        verify(componentsHandler).createUserComponent();
         verify(loginView).navigateToHome();
     }
 
@@ -119,6 +121,7 @@ public class LoginPresenterUnitTests {
         loginPresenter.onAttach(loginView);
 
         verify(userManager).isUserLoggedIn();
+        verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
 
@@ -142,6 +145,7 @@ public class LoginPresenterUnitTests {
         verify(configurationRepository, never()).configure(any());
         verify(userManager, never()).logIn(any(), any());
         verify(userManager, never()).isUserLoggedIn();
+        verify(componentsHandler, never()).createUserComponent();
 
         // show error message
         verify(loginView).showInvalidServerUrlError();
@@ -168,6 +172,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(configurationRepository).configure(any());
         mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
+        mocksInOrder.verify(componentsHandler).createUserComponent();
         mocksInOrder.verify(loginView).navigateToHome();
     }
 
@@ -195,6 +200,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showInvalidCredentialsError();
+        verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
 
@@ -222,6 +228,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showInvalidServerUrlError();
+        verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
 
@@ -249,6 +256,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showUnexpectedError();
+        verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
 
@@ -274,6 +282,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showInvalidServerUrlError();
+        verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
 
@@ -299,6 +308,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showInvalidServerUrlError();
+        verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
 
@@ -324,6 +334,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView, never()).navigateToHome();
+        verify(componentsHandler, never()).createUserComponent();
     }
 
     @Test
@@ -348,6 +359,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showUnexpectedError();
+        verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
 
@@ -375,6 +387,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
         mocksInOrder.verify(loginView).showServerError();
+        verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
 

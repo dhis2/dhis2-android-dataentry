@@ -26,37 +26,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry;
+package org.hisp.dhis.android.dataentry.commons;
 
-import android.content.Context;
-import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 
-import com.squareup.sqlbrite.SqlBrite;
+import org.hisp.dhis.android.dataentry.DhisApp;
 
-import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
-import org.hisp.dhis.android.core.data.database.DbOpenHelper;
-import org.hisp.dhis.android.dataentry.database.SqlBriteDatabaseAdapter;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+public abstract class BaseFragment extends Fragment {
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-
-@Module
-class DbModule {
-    private final String databaseName;
-
-    DbModule(@Nullable String databaseName) {
-        this.databaseName = databaseName;
-    }
-
-    @Provides
-    @Singleton
-    DatabaseAdapter databaseAdapter(Context context, SchedulerProvider schedulerProvider) {
-        return new SqlBriteDatabaseAdapter(
-                new DbOpenHelper(context, databaseName),
-                new SqlBrite.Builder().build(),
-                schedulerProvider);
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ((DhisApp) getActivity().getApplicationContext())
+                .refWatcher().watch(this);
     }
 }

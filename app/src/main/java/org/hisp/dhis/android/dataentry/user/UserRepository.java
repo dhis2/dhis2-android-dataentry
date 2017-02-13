@@ -26,23 +26,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.user;
 
-import org.hisp.dhis.android.dataentry.commons.PerActivity;
-import org.hisp.dhis.android.dataentry.user.UserRepository;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+import android.support.annotation.NonNull;
 
-import dagger.Module;
-import dagger.Provides;
+import org.hisp.dhis.android.core.user.UserModel;
 
-@Module
-@PerActivity
-public class HomeModule {
+import io.reactivex.Observable;
 
-    @Provides
-    @PerActivity
-    HomePresenter homePresenter(SchedulerProvider schedulerProvider,
-            UserRepository userRepository) {
-        return new HomePresenterImpl(schedulerProvider, userRepository);
-    }
+public interface UserRepository {
+    @NonNull
+    Observable<UserModel> me();
 }

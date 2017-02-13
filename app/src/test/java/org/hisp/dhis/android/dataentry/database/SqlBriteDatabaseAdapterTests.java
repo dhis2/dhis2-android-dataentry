@@ -62,15 +62,14 @@ public class SqlBriteDatabaseAdapterTests {
         scheduler = Schedulers.immediate();
 
         Mockito.when(schedulerProvider.legacyIo()).thenReturn(scheduler);
-
         Mockito.when(sqlBrite.wrapDatabaseHelper(dbOpenHelper, scheduler)).thenReturn(sqlBriteDatabase);
 
-        sqlBriteDatabaseAdapter = new SqlBriteDatabaseAdapter(dbOpenHelper, sqlBrite, schedulerProvider);
+        sqlBriteDatabaseAdapter = new SqlBriteDatabaseAdapter(sqlBriteDatabase);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void providingNullDbOpenHelper_shouldThrowError() throws Exception {
-        new SqlBriteDatabaseAdapter(null, sqlBrite, schedulerProvider);
+        new SqlBriteDatabaseAdapter(null);
     }
 
     @Test

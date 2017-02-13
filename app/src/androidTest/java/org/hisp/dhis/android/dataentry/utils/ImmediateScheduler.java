@@ -26,23 +26,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.utils;
 
-import org.hisp.dhis.android.dataentry.commons.PerActivity;
-import org.hisp.dhis.android.dataentry.user.UserRepository;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+import rx.Scheduler;
+import rx.schedulers.Schedulers;
 
-import dagger.Module;
-import dagger.Provides;
+public final class ImmediateScheduler {
+    private ImmediateScheduler() {
+        // no instances
+    }
 
-@Module
-@PerActivity
-public class HomeModule {
-
-    @Provides
-    @PerActivity
-    HomePresenter homePresenter(SchedulerProvider schedulerProvider,
-            UserRepository userRepository) {
-        return new HomePresenterImpl(schedulerProvider, userRepository);
+    public static Scheduler create() {
+        return Schedulers.from((command) -> command.run());
     }
 }

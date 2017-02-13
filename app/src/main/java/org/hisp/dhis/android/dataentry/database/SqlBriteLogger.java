@@ -26,23 +26,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.database;
 
-import org.hisp.dhis.android.dataentry.commons.PerActivity;
-import org.hisp.dhis.android.dataentry.user.UserRepository;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+import com.squareup.sqlbrite.SqlBrite;
 
-import dagger.Module;
-import dagger.Provides;
+import timber.log.Timber;
 
-@Module
-@PerActivity
-public class HomeModule {
+class SqlBriteLogger implements SqlBrite.Logger {
+    private static final String TAG = SqlBriteLogger.class.getSimpleName();
 
-    @Provides
-    @PerActivity
-    HomePresenter homePresenter(SchedulerProvider schedulerProvider,
-            UserRepository userRepository) {
-        return new HomePresenterImpl(schedulerProvider, userRepository);
+    @Override
+    public void log(String message) {
+        Timber.tag(TAG);
+        Timber.d(message);
     }
 }
