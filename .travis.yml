@@ -26,6 +26,13 @@ before_script:
   - echo no | android create avd --force -n test -t android-18 --abi armeabi-v7a
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
+
+  # disable animations on CI device
+  - adb shell settings put global window_animation_scale 0
+  - adb shell settings put global transition_animation_scale 0
+  - adb shell settings put global animator_duration_scale 0
+
+  # unlock device
   - adb shell input keyevent 82
 
 branches:
@@ -34,7 +41,7 @@ branches:
   - develop
 
 script:
-  bash build-ci.sh
+  bash ci.sh
 
 after_script:
   ./gradlew sonarqube

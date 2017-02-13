@@ -128,6 +128,14 @@ android {
     }
 }
 
+spoon {
+    // for debug output
+    debug = true
+
+    // test coverage
+    codeCoverage = true
+}
+
 dependencies {
 
     compile "hu.supercluster:paperwork:${libraries.paperwork}"
