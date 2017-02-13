@@ -51,20 +51,28 @@ public final class DatabaseRule extends ExternalResource {
         this.scheduler = scheduler;
     }
 
+    public DatabaseRule(@NonNull BriteDatabase briteDatabase) {
+        this.scheduler = null;
+        this.briteDatabase = briteDatabase;
+    }
+
     @Override
     protected void before() throws Throwable {
-        // create a new in-memory database before running test
-        DbOpenHelper dbOpenHelper = new DbOpenHelper(
-                InstrumentationRegistry.getTargetContext(), null);
+        // if database was supplied, don't re-create it
+        if (scheduler != null) {
+            // create a new in-memory database before running test
+            DbOpenHelper dbOpenHelper = new DbOpenHelper(
+                    InstrumentationRegistry.getTargetContext(), null);
 
-        SqlBrite sqlBrite = new SqlBrite.Builder().build();
-        briteDatabase = sqlBrite.wrapDatabaseHelper(dbOpenHelper, scheduler);
+            SqlBrite sqlBrite = new SqlBrite.Builder().build();
+            briteDatabase = sqlBrite.wrapDatabaseHelper(dbOpenHelper, scheduler);
+        }
     }
 
     @Override
     protected void after() {
-        // closing database will purge all data
-        if (briteDatabase != null) {
+        // close database only in case when it was created within Rule
+        if (scheduler != null && briteDatabase != null) {
             briteDatabase.close();
         }
     }

@@ -39,12 +39,12 @@ import com.crashlytics.android.core.CrashlyticsCore;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
+import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.dataentry.commons.PerActivity;
 import org.hisp.dhis.android.dataentry.database.DbModule;
 import org.hisp.dhis.android.dataentry.login.LoginComponent;
 import org.hisp.dhis.android.dataentry.login.LoginModule;
-import org.hisp.dhis.android.dataentry.server.ConfigurationRepository;
 import org.hisp.dhis.android.dataentry.server.PerServer;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.server.ServerModule;
@@ -63,6 +63,7 @@ import hu.supercluster.paperwork.Paperwork;
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
+@SuppressWarnings("PMD.ExcessiveImports")
 public class DhisApp extends Application implements Components {
     private static final String DATABASE_NAME = "dhis.db";
     private static final String GIT_SHA = "gitSha";
@@ -72,7 +73,7 @@ public class DhisApp extends Application implements Components {
     Paperwork paperwork;
 
     @Inject
-    ConfigurationRepository configurationRepository;
+    ConfigurationManager configurationManager;
 
     @NonNull
     @Singleton
@@ -165,7 +166,7 @@ public class DhisApp extends Application implements Components {
     }
 
     private void setUpServerComponent() {
-        ConfigurationModel configuration = configurationRepository.get().blockingFirst();
+        ConfigurationModel configuration = configurationManager.get();
         if (configuration != null) {
             serverComponent = appComponent.plus(new ServerModule(configuration));
         }
@@ -193,6 +194,11 @@ public class DhisApp extends Application implements Components {
                 .dbModule(new DbModule(DATABASE_NAME))
                 .appModule(new AppModule(this))
                 .schedulerModule(new SchedulerModule(new SchedulersProviderImpl()));
+    }
+
+    @NonNull
+    protected AppComponent createAppComponent() {
+        return (appComponent = prepareAppComponent().build());
     }
 
     @NonNull
@@ -236,6 +242,11 @@ public class DhisApp extends Application implements Components {
     @Override
     public ServerComponent serverComponent() {
         return serverComponent;
+    }
+
+    @Override
+    public void releaseServerComponent() {
+        serverComponent = null;
     }
 
     ////////////////////////////////////////////////////////////////////////

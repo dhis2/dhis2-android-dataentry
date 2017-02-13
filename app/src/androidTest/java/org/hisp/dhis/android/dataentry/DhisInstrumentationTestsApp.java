@@ -29,6 +29,8 @@
 package org.hisp.dhis.android.dataentry;
 
 import android.support.annotation.NonNull;
+import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingResource;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.dataentry.database.DbModule;
@@ -40,10 +42,6 @@ import okhttp3.HttpUrl;
 
 public class DhisInstrumentationTestsApp extends DhisApp {
     private HttpUrl baseUrl;
-
-    public void overrideBaseUrl(@NonNull HttpUrl baseUrl) {
-        this.baseUrl = baseUrl;
-    }
 
     @NonNull
     @Override
@@ -65,5 +63,25 @@ public class DhisInstrumentationTestsApp extends DhisApp {
         }
 
         return super.createServerComponent(configuration);
+    }
+
+    public void overrideBaseUrl(@NonNull HttpUrl baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public void clear() {
+        // clear all idling resources
+        Espresso.unregisterIdlingResources(Espresso.getIdlingResources()
+                .toArray(new IdlingResource[Espresso.getIdlingResources().size()]));
+
+        // release components
+        releaseServerComponent();
+        releaseLoginComponent();
+        releaseUserComponent();
+
+        // reset database state and
+        // recreate application component
+        appComponent().briteDatabase().close();
+        createAppComponent();
     }
 }
