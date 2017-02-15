@@ -26,9 +26,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.main;
 
 import org.hisp.dhis.android.dataentry.commons.Presenter;
 
-public interface HomePresenter extends Presenter {
+public interface MainPresenter extends Presenter {
 }

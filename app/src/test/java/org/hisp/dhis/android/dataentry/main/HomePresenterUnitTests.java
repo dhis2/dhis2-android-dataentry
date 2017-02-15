@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.main;
 
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.dataentry.user.UserRepository;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 public class HomePresenterUnitTests {
 
     @Mock
-    private HomeView homeView;
+    private MainView mainView;
 
     @Mock
     private UserRepository userRepository;
@@ -58,13 +58,13 @@ public class HomePresenterUnitTests {
     @Mock
     private UserModel userModel;
 
-    private HomePresenter homePresenter;
+    private MainPresenter mainPresenter;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        homePresenter = new HomePresenterImpl(new MockSchedulersProvider(), userRepository);
+        mainPresenter = new MainPresenterImpl(new MockSchedulersProvider(), userRepository);
     }
 
     @Test
@@ -73,12 +73,12 @@ public class HomePresenterUnitTests {
         when(userModel.surname()).thenReturn("Watson");
         when(userRepository.me()).thenReturn(Observable.just(userModel));
 
-        homePresenter.onAttach(homeView);
+        mainPresenter.onAttach(mainView);
 
-        verify(homeView).showUsername("John Watson");
-        verify(homeView).showUserInitials("JW");
+        verify(mainView).showUsername("John Watson");
+        verify(mainView).showUserInitials("JW");
 
-        verify(homeView, never()).showUserInfo(any());
+        verify(mainView, never()).showUserInfo(any());
     }
 
     @Test
@@ -87,12 +87,12 @@ public class HomePresenterUnitTests {
         when(userModel.surname()).thenReturn("Watson");
         when(userRepository.me()).thenReturn(Observable.just(userModel));
 
-        homePresenter.onAttach(homeView);
+        mainPresenter.onAttach(mainView);
 
-        verify(homeView).showUsername("Watson");
-        verify(homeView).showUserInitials("W");
+        verify(mainView).showUsername("Watson");
+        verify(mainView).showUserInitials("W");
 
-        verify(homeView, never()).showUserInfo(any());
+        verify(mainView, never()).showUserInfo(any());
     }
 
     @Test
@@ -101,12 +101,12 @@ public class HomePresenterUnitTests {
         when(userModel.surname()).thenReturn("watson");
         when(userRepository.me()).thenReturn(Observable.just(userModel));
 
-        homePresenter.onAttach(homeView);
+        mainPresenter.onAttach(mainView);
 
-        verify(homeView).showUsername("john watson");
-        verify(homeView).showUserInitials("JW");
+        verify(mainView).showUsername("john watson");
+        verify(mainView).showUserInitials("JW");
 
-        verify(homeView, never()).showUserInfo(any());
+        verify(mainView, never()).showUserInfo(any());
     }
 
     @Test
@@ -115,12 +115,12 @@ public class HomePresenterUnitTests {
         when(userModel.surname()).thenReturn(null);
         when(userRepository.me()).thenReturn(Observable.just(userModel));
 
-        homePresenter.onAttach(homeView);
+        mainPresenter.onAttach(mainView);
 
-        verify(homeView).showUsername("");
-        verify(homeView).showUserInitials("");
+        verify(mainView).showUsername("");
+        verify(mainView).showUserInitials("");
 
-        verify(homeView, never()).showUserInfo(any());
+        verify(mainView, never()).showUserInfo(any());
     }
 
     @Test
@@ -129,25 +129,25 @@ public class HomePresenterUnitTests {
         when(userModel.surname()).thenReturn("");
         when(userRepository.me()).thenReturn(Observable.just(userModel));
 
-        homePresenter.onAttach(homeView);
+        mainPresenter.onAttach(mainView);
 
-        verify(homeView).showUsername("");
-        verify(homeView).showUserInitials("");
+        verify(mainView).showUsername("");
+        verify(mainView).showUserInitials("");
 
-        verify(homeView, never()).showUserInfo(any());
+        verify(mainView, never()).showUserInfo(any());
     }
 
     @Test
     public void onDetachShouldNotInteractWithView() {
         when(userRepository.me()).thenReturn(Observable.just(userModel));
 
-        homePresenter.onAttach(homeView);
+        mainPresenter.onAttach(mainView);
 
         verify(userRepository).me();
-        verify(homeView).showUsername(any());
-        verify(homeView).showUserInitials(any());
+        verify(mainView).showUsername(any());
+        verify(mainView).showUserInitials(any());
 
-        homePresenter.onDetach();
-        verifyNoMoreInteractions(userRepository, homeView);
+        mainPresenter.onDetach();
+        verifyNoMoreInteractions(userRepository, mainView);
     }
 }

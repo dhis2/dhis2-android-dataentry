@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.main;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -44,16 +44,16 @@ import timber.log.Timber;
 import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 import static org.hisp.dhis.android.dataentry.utils.StringUtils.isEmpty;
 
-class HomePresenterImpl implements HomePresenter {
+class MainPresenterImpl implements MainPresenter {
     private final SchedulerProvider schedulerProvider;
     private final UserRepository userRepository;
     private final CompositeDisposable compositeDisposable;
 
     @Nullable
-    private HomeView homeView;
+    private MainView mainView;
 
-    HomePresenterImpl(@NonNull SchedulerProvider schedulerProvider,
-            @NonNull UserRepository userRepository) {
+    MainPresenterImpl(@NonNull SchedulerProvider schedulerProvider,
+                      @NonNull UserRepository userRepository) {
         this.schedulerProvider = schedulerProvider;
         this.userRepository = userRepository;
         this.compositeDisposable = new CompositeDisposable();
@@ -61,10 +61,10 @@ class HomePresenterImpl implements HomePresenter {
 
     @Override
     public void onAttach(@NonNull View view) {
-        isNull(view, "HomeView must not be null");
+        isNull(view, "MainView must not be null");
 
-        if (view instanceof HomeView) {
-            homeView = (HomeView) view;
+        if (view instanceof MainView) {
+            mainView = (MainView) view;
 
             compositeDisposable.add(userRepository.me()
                     .subscribeOn(schedulerProvider.io())
@@ -76,12 +76,12 @@ class HomePresenterImpl implements HomePresenter {
     @Override
     public void onDetach() {
         compositeDisposable.clear();
-        homeView = null;
+        mainView = null;
     }
 
     @SuppressWarnings("PMD.UseStringBufferForStringAppends")
     private void showUserDetails(@NonNull UserModel userModel) {
-        if (homeView == null) {
+        if (mainView == null) {
             return;
         }
 
@@ -101,7 +101,7 @@ class HomePresenterImpl implements HomePresenter {
             initials += String.valueOf(userModel.surname().charAt(0));
         }
 
-        homeView.showUsername(username);
-        homeView.showUserInitials(initials.toUpperCase(Locale.US));
+        mainView.showUsername(username);
+        mainView.showUserInitials(initials.toUpperCase(Locale.US));
     }
 }

@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.main;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -42,7 +42,6 @@ import org.hisp.dhis.android.core.user.UserCredentialsModel;
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.DhisInstrumentationTestsApp;
-import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
 import org.junit.After;
 import org.junit.Before;
@@ -64,7 +63,7 @@ public class HomeViewTests {
     private DatabaseRule databaseRule = new DatabaseRule(((Components) InstrumentationRegistry.getTargetContext()
             .getApplicationContext()).appComponent().briteDatabase());
     private ActivityTestRule activityTestRule
-            = new ActivityTestRule<>(HomeActivity.class, true, false);
+            = new ActivityTestRule<>(MainActivity.class, true, false);
 
     @Rule
     public RuleChain rules = RuleChain.emptyRuleChain()

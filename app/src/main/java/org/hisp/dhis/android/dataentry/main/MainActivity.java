@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.main;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -51,7 +51,7 @@ import org.hisp.dhis.android.dataentry.commons.ToolbarFragment;
 
 import javax.inject.Inject;
 
-public class HomeActivity extends AppCompatActivity implements HomeView,
+public class MainActivity extends AppCompatActivity implements MainView,
         NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener {
 
     // drawer layout
@@ -64,7 +64,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
     TextView userInfo;
 
     @Inject
-    HomePresenter homePresenter;
+    MainPresenter mainPresenter;
 
     // Delaying attachment of fragment
     // in order to avoid animation lag
@@ -73,7 +73,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
 
     @NonNull
     public static Intent create(@NonNull Activity activity) {
-        return new Intent(activity, HomeActivity.class);
+        return new Intent(activity, MainActivity.class);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
         setContentView(R.layout.activity_home);
 
         ((Components) getApplicationContext()).userComponent()
-                .plus(new HomeModule())
+                .plus(new MainModule())
                 .inject(this);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -112,13 +112,13 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
 
     @Override
     protected void onResume() {
-        homePresenter.onAttach(this);
+        mainPresenter.onAttach(this);
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        homePresenter.onDetach();
+        mainPresenter.onDetach();
         super.onPause();
     }
 

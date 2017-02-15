@@ -30,8 +30,8 @@ package org.hisp.dhis.android.dataentry.user;
 
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.dataentry.home.HomeComponent;
-import org.hisp.dhis.android.dataentry.home.HomeModule;
+import org.hisp.dhis.android.dataentry.main.MainComponent;
+import org.hisp.dhis.android.dataentry.main.MainModule;
 
 import dagger.Subcomponent;
 
@@ -42,5 +42,5 @@ import dagger.Subcomponent;
 public interface UserComponent {
 
     @NonNull
-    HomeComponent plus(@NonNull HomeModule homeModule);
+    MainComponent plus(@NonNull MainModule mainModule);
 }

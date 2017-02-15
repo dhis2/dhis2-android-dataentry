@@ -26,23 +26,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.main;
 
 import org.hisp.dhis.android.dataentry.commons.PerActivity;
-import org.hisp.dhis.android.dataentry.user.UserRepository;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 
-import dagger.Module;
-import dagger.Provides;
+import dagger.Subcomponent;
 
-@Module
 @PerActivity
-public class HomeModule {
-
-    @Provides
-    @PerActivity
-    HomePresenter homePresenter(SchedulerProvider schedulerProvider,
-            UserRepository userRepository) {
-        return new HomePresenterImpl(schedulerProvider, userRepository);
-    }
+@Subcomponent(modules = MainModule.class)
+public interface MainComponent {
+    void inject(MainActivity mainActivity);
 }

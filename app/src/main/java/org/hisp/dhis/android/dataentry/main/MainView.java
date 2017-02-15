@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, University of Oslo
+ * Copyright (c) 2016, University of Oslo
  *
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
@@ -26,14 +26,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.main;
 
-import org.hisp.dhis.android.dataentry.commons.PerActivity;
+import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
 
-import dagger.Subcomponent;
+import org.hisp.dhis.android.dataentry.commons.View;
 
-@PerActivity
-@Subcomponent(modules = HomeModule.class)
-public interface HomeComponent {
-    void inject(HomeActivity homeActivity);
+public interface MainView extends View {
+    @UiThread
+    void showUsername(@NonNull String username);
+
+    @UiThread
+    void showUserInfo(@NonNull String userInfo);
+
+    @UiThread
+    void showUserInitials(@NonNull String userInitials);
 }

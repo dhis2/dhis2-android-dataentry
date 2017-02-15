@@ -45,7 +45,7 @@
     <string name="error_unexpected_error">Unexpected error</string>
     <string name="error_internal_server_error">Internal server error</string>
 
-    <!-- HomeActivity -->
+    <!-- MainActivity -->
     <string name="drawer_item_forms">Forms</string>
     <string name="drawer_item_other">Other</string>
     <string name="drawer_item_profile">Profile</string>

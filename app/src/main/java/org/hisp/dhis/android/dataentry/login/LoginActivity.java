@@ -53,7 +53,7 @@ import android.widget.Toast;
 
 import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.home.HomeActivity;
+import org.hisp.dhis.android.dataentry.main.MainActivity;
 
 import javax.inject.Inject;
 
@@ -272,7 +272,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     @Override
     public void navigateToHome() {
-        Intent intent = HomeActivity.create(this);
+        Intent intent = MainActivity.create(this);
         ActivityCompat.startActivity(this, intent, null);
         overridePendingTransition(
                 R.anim.activity_open_enter,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, University of Oslo
+ * Copyright (c) 2017, University of Oslo
  *
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
@@ -26,20 +26,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.main;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.UiThread;
+import org.hisp.dhis.android.dataentry.commons.PerActivity;
+import org.hisp.dhis.android.dataentry.user.UserRepository;
+import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 
-import org.hisp.dhis.android.dataentry.commons.View;
+import dagger.Module;
+import dagger.Provides;
 
-public interface HomeView extends View {
-    @UiThread
-    void showUsername(@NonNull String username);
+@Module
+@PerActivity
+public class MainModule {
 
-    @UiThread
-    void showUserInfo(@NonNull String userInfo);
-
-    @UiThread
-    void showUserInitials(@NonNull String userInitials);
+    @Provides
+    @PerActivity
+    MainPresenter homePresenter(SchedulerProvider schedulerProvider,
+                                UserRepository userRepository) {
+        return new MainPresenterImpl(schedulerProvider, userRepository);
+    }
 }
