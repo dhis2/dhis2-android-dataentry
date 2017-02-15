@@ -55,9 +55,9 @@ import java.util.Date;
 import okhttp3.HttpUrl;
 
 @RunWith(AndroidJUnit4.class)
-public class HomeViewTests {
+public class MainViewTests {
     private Resources resources;
-    private HomeRobot homeRobot;
+    private MainRobot mainRobot;
     private ContentValues user;
 
     private DatabaseRule databaseRule = new DatabaseRule(((Components) InstrumentationRegistry.getTargetContext()
@@ -73,7 +73,7 @@ public class HomeViewTests {
     @Before
     public void setUp() throws Exception {
         resources = InstrumentationRegistry.getTargetContext().getResources();
-        homeRobot = new HomeRobot();
+        mainRobot = new MainRobot();
 
         user = new ContentValues();
         user.put(UserModel.Columns.ID, 22L);
@@ -130,14 +130,14 @@ public class HomeViewTests {
 
     @Test
     public void drawerShouldContainCorrectInformationAboutUser() {
-        homeRobot.openSlidingPanel()
+        mainRobot.openSlidingPanel()
                 .checkUsername("test_first_name test_surname")
                 .checkUserInitials("TT");
     }
 
     @Test
     public void drawerShouldObserveChangesInDatabase() {
-        homeRobot.openSlidingPanel();
+        mainRobot.openSlidingPanel();
 
         user.put(UserModel.Columns.FIRST_NAME, "another_first_name");
         user.put(UserModel.Columns.SURNAME, "another_surname");
@@ -145,14 +145,14 @@ public class HomeViewTests {
         databaseRule.briteDatabase().update(UserModel.TABLE, user,
                 UserModel.Columns.UID + " = ?", String.valueOf("test_user_uid"));
 
-        homeRobot
+        mainRobot
                 .checkUsername("another_first_name another_surname")
                 .checkUserInitials("AA");
     }
 
     @Test
     public void homeViewShouldHandleConfigurationChanges() {
-        homeRobot.openSlidingPanel()
+        mainRobot.openSlidingPanel()
                 .checkUsername("test_first_name test_surname")
                 .checkUserInitials("TT")
                 .rotateToLandscape()
@@ -166,7 +166,7 @@ public class HomeViewTests {
     // ToDo: implement tests which verify that correct fragments are attached when menu items are selected.
 //    @Test
 //    public void formsItemShouldBeSelectedByDefault() {
-//        homeRobot.checkToolbarTitle(resources.getString(R.string.drawer_item_forms))
+//        mainRobot.checkToolbarTitle(resources.getString(R.string.drawer_item_forms))
 //                .openSlidingPanel()
 //                .formsMenuItemIsSelected()
 //                .rotateToLandscape();

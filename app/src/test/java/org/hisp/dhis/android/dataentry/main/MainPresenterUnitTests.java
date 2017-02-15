@@ -47,7 +47,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
-public class HomePresenterUnitTests {
+public class MainPresenterUnitTests {
 
     @Mock
     private MainView mainView;

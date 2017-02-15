@@ -48,61 +48,61 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.hisp.dhis.android.dataentry.espresso.CustomViewMatchers.withToolbarTitle;
 
-class HomeRobot {
+class MainRobot {
 
-    HomeRobot() {
+    MainRobot() {
         // explicit public constructor
     }
 
-    HomeRobot openSlidingPanel() {
+    MainRobot openSlidingPanel() {
         onView(withId(R.id.drawer_layout))
                 .perform(open(GravityCompat.START));
         return this;
     }
 
-    HomeRobot closeSlidingPanel() {
+    MainRobot closeSlidingPanel() {
         onView(withId(R.id.drawer_layout))
                 .perform(close(GravityCompat.START));
         return this;
     }
 
-    HomeRobot checkUserInitials(@NonNull String initials) {
+    MainRobot checkUserInitials(@NonNull String initials) {
         onView(withId(R.id.textview_username_initials))
                 .check(matches(withText(initials)));
         return this;
     }
 
-    HomeRobot checkUsername(@NonNull String username) {
+    MainRobot checkUsername(@NonNull String username) {
         onView(withId(R.id.textview_username))
                 .check(matches(withText(username)));
         return this;
     }
 
-    HomeRobot checkUserInfo(@NonNull String userInfo) {
+    MainRobot checkUserInfo(@NonNull String userInfo) {
         onView(withId(R.id.textview_user_info))
                 .check(matches(withText(userInfo)));
         return this;
     }
 
-    HomeRobot checkToolbarTitle(@NonNull String title) {
+    MainRobot checkToolbarTitle(@NonNull String title) {
         onView(isAssignableFrom(Toolbar.class))
                 .check(matches(withToolbarTitle(is(title))));
         return this;
     }
 
-    HomeRobot formsMenuItemIsSelected() {
+    MainRobot formsMenuItemIsSelected() {
         onView(withId(R.id.navigation_view))
                 .perform(navigateTo(R.id.drawer_item_forms))
                 .check(matches(isSelected()));
         return this;
     }
 
-    HomeRobot rotateToPortrait() {
+    MainRobot rotateToPortrait() {
         onView(isRoot()).perform(OrientationChangeAction.orientationPortrait());
         return this;
     }
 
-    HomeRobot rotateToLandscape() {
+    MainRobot rotateToLandscape() {
         onView(isRoot()).perform(OrientationChangeAction.orientationLandscape());
         return this;
     }
