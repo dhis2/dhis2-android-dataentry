@@ -81,9 +81,14 @@ public class MainActivity extends AppCompatActivity implements MainView,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        ((Components) getApplicationContext()).userComponent()
-                .plus(new MainModule())
-                .inject(this);
+        MainComponent mainComponent = ((Components) getApplicationContext()).mainComponent();
+
+        if (mainComponent == null) {
+            // if we don't have cached component
+            mainComponent = ((Components) getApplicationContext()).createMainComponent();
+        }
+
+        mainComponent.inject(this);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -120,6 +125,12 @@ public class MainActivity extends AppCompatActivity implements MainView,
     protected void onPause() {
         mainPresenter.onDetach();
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        ((Components) getApplicationContext()).relaseMainComponent();
+        super.onDestroy();
     }
 
     @Override
