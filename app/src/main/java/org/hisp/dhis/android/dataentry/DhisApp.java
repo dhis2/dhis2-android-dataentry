@@ -98,6 +98,12 @@ public class DhisApp extends Application implements Components {
     public void onCreate() {
         super.onCreate();
 
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // this process will be used by
+            // LeakCanary to analyze heap dumps
+            return;
+        }
+
         setUpAppComponent();
         setUpServerComponent();
         setUpUserComponent();
