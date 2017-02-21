@@ -29,7 +29,6 @@
 package org.hisp.dhis.android.dataentry.home;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.dataentry.commons.View;
@@ -39,6 +38,7 @@ import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 import java.util.Locale;
 
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observables.ConnectableObservable;
 import timber.log.Timber;
 
 import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
@@ -48,9 +48,6 @@ class HomePresenterImpl implements HomePresenter {
     private final SchedulerProvider schedulerProvider;
     private final UserRepository userRepository;
     private final CompositeDisposable compositeDisposable;
-
-    @Nullable
-    private HomeView homeView;
 
     HomePresenterImpl(@NonNull SchedulerProvider schedulerProvider,
             @NonNull UserRepository userRepository) {
@@ -64,44 +61,59 @@ class HomePresenterImpl implements HomePresenter {
         isNull(view, "HomeView must not be null");
 
         if (view instanceof HomeView) {
-            homeView = (HomeView) view;
+            HomeView homeView = (HomeView) view;
 
-            compositeDisposable.add(userRepository.me()
+            ConnectableObservable<UserModel> userObservable = userRepository.me()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(this::showUserDetails, Timber::e));
+                    .publish();
+
+            compositeDisposable.add(userObservable
+                    .map(this::username)
+                    .subscribe(homeView.showUsername(), Timber::e));
+
+            compositeDisposable.add(userObservable
+                    .map(this::userInitials)
+                    .subscribe(homeView.showUserInitials(), Timber::e));
+
+            compositeDisposable.add(userObservable.connect());
         }
     }
 
     @Override
     public void onDetach() {
         compositeDisposable.clear();
-        homeView = null;
     }
 
     @SuppressWarnings("PMD.UseStringBufferForStringAppends")
-    private void showUserDetails(@NonNull UserModel userModel) {
-        if (homeView == null) {
-            return;
-        }
-
-        String initials = "";
+    private String username(@NonNull UserModel user) {
         String username = "";
-        if (!isEmpty(userModel.firstName())) {
-            username += userModel.firstName();
-            initials += String.valueOf(userModel.firstName().charAt(0));
+        if (!isEmpty(user.firstName())) {
+            username += user.firstName();
         }
 
-        if (!isEmpty(userModel.surname())) {
+        if (!isEmpty(user.surname())) {
             if (!username.isEmpty()) {
                 username += " ";
             }
 
-            username += userModel.surname();
-            initials += String.valueOf(userModel.surname().charAt(0));
+            username += user.surname();
         }
 
-        homeView.showUsername(username);
-        homeView.showUserInitials(initials.toUpperCase(Locale.US));
+        return username;
+    }
+
+    @SuppressWarnings("PMD.UseStringBufferForStringAppends")
+    private String userInitials(@NonNull UserModel user) {
+        String initials = "";
+        if (!isEmpty(user.firstName())) {
+            initials += String.valueOf(user.firstName().charAt(0));
+        }
+
+        if (!isEmpty(user.surname())) {
+            initials += String.valueOf(user.surname().charAt(0));
+        }
+
+        return initials.toUpperCase(Locale.US);
     }
 }

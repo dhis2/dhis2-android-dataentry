@@ -35,12 +35,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import io.reactivex.Observable;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -49,7 +52,7 @@ import static org.mockito.Mockito.when;
 @RunWith(JUnit4.class)
 public class HomePresenterUnitTests {
 
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private HomeView homeView;
 
     @Mock
@@ -57,6 +60,12 @@ public class HomePresenterUnitTests {
 
     @Mock
     private UserModel userModel;
+
+    @Captor
+    private ArgumentCaptor<String> usernameCaptor;
+
+    @Captor
+    private ArgumentCaptor<String> userInitialsCaptor;
 
     private HomePresenter homePresenter;
 
@@ -68,73 +77,83 @@ public class HomePresenterUnitTests {
     }
 
     @Test
-    public void onAttachShouldCallViewWithCorrectUsernameAndInitials() {
+    public void onAttachShouldCallViewWithCorrectUsernameAndInitials() throws Exception {
         when(userModel.firstName()).thenReturn("John");
         when(userModel.surname()).thenReturn("Watson");
         when(userRepository.me()).thenReturn(Observable.just(userModel));
 
         homePresenter.onAttach(homeView);
 
-        verify(homeView).showUsername("John Watson");
-        verify(homeView).showUserInitials("JW");
+        verify(homeView.showUsername()).accept(usernameCaptor.capture());
+        verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
+        verify(homeView, never()).showUserInfo();
 
-        verify(homeView, never()).showUserInfo(any());
+        assertThat(usernameCaptor.getValue()).isEqualTo("John Watson");
+        assertThat(userInitialsCaptor.getValue()).isEqualTo("JW");
     }
 
     @Test
-    public void onAttachShouldNotAppendSpaceToUsername() {
+    public void onAttachShouldNotAppendSpaceToUsername() throws Exception {
         when(userModel.firstName()).thenReturn(null);
         when(userModel.surname()).thenReturn("Watson");
         when(userRepository.me()).thenReturn(Observable.just(userModel));
 
         homePresenter.onAttach(homeView);
 
-        verify(homeView).showUsername("Watson");
-        verify(homeView).showUserInitials("W");
+        verify(homeView.showUsername()).accept(usernameCaptor.capture());
+        verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
+        verify(homeView, never()).showUserInfo();
 
-        verify(homeView, never()).showUserInfo(any());
+        assertThat(usernameCaptor.getValue()).isEqualTo("Watson");
+        assertThat(userInitialsCaptor.getValue()).isEqualTo("W");
     }
 
     @Test
-    public void onAttachShouldCapitalizeInitials() {
+    public void onAttachShouldCapitalizeInitials() throws Exception {
         when(userModel.firstName()).thenReturn("john");
         when(userModel.surname()).thenReturn("watson");
         when(userRepository.me()).thenReturn(Observable.just(userModel));
 
         homePresenter.onAttach(homeView);
 
-        verify(homeView).showUsername("john watson");
-        verify(homeView).showUserInitials("JW");
+        verify(homeView.showUsername()).accept(usernameCaptor.capture());
+        verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
+        verify(homeView, never()).showUserInfo();
 
-        verify(homeView, never()).showUserInfo(any());
+        assertThat(usernameCaptor.getValue()).isEqualTo("john watson");
+        assertThat(userInitialsCaptor.getValue()).isEqualTo("JW");
     }
 
     @Test
-    public void onAttachShouldNotFailIfArgumentsAreNull() {
+    public void onAttachShouldNotFailIfArgumentsAreNull() throws Exception {
         when(userModel.firstName()).thenReturn(null);
         when(userModel.surname()).thenReturn(null);
         when(userRepository.me()).thenReturn(Observable.just(userModel));
 
         homePresenter.onAttach(homeView);
 
-        verify(homeView).showUsername("");
-        verify(homeView).showUserInitials("");
+        verify(homeView.showUsername()).accept(usernameCaptor.capture());
+        verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
+        verify(homeView, never()).showUserInfo();
 
-        verify(homeView, never()).showUserInfo(any());
+        assertThat(usernameCaptor.getValue()).isEqualTo("");
+        assertThat(userInitialsCaptor.getValue()).isEqualTo("");
     }
 
     @Test
-    public void onAttachShouldNotFailIfArgumentsAreEmpty() {
+    public void onAttachShouldNotFailIfArgumentsAreEmpty() throws Exception {
         when(userModel.firstName()).thenReturn("");
         when(userModel.surname()).thenReturn("");
         when(userRepository.me()).thenReturn(Observable.just(userModel));
 
         homePresenter.onAttach(homeView);
 
-        verify(homeView).showUsername("");
-        verify(homeView).showUserInitials("");
+        verify(homeView.showUsername()).accept(usernameCaptor.capture());
+        verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
+        verify(homeView, never()).showUserInfo();
 
-        verify(homeView, never()).showUserInfo(any());
+        assertThat(usernameCaptor.getValue()).isEqualTo("");
+        assertThat(userInitialsCaptor.getValue()).isEqualTo("");
     }
 
     @Test
@@ -144,8 +163,8 @@ public class HomePresenterUnitTests {
         homePresenter.onAttach(homeView);
 
         verify(userRepository).me();
-        verify(homeView).showUsername(any());
-        verify(homeView).showUserInitials(any());
+        verify(homeView).showUsername();
+        verify(homeView).showUserInitials();
 
         homePresenter.onDetach();
         verifyNoMoreInteractions(userRepository, homeView);
