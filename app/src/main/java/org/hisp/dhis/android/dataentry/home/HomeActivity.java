@@ -51,6 +51,8 @@ import org.hisp.dhis.android.dataentry.commons.ToolbarFragment;
 
 import javax.inject.Inject;
 
+import io.reactivex.functions.Consumer;
+
 public class HomeActivity extends AppCompatActivity implements HomeView,
         NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener {
 
@@ -166,22 +168,25 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
         return true;
     }
 
+    @NonNull
     @UiThread
     @Override
-    public void showUsername(@NonNull String name) {
-        username.setText(name);
+    public Consumer<String> showUsername() {
+        return (username) -> this.username.setText(username);
     }
 
+    @NonNull
     @UiThread
     @Override
-    public void showUserInfo(@NonNull String info) {
+    public Consumer<String> showUserInitials() {
+        return (userInitials) -> this.usernameInitials.setText(userInitials);
+    }
+
+    @NonNull
+    @UiThread
+    @Override
+    public Consumer<String> showUserInfo() {
         throw new UnsupportedOperationException();
-    }
-
-    @UiThread
-    @Override
-    public void showUserInitials(@NonNull String initials) {
-        usernameInitials.setText(initials);
     }
 
     protected void attachFragment(Fragment fragment) {
