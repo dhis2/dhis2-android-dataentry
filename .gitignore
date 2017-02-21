@@ -35,8 +35,3 @@ secrets.properties
 
 # ignore .idea directory
 .idea/*
-# keep fileTemplates directory
-!.idea/fileTemplates
-!.idea/fileTemplates/*
-!.idea/fileTemplates/internal/*
-!.idea/fileTemplates/includes/*
