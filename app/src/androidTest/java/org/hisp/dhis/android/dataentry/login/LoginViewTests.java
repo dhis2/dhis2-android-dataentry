@@ -30,8 +30,6 @@ package org.hisp.dhis.android.dataentry.login;
 
 import android.content.res.Resources;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
-import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -48,7 +46,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.net.HttpURLConnection;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -179,32 +176,13 @@ public class LoginViewTests {
         mockResponse.setBodyDelay(2, TimeUnit.SECONDS);
         mockWebServer.enqueue(mockResponse);
 
-        List<IdlingResource> idlingResources = muteIdlingResources();
+        Intents.init();
 
         // kick of login
         loginRobot.typeServerUrl(SERVER_URL)
                 .typeUsername(USERNAME)
                 .typePassword(PASSWORD)
                 .clickOnLoginButton();
-
-        // check if views are hidden and trigger configuration change
-        loginRobot.progressBarIsVisible()
-                .serverUrlIsHidden()
-                .usernameIsHidden()
-                .passwordIsHidden()
-                .loginButtonIsHidden()
-                .rotateToLandscape();
-
-        // check if state is correctly restored after configuration change
-        loginRobot.progressBarIsVisible()
-                .serverUrlIsHidden()
-                .usernameIsHidden()
-                .passwordIsHidden()
-                .loginButtonIsHidden();
-
-        unmuteIdlingResources(idlingResources);
-
-        Intents.init();
 
         // if login is successful, home activity should be started
         Intents.intended(hasComponent(HomeActivity.class.getName()));
@@ -229,17 +207,5 @@ public class LoginViewTests {
                 .checkPasswordError(resources.getString(R.string.error_wrong_credentials));
 
         Spoon.screenshot(loginViewRule.getActivity(), "wrong_server_url_state");
-    }
-
-    private List<IdlingResource> muteIdlingResources() {
-        List<IdlingResource> idlingResources = Espresso.getIdlingResources();
-        Espresso.unregisterIdlingResources(idlingResources
-                .toArray(new IdlingResource[idlingResources.size()]));
-        return idlingResources;
-    }
-
-    private void unmuteIdlingResources(List<IdlingResource> idlingResources) {
-        Espresso.registerIdlingResources(idlingResources
-                .toArray(new IdlingResource[idlingResources.size()]));
     }
 }
