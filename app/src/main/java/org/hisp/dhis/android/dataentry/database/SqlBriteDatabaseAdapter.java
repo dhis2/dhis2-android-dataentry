@@ -34,12 +34,12 @@ import android.support.annotation.NonNull;
 import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
+import org.hisp.dhis.android.core.data.database.Transaction;
 
 import timber.log.Timber;
 
 import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 
-// TODO: tests
 class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     private final BriteDatabase sqlBriteDatabase;
     private BriteDatabase.Transaction transaction;
@@ -80,17 +80,7 @@ class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     }
 
     @Override
-    public void beginTransaction() {
-        transaction = sqlBriteDatabase.newTransaction();
-    }
-
-    @Override
-    public void setTransactionSuccessful() {
-        transaction.markSuccessful();
-    }
-
-    @Override
-    public void endTransaction() {
-        transaction.end();
+    public Transaction beginNewTransaction() {
+        return new SqlBriteTransaction(sqlBriteDatabase.newTransaction());
     }
 }
