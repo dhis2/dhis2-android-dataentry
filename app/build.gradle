@@ -167,6 +167,11 @@ dependencies {
     compile "com.google.dagger:dagger:${libraries.dagger}"
     annotationProcessor "com.google.dagger:dagger-compiler:${libraries.dagger}"
 
+    // Google's auto-value. Annotations are used only during compilation time, as well as
+    // annotation processor which hoops up into compilation process
+    provided "com.google.auto.value:auto-value:${libraries.autovalue}"
+    annotationProcessor "com.google.auto.value:auto-value:${libraries.autovalue}"
+
     // Square libraries
     debugCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:${libraries.leakcanary}"
