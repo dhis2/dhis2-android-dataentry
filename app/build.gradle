@@ -192,6 +192,7 @@ dependencies {
     testCompile "org.powermock:powermock-module-junit4:${libraries.powermock}"
     testCompile "org.powermock:powermock-api-mockito2:${libraries.powermock}"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:${libraries.leakcanary}"
+    testCompile "nl.jqno.equalsverifier:equalsverifier:${libraries.equalsverifier}"
 
     // Spoon client which allows to capture screenshots during instrumentation tests
     androidTestCompile "com.squareup.spoon:spoon-client:${libraries.spoon}"
