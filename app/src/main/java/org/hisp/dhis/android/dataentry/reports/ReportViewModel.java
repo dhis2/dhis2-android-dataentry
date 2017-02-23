@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 
+import java.util.Collections;
 import java.util.List;
 
 @AutoValue
@@ -13,25 +14,18 @@ public abstract class ReportViewModel {
     public abstract String id();
 
     @NonNull
-    public abstract SyncStatus status();
+    public abstract Status status();
 
     @NonNull
     public abstract List<String> labels();
 
-    public static ReportViewModel
-
-    @AutoValue.Builder
-    public static abstract class Builder {
-        public abstract Builder id(String id);
-
-        public abstract Builder status(SyncStatus status);
-
-        public abstract Builder labels(List<String> labels);
-
-        public abstract ReportViewModel build();
+    @NonNull
+    public static ReportViewModel create(@NonNull String id,
+            @NonNull Status status, @NonNull List<String> labels) {
+        return new AutoValue_ReportViewModel(id, status, Collections.unmodifiableList(labels));
     }
 
-    public enum SyncStatus {
+    public enum Status {
         SENT, TO_UPDATE, TO_POST, ERROR
     }
 }
