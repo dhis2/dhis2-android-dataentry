@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.never;
@@ -39,22 +40,25 @@ public class HomePresenterUnitTests {
     @Captor
     private ArgumentCaptor<String> userInitialsCaptor;
 
+    private PublishSubject<UserModel> userSubject;
     private HomePresenter homePresenter;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
+        userSubject = PublishSubject.create();
         homePresenter = new HomePresenterImpl(new MockSchedulersProvider(), userRepository);
+        when(userRepository.me()).thenReturn(userSubject);
     }
 
     @Test
     public void onAttachShouldCallViewWithCorrectUsernameAndInitials() throws Exception {
         when(userModel.firstName()).thenReturn("John");
         when(userModel.surname()).thenReturn("Watson");
-        when(userRepository.me()).thenReturn(Observable.just(userModel));
 
         homePresenter.onAttach(homeView);
+        userSubject.onNext(userModel);
 
         verify(homeView.showUsername()).accept(usernameCaptor.capture());
         verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
@@ -68,9 +72,9 @@ public class HomePresenterUnitTests {
     public void onAttachShouldNotAppendSpaceToUsername() throws Exception {
         when(userModel.firstName()).thenReturn(null);
         when(userModel.surname()).thenReturn("Watson");
-        when(userRepository.me()).thenReturn(Observable.just(userModel));
 
         homePresenter.onAttach(homeView);
+        userSubject.onNext(userModel);
 
         verify(homeView.showUsername()).accept(usernameCaptor.capture());
         verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
@@ -84,9 +88,9 @@ public class HomePresenterUnitTests {
     public void onAttachShouldCapitalizeInitials() throws Exception {
         when(userModel.firstName()).thenReturn("john");
         when(userModel.surname()).thenReturn("watson");
-        when(userRepository.me()).thenReturn(Observable.just(userModel));
 
         homePresenter.onAttach(homeView);
+        userSubject.onNext(userModel);
 
         verify(homeView.showUsername()).accept(usernameCaptor.capture());
         verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
@@ -100,9 +104,9 @@ public class HomePresenterUnitTests {
     public void onAttachShouldNotFailIfArgumentsAreNull() throws Exception {
         when(userModel.firstName()).thenReturn(null);
         when(userModel.surname()).thenReturn(null);
-        when(userRepository.me()).thenReturn(Observable.just(userModel));
 
         homePresenter.onAttach(homeView);
+        userSubject.onNext(userModel);
 
         verify(homeView.showUsername()).accept(usernameCaptor.capture());
         verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
@@ -119,6 +123,7 @@ public class HomePresenterUnitTests {
         when(userRepository.me()).thenReturn(Observable.just(userModel));
 
         homePresenter.onAttach(homeView);
+        userSubject.onNext(userModel);
 
         verify(homeView.showUsername()).accept(usernameCaptor.capture());
         verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
@@ -130,9 +135,8 @@ public class HomePresenterUnitTests {
 
     @Test
     public void onDetachShouldNotInteractWithView() {
-        when(userRepository.me()).thenReturn(Observable.just(userModel));
-
         homePresenter.onAttach(homeView);
+        userSubject.onNext(userModel);
 
         verify(userRepository).me();
         verify(homeView).showUsername();
@@ -140,5 +144,14 @@ public class HomePresenterUnitTests {
 
         homePresenter.onDetach();
         verifyNoMoreInteractions(userRepository, homeView);
+    }
+
+    @Test
+    public void onDetachShouldUnsubscribeFromRepository() {
+        homePresenter.onAttach(homeView);
+        assertThat(userSubject.hasObservers()).isTrue();
+
+        homePresenter.onDetach();
+        assertThat(userSubject.hasObservers()).isFalse();
     }
 }
