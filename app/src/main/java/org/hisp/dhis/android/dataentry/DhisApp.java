@@ -46,7 +46,6 @@ import org.hisp.dhis.android.dataentry.database.DbModule;
 import org.hisp.dhis.android.dataentry.login.LoginComponent;
 import org.hisp.dhis.android.dataentry.login.LoginModule;
 import org.hisp.dhis.android.dataentry.main.MainComponent;
-import org.hisp.dhis.android.dataentry.main.MainModule;
 import org.hisp.dhis.android.dataentry.server.PerServer;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.server.ServerModule;
@@ -274,26 +273,5 @@ public class DhisApp extends Application implements Components {
     @Override
     public void releaseUserComponent() {
         userComponent = null;
-    }
-
-    ////////////////////////////////////////////////////////////////////////
-    // Main component
-    ////////////////////////////////////////////////////////////////////////
-
-    @NonNull
-    @Override
-    public MainComponent createMainComponent() {
-        return (mainComponent = userComponent.plus(new MainModule()));
-    }
-
-    @Nullable
-    @Override
-    public MainComponent mainComponent() {
-        return mainComponent;
-    }
-
-    @Override
-    public void relaseMainComponent() {
-        mainComponent = null;
     }
 }

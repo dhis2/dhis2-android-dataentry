@@ -33,7 +33,6 @@ import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.dataentry.login.LoginComponent;
-import org.hisp.dhis.android.dataentry.main.MainComponent;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.user.UserComponent;
 
@@ -78,16 +77,4 @@ public interface Components {
     UserComponent userComponent();
 
     void releaseUserComponent();
-
-    ////////////////////////////////////////////////////////////////////
-    // Main component
-    ////////////////////////////////////////////////////////////////////
-
-    @NonNull
-    MainComponent createMainComponent();
-
-    @Nullable
-    MainComponent mainComponent();
-
-    void relaseMainComponent();
 }

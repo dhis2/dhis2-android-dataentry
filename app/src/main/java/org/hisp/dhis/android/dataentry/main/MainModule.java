@@ -41,7 +41,7 @@ public class MainModule {
 
     @Provides
     @PerActivity
-    MainPresenter homePresenter(SchedulerProvider schedulerProvider,
+    MainPresenter mainPresenter(SchedulerProvider schedulerProvider,
                                 UserRepository userRepository) {
         return new MainPresenterImpl(schedulerProvider, userRepository);
     }

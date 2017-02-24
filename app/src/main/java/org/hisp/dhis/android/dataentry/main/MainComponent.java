@@ -29,7 +29,6 @@
 package org.hisp.dhis.android.dataentry.main;
 
 import org.hisp.dhis.android.dataentry.commons.PerActivity;
-import org.hisp.dhis.android.dataentry.main.home.HomeFragment;
 
 import dagger.Subcomponent;
 
@@ -37,6 +36,4 @@ import dagger.Subcomponent;
 @Subcomponent(modules = MainModule.class)
 public interface MainComponent {
     void inject(MainActivity mainActivity);
-
-    void inject(HomeFragment homeFragment);
 }

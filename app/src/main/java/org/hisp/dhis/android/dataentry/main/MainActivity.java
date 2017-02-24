@@ -47,7 +47,7 @@ import android.widget.TextView;
 
 import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.ToolbarFragment;
+import org.hisp.dhis.android.dataentry.main.home.HomeFragment;
 
 import javax.inject.Inject;
 
@@ -81,14 +81,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        MainComponent mainComponent = ((Components) getApplicationContext()).mainComponent();
-
-        if (mainComponent == null) {
-            // if we don't have cached component
-            mainComponent = ((Components) getApplicationContext()).createMainComponent();
-        }
-
-        mainComponent.inject(this);
+        ((Components) getApplicationContext()).userComponent().plus(new MainModule()).inject(this);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -128,12 +121,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
     }
 
     @Override
-    protected void onDestroy() {
-        ((Components) getApplicationContext()).relaseMainComponent();
-        super.onDestroy();
-    }
-
-    @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
@@ -169,7 +156,8 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        attachFragment(ToolbarFragment.create(menuItem.getTitle().toString()));
+        //attachFragment(ToolbarFragment.create(menuItem.getTitle().toString()));
+        attachFragment(new HomeFragment());
 
         navigationView.setCheckedItem(menuItem.getItemId());
         drawerLayout.closeDrawers();
