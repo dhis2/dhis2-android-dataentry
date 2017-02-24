@@ -25,7 +25,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.hisp.dhis.android.dataentry.main.home;
+
+import android.support.annotation.UiThread;
 
 import org.hisp.dhis.android.dataentry.commons.View;
 
@@ -33,14 +36,10 @@ import java.util.List;
 
 public interface HomeView extends View {
 
-    void swapData(List<String> contentEntities);
+    @UiThread
+    void swapData(List<HomeEntity> homeEntities);
 
-    void showProgressBar();
-
-    void hideProgressBar();
-
-    void showUnexpectedError(String message);
-
+    @UiThread
     void showError(String message);
 }
 
