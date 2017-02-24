@@ -108,7 +108,7 @@ public class SqlBriteDatabaseAdapterTests {
     @Test
     public void transactionIsCreated() throws Exception {
         Mockito.when(sqlBriteDatabase.newTransaction()).thenReturn(transaction);
-        sqlBriteDatabaseAdapter.beginTransaction();
+        sqlBriteDatabaseAdapter.beginNewTransaction();
         BriteDatabase.Transaction result = verify(sqlBriteDatabase).newTransaction();
     }
 }

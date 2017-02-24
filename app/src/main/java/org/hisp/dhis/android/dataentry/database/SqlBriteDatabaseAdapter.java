@@ -42,7 +42,6 @@ import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 
 class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     private final BriteDatabase sqlBriteDatabase;
-    private BriteDatabase.Transaction transaction;
 
     SqlBriteDatabaseAdapter(@NonNull BriteDatabase briteDatabase) {
         isNull(briteDatabase, "Brite");
