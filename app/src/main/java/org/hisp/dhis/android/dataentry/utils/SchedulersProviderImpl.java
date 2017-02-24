@@ -44,12 +44,6 @@ public class SchedulersProviderImpl implements SchedulerProvider {
 
     @NonNull
     @Override
-    public rx.Scheduler legacyIo() {
-        return rx.schedulers.Schedulers.io();
-    }
-
-    @NonNull
-    @Override
     public Scheduler io() {
         return Schedulers.io();
     }
@@ -58,5 +52,11 @@ public class SchedulersProviderImpl implements SchedulerProvider {
     @Override
     public Scheduler ui() {
         return AndroidSchedulers.mainThread();
+    }
+
+    @NonNull
+    @Override
+    public rx.Scheduler legacyIo() {
+        return rx.schedulers.Schedulers.io();
     }
 }
