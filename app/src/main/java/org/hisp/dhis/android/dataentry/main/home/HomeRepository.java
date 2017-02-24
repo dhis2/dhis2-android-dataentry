@@ -28,8 +28,11 @@
 
 package org.hisp.dhis.android.dataentry.main.home;
 
-import org.hisp.dhis.android.dataentry.commons.Presenter;
+import java.util.List;
 
-public interface HomePresenter extends Presenter {
+import io.reactivex.Observable;
 
+public interface HomeRepository {
+
+    Observable<List<HomeEntity>> homeEntities();
 }
