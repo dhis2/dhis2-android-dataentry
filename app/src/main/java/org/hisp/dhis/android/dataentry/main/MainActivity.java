@@ -47,6 +47,7 @@ import android.widget.TextView;
 
 import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.commons.ToolbarFragment;
 import org.hisp.dhis.android.dataentry.main.home.HomeFragment;
 
 import javax.inject.Inject;
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
         if (savedInstanceState == null) {
             onNavigationItemSelected(navigationView.getMenu()
-                    .findItem(R.id.drawer_item_forms));
+                    .findItem(R.id.drawer_item_home));
         }
     }
 
@@ -156,10 +157,14 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        //attachFragment(ToolbarFragment.create(menuItem.getTitle().toString()));
-        attachFragment(new HomeFragment());
 
         navigationView.setCheckedItem(menuItem.getItemId());
+
+        if (menuItem.getItemId() == R.id.drawer_item_home) {
+            attachFragment(new HomeFragment());
+        } else {
+            attachFragment(ToolbarFragment.create(menuItem.getTitle().toString()));
+        }
         drawerLayout.closeDrawers();
 
         return true;

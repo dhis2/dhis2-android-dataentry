@@ -90,9 +90,9 @@ class MainRobot {
         return this;
     }
 
-    MainRobot formsMenuItemIsSelected() {
+    MainRobot homeMenuItemIsSelected() {
         onView(withId(R.id.navigation_view))
-                .perform(navigateTo(R.id.drawer_item_forms))
+                .perform(navigateTo(R.id.drawer_item_home))
                 .check(matches(isSelected()));
         return this;
     }

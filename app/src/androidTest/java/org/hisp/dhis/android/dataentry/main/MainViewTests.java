@@ -151,7 +151,7 @@ public class MainViewTests {
     }
 
     @Test
-    public void homeViewShouldHandleConfigurationChanges() {
+    public void mainViewShouldHandleConfigurationChanges() {
         mainRobot.openSlidingPanel()
                 .checkUsername("test_first_name test_surname")
                 .checkUserInitials("TT")
@@ -165,10 +165,10 @@ public class MainViewTests {
 
     // ToDo: implement tests which verify that correct fragments are attached when menu items are selected.
 //    @Test
-//    public void formsItemShouldBeSelectedByDefault() {
+//    public void homeScreenShouldBeSelectedByDefault() {
 //        mainRobot.checkToolbarTitle(resources.getString(R.string.drawer_item_forms))
 //                .openSlidingPanel()
-//                .formsMenuItemIsSelected()
+//                .homeMenuItemIsSelected()
 //                .rotateToLandscape();
 //    }
 
