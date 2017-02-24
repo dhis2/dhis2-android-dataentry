@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 @AutoValue
-public abstract class ReportViewModel {
+abstract class ReportViewModel {
 
     @NonNull
     public abstract String id();
@@ -25,7 +25,7 @@ public abstract class ReportViewModel {
         return new AutoValue_ReportViewModel(id, status, Collections.unmodifiableList(labels));
     }
 
-    public enum Status {
+    enum Status {
         SENT, TO_UPDATE, TO_POST, ERROR
     }
 }
