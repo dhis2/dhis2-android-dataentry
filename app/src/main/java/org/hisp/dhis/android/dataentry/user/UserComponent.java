@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.home.HomeComponent;
 import org.hisp.dhis.android.dataentry.home.HomeModule;
+import org.hisp.dhis.android.dataentry.reports.ReportsComponent;
+import org.hisp.dhis.android.dataentry.reports.ReportsModule;
 
 import dagger.Subcomponent;
 
@@ -15,4 +17,7 @@ public interface UserComponent {
 
     @NonNull
     HomeComponent plus(@NonNull HomeModule homeModule);
+
+    @NonNull
+    ReportsComponent plus(@NonNull ReportsModule reportsModule);
 }
