@@ -14,7 +14,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.processors.PublishProcessor;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -33,43 +33,41 @@ public class ReportsPresenterUnitTests {
     private ArgumentCaptor<List<ReportViewModel>> reportViewModelsCaptor;
 
     private ReportsPresenter reportsPresenter;
-    private PublishSubject<List<ReportViewModel>> reportsPublisher;
+    private PublishProcessor<List<ReportViewModel>> reportsPublisher;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        reportsPublisher = PublishSubject.create();
-        reportsPresenter = new ReportsPresenterImpl(ReportType.EVENT,
-                new MockSchedulersProvider(), reportsRepository);
-        when(reportsRepository.reports(ReportType.EVENT))
-                .thenReturn(reportsPublisher);
+        reportsPublisher = PublishProcessor.create();
+        reportsPresenter = new ReportsPresenterImpl(new MockSchedulersProvider(), reportsRepository);
+        when(reportsRepository.reports()).thenReturn(reportsPublisher);
     }
 
     @Test
     public void onAttachShouldRenderReportViewModels() throws Exception {
         List<ReportViewModel> reports = Arrays.asList(
-                ReportViewModel.create("test_report_id_one", ReportViewModel.Status.SENT,
+                ReportViewModel.create("test_report_id_one", ReportViewModel.Status.SYNCED,
                         Arrays.asList("test_label_one", "test_label_two")),
-                ReportViewModel.create("test_report_id_two", ReportViewModel.Status.ERROR,
+                ReportViewModel.create("test_report_id_two", ReportViewModel.Status.FAILED,
                         Arrays.asList("test_label_one", "test_label_two")),
-                ReportViewModel.create("test_report_id_three", ReportViewModel.Status.TO_POST,
+                ReportViewModel.create("test_report_id_three", ReportViewModel.Status.TO_SYNC,
                         Arrays.asList("test_label_one", "test_label_two")));
 
         reportsPresenter.onAttach(reportsView);
         reportsPublisher.onNext(reports);
 
         verify(reportsView.renderReportViewModels()).accept(reportViewModelsCaptor.capture());
-        verify(reportsRepository).reports(ReportType.EVENT);
+        verify(reportsRepository).reports();
         assertThat(reportViewModelsCaptor.getValue()).isEqualTo(reports);
     }
 
     @Test
     public void updatesShouldBePropagatedToView() throws Exception {
         List<ReportViewModel> reports = Arrays.asList(ReportViewModel.create("test_report_id_one",
-                ReportViewModel.Status.SENT, Arrays.asList("test_label_one", "test_label_two")));
+                ReportViewModel.Status.SYNCED, Arrays.asList("test_label_one", "test_label_two")));
 
-        when(reportsRepository.reports(ReportType.EVENT)).thenReturn(reportsPublisher);
+        when(reportsRepository.reports()).thenReturn(reportsPublisher);
 
         reportsPresenter.onAttach(reportsView);
 
@@ -77,16 +75,16 @@ public class ReportsPresenterUnitTests {
         reportsPublisher.onNext(reports);
 
         verify(reportsView.renderReportViewModels()).accept(reportViewModelsCaptor.capture());
-        verify(reportsRepository).reports(ReportType.EVENT);
+        verify(reportsRepository).reports();
         assertThat(reportViewModelsCaptor.getValue()).isEqualTo(reports);
     }
 
     @Test
     public void onDetachShouldUnsubscribeFromRepository() {
         reportsPresenter.onAttach(reportsView);
-        assertThat(reportsPublisher.hasObservers()).isTrue();
+        assertThat(reportsPublisher.hasSubscribers()).isTrue();
 
         reportsPresenter.onDetach();
-        assertThat(reportsPublisher.hasObservers()).isFalse();
+        assertThat(reportsPublisher.hasSubscribers()).isFalse();
     }
 }
