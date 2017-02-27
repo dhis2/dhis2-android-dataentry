@@ -2,7 +2,6 @@ package org.hisp.dhis.android.dataentry.home;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -14,7 +13,6 @@ import org.hisp.dhis.android.core.user.UserCredentialsModel;
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.DhisInstrumentationTestsApp;
-import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
 import org.junit.After;
 import org.junit.Before;
@@ -29,7 +27,6 @@ import okhttp3.HttpUrl;
 
 @RunWith(AndroidJUnit4.class)
 public class HomeViewTests {
-    private Resources resources;
     private HomeRobot homeRobot;
     private ContentValues user;
 
@@ -45,7 +42,6 @@ public class HomeViewTests {
 
     @Before
     public void setUp() throws Exception {
-        resources = InstrumentationRegistry.getTargetContext().getResources();
         homeRobot = new HomeRobot();
 
         user = new ContentValues();
