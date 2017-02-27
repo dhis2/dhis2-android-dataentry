@@ -8,6 +8,9 @@ import com.google.auto.value.AutoValue;
 public abstract class Quartet<T> {
 
     @NonNull
+    public abstract T val0();
+
+    @NonNull
     public abstract T val1();
 
     @NonNull
@@ -17,11 +20,8 @@ public abstract class Quartet<T> {
     public abstract T val3();
 
     @NonNull
-    public abstract T val4();
-
-    @NonNull
-    public static <T> Quartet<T> create(@NonNull T val1, @NonNull T val2,
-            @NonNull T val3, @NonNull T val4) {
-        return new AutoValue_Quartet<T>(val1, val2, val3, val4);
+    public static <T> Quartet<T> create(@NonNull T val0, @NonNull T val1,
+            @NonNull T val2, @NonNull T val3) {
+        return new AutoValue_Quartet<T>(val0, val1, val2, val3);
     }
 }
