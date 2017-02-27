@@ -19,19 +19,23 @@ import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
+@SuppressWarnings({
+        "PMD.AvoidDuplicateLiterals"
+})
 final class ReportsRepositoryImpl implements ReportsRepository {
     /*
-        SELECT
-            Event.uid,
-            Event.state,
-            DataElement.displayName,
-            TrackedEntityDataValue.value
-        FROM TrackedEntityDataValue
-            LEFT JOIN Event ON TrackedEntityDataValue.event = Event.uid
-            LEFT JOIN DataElement ON TrackedEntityDataValue.dataElement = DataElement.uid
-            LEFT JOIN ProgramStageDataElement ON TrackedEntityDataValue.dataElement = ProgramStageDataElement.dataElement
-        WHERE Event.program = "program_uid" AND NOT Event.state = 'TO_DELETE' AND ProgramStageDataElement.displayInReports = 1
-        ORDER BY datetime(Event.created) DESC, Event.uid ASC, ProgramStageDataElement.sortOrder ASC;
+    SELECT
+      Event.uid,
+      Event.state,
+      DataElement.displayName,
+      TrackedEntityDataValue.value
+    FROM TrackedEntityDataValue
+      LEFT JOIN Event ON TrackedEntityDataValue.event = Event.uid
+      LEFT JOIN DataElement ON TrackedEntityDataValue.dataElement = DataElement.uid
+      LEFT JOIN ProgramStageDataElement ON TrackedEntityDataValue.dataElement = ProgramStageDataElement.dataElement
+    WHERE Event.program = "program_uid" AND NOT Event.state = 'TO_DELETE'
+    AND ProgramStageDataElement.displayInReports = 1
+    ORDER BY datetime(Event.created) DESC, Event.uid ASC, ProgramStageDataElement.sortOrder ASC;
      */
     private static final String SELECT_EVENTS = "SELECT " +
             EventModel.TABLE + "." + EventModel.Columns.UID + ", " +
@@ -49,8 +53,10 @@ final class ReportsRepositoryImpl implements ReportsRepository {
             TrackedEntityDataValueModel.TABLE + "." + TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = " +
             ProgramStageDataElementModel.TABLE + "." + ProgramStageDataElementModel.Columns.DATA_ELEMENT + " " +
             "WHERE " + EventModel.TABLE + "." + EventModel.Columns.PROGRAM + " = ?" + "AND NOT " +
-            EventModel.TABLE + "." + EventModel.Columns.STATE + " = " + '"' + State.TO_DELETE.toString() + '"' + " AND " +
-            ProgramStageDataElementModel.TABLE + "." + ProgramStageDataElementModel.Columns.DISPLAY_IN_REPORTS + " = 1 " +
+            EventModel.TABLE + "." + EventModel.Columns.STATE + " = " + '"' +
+            State.TO_DELETE.toString() + '"' + " AND " +
+            ProgramStageDataElementModel.TABLE + "." +
+            ProgramStageDataElementModel.Columns.DISPLAY_IN_REPORTS + " = 1 " +
             "ORDER BY datetime(" + EventModel.TABLE + "." + EventModel.Columns.CREATED + ") DESC" + "," +
             EventModel.TABLE + "." + EventModel.Columns.UID + " ASC," +
             ProgramStageDataElementModel.TABLE + "." + ProgramStageDataElementModel.Columns.SORT_ORDER + " ASC;";
