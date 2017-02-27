@@ -16,14 +16,14 @@ public class ReportViewModelUnitTests {
 
     @Test
     public void equalsHasCodeShouldConformToContract() {
-        EqualsVerifier.forClass(ReportViewModel.create("test_id", ReportViewModel.Status.SENT,
+        EqualsVerifier.forClass(ReportViewModel.create("test_id", ReportViewModel.Status.SYNCED,
                 Arrays.asList("test_label_one", "test_label_two")).getClass());
     }
 
     @Test
     public void labelsShouldBeImmutable() {
         ReportViewModel reportViewModel = ReportViewModel.create("test_id",
-                ReportViewModel.Status.SENT, Arrays.asList("test_label_one", "test_label_two"));
+                ReportViewModel.Status.SYNCED, Arrays.asList("test_label_one", "test_label_two"));
 
         try {
             reportViewModel.labels().add("another_label");
@@ -36,10 +36,10 @@ public class ReportViewModelUnitTests {
     @Test
     public void propertiesShouldBePropagatedToModelCorrectly() {
         ReportViewModel reportViewModel = ReportViewModel.create("test_id",
-                ReportViewModel.Status.SENT, Arrays.asList("test_label_one", "test_label_two"));
+                ReportViewModel.Status.SYNCED, Arrays.asList("test_label_one", "test_label_two"));
 
         assertThat(reportViewModel.id()).isEqualTo("test_id");
-        assertThat(reportViewModel.status()).isEqualTo(ReportViewModel.Status.SENT);
+        assertThat(reportViewModel.status()).isEqualTo(ReportViewModel.Status.SYNCED);
         assertThat(reportViewModel.labels().size()).isEqualTo(2);
         assertThat(reportViewModel.labels().get(0)).isEqualTo("test_label_one");
         assertThat(reportViewModel.labels().get(1)).isEqualTo("test_label_two");

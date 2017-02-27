@@ -26,6 +26,6 @@ abstract class ReportViewModel {
     }
 
     enum Status {
-        SENT, TO_UPDATE, TO_POST, ERROR
+        SYNCED, TO_SYNC, FAILED
     }
 }
