@@ -1,6 +1,7 @@
 package org.hisp.dhis.android.dataentry.reports;
 
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.squareup.sqlbrite.BriteDatabase;
@@ -42,51 +43,53 @@ public class ReportsRepositoryIntegrationTests {
 
     @Before
     public void setUp() throws Exception {
+        SQLiteDatabase database = databaseRule.database();
+        
         ContentValues orgUnit = new ContentValues();
         orgUnit.put(OrganisationUnitModel.Columns.UID, "organisation_unit_uid");
-        databaseRule.database().insert(OrganisationUnitModel.TABLE, null, orgUnit);
+        database.insert(OrganisationUnitModel.TABLE, null, orgUnit);
 
         ContentValues program = new ContentValues();
         program.put(ProgramModel.Columns.UID, "program_uid");
-        databaseRule.database().insert(ProgramModel.TABLE, null, program);
+        database.insert(ProgramModel.TABLE, null, program);
 
         ContentValues programStage = new ContentValues();
         programStage.put(ProgramStageModel.Columns.UID, "ps_uid");
         programStage.put(ProgramStageModel.Columns.PROGRAM, "program_uid");
-        databaseRule.database().insert(ProgramStageModel.TABLE, null, programStage);
+        database.insert(ProgramStageModel.TABLE, null, programStage);
 
-        databaseRule.database().insert(DataElementModel.TABLE, null,
+        database.insert(DataElementModel.TABLE, null,
                 dataElement("data_element_one_uid", "data_element_one_name"));
-        databaseRule.database().insert(DataElementModel.TABLE, null,
+        database.insert(DataElementModel.TABLE, null,
                 dataElement("data_element_two_uid", "data_element_two_name"));
-        databaseRule.database().insert(DataElementModel.TABLE, null,
+        database.insert(DataElementModel.TABLE, null,
                 dataElement("data_element_three_uid", "data_element_three_name"));
 
-        databaseRule.database().insert(ProgramStageDataElementModel.TABLE, null,
+        database.insert(ProgramStageDataElementModel.TABLE, null,
                 programStageDataElement("ps_data_element_one", "ps_uid", "data_element_one_uid", true));
-        databaseRule.database().insert(ProgramStageDataElementModel.TABLE, null,
+        database.insert(ProgramStageDataElementModel.TABLE, null,
                 programStageDataElement("ps_data_element_two", "ps_uid", "data_element_two_uid", true));
-        databaseRule.database().insert(ProgramStageDataElementModel.TABLE, null,
+        database.insert(ProgramStageDataElementModel.TABLE, null,
                 programStageDataElement("ps_data_element_three", "ps_uid", "data_element_three_uid", false));
 
-        databaseRule.database().insert(EventModel.TABLE, null, event("event_one",
+        database.insert(EventModel.TABLE, null, event("event_one",
                 BaseIdentifiableObject.DATE_FORMAT.parse("2016-04-06T00:05:57.495"),
                 "organisation_unit_uid", "program_uid", "ps_uid", State.TO_POST));
-        databaseRule.database().insert(EventModel.TABLE, null, event("event_two",
+        database.insert(EventModel.TABLE, null, event("event_two",
                 BaseIdentifiableObject.DATE_FORMAT.parse("2017-04-06T00:05:57.495"),
                 "organisation_unit_uid", "program_uid", "ps_uid", State.SYNCED));
 
-        databaseRule.database().insert(TrackedEntityDataValueModel.TABLE, null,
+        database.insert(TrackedEntityDataValueModel.TABLE, null,
                 dataValue("event_one", "data_element_one_uid", "data_value_one"));
-        databaseRule.database().insert(TrackedEntityDataValueModel.TABLE, null,
+        database.insert(TrackedEntityDataValueModel.TABLE, null,
                 dataValue("event_one", "data_element_two_uid", "data_value_two"));
-        databaseRule.database().insert(TrackedEntityDataValueModel.TABLE, null,
+        database.insert(TrackedEntityDataValueModel.TABLE, null,
                 dataValue("event_one", "data_element_three_uid", "data_value_three"));
-        databaseRule.database().insert(TrackedEntityDataValueModel.TABLE, null,
+        database.insert(TrackedEntityDataValueModel.TABLE, null,
                 dataValue("event_two", "data_element_one_uid", "data_value_four"));
-        databaseRule.database().insert(TrackedEntityDataValueModel.TABLE, null,
+        database.insert(TrackedEntityDataValueModel.TABLE, null,
                 dataValue("event_two", "data_element_two_uid", "data_value_five"));
-        databaseRule.database().insert(TrackedEntityDataValueModel.TABLE, null,
+        database.insert(TrackedEntityDataValueModel.TABLE, null,
                 dataValue("event_two", "data_element_three_uid", "data_value_six"));
 
         reportViewModelOne = ReportViewModel.create("event_one",
