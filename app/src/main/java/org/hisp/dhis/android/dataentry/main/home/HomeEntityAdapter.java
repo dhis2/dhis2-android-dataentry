@@ -53,7 +53,7 @@ import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 public class HomeEntityAdapter extends RecyclerView.Adapter {
     public static final String KEY_HOME_ENTITIES = "key:homeEntities";
     private final LayoutInflater layoutInflater;
-    private List<HomeEntity> homeEntities;
+    private List<HomeViewModel> homeEntities;
     private OnHomeItemClicked onHomeItemClickListener;
 
     public HomeEntityAdapter(Context context) {
@@ -71,9 +71,9 @@ public class HomeEntityAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        HomeEntity homeEntity = homeEntities.get(position);
+        HomeViewModel homeViewModel = homeEntities.get(position);
         if (holder instanceof HomeEntityViewHolder) {
-            ((HomeEntityViewHolder) holder).update(homeEntity);
+            ((HomeEntityViewHolder) holder).update(homeViewModel);
         }
     }
 
@@ -82,7 +82,7 @@ public class HomeEntityAdapter extends RecyclerView.Adapter {
         return homeEntities.size();
     }
 
-    public void swapData(@Nullable List<HomeEntity> homeEntities) {
+    public void swapData(@Nullable List<HomeViewModel> homeEntities) {
         this.homeEntities.clear();
 
         if (homeEntities != null) {
@@ -98,10 +98,10 @@ public class HomeEntityAdapter extends RecyclerView.Adapter {
 
     public void filter(String query) {
         if (homeEntities != null && !homeEntities.isEmpty()) {
-            List<HomeEntity> filteredLists = new ArrayList<>();
-            for (HomeEntity homeEntity : homeEntities) {
-                if (homeEntity.getTitle().contains(query)) {
-                    filteredLists.add(homeEntity);
+            List<HomeViewModel> filteredLists = new ArrayList<>();
+            for (HomeViewModel homeViewModel : homeEntities) {
+                if (homeViewModel.getTitle().contains(query)) {
+                    filteredLists.add(homeViewModel);
                 }
             }
             swapData(filteredLists);
@@ -109,7 +109,7 @@ public class HomeEntityAdapter extends RecyclerView.Adapter {
     }
 
     public interface OnHomeItemClicked {
-        void onHomeItemClicked(HomeEntity homeEntity);
+        void onHomeItemClicked(HomeViewModel homeViewModel);
     }
 
     public void onRestoreInstanceState(Bundle bundle) {
@@ -131,20 +131,20 @@ public class HomeEntityAdapter extends RecyclerView.Adapter {
         @BindView(R.id.home_entity_icon)
         ImageView icon;
 
-        private HomeEntity homeEntity;
+        private HomeViewModel homeViewModel;
 
         HomeEntityViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        void update(HomeEntity homeEntity) {
-            this.homeEntity = homeEntity;
+        void update(HomeViewModel homeViewModel) {
+            this.homeViewModel = homeViewModel;
 
-            title.setText(homeEntity.getTitle());
+            title.setText(homeViewModel.getTitle());
 
             int iconResourceId;
-            if (homeEntity.getType() == HomeEntity.HomeEntityType.TRACKED_ENTITY) {
+            if (homeViewModel.getType() == HomeViewModel.HomeEntityType.TRACKED_ENTITY) {
                 iconResourceId = R.drawable.ic_widgets_black;
             } else {
                 iconResourceId = R.drawable.ic_border_all_black;
@@ -156,7 +156,7 @@ public class HomeEntityAdapter extends RecyclerView.Adapter {
         @OnClick(R.id.home_entity_container)
         public void onHomeEntityClick() {
             if (onHomeItemClickListener != null) {
-                onHomeItemClickListener.onHomeItemClicked(homeEntity);
+                onHomeItemClickListener.onHomeItemClicked(homeViewModel);
             }
         }
     }

@@ -145,7 +145,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
 
         homeEntityAdapter = new HomeEntityAdapter(getActivity());
         homeEntityAdapter.setOnHomeItemClickListener(homeEntity -> {
-            /*if (homeEntity.getType() == HomeEntity.HomeEntityType.TRACKED_ENTITY) {
+            /*if (homeEntity.getType() == HomeViewModel.HomeEntityType.TRACKED_ENTITY) {
                 // todo go to TrackedEntity activity
             } else {
                 // go to program activity
@@ -154,7 +154,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
     }
 
     @Override
-    public Consumer<List<HomeEntity>> swapData() {
+    public Consumer<List<HomeViewModel>> swapData() {
         return homeEntities -> homeEntityAdapter.swapData(homeEntities);
     }
 

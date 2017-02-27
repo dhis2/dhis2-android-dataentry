@@ -38,7 +38,7 @@ import io.reactivex.functions.Consumer;
 
 public interface HomeView extends View {
     
-    Consumer<List<HomeEntity>> swapData();
+    Consumer<List<HomeViewModel>> swapData();
 
     @UiThread
     void showError(String message);

@@ -34,5 +34,5 @@ import io.reactivex.Observable;
 
 public interface HomeRepository {
 
-    Observable<List<HomeEntity>> homeEntities();
+    Observable<List<HomeViewModel>> homeEntities();
 }

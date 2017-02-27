@@ -43,7 +43,7 @@ import java.util.Set;
 
 import io.reactivex.Observable;
 
-import static org.hisp.dhis.android.dataentry.main.home.HomeEntity.Columns.ENTITY_TYPE;
+import static org.hisp.dhis.android.dataentry.main.home.HomeViewModel.Columns.ENTITY_TYPE;
 
 public class HomeRepositoryImpl extends Repository implements HomeRepository {
 
@@ -53,8 +53,8 @@ public class HomeRepositoryImpl extends Repository implements HomeRepository {
                     "UNION SELECT %s,%s,'%s' AS %s FROM %s WHERE %s.%s = '%s') " +
                     "ORDER BY %s DESC",
             TrackedEntityModel.Columns.UID, TrackedEntityModel.Columns.DISPLAY_NAME,
-            HomeEntity.HomeEntityType.TRACKED_ENTITY.name(), ENTITY_TYPE, TrackedEntityModel.TABLE,
-            ProgramModel.Columns.UID, ProgramModel.Columns.DISPLAY_NAME, HomeEntity.HomeEntityType.PROGRAM.name(),
+            HomeViewModel.HomeEntityType.TRACKED_ENTITY.name(), ENTITY_TYPE, TrackedEntityModel.TABLE,
+            ProgramModel.Columns.UID, ProgramModel.Columns.DISPLAY_NAME, HomeViewModel.HomeEntityType.PROGRAM.name(),
             ENTITY_TYPE, ProgramModel.TABLE, ProgramModel.TABLE, ProgramModel.Columns.PROGRAM_TYPE,
             ProgramType.WITHOUT_REGISTRATION.name(), ENTITY_TYPE);
 
@@ -84,15 +84,15 @@ public class HomeRepositoryImpl extends Repository implements HomeRepository {
     }*/
 
     @Override
-    public Observable<List<HomeEntity>> homeEntities() {
+    public Observable<List<HomeViewModel>> homeEntities() {
         return queryMultipleTables(TABLE_SET, SELECT_HOME_ENTITIES)
                 .map(cursor -> {
-                    List<HomeEntity> trackedEntityTypes = new ArrayList<>();
+                    List<HomeViewModel> trackedEntityTypes = new ArrayList<>();
                     cursor.moveToFirst();
 
                     while (!cursor.isAfterLast()) {
                         trackedEntityTypes.add(
-                                HomeEntity.fromCursor(cursor));
+                                HomeViewModel.fromCursor(cursor));
                         cursor.moveToNext();
                     }
 
