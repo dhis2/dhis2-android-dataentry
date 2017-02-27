@@ -172,6 +172,9 @@ dependencies {
     compile "com.jakewharton.timber:timber:${libraries.timber}"
     compile "com.jakewharton:butterknife:${libraries.butterknife}"
     annotationProcessor "com.jakewharton:butterknife-compiler:${libraries.butterknife}"
+    
+    compile "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
+    compile "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
 
     // Test dependencies
     testCompile "junit:junit:${libraries.junit}"

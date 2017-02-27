@@ -28,8 +28,6 @@
 
 package org.hisp.dhis.android.dataentry.main.home;
 
-import android.content.ContentValues;
-
 import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -65,10 +63,10 @@ public class HomeRepositoryImpl extends Repository implements HomeRepository {
 
     HomeRepositoryImpl(BriteDatabase briteDatabase) {
         super(briteDatabase);
-        insertDummyData(briteDatabase);
+        //insertDummyData(briteDatabase);
     }
 
-    private void insertDummyData(BriteDatabase briteDatabase) {
+    /*private void insertDummyData(BriteDatabase briteDatabase) {
 
         ContentValues trackedEntity = new ContentValues();
         trackedEntity.put(TrackedEntityModel.Columns.ID, 333L);
@@ -83,7 +81,7 @@ public class HomeRepositoryImpl extends Repository implements HomeRepository {
 
         briteDatabase.insert(TrackedEntityModel.TABLE, trackedEntity);
         briteDatabase.insert(ProgramModel.TABLE, program);
-    }
+    }*/
 
     @Override
     public Observable<List<HomeEntity>> homeEntities() {

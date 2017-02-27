@@ -49,7 +49,7 @@ public class HomeEntity implements Parcelable {
         public static final String ENTITY_TYPE = "entityType";
     }
 
-    private HomeEntity(String id, String title, HomeEntityType type) {
+    public HomeEntity(String id, String title, HomeEntityType type) {
         this.id = id;
         this.title = title;
         this.type = type;

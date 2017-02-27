@@ -33,13 +33,19 @@ import android.support.annotation.UiThread;
 
 import org.hisp.dhis.android.dataentry.commons.View;
 
+import io.reactivex.functions.Consumer;
+
 public interface MainView extends View {
-    @UiThread
-    void showUsername(@NonNull String username);
 
+    @NonNull
     @UiThread
-    void showUserInfo(@NonNull String userInfo);
+    Consumer<String> showUsername();
 
+    @NonNull
     @UiThread
-    void showUserInitials(@NonNull String userInitials);
+    Consumer<String> showUserInfo();
+
+    @NonNull
+    @UiThread
+    Consumer<String> showUserInitials();
 }

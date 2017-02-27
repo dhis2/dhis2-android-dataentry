@@ -34,10 +34,11 @@ import org.hisp.dhis.android.dataentry.commons.View;
 
 import java.util.List;
 
-public interface HomeView extends View {
+import io.reactivex.functions.Consumer;
 
-    @UiThread
-    void swapData(List<HomeEntity> homeEntities);
+public interface HomeView extends View {
+    
+    Consumer<List<HomeEntity>> swapData();
 
     @UiThread
     void showError(String message);

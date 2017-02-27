@@ -29,9 +29,9 @@ import static org.mockito.Mockito.verify;
 // ToDo: research other ways of testing DatabaseAdapter
 public class SqlBriteDatabaseAdapterTests {
 
-    BriteDatabase sqlBriteDatabase;
+    private BriteDatabase sqlBriteDatabase;
 
-    SqlBrite sqlBrite;
+    private SqlBrite sqlBrite;
 
     @Mock
     DbOpenHelper dbOpenHelper;
@@ -51,7 +51,7 @@ public class SqlBriteDatabaseAdapterTests {
     @Mock
     Scheduler scheduler;
 
-    SqlBriteDatabaseAdapter sqlBriteDatabaseAdapter; // the class we are testing
+    private SqlBriteDatabaseAdapter sqlBriteDatabaseAdapter; // the class we are testing
 
     @Before
     public void setup() {

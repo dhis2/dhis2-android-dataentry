@@ -50,6 +50,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.functions.Consumer;
 
 public class HomeFragment extends BaseFragment implements HomeView {
 
@@ -153,8 +154,8 @@ public class HomeFragment extends BaseFragment implements HomeView {
     }
 
     @Override
-    public void swapData(List<HomeEntity> homeEntities) {
-        homeEntityAdapter.swapData(homeEntities);
+    public Consumer<List<HomeEntity>> swapData() {
+        return homeEntities -> homeEntityAdapter.swapData(homeEntities);
     }
 
     public void showProgressBar() {

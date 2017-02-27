@@ -31,6 +31,9 @@ package org.hisp.dhis.android.dataentry.main.home;
 import org.hisp.dhis.android.dataentry.utils.MockSchedulersProvider;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -46,13 +49,16 @@ import static org.mockito.Mockito.when;
 
 public class HomePresenterUnitTest {
 
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     HomeView homeView;
 
     @Mock
     HomeRepository homeRepository;
 
     private HomePresenter homePresenter; // the class we are testing
+
+    @Captor
+    private ArgumentCaptor<List<HomeEntity>> homeEntityListCaptor;
 
     @Before
     public void setUp() throws Exception {
@@ -65,10 +71,15 @@ public class HomePresenterUnitTest {
     public void onAttachShouldPopulateList() throws Exception {
 
         List<HomeEntity> homeEntityList = new ArrayList<>();
+        homeEntityList.add(new HomeEntity("test_id", "test_display_name", HomeEntity.HomeEntityType.PROGRAM));
+
         when(homeRepository.homeEntities()).thenReturn(Observable.just(homeEntityList));
 
         homePresenter.onAttach(homeView);
-        verify(homeView).swapData(homeEntityList);
+
+        verify(homeView.swapData()).accept(homeEntityListCaptor.capture());
+
+        assertThat(homeEntityListCaptor.getValue()).isEqualTo(homeEntityList);
 
     }
 

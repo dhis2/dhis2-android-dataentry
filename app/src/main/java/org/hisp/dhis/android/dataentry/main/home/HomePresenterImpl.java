@@ -55,18 +55,13 @@ public class HomePresenterImpl implements HomePresenter {
 
         if (view instanceof HomeView) {
             HomeView homeView = (HomeView) view;
+
             compositeDisposable.add(homeRepository.homeEntities()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe((homeEntities) -> {
-                        if (homeEntities != null) {
-                            homeView.swapData(homeEntities);
-                        }
-                    }, throwable -> {
-                        if (throwable != null) {
-                            homeView.showError(throwable.getMessage());
-                        }
-                    }));
+                    .subscribe(
+                            homeView.swapData(),
+                            throwable -> homeView.showError(throwable.getMessage())));
         }
     }
 
