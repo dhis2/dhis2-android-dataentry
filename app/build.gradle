@@ -167,6 +167,8 @@ dependencies {
     // annotation processor which hoops up into compilation process
     provided "com.google.auto.value:auto-value:${libraries.autovalue}"
     annotationProcessor "com.google.auto.value:auto-value:${libraries.autovalue}"
+    // Extension which generates mappers for work with cursors
+    annotationProcessor "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
 
     // Square libraries
     debugCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"
@@ -177,7 +179,7 @@ dependencies {
     compile "com.jakewharton.timber:timber:${libraries.timber}"
     compile "com.jakewharton:butterknife:${libraries.butterknife}"
     annotationProcessor "com.jakewharton:butterknife-compiler:${libraries.butterknife}"
-    
+
     compile "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
     compile "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
 
