@@ -2,6 +2,7 @@ package org.hisp.dhis.android.dataentry.main;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -11,7 +12,9 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +22,7 @@ import android.widget.TextView;
 
 import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.ToolbarFragment;
+import org.hisp.dhis.android.dataentry.commons.DummyFragment;
 import org.hisp.dhis.android.dataentry.main.home.HomeFragment;
 
 import javax.inject.Inject;
@@ -38,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements MainView,
     TextView username;
     TextView userInfo;
 
+    Toolbar toolbar;
+
     @Inject
     MainPresenter mainPresenter;
 
@@ -45,6 +50,10 @@ public class MainActivity extends AppCompatActivity implements MainView,
     // in order to avoid animation lag
     @Nullable
     Runnable pendingRunnable;
+
+    // Handles toggling of the drawer from the hamburger icon, animating the icon
+    // and keeping it in sync with drawer state
+    private ActionBarDrawerToggle drawerToggle;
 
     @NonNull
     public static Intent create(@NonNull Activity activity) {
@@ -61,7 +70,10 @@ public class MainActivity extends AppCompatActivity implements MainView,
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
 
+        setupToolbar();
+
         drawerLayout.addDrawerListener(this);
+        drawerLayout.addDrawerListener(drawerToggle);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.inflateMenu(R.menu.menu_drawer);
 
@@ -81,6 +93,13 @@ public class MainActivity extends AppCompatActivity implements MainView,
             onNavigationItemSelected(navigationView.getMenu()
                     .findItem(R.id.drawer_item_home));
         }
+    }
+
+    private void setupToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        drawerToggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
     }
 
     @Override
@@ -133,11 +152,12 @@ public class MainActivity extends AppCompatActivity implements MainView,
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
         navigationView.setCheckedItem(menuItem.getItemId());
+        toolbar.setTitle(menuItem.getTitle());
 
         if (menuItem.getItemId() == R.id.drawer_item_home) {
             attachFragment(new HomeFragment());
         } else {
-            attachFragment(ToolbarFragment.create(menuItem.getTitle().toString()));
+            attachFragment(new DummyFragment());
         }
         drawerLayout.closeDrawers();
 
@@ -171,4 +191,28 @@ public class MainActivity extends AppCompatActivity implements MainView,
                 .replace(R.id.content_frame, fragment)
                 .commit();
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggles
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
 }
