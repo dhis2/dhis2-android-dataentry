@@ -3,12 +3,7 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:id="@+id/container"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/single_line_list_item_height"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:gravity="start|center_vertical"
-                android:padding="@dimen/keyline_default">
+                style="@style/SingleLineListItemWithIconAndText">
 
     <ImageView
         android:id="@+id/icon"
@@ -18,8 +13,7 @@
         android:paddingLeft="@dimen/keyline_default"
         android:paddingStart="@dimen/keyline_default"
         tools:src="@drawable/ic_border_all_black"/>
-
-
+    
     <org.hisp.dhis.android.dataentry.commons.views.FontTextView
         android:id="@+id/text"
         android:layout_width="wrap_content"

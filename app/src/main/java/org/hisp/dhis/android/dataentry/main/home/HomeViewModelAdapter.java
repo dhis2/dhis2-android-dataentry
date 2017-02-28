@@ -64,7 +64,7 @@ public class HomeViewModelAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new HomeViewModelViewHolder(layoutInflater.inflate(
-                R.layout.single_line_icon_with_text, parent, false));
+                R.layout.single_line_list_icon_with_text, parent, false));
     }
 
     @Override

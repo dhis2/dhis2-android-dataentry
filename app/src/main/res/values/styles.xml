@@ -13,7 +13,9 @@
         <item name="android:windowBackground">@color/color_primary</item>
     </style>
 
-    <!-- Two line list as per https://material.google.com/components/lists.html#lists-specs -->
+    <!-- BEGIN SECTION: Lists -->
+    <!-- All specifications are as per https://material.google.com/components/lists.html#lists-specs -->
+    <!-- Two line list -->
     <style name="TwoLineListItem">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">72dp</item>
@@ -21,9 +23,18 @@
         <item name="android:gravity">center_vertical</item>
     </style>
 
-    <!-- Dense two line list as per https://material.google.com/components/lists.html#lists-specs -->
+    <!-- Dense two line list -->
     <style name="DenseTwoLineListItem" parent="TwoLineListItem">
         <item name="android:layout_height">60dp</item>
     </style>
+
+    <!-- Single line list with icon and text -->
+    <style name="SingleLineListItemWithIconAndText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:gravity">start|center_vertical</item>
+    </style>
+    <!-- END SECTION: Lists -->
 
 </resources>
