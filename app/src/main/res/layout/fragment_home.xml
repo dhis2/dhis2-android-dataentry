@@ -6,8 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include layout="@layout/toolbar"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/home_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/single_line_list_vertical_padding"
+        android:paddingTop="@dimen/single_line_list_vertical_padding"/>
 </android.support.v4.widget.SwipeRefreshLayout>

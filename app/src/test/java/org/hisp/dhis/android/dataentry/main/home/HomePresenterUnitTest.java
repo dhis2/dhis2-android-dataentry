@@ -71,7 +71,7 @@ public class HomePresenterUnitTest {
     public void onAttachShouldPopulateList() throws Exception {
 
         List<HomeViewModel> homeViewModelList = new ArrayList<>();
-        homeViewModelList.add(new HomeViewModel("test_id", "test_display_name", HomeViewModel.HomeEntityType.PROGRAM));
+        homeViewModelList.add(HomeViewModel.create("test_id", "test_display_name", HomeViewModel.Type.PROGRAM));
 
         when(homeRepository.homeEntities()).thenReturn(Observable.just(homeViewModelList));
 

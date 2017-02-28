@@ -94,10 +94,10 @@ public class HomeRepositoryIntegrationTests {
         assertThat(testObserver.values().get(0).size()).isEqualTo(2); // List contains both home entities
 
         // TrackedEntity type should be returned first
-        assertThat(testObserver.values().get(0).get(0).getType()).isEqualTo(HomeViewModel.HomeEntityType.TRACKED_ENTITY);
+        assertThat(testObserver.values().get(0).get(0).type()).isEqualTo(HomeViewModel.Type.TRACKED_ENTITY);
 
         // Program type should be returned last
-        assertThat(testObserver.values().get(0).get(1).getType()).isEqualTo(HomeViewModel.HomeEntityType.PROGRAM);
+        assertThat(testObserver.values().get(0).get(1).type()).isEqualTo(HomeViewModel.Type.PROGRAM);
 
         testObserver.assertNoErrors();
 
@@ -119,8 +119,8 @@ public class HomeRepositoryIntegrationTests {
         assertThat(updated).isEqualTo(1);
         testObserver.assertValueCount(2);
 
-        assertThat(testObserver.values().get(0).get(0).getTitle()).isEqualTo("test_tracked_entity_display_name");
-        assertThat(testObserver.values().get(1).get(0).getTitle()).isEqualTo("test_another_tracked_entity_display_name");
+        assertThat(testObserver.values().get(0).get(0).title()).isEqualTo("test_tracked_entity_display_name");
+        assertThat(testObserver.values().get(1).get(0).title()).isEqualTo("test_another_tracked_entity_display_name");
 
         testObserver.assertNoErrors();
 
@@ -142,8 +142,8 @@ public class HomeRepositoryIntegrationTests {
         assertThat(updated).isEqualTo(1);
         testObserver.assertValueCount(2);
 
-        assertThat(testObserver.values().get(0).get(1).getTitle()).isEqualTo("test_program_display_name");
-        assertThat(testObserver.values().get(1).get(1).getTitle()).isEqualTo("test_another_program_display_name");
+        assertThat(testObserver.values().get(0).get(1).title()).isEqualTo("test_program_display_name");
+        assertThat(testObserver.values().get(1).get(1).title()).isEqualTo("test_another_program_display_name");
 
         testObserver.assertNoErrors();
 

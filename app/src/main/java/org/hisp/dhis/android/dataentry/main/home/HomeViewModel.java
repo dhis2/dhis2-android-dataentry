@@ -1,67 +1,52 @@
 package org.hisp.dhis.android.dataentry.main.home;
 
 import android.database.Cursor;
-import android.os.Parcel;
+import android.support.annotation.NonNull;
+
+import com.gabrielittner.auto.value.cursor.ColumnAdapter;
+import com.gabrielittner.auto.value.cursor.ColumnName;
+import com.google.auto.value.AutoValue;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObjectModel;
 
-import static org.hisp.dhis.android.dataentry.main.home.HomeViewModel.Columns.DISPLAY_NAME;
-import static org.hisp.dhis.android.dataentry.main.home.HomeViewModel.Columns.ENTITY_TYPE;
-import static org.hisp.dhis.android.dataentry.main.home.HomeViewModel.Columns.UID;
-
-public class HomeViewModel {
-    private final String id;
-    private final String title;
-    private final HomeEntityType type;
+@AutoValue
+public abstract class HomeViewModel {
 
     public static class Columns extends BaseIdentifiableObjectModel.Columns {
         static final String UID = "uid";
         static final String DISPLAY_NAME = "displayName";
-        public static final String ENTITY_TYPE = "entityType";
+        public static final String HOME_VIEW_MODEL_TYPE = "homeViewModelType";
     }
 
-    public HomeViewModel(String id, String title, HomeEntityType type) {
-        this.id = id;
-        this.title = title;
-        this.type = type;
-    }
+    @NonNull
+    @ColumnName(Columns.UID)
+    public abstract String id();
 
-    protected HomeViewModel(Parcel in) {
-        id = in.readString();
-        title = in.readString();
-        type = HomeEntityType.valueOf(in.readString());
-    }
+    @NonNull
+    @ColumnName(Columns.DISPLAY_NAME)
+    public abstract String title();
 
-    public String getId() {
-        return id;
-    }
+    @NonNull
+    @ColumnName(Columns.HOME_VIEW_MODEL_TYPE)
+    @ColumnAdapter(HomeViewModelTypeColumnAdapter.class)
+    public abstract Type type();
 
-    public String getTitle() {
-        return title;
-    }
-
-    public HomeEntityType getType() {
-        return type;
+    @NonNull
+    public static HomeViewModel create(@NonNull String id, @NonNull String title,
+                                       @NonNull Type type) {
+        return new AutoValue_HomeViewModel(id, title, type);
     }
 
     public static HomeViewModel fromCursor(Cursor cursor) {
+        return AutoValue_HomeViewModel.createFromCursor(cursor);
 
-        int uidColumnIndex = cursor.getColumnIndex(UID);
-        String uid = uidColumnIndex == -1 || cursor.isNull(uidColumnIndex) ? null : cursor.getString(uidColumnIndex);
-
-        int displayNameColumnIndex = cursor.getColumnIndex(DISPLAY_NAME);
-        String displayName = displayNameColumnIndex == -1 || cursor.isNull(displayNameColumnIndex) ?
-                null : cursor.getString(displayNameColumnIndex);
-
-        int entityTypeColumnIndex = cursor.getColumnIndex(ENTITY_TYPE);
-        HomeEntityType entityType = entityTypeColumnIndex == -1 || cursor.isNull(entityTypeColumnIndex) ?
-                null : HomeEntityType.valueOf(cursor.getString(entityTypeColumnIndex));
-
-        return new HomeViewModel(uid, displayName, entityType);
     }
 
-    public enum HomeEntityType {
+    public enum Type {
         PROGRAM,
-        TRACKED_ENTITY
+        TRACKED_ENTITY,
+        UNKNOWN
     }
+
+
 }

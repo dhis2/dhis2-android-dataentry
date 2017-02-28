@@ -29,8 +29,6 @@
 package org.hisp.dhis.android.dataentry.main.home;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -50,43 +48,43 @@ import butterknife.OnClick;
 
 import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 
-public class HomeEntityAdapter extends RecyclerView.Adapter {
-    public static final String KEY_HOME_ENTITIES = "key:homeEntities";
+public class HomeViewModelAdapter extends RecyclerView.Adapter {
+
     private final LayoutInflater layoutInflater;
-    private List<HomeViewModel> homeEntities;
+    private final List<HomeViewModel> homeViewModels;
     private OnHomeItemClicked onHomeItemClickListener;
 
-    public HomeEntityAdapter(Context context) {
+    public HomeViewModelAdapter(Context context) {
         isNull(context, "context must not be null");
 
         this.layoutInflater = LayoutInflater.from(context);
-        this.homeEntities = new ArrayList<>();
+        this.homeViewModels = new ArrayList<>();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new HomeEntityViewHolder(layoutInflater.inflate(
-                R.layout.recyclerview_row_home_entity_item, parent, false));
+        return new HomeViewModelViewHolder(layoutInflater.inflate(
+                R.layout.single_line_icon_with_text, parent, false));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        HomeViewModel homeViewModel = homeEntities.get(position);
-        if (holder instanceof HomeEntityViewHolder) {
-            ((HomeEntityViewHolder) holder).update(homeViewModel);
+        HomeViewModel homeViewModel = homeViewModels.get(position);
+        if (holder instanceof HomeViewModelViewHolder) {
+            ((HomeViewModelViewHolder) holder).update(homeViewModel);
         }
     }
 
     @Override
     public int getItemCount() {
-        return homeEntities.size();
+        return homeViewModels.size();
     }
 
-    public void swapData(@Nullable List<HomeViewModel> homeEntities) {
-        this.homeEntities.clear();
+    public void swapData(@Nullable List<HomeViewModel> homeViewModels) {
+        this.homeViewModels.clear();
 
-        if (homeEntities != null) {
-            this.homeEntities.addAll(homeEntities);
+        if (homeViewModels != null) {
+            this.homeViewModels.addAll(homeViewModels);
         }
 
         notifyDataSetChanged();
@@ -96,44 +94,21 @@ public class HomeEntityAdapter extends RecyclerView.Adapter {
         this.onHomeItemClickListener = onHomeItemClicked;
     }
 
-    public void filter(String query) {
-        if (homeEntities != null && !homeEntities.isEmpty()) {
-            List<HomeViewModel> filteredLists = new ArrayList<>();
-            for (HomeViewModel homeViewModel : homeEntities) {
-                if (homeViewModel.getTitle().contains(query)) {
-                    filteredLists.add(homeViewModel);
-                }
-            }
-            swapData(filteredLists);
-        }
-    }
-
     public interface OnHomeItemClicked {
         void onHomeItemClicked(HomeViewModel homeViewModel);
     }
 
-    public void onRestoreInstanceState(Bundle bundle) {
-        homeEntities = bundle.getParcelableArrayList(KEY_HOME_ENTITIES);
-        notifyDataSetChanged();
-    }
+    final class HomeViewModelViewHolder extends RecyclerView.ViewHolder {
 
-    public Parcelable onSaveInstanceState() {
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(KEY_HOME_ENTITIES, (ArrayList<? extends Parcelable>) homeEntities);
-        return bundle;
-    }
-
-    final class HomeEntityViewHolder extends RecyclerView.ViewHolder {
-
-        @BindView(R.id.home_entity_title)
+        @BindView(R.id.text)
         FontTextView title;
 
-        @BindView(R.id.home_entity_icon)
+        @BindView(R.id.icon)
         ImageView icon;
 
         private HomeViewModel homeViewModel;
 
-        HomeEntityViewHolder(View itemView) {
+        HomeViewModelViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
@@ -141,10 +116,10 @@ public class HomeEntityAdapter extends RecyclerView.Adapter {
         void update(HomeViewModel homeViewModel) {
             this.homeViewModel = homeViewModel;
 
-            title.setText(homeViewModel.getTitle());
+            title.setText(homeViewModel.title());
 
             int iconResourceId;
-            if (homeViewModel.getType() == HomeViewModel.HomeEntityType.TRACKED_ENTITY) {
+            if (homeViewModel.type() == HomeViewModel.Type.TRACKED_ENTITY) {
                 iconResourceId = R.drawable.ic_widgets_black;
             } else {
                 iconResourceId = R.drawable.ic_border_all_black;
@@ -153,7 +128,7 @@ public class HomeEntityAdapter extends RecyclerView.Adapter {
             icon.setImageResource(iconResourceId);
         }
 
-        @OnClick(R.id.home_entity_container)
+        @OnClick(R.id.container)
         public void onHomeEntityClick() {
             if (onHomeItemClickListener != null) {
                 onHomeItemClickListener.onHomeItemClicked(homeViewModel);

@@ -50,12 +50,10 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.reactivex.functions.Consumer;
 
 public class HomeFragment extends BaseFragment implements HomeView {
-
-    private static final String LAYOUT_MANAGER_KEY = "LAYOUT_MANAGER_KEY";
-    private static final String STATE_IS_REFRESHING = "state:isRefreshing";
 
     @Inject
     HomePresenter homePresenter;
@@ -66,8 +64,9 @@ public class HomeFragment extends BaseFragment implements HomeView {
     @BindView(R.id.home_recyclerview)
     RecyclerView recyclerView;
 
-    private HomeEntityAdapter homeEntityAdapter;
+    private HomeViewModelAdapter homeViewModelAdapter;
     private AlertDialog alertDialog;
+    private Unbinder unbinder;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,7 +79,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         return view;
     }
 
@@ -88,35 +87,21 @@ public class HomeFragment extends BaseFragment implements HomeView {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupAdapter();
-        setupSwipeRefreshLayout(savedInstanceState);
+        setupSwipeRefreshLayout();
 
-        recyclerView.setAdapter(homeEntityAdapter);
+        recyclerView.setAdapter(homeViewModelAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);
-        if (savedInstanceState != null) {
-            layoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(LAYOUT_MANAGER_KEY));
-        }
-
-        if (savedInstanceState != null) {
-            homeEntityAdapter.onRestoreInstanceState(
-                    savedInstanceState.getBundle(HomeEntityAdapter.KEY_HOME_ENTITIES));
-        }
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerDecoration(
                 ContextCompat.getDrawable(getActivity(), R.drawable.divider)));
     }
 
-    private void setupSwipeRefreshLayout(final Bundle savedInstanceState) {
+    private void setupSwipeRefreshLayout() {
         swipeRefreshLayout.setColorSchemeResources(R.color.color_primary);
-        // swipeRefreshLayout.setOnRefreshListener() todo set this when Syncing Service is in place
-
-        if (savedInstanceState != null) {
-            swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(savedInstanceState
-                    .getBoolean(STATE_IS_REFRESHING, false)));
-        }
     }
 
     @Override
@@ -131,21 +116,11 @@ public class HomeFragment extends BaseFragment implements HomeView {
         homePresenter.onAttach(this);
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(STATE_IS_REFRESHING, swipeRefreshLayout.isRefreshing());
-
-        outState.putParcelable(HomeEntityAdapter.KEY_HOME_ENTITIES, homeEntityAdapter.onSaveInstanceState());
-        outState.putParcelable(LAYOUT_MANAGER_KEY, recyclerView.getLayoutManager().onSaveInstanceState());
-
-    }
-
     private void setupAdapter() {
 
-        homeEntityAdapter = new HomeEntityAdapter(getActivity());
-        homeEntityAdapter.setOnHomeItemClickListener(homeEntity -> {
-            /*if (homeEntity.getType() == HomeViewModel.HomeEntityType.TRACKED_ENTITY) {
+        homeViewModelAdapter = new HomeViewModelAdapter(getActivity());
+        homeViewModelAdapter.setOnHomeItemClickListener(homeEntity -> {
+            /*if (homeEntity.getType() == HomeViewModel.Type.TRACKED_ENTITY) {
                 // todo go to TrackedEntity activity
             } else {
                 // go to program activity
@@ -155,20 +130,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
 
     @Override
     public Consumer<List<HomeViewModel>> swapData() {
-        return homeEntities -> homeEntityAdapter.swapData(homeEntities);
-    }
-
-    public void showProgressBar() {
-
-        // this workaround is necessary because of the message queue
-        // implementation in android. If you will try to setRefreshing(true) right away,
-        // this call will be placed in UI message queue by SwipeRefreshLayout BEFORE
-        // message to hide progress bar which probably is created by layout
-        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(true));
-    }
-
-    public void hideProgressBar() {
-        swipeRefreshLayout.post(() -> swipeRefreshLayout.setRefreshing(false));
+        return homeEntities -> homeViewModelAdapter.swapData(homeEntities);
     }
 
     @Override
@@ -181,5 +143,11 @@ public class HomeFragment extends BaseFragment implements HomeView {
         alertDialog.setTitle(getString(R.string.error_generic));
         alertDialog.setMessage(message);
         alertDialog.show();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }
