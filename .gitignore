@@ -4,7 +4,6 @@
 .settings
 
 # IntelliJ IDEA
-.idea
 *.iml
 *.ipr
 *.iws
@@ -22,6 +21,9 @@ build
 # OSX
 .DS_Store
 
+# Crashlytics plugin (for Android Studio and IntelliJ)
+fabric.properties
+
 # Windows
 *.db
 
@@ -30,3 +32,6 @@ build
 
 # Secret keys
 secrets.properties
+
+# ignore .idea directory
+.idea/*

@@ -18,18 +18,31 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-25.0.2
     - android-25
+    - build-tools-25.0.2
     - extra-android-m2repository
+    - sys-img-armeabi-v7a-android-19
 
 before_script:
-  - echo no | android create avd --force -n test -t android-18 --abi armeabi-v7a
+  - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
+
+  # disable animations on CI device
+  - adb shell settings put global window_animation_scale 0
+  - adb shell settings put global transition_animation_scale 0
+  - adb shell settings put global animator_duration_scale 0
+
+  # unlock device
   - adb shell input keyevent 82
 
+branches:
+  only:
+  - master
+  - develop
+
 script:
-  bash build.sh
+  bash ci.sh
 
 after_script:
   ./gradlew sonarqube
@@ -40,7 +53,7 @@ env:
 
 notifications:
   slack:
-    secure: "AkHqcKUwKfSfljvrHXkSaYwjLfLiiqdwRL3zqim9EMIA+AoqW9dhkwoegbeSr44plK82KJsVgo7UrSDLSiJR3UCXtjgkYwwf+hqOM7BVbIK/uTglrjhrDeJ4ZrE/W/FP1O4oeFYE1QZFeAFEb9yLtKBG8rfoQNDl4t83auWuehA="
+    secure: "UIdgmgulJ5+wXf9zWQLk+8UzCrdqJTXZ6ysL/IsyRElNinJFbJr2PD2qAy9QR4sacNK6q9sTHcUD9RceBLYOJ5nLJpwt1I4vQy7Sd/1TaJqOohKIBY4f5ntpjrNs2DE9NO2qSc6nrFu5QDVCY+7dVaYEsurkyQeExC+0h+SrAxPUDOE8/UQ+lls8idQ/RCvw3/Tcr/i7r+JAV9ICH1xtIz7nydu7nzczYiILmlf+1rylGjo8omJDnl5P0SHyE7i1jLqgwheJh/ebLDFCavjDBNTQP3kjJGKf4gWXuvn85wGsIGqkdBc8YRpU3mOPnllucSSI78iDyVKEN6c/Em+lcCIJhKmsqBNoSq4ZsCLTu3XXJd001WalFv4+Iq/7v9P1HYqHw5A3R9N01XSd3RFF7MUh5iUSoBDxbusgqQ4en+sWgpD72K2GEdGUiEGu+6qj6AW/uho2+gyev5KzYV8NZenLy0hZ4Hkc6R3ofGB1v7IwxMj3UT8+V82oOwzZCWQyzEQvuvE7RZxXc6vgENkFUnveEOqk/YlAZLUFzjV0QSQRUyS5ZeTmNV0x8ozTH1/NU50jJRVyYBxOm5yBpDEVzqopdVDoMBNAJxtg8vGHMtrN5XliaBy6Aq7Gcr5V1woQjhJFjUmV7PaElxnaSPfYo3fwPL4oKSzTEJfyHc8wVWU="
   email: true
 
 cache:

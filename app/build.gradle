@@ -55,7 +55,7 @@ android {
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
 
         // jUnit test runner for android
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "org.hisp.dhis.android.dataentry.DhisInstrumentationTestsRunner"
 
         // Fabric API key
         manifestPlaceholders = [
@@ -67,11 +67,17 @@ android {
     }
 
     lintOptions {
-        warningsAsErrors true
+        // fail early
         abortOnError true
 
-        disable "GoogleAppIndexingWarning" // App does not have deep linking.
-        warning "InvalidPackage" // Okio references java.nio that does not presented in Android SDK.
+        // App does not have deep linking.
+        disable "GoogleAppIndexingWarning"
+
+        // Okio references java.nio that does not presented in Android SDK.
+        warning "InvalidPackage"
+
+        // casting 'InvalidPackage' error to warning
+        warning 'InvalidPackage'
     }
 
     compileOptions {
@@ -80,12 +86,23 @@ android {
     }
 
     signingConfigs {
-        dataentry {
+        debug {
             storeFile file("dataentry.jks")
             storePassword "android"
             keyAlias "android"
             keyPassword "android"
         }
+    }
+
+    // ToDo: Handle dependency on jackson in d2 properly (possibly replace with GSON)
+    packagingOptions {
+        // excluding duplicate license files
+        // from jackson modules
+        exclude "META-INF/LICENSE"
+
+        // excluding duplicate rxjava properties file
+        // see https://github.com/ReactiveX/RxJava/issues/4445#issuecomment-243591879
+        exclude 'META-INF/rxjava.properties'
     }
 
     buildTypes {
@@ -102,7 +119,7 @@ android {
             ext.enableCrashlytics = false
 
             // Using dataentry.jks to sign debug build type.
-            signingConfig = signingConfigs.dataentry
+            signingConfig = signingConfigs.debug
         }
         release {
             // enabling crashlytics for debug builds
@@ -111,27 +128,71 @@ android {
     }
 }
 
+spoon {
+    // for debug output
+    debug = true
+}
+
 dependencies {
+
     compile "hu.supercluster:paperwork:${libraries.paperwork}"
 
     // Support libraries
     compile "com.android.support:appcompat-v7:${libraries.support}"
     compile "com.android.support:support-annotations:${libraries.support}"
+    compile "com.android.support:cardview-v7:${libraries.support}"
+    compile "com.android.support:design:${libraries.support}"
+
+    // Other
+    compile "com.github.castorflex.smoothprogressbar:library-circular:${libraries.progressbar}"
+
+    // dhis2 libraries
+    compile "org.hisp.dhis:android-core:${libraries.dhis2sdk}"
 
     // Fabric tools
     compile("com.crashlytics.sdk.android:crashlytics:${libraries.crashlytics}@aar") {
         transitive = true;
     }
 
+    // ReactiveX
+    compile "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+    compile "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    compile "com.github.akarnokd:rxjava2-interop:${libraries.rxjavainteroperop}"
+
+    // Google dagger
+    compile "com.google.dagger:dagger:${libraries.dagger}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${libraries.dagger}"
+
+    // Square libraries
+    debugCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:${libraries.leakcanary}"
+    compile "com.squareup.sqlbrite:sqlbrite:${libraries.sqlbrite}"
+
+    // Jake Wharton libraries
+    compile "com.jakewharton.timber:timber:${libraries.timber}"
+    compile "com.jakewharton:butterknife:${libraries.butterknife}"
+    annotationProcessor "com.jakewharton:butterknife-compiler:${libraries.butterknife}"
+    
+    compile "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
+    compile "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
+
     // Test dependencies
     testCompile "junit:junit:${libraries.junit}"
     testCompile "org.assertj:assertj-core:${libraries.assertj}"
     testCompile "org.mockito:mockito-core:${libraries.mockito}"
+    testCompile "org.powermock:powermock-module-junit4:${libraries.powermock}"
+    testCompile "org.powermock:powermock-api-mockito2:${libraries.powermock}"
+    testCompile "com.squareup.leakcanary:leakcanary-android-no-op:${libraries.leakcanary}"
 
-    // Spoon client which allows to capture screenshots
+    // Spoon client which allows to capture screenshots during instrumentation tests
     androidTestCompile "com.squareup.spoon:spoon-client:${libraries.spoon}"
+    androidTestCompile "com.squareup.okhttp3:mockwebserver:${libraries.okhttp}"
+    androidTestCompile "org.mockito:mockito-android:${libraries.mockito}"
+    androidTestCompile "org.assertj:assertj-core:${libraries.assertj}"
 
+    androidTestCompile "com.android.support.test.espresso:espresso-idling-resource:${libraries.espresso}"
     androidTestCompile "com.android.support.test.espresso:espresso-core:${libraries.espresso}"
+    androidTestCompile "com.android.support.test.espresso:espresso-intents:${libraries.espresso}"
     androidTestCompile("com.android.support.test.espresso:espresso-contrib:${libraries.espresso}") {
         // Causes IncompatibleClassChangeError
         exclude module: "support-annotations"
