@@ -41,8 +41,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
     TextView username;
     TextView userInfo;
 
-    Toolbar toolbar;
-
     @Inject
     MainPresenter mainPresenter;
 
@@ -96,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
     }
 
     private void setupToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerToggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
@@ -152,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
         navigationView.setCheckedItem(menuItem.getItemId());
-        toolbar.setTitle(menuItem.getTitle());
+        getSupportActionBar().setTitle(menuItem.getTitle());
 
         if (menuItem.getItemId() == R.id.drawer_item_home) {
             attachFragment(new HomeFragment());
