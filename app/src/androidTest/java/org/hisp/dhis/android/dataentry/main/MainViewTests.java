@@ -42,6 +42,7 @@ import org.hisp.dhis.android.core.user.UserCredentialsModel;
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.DhisInstrumentationTestsApp;
+import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
 import org.junit.After;
 import org.junit.Before;
@@ -163,14 +164,11 @@ public class MainViewTests {
                 .checkUserInitials("TT");
     }
 
-    // ToDo: implement tests which verify that correct fragments are attached when menu items are selected.
-//    @Test
-//    public void homeScreenShouldBeSelectedByDefault() {
-//        mainRobot.checkToolbarTitle(resources.getString(R.string.drawer_item_forms))
-//                .openSlidingPanel()
-//                .homeMenuItemIsSelected()
-//                .rotateToLandscape();
-//    }
+    @Test
+    public void homeScreenShouldBeSelectedByDefault() {
+        mainRobot.checkToolbarTitle(resources.getString(R.string.drawer_item_home))
+                .homeMenuItemIsSelected();
+    }
 
     @After
     public void tearDown() throws Exception {
