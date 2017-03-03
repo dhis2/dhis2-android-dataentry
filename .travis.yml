@@ -40,7 +40,6 @@ branches:
   only:
   - master
   - develop
-  - feature/fabricKeyFix
 
 script:
   bash ci.sh
