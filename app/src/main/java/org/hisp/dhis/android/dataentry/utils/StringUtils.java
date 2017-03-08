@@ -35,7 +35,6 @@ public final class StringUtils {
         return cache.toString();
     }
 
-    // ToDo: tests
     @NonNull
     public static Spanned htmlify(@NonNull List<String> values) {
         StringBuilder cache = new StringBuilder();
