@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
@@ -22,7 +23,7 @@ public class HomeRepositoryImpl implements HomeRepository {
      UNION SELECT
      uid,displayName,'PROGRAM' AS homeViewModelType FROM Program WHERE Program.programType = 'WITHOUT_REGISTRATION')
      ORDER BY homeViewModelType DESC */
-    private final static String SELECT_HOME_ENTITIES = String.format(
+    private final static String SELECT_HOME_ENTITIES = String.format(Locale.US,
             "SELECT * FROM " +
                     "(SELECT %s,%s,'%s' AS %s FROM %s " +
                     "UNION SELECT %s,%s,'%s' AS %s FROM %s WHERE %s.%s = '%s') " +
