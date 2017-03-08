@@ -44,6 +44,7 @@ import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -80,6 +81,34 @@ public class HomePresenterUnitTest {
         verify(homeView.swapData()).accept(homeEntityListCaptor.capture());
 
         assertThat(homeEntityListCaptor.getValue()).isEqualTo(homeViewModelList);
+
+    }
+
+    @Test
+    public void updatesShouldBePropagatedToView() throws Exception {
+
+        PublishSubject<List<HomeViewModel>> subject = PublishSubject.create();
+        when(homeRepository.homeEntities()).thenReturn(subject);
+
+        List<HomeViewModel> homeViewModelList = new ArrayList<>();
+        homeViewModelList.add(HomeViewModel.create("test_id", "test_display_name", HomeViewModel.Type.PROGRAM));
+
+        homePresenter.onAttach(homeView);
+
+        subject.onNext(homeViewModelList);
+        verify(homeView.swapData()).accept(homeEntityListCaptor.capture());
+
+        assertThat(homeEntityListCaptor.getValue()).isEqualTo(homeViewModelList);
+
+        List<HomeViewModel> secondHomeViewModelList = new ArrayList<>();
+        secondHomeViewModelList.add(
+                HomeViewModel.create("second_test_id", "second_test_display_name", HomeViewModel.Type.TRACKED_ENTITY));
+
+        subject.onNext(secondHomeViewModelList);
+
+        verify(homeView.swapData(), times(2)).accept(homeEntityListCaptor.capture());
+
+        assertThat(homeEntityListCaptor.getValue()).isEqualTo(secondHomeViewModelList);
 
     }
 
