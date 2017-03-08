@@ -35,7 +35,6 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
-import org.hisp.dhis.android.dataentry.utils.ImmediateScheduler;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +44,7 @@ import java.io.IOException;
 import java.util.List;
 
 import io.reactivex.observers.TestObserver;
+import rx.internal.schedulers.TrampolineScheduler;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -57,7 +57,7 @@ public class HomeRepositoryIntegrationTests {
     private HomeRepository homeRepository;
 
     @Rule
-    public DatabaseRule databaseRule = new DatabaseRule(ImmediateScheduler.create());
+    public DatabaseRule databaseRule = new DatabaseRule(TrampolineScheduler.INSTANCE);
 
     @Before
     public void setUp() throws IOException {
