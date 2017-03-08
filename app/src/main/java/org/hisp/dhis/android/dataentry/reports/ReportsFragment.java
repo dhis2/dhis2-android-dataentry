@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,20 +21,25 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import io.reactivex.functions.Consumer;
-import timber.log.Timber;
 
 public final class ReportsFragment extends BaseFragment implements ReportsView {
     private static final String ARG_FORM_UID = "arg:formUid";
+    private static final String ARG_FORM_NAME = "arg:formName";
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     @BindView(R.id.recyclerview_reports)
     RecyclerView recyclerViewReports;
 
     @Inject
     ReportsPresenter presenter;
+    ReportsAdapter reportsAdapter;
 
-    public static ReportsFragment create(@NonNull String formUid) {
+    public static ReportsFragment create(@NonNull String formUid, @NonNull String formName) {
         Bundle arguments = new Bundle();
         arguments.putString(ARG_FORM_UID, formUid);
+        arguments.putString(ARG_FORM_NAME, formName);
 
         ReportsFragment reportsFragment = new ReportsFragment();
         reportsFragment.setArguments(arguments);
@@ -44,6 +50,8 @@ public final class ReportsFragment extends BaseFragment implements ReportsView {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+        // inject dependencies
         ((DhisApp) context.getApplicationContext()).userComponent()
                 .plus(new ReportsModule(getFormUid()))
                 .inject(this);
@@ -51,7 +59,7 @@ public final class ReportsFragment extends BaseFragment implements ReportsView {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_reports, container, false);
     }
@@ -60,6 +68,7 @@ public final class ReportsFragment extends BaseFragment implements ReportsView {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         bind(this, view);
 
+        setUpToolbar();
         setUpRecyclerView();
     }
 
@@ -78,16 +87,27 @@ public final class ReportsFragment extends BaseFragment implements ReportsView {
     @NonNull
     @Override
     public Consumer<List<ReportViewModel>> renderReportViewModels() {
-        return (reportViewModels) -> {
-            Timber.d(reportViewModels.toString());
-        };
+        return reportViewModels -> reportsAdapter.swapData(reportViewModels);
+    }
+
+    private void setUpToolbar() {
+        toolbar.setTitle(getFormName());
     }
 
     private void setUpRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        reportsAdapter = new ReportsAdapter(getContext());
+        recyclerViewReports.setLayoutManager(layoutManager);
+        recyclerViewReports.setAdapter(reportsAdapter);
     }
 
     private String getFormUid() {
         return getArguments().getString(ARG_FORM_UID, "");
+    }
+
+    private String getFormName() {
+        return getArguments().getString(ARG_FORM_NAME, "");
     }
 }
