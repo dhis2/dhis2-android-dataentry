@@ -28,6 +28,7 @@
 
 package org.hisp.dhis.android.dataentry.main.home;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -68,12 +69,6 @@ public class HomeFragment extends BaseFragment implements HomeView {
     private AlertDialog alertDialog;
     private Unbinder unbinder;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getUserComponent().plus(new HomeModule()).inject(this);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -102,6 +97,12 @@ public class HomeFragment extends BaseFragment implements HomeView {
 
     private void setupSwipeRefreshLayout() {
         swipeRefreshLayout.setColorSchemeResources(R.color.color_primary);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        getUserComponent().plus(new HomeModule()).inject(this);
     }
 
     @Override
