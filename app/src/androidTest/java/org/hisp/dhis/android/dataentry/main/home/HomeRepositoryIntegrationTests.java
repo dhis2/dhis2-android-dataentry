@@ -91,7 +91,7 @@ public class HomeRepositoryIntegrationTests {
 
         testObserver.assertValueCount(1); // One list is returned
 
-        assertThat(testObserver.values().get(0).size()).isEqualTo(2); // List contains both home entities
+        assertThat(testObserver.values().get(0).size()).isEqualTo(2); // List contains both HomeViewModels
 
         // TrackedEntity type should be returned first
         assertThat(testObserver.values().get(0).get(0).type()).isEqualTo(HomeViewModel.Type.TRACKED_ENTITY);
@@ -100,6 +100,8 @@ public class HomeRepositoryIntegrationTests {
         assertThat(testObserver.values().get(0).get(1).type()).isEqualTo(HomeViewModel.Type.PROGRAM);
 
         testObserver.assertNoErrors();
+
+        testObserver.assertNotComplete();
 
     }
 
@@ -124,6 +126,8 @@ public class HomeRepositoryIntegrationTests {
 
         testObserver.assertNoErrors();
 
+        testObserver.assertNotComplete();
+
     }
 
     @Test
@@ -147,6 +151,8 @@ public class HomeRepositoryIntegrationTests {
 
         testObserver.assertNoErrors();
 
+        testObserver.assertNotComplete();
+
     }
 
     @Test
@@ -160,6 +166,8 @@ public class HomeRepositoryIntegrationTests {
         assertThat(testObserver.values().get(0).size()).isEqualTo(0); // List should be empty
 
         testObserver.assertNoErrors();
+
+        testObserver.assertNotComplete();
 
     }
 }
