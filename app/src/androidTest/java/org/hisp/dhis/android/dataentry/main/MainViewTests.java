@@ -167,6 +167,7 @@ public class MainViewTests {
     @Test
     public void homeScreenShouldBeSelectedByDefault() {
         mainRobot.checkToolbarTitle(resources.getString(R.string.drawer_item_home))
+                .openSlidingPanel()
                 .homeMenuItemIsSelected();
     }
 

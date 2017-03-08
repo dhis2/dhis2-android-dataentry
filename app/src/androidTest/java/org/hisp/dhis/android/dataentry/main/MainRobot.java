@@ -97,6 +97,7 @@ class MainRobot {
     MainRobot homeMenuItemIsSelected() {
 
         onView(withId(R.id.navigation_view)).check((view, noViewFoundException) -> {
+            // TODO: Use ElementMatcher Junctions or other means to find the drawer menu item that is selected
             CheckedTextView homeMenuView = getHomeCheckedTextView(view);
             if (homeMenuView == null) {
                 throw noViewFoundException;
@@ -107,6 +108,7 @@ class MainRobot {
         return this;
     }
 
+    // TODO: Remove this when better means of finding view is in place
     private CheckedTextView getHomeCheckedTextView(View view) {
         return (CheckedTextView) ((LinearLayoutCompat) ((RecyclerView)
                 ((NavigationView) view).getChildAt(0)).getChildAt(1)).getChildAt(0);
