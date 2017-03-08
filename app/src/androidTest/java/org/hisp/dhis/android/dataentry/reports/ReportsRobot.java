@@ -10,10 +10,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hisp.dhis.android.dataentry.espresso.CustomViewMatchers.withToolbarTitle;
 
 final class ReportsRobot {
-    ReportsRobot() {
-        // explicit public constructor
-    }
 
+    @NonNull
     ReportsRobot checkToolbarTitle(@NonNull String title) {
         onView(isAssignableFrom(Toolbar.class))
                 .check(matches(withToolbarTitle(is(title))));
