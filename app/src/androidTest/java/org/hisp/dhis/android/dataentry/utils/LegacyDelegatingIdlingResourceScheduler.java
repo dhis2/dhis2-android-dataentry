@@ -9,11 +9,11 @@ import java.util.concurrent.TimeUnit;
 import rx.Subscription;
 import rx.functions.Action0;
 
-public class LegacyDelegatingIdlingResourceScheduler extends rx.Scheduler implements IdlingResource {
+class LegacyDelegatingIdlingResourceScheduler extends rx.Scheduler implements IdlingResource {
     private final rx.Scheduler scheduler;
     private final CountingIdlingResource countingIdlingResource;
 
-    public LegacyDelegatingIdlingResourceScheduler(@NonNull String name, @NonNull rx.Scheduler scheduler) {
+    LegacyDelegatingIdlingResourceScheduler(@NonNull String name, @NonNull rx.Scheduler scheduler) {
         this.scheduler = scheduler;
         this.countingIdlingResource = new CountingIdlingResource(name, true);
     }
