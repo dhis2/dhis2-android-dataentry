@@ -181,7 +181,7 @@ dependencies {
     compile "com.jakewharton.timber:timber:${libraries.timber}"
     compile "com.jakewharton:butterknife:${libraries.butterknife}"
     annotationProcessor "com.jakewharton:butterknife-compiler:${libraries.butterknife}"
-    
+
     compile "com.jakewharton.rxbinding2:rxbinding:${libraries.rxbindings}"
     compile "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${libraries.rxbindings}"
 
@@ -200,9 +200,15 @@ dependencies {
     androidTestCompile "org.mockito:mockito-android:${libraries.mockito}"
     androidTestCompile "org.assertj:assertj-core:${libraries.assertj}"
 
-    androidTestCompile "com.android.support.test.espresso:espresso-idling-resource:${libraries.espresso}"
-    androidTestCompile "com.android.support.test.espresso:espresso-core:${libraries.espresso}"
-    androidTestCompile "com.android.support.test.espresso:espresso-intents:${libraries.espresso}"
+    androidTestCompile("com.android.support.test.espresso:espresso-idling-resource:${libraries.espresso}") {
+        exclude module: "support-annotations"
+    }
+    androidTestCompile("com.android.support.test.espresso:espresso-core:${libraries.espresso}") {
+        exclude module: "support-annotations"
+    }
+    androidTestCompile("com.android.support.test.espresso:espresso-intents:${libraries.espresso}") {
+        exclude module: "support-annotations"
+    }
     androidTestCompile("com.android.support.test.espresso:espresso-contrib:${libraries.espresso}") {
         // Causes IncompatibleClassChangeError
         exclude module: "support-annotations"
