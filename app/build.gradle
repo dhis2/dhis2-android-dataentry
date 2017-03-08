@@ -33,8 +33,12 @@ def getFabricKey = {
         Properties properties = new Properties()
         properties.load(fabricPropertiesFile.newDataInputStream())
         return properties.getProperty("apiKey")
-    } else {
+    } else if (System.getenv("DHIS_FABRIC_KEY") != null) {
         return System.getenv("DHIS_FABRIC_KEY")
+    } else {
+        // in case that, neither the environment variable or the properties file is not specified,
+        // return an empty string which will allow to a build debug type of the application.
+        return ""
     }
 }
 
