@@ -56,8 +56,7 @@ public class ReportsViewTests {
 
     @Before
     public void setUp() throws Exception {
-        reportsRobot = new ReportsRobot(InstrumentationRegistry
-                .getTargetContext().getApplicationContext());
+        reportsRobot = new ReportsRobot();
 
         reportViewModelOne = ReportViewModel.create("event_one",
                 ReportViewModel.Status.SYNCED, Arrays.asList(

@@ -64,8 +64,8 @@ class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
 
     static class ReportViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.container_status_icon)
-        View containerStatus;
+//        @BindView(R.id.container_status_icon)
+//        View containerStatus;
 
         @BindView(R.id.circleview_status_background)
         CircleView circleViewStatus;
@@ -115,8 +115,8 @@ class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
                 }
                 case TO_SYNC: {
                     buttonDelete.setVisibility(View.INVISIBLE);
-                    circleViewStatus.setFillColor(colorSent);
-                    imageViewStatus.setImageDrawable(drawableSent);
+                    circleViewStatus.setFillColor(colorOffline);
+                    imageViewStatus.setImageDrawable(drawableOffline);
                     break;
                 }
                 case FAILED: {
@@ -124,6 +124,9 @@ class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
                     circleViewStatus.setFillColor(colorError);
                     imageViewStatus.setImageDrawable(drawableError);
                     break;
+                }
+                default: {
+                    throw new IllegalArgumentException();
                 }
             }
         }
