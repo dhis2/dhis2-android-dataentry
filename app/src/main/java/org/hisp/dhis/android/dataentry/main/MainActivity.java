@@ -165,21 +165,21 @@ public class MainActivity extends AppCompatActivity implements MainView,
     @NonNull
     @UiThread
     @Override
-    public Consumer<String> showUsername() {
+    public Consumer<String> renderUsername() {
         return username1 -> username.setText(username1);
     }
 
     @NonNull
     @UiThread
     @Override
-    public Consumer<String> showUserInitials() {
+    public Consumer<String> renderUserInitials() {
         return (userInitials) -> this.usernameInitials.setText(userInitials);
     }
 
     @NonNull
     @UiThread
     @Override
-    public Consumer<String> showUserInfo() {
+    public Consumer<String> renderUserInfo() {
         throw new UnsupportedOperationException();
     }
 

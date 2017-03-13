@@ -128,28 +128,28 @@ class LoginPresenterImpl implements LoginPresenter {
     private void showInvalidCredentialsError() {
         if (loginView != null) {
             loginView.hideProgress();
-            loginView.showInvalidCredentialsError();
+            loginView.renderInvalidCredentialsError();
         }
     }
 
     private void showInvalidServerUrlError() {
         if (loginView != null) {
             loginView.hideProgress();
-            loginView.showInvalidServerUrlError();
+            loginView.renderInvalidServerUrlError();
         }
     }
 
     private void showUnexpectedError() {
         if (loginView != null) {
             loginView.hideProgress();
-            loginView.showUnexpectedError();
+            loginView.renderUnexpectedError();
         }
     }
 
     private void showServerError() {
         if (loginView != null) {
             loginView.hideProgress();
-            loginView.showServerError();
+            loginView.renderServerError();
         }
     }
 

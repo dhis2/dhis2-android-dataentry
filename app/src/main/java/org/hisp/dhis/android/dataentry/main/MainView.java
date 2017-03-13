@@ -7,17 +7,17 @@ import org.hisp.dhis.android.dataentry.commons.View;
 
 import io.reactivex.functions.Consumer;
 
-public interface MainView extends View {
+interface MainView extends View {
 
     @NonNull
     @UiThread
-    Consumer<String> showUsername();
+    Consumer<String> renderUsername();
 
     @NonNull
     @UiThread
-    Consumer<String> showUserInfo();
+    Consumer<String> renderUserInfo();
 
     @NonNull
     @UiThread
-    Consumer<String> showUserInitials();
+    Consumer<String> renderUserInitials();
 }

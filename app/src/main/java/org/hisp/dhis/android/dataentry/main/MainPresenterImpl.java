@@ -42,11 +42,11 @@ class MainPresenterImpl implements MainPresenter {
 
             compositeDisposable.add(userObservable
                     .map(this::username)
-                    .subscribe(mainView.showUsername(), Timber::e));
+                    .subscribe(mainView.renderUsername(), Timber::e));
 
             compositeDisposable.add(userObservable
                     .map(this::userInitials)
-                    .subscribe(mainView.showUserInitials(), Timber::e));
+                    .subscribe(mainView.renderUserInitials(), Timber::e));
 
             compositeDisposable.add(userObservable.connect());
         }

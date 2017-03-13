@@ -220,24 +220,24 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     }
 
     @Override
-    public void showInvalidServerUrlError() {
+    public void renderInvalidServerUrlError() {
         serverUrl.setError(getResources().getString(R.string.error_wrong_server_url));
     }
 
     @Override
-    public void showInvalidCredentialsError() {
+    public void renderInvalidCredentialsError() {
         username.setError(getString(R.string.error_wrong_credentials));
         password.setError(getString(R.string.error_wrong_credentials));
     }
 
     @Override
-    public void showUnexpectedError() {
+    public void renderUnexpectedError() {
         Toast.makeText(this, getResources().getString(
                 R.string.error_unexpected_error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void showServerError() {
+    public void renderServerError() {
         Toast.makeText(this, getResources().getString(
                 R.string.error_internal_server_error), Toast.LENGTH_SHORT).show();
     }

@@ -62,9 +62,9 @@ public class MainPresenterUnitTests {
         mainPresenter.onAttach(mainView);
         userSubject.onNext(userModel);
 
-        verify(mainView.showUsername()).accept(usernameCaptor.capture());
-        verify(mainView.showUserInitials()).accept(userInitialsCaptor.capture());
-        verify(mainView, never()).showUserInfo();
+        verify(mainView.renderUsername()).accept(usernameCaptor.capture());
+        verify(mainView.renderUserInitials()).accept(userInitialsCaptor.capture());
+        verify(mainView, never()).renderUserInfo();
 
         assertThat(usernameCaptor.getValue()).isEqualTo("John Watson");
         assertThat(userInitialsCaptor.getValue()).isEqualTo("JW");
@@ -78,9 +78,9 @@ public class MainPresenterUnitTests {
         mainPresenter.onAttach(mainView);
         userSubject.onNext(userModel);
 
-        verify(mainView.showUsername()).accept(usernameCaptor.capture());
-        verify(mainView.showUserInitials()).accept(userInitialsCaptor.capture());
-        verify(mainView, never()).showUserInfo();
+        verify(mainView.renderUsername()).accept(usernameCaptor.capture());
+        verify(mainView.renderUserInitials()).accept(userInitialsCaptor.capture());
+        verify(mainView, never()).renderUserInfo();
 
         assertThat(usernameCaptor.getValue()).isEqualTo("Watson");
         assertThat(userInitialsCaptor.getValue()).isEqualTo("W");
@@ -94,9 +94,9 @@ public class MainPresenterUnitTests {
         mainPresenter.onAttach(mainView);
         userSubject.onNext(userModel);
 
-        verify(mainView.showUsername()).accept(usernameCaptor.capture());
-        verify(mainView.showUserInitials()).accept(userInitialsCaptor.capture());
-        verify(mainView, never()).showUserInfo();
+        verify(mainView.renderUsername()).accept(usernameCaptor.capture());
+        verify(mainView.renderUserInitials()).accept(userInitialsCaptor.capture());
+        verify(mainView, never()).renderUserInfo();
 
         assertThat(usernameCaptor.getValue()).isEqualTo("john watson");
         assertThat(userInitialsCaptor.getValue()).isEqualTo("JW");
@@ -110,9 +110,9 @@ public class MainPresenterUnitTests {
         mainPresenter.onAttach(mainView);
         userSubject.onNext(userModel);
 
-        verify(mainView.showUsername()).accept(usernameCaptor.capture());
-        verify(mainView.showUserInitials()).accept(userInitialsCaptor.capture());
-        verify(mainView, never()).showUserInfo();
+        verify(mainView.renderUsername()).accept(usernameCaptor.capture());
+        verify(mainView.renderUserInitials()).accept(userInitialsCaptor.capture());
+        verify(mainView, never()).renderUserInfo();
 
         assertThat(usernameCaptor.getValue()).isEqualTo("");
         assertThat(userInitialsCaptor.getValue()).isEqualTo("");
@@ -127,9 +127,9 @@ public class MainPresenterUnitTests {
         mainPresenter.onAttach(mainView);
         userSubject.onNext(userModel);
 
-        verify(mainView.showUsername()).accept(usernameCaptor.capture());
-        verify(mainView.showUserInitials()).accept(userInitialsCaptor.capture());
-        verify(mainView, never()).showUserInfo();
+        verify(mainView.renderUsername()).accept(usernameCaptor.capture());
+        verify(mainView.renderUserInitials()).accept(userInitialsCaptor.capture());
+        verify(mainView, never()).renderUserInfo();
 
         assertThat(usernameCaptor.getValue()).isEqualTo("");
         assertThat(userInitialsCaptor.getValue()).isEqualTo("");
@@ -143,8 +143,8 @@ public class MainPresenterUnitTests {
         mainPresenter.onAttach(mainView);
 
         verify(userRepository).me();
-        verify(mainView).showUsername();
-        verify(mainView).showUserInitials();
+        verify(mainView).renderUsername();
+        verify(mainView).renderUserInitials();
 
         mainPresenter.onDetach();
         verifyNoMoreInteractions(userRepository, mainView);
