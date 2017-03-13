@@ -107,7 +107,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
     }
 
     @Override
-    public void showError(String message) {
+    public void renderError(String message) {
         if (alertDialog == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setPositiveButton(R.string.option_confirm, null);

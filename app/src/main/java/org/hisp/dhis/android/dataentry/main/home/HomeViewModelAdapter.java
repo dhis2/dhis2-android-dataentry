@@ -20,13 +20,12 @@ import butterknife.OnClick;
 
 import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 
-public class HomeViewModelAdapter extends RecyclerView.Adapter {
-
+class HomeViewModelAdapter extends RecyclerView.Adapter {
     private final LayoutInflater layoutInflater;
     private final List<HomeViewModel> homeViewModels;
     private OnHomeItemClicked onHomeItemClickListener;
 
-    public HomeViewModelAdapter(Context context) {
+    HomeViewModelAdapter(Context context) {
         isNull(context, "context must not be null");
 
         this.layoutInflater = LayoutInflater.from(context);

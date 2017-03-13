@@ -8,12 +8,12 @@ import java.util.List;
 
 import io.reactivex.functions.Consumer;
 
-public interface HomeView extends View {
+interface HomeView extends View {
     
     Consumer<List<HomeViewModel>> swapData();
 
     @UiThread
-    void showError(String message);
+    void renderError(String message);
 }
 
 

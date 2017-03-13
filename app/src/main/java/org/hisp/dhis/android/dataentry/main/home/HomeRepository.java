@@ -1,10 +1,13 @@
 package org.hisp.dhis.android.dataentry.main.home;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
 import io.reactivex.Observable;
 
-public interface HomeRepository {
+interface HomeRepository {
 
+    @NonNull
     Observable<List<HomeViewModel>> homeEntities();
 }

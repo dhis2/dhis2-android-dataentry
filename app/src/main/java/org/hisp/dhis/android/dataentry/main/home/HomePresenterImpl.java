@@ -9,13 +9,13 @@ import io.reactivex.disposables.CompositeDisposable;
 
 import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 
-public class HomePresenterImpl implements HomePresenter {
+class HomePresenterImpl implements HomePresenter {
 
     private final SchedulerProvider schedulerProvider;
     private final HomeRepository homeRepository;
     private final CompositeDisposable compositeDisposable;
 
-    public HomePresenterImpl(SchedulerProvider schedulerProvider, HomeRepository homeRepository) {
+    HomePresenterImpl(SchedulerProvider schedulerProvider, HomeRepository homeRepository) {
         this.homeRepository = homeRepository;
         this.schedulerProvider = schedulerProvider;
         this.compositeDisposable = new CompositeDisposable();
@@ -33,7 +33,7 @@ public class HomePresenterImpl implements HomePresenter {
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                             homeView.swapData(),
-                            throwable -> homeView.showError(throwable.getMessage())));
+                            throwable -> homeView.renderError(throwable.getMessage())));
         }
     }
 
