@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +23,6 @@ import io.reactivex.functions.Consumer;
 
 public final class ReportsFragment extends BaseFragment implements ReportsView {
     private static final String ARG_FORM_UID = "arg:formUid";
-    private static final String ARG_FORM_NAME = "arg:formName";
-
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
 
     @BindView(R.id.recyclerview_reports)
     RecyclerView recyclerViewReports;
@@ -36,10 +31,9 @@ public final class ReportsFragment extends BaseFragment implements ReportsView {
     ReportsPresenter presenter;
     ReportsAdapter reportsAdapter;
 
-    public static ReportsFragment create(@NonNull String formUid, @NonNull String formName) {
+    public static ReportsFragment create(@NonNull String formUid) {
         Bundle arguments = new Bundle();
         arguments.putString(ARG_FORM_UID, formUid);
-        arguments.putString(ARG_FORM_NAME, formName);
 
         ReportsFragment reportsFragment = new ReportsFragment();
         reportsFragment.setArguments(arguments);
@@ -67,8 +61,6 @@ public final class ReportsFragment extends BaseFragment implements ReportsView {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         bind(this, view);
-
-        setUpToolbar();
         setUpRecyclerView();
     }
 
@@ -90,10 +82,6 @@ public final class ReportsFragment extends BaseFragment implements ReportsView {
         return reportViewModels -> reportsAdapter.swapData(reportViewModels);
     }
 
-    private void setUpToolbar() {
-        toolbar.setTitle(getFormName());
-    }
-
     private void setUpRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -105,9 +93,5 @@ public final class ReportsFragment extends BaseFragment implements ReportsView {
 
     private String getFormUid() {
         return getArguments().getString(ARG_FORM_UID, "");
-    }
-
-    private String getFormName() {
-        return getArguments().getString(ARG_FORM_NAME, "");
     }
 }
