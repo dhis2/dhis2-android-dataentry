@@ -42,7 +42,7 @@ branches:
   - develop
 
 script:
-  bash ci.sh
+  bash build.sh
 
 after_script:
   ./gradlew sonarqube
