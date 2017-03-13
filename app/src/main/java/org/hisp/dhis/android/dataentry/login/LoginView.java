@@ -12,16 +12,16 @@ interface LoginView extends View {
     void hideProgress();
 
     @UiThread
-    void showInvalidServerUrlError();
+    void renderInvalidServerUrlError();
 
     @UiThread
-    void showInvalidCredentialsError();
+    void renderInvalidCredentialsError();
 
     @UiThread
-    void showUnexpectedError();
+    void renderUnexpectedError();
 
     @UiThread
-    void showServerError();
+    void renderServerError();
 
     @UiThread
     void navigateToHome();

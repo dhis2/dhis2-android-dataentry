@@ -9,6 +9,18 @@
     <Match>
         <Class name="~.*ViewBinding.*"/>
     </Match>
+    <Match>
+        <Class name="~.*\$\$ViewBinder*"/>
+    </Match>
+    <Match>
+        <Class name="~.*\$\$ViewBinder\$InnerUnbinder*"/>
+    </Match>
+
+    <!-- Ignore UPM in lambdas from Retrolambda, FindBugs does not correctly understand them -->
+    <Match>
+        <Bug code="UPM"/>
+        <Class name="~.*\$\$Lambda\$.*"/>
+    </Match>
 
     <!-- Do not check auto-generated classes (Dagger puts $ into class names) -->
     <Match>
@@ -31,6 +43,7 @@
     </Match>
     <Match>
         <!-- Allow Unchecked/unconfirmed cast from android.view.View when using findViewById(id)  -->
-        <Bug pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" method="findViewById" returns="android.view.View" />
+        <Bug method="findViewById" pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE"
+             returns="android.view.View"/>
     </Match>
 </FindBugsFilter>

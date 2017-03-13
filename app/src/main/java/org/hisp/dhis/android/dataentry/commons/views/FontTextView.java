@@ -13,6 +13,7 @@ import org.hisp.dhis.android.dataentry.utils.TypefaceManager;
 
 import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 
+// ToDo: tests
 public class FontTextView extends AppCompatTextView {
 
     public FontTextView(Context context) {

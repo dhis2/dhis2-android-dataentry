@@ -120,7 +120,7 @@ public class LoginPresenterUnitTests {
         verify(componentsHandler, never()).createUserComponent();
 
         // show error message
-        verify(loginView).showInvalidServerUrlError();
+        verify(loginView).renderInvalidServerUrlError();
     }
 
     @Test
@@ -171,7 +171,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
-        mocksInOrder.verify(loginView).showInvalidCredentialsError();
+        mocksInOrder.verify(loginView).renderInvalidCredentialsError();
         verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
@@ -199,7 +199,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
-        mocksInOrder.verify(loginView).showInvalidServerUrlError();
+        mocksInOrder.verify(loginView).renderInvalidServerUrlError();
         verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
@@ -227,7 +227,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
-        mocksInOrder.verify(loginView).showUnexpectedError();
+        mocksInOrder.verify(loginView).renderUnexpectedError();
         verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
@@ -253,7 +253,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
-        mocksInOrder.verify(loginView).showInvalidServerUrlError();
+        mocksInOrder.verify(loginView).renderInvalidServerUrlError();
         verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
@@ -279,7 +279,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
-        mocksInOrder.verify(loginView).showInvalidServerUrlError();
+        mocksInOrder.verify(loginView).renderInvalidServerUrlError();
         verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
@@ -330,7 +330,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
-        mocksInOrder.verify(loginView).showUnexpectedError();
+        mocksInOrder.verify(loginView).renderUnexpectedError();
         verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }
@@ -358,7 +358,7 @@ public class LoginPresenterUnitTests {
         mocksInOrder.verify(componentsHandler).createServerComponent(configuration);
         mocksInOrder.verify(userManager).logIn("test_user_name", "test_password");
         mocksInOrder.verify(loginView).hideProgress();
-        mocksInOrder.verify(loginView).showServerError();
+        mocksInOrder.verify(loginView).renderServerError();
         verify(componentsHandler, never()).createUserComponent();
         verify(loginView, never()).navigateToHome();
     }

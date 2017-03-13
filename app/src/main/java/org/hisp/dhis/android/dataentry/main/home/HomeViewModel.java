@@ -10,12 +10,12 @@ import com.google.auto.value.AutoValue;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObjectModel;
 
 @AutoValue
-public abstract class HomeViewModel {
+abstract class HomeViewModel {
 
-    public static class Columns extends BaseIdentifiableObjectModel.Columns {
+    static class Columns extends BaseIdentifiableObjectModel.Columns {
         static final String UID = "uid";
         static final String DISPLAY_NAME = "displayName";
-        public static final String HOME_VIEW_MODEL_TYPE = "homeViewModelType";
+        static final String HOME_VIEW_MODEL_TYPE = "homeViewModelType";
     }
 
     @NonNull

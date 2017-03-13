@@ -164,7 +164,7 @@ public class LoginViewTests {
     }
 
     @Test
-    public void loginShouldShowWrongUsernameMessageIf401() {
+    public void loginShouldRenderWrongUsernameMessageIf401() {
         Spoon.screenshot(loginViewRule.getActivity(), "login_initial_state");
 
         MockResponse mockResponse = new MockResponse();

@@ -171,6 +171,7 @@ dependencies {
     // annotation processor which hoops up into compilation process
     provided "com.google.auto.value:auto-value:${libraries.autovalue}"
     annotationProcessor "com.google.auto.value:auto-value:${libraries.autovalue}"
+    
     // Extension which generates mappers for work with cursors
     annotationProcessor "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
 
@@ -194,6 +195,7 @@ dependencies {
     testCompile "org.powermock:powermock-module-junit4:${libraries.powermock}"
     testCompile "org.powermock:powermock-api-mockito2:${libraries.powermock}"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:${libraries.leakcanary}"
+    testCompile "nl.jqno.equalsverifier:equalsverifier:${libraries.equalsverifier}"
 
     // Spoon client which allows to capture screenshots during instrumentation tests
     androidTestCompile "com.squareup.spoon:spoon-client:${libraries.spoon}"
@@ -201,9 +203,15 @@ dependencies {
     androidTestCompile "org.mockito:mockito-android:${libraries.mockito}"
     androidTestCompile "org.assertj:assertj-core:${libraries.assertj}"
 
-    androidTestCompile "com.android.support.test.espresso:espresso-idling-resource:${libraries.espresso}"
-    androidTestCompile "com.android.support.test.espresso:espresso-core:${libraries.espresso}"
-    androidTestCompile "com.android.support.test.espresso:espresso-intents:${libraries.espresso}"
+    androidTestCompile("com.android.support.test.espresso:espresso-idling-resource:${libraries.espresso}") {
+        exclude module: "support-annotations"
+    }
+    androidTestCompile("com.android.support.test.espresso:espresso-core:${libraries.espresso}") {
+        exclude module: "support-annotations"
+    }
+    androidTestCompile("com.android.support.test.espresso:espresso-intents:${libraries.espresso}") {
+        exclude module: "support-annotations"
+    }
     androidTestCompile("com.android.support.test.espresso:espresso-contrib:${libraries.espresso}") {
         // Causes IncompatibleClassChangeError
         exclude module: "support-annotations"

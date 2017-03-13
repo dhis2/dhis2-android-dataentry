@@ -1,5 +1,7 @@
 package org.hisp.dhis.android.dataentry.main.home;
 
+import android.support.annotation.NonNull;
+
 import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -15,7 +17,7 @@ import java.util.Set;
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import io.reactivex.Observable;
 
-public class HomeRepositoryImpl implements HomeRepository {
+class HomeRepositoryImpl implements HomeRepository {
 
     /*
      SELECT * FROM
@@ -44,6 +46,7 @@ public class HomeRepositoryImpl implements HomeRepository {
         this.briteDatabase = briteDatabase;
     }
 
+    @NonNull
     @Override
     public Observable<List<HomeViewModel>> homeEntities() {
         return RxJavaInterop.toV2Observable(

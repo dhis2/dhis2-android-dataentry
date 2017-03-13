@@ -6,7 +6,6 @@ import android.support.test.runner.AndroidJUnit4;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
-import org.hisp.dhis.android.dataentry.utils.ImmediateScheduler;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,6 +15,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import io.reactivex.observers.TestObserver;
+import rx.schedulers.Schedulers;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -27,7 +27,7 @@ public class UserRepositoryIntegrationTests {
     private UserRepository userRepository;
 
     @Rule
-    public DatabaseRule databaseRule = new DatabaseRule(ImmediateScheduler.create());
+    public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
 
     @Before
     public void setUp() throws IOException {

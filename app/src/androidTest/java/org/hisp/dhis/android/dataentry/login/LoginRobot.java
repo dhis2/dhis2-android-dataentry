@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hisp.dhis.android.dataentry.espresso.CustomViewMatchers.withErrorText;
 import static org.hisp.dhis.android.dataentry.espresso.CustomViewMatchers.withHint;
 
-public class LoginRobot {
+class LoginRobot {
     LoginRobot typeServerUrl(String serverUrl) {
         onView(withId(R.id.edittext_server_url))
                 .perform(scrollTo(), typeText(serverUrl), closeSoftKeyboard());
