@@ -3,7 +3,7 @@ package org.hisp.dhis.android.dataentry.login;
 import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.commons.dagger.PerActivity;
 import org.hisp.dhis.android.dataentry.server.ConfigurationRepository;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 
 import dagger.Module;
 import dagger.Provides;

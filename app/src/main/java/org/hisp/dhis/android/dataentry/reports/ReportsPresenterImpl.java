@@ -3,7 +3,7 @@ package org.hisp.dhis.android.dataentry.reports;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.ui.View;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;

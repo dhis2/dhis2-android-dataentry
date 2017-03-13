@@ -9,9 +9,9 @@ import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.utils.TypefaceManager;
+import org.hisp.dhis.android.dataentry.commons.utils.TypefaceManager;
 
-import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
+import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
 // ToDo: tests
 public class FontTextView extends AppCompatTextView {

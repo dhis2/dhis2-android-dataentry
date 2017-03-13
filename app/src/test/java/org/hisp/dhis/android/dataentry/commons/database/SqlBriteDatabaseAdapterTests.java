@@ -8,7 +8,7 @@ import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
 
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

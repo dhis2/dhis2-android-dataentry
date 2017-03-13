@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import org.hisp.dhis.android.dataentry.commons.dagger.PerActivity;
 import org.hisp.dhis.android.dataentry.server.UserManager;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 
 import dagger.Module;
 import dagger.Provides;

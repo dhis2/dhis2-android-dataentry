@@ -11,7 +11,7 @@ import org.hisp.dhis.android.core.data.database.Transaction;
 
 import timber.log.Timber;
 
-import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
+import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
 class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     private final BriteDatabase sqlBriteDatabase;

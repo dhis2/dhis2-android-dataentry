@@ -9,7 +9,7 @@ import org.hisp.dhis.android.dataentry.login.LoginComponent;
 import org.hisp.dhis.android.dataentry.login.LoginModule;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.server.ServerModule;
-import org.hisp.dhis.android.dataentry.utils.SchedulerModule;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerModule;
 
 import javax.inject.Singleton;
 

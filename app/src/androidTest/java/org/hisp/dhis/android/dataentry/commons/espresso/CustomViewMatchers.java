@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.espresso;
+package org.hisp.dhis.android.dataentry.commons.espresso;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;

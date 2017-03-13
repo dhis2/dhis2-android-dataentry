@@ -3,7 +3,7 @@ package org.hisp.dhis.android.dataentry.main.home;
 import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.dataentry.commons.dagger.PerFragment;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 
 import dagger.Module;
 import dagger.Provides;

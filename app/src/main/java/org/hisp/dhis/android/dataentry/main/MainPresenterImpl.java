@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
 import org.hisp.dhis.android.dataentry.user.UserRepository;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 
 import java.util.Locale;
 
@@ -13,8 +13,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observables.ConnectableObservable;
 import timber.log.Timber;
 
-import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
-import static org.hisp.dhis.android.dataentry.utils.StringUtils.isEmpty;
+import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
+import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
 
 class MainPresenterImpl implements MainPresenter {
     private final SchedulerProvider schedulerProvider;

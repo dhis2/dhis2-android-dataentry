@@ -18,7 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
+import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
 class HomeViewModelAdapter extends RecyclerView.Adapter {
     private final LayoutInflater layoutInflater;

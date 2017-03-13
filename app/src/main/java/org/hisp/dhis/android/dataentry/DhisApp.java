@@ -25,9 +25,9 @@ import org.hisp.dhis.android.dataentry.server.UserManager;
 import org.hisp.dhis.android.dataentry.commons.dagger.PerUser;
 import org.hisp.dhis.android.dataentry.user.UserComponent;
 import org.hisp.dhis.android.dataentry.user.UserModule;
-import org.hisp.dhis.android.dataentry.utils.CrashReportingTree;
-import org.hisp.dhis.android.dataentry.utils.SchedulerModule;
-import org.hisp.dhis.android.dataentry.utils.SchedulersProviderImpl;
+import org.hisp.dhis.android.dataentry.commons.utils.CrashReportingTree;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerModule;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulersProviderImpl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

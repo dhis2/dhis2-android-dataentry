@@ -1,6 +1,8 @@
-package org.hisp.dhis.android.dataentry.utils;
+package org.hisp.dhis.android.dataentry.commons.schedulers;
 
 import android.support.annotation.NonNull;
+
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;

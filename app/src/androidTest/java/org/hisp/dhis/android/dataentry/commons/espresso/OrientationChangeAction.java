@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.espresso;
+package org.hisp.dhis.android.dataentry.commons.espresso;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;

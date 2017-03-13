@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.utils;
+package org.hisp.dhis.android.dataentry.commons.utils;
 
 import java.util.Locale;
 

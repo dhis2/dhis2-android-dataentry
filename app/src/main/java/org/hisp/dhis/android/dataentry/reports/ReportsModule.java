@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.dataentry.commons.dagger.PerActivity;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 
 import dagger.Module;
 import dagger.Provides;

@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.utils;
+package org.hisp.dhis.android.dataentry.commons.utils;
 
 public final class Preconditions {
     private Preconditions() {
