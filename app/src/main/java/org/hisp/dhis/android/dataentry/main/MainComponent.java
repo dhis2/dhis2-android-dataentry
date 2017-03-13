@@ -25,33 +25,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.hisp.dhis.android.dataentry.database;
 
-import com.squareup.sqlbrite.BriteDatabase;
+package org.hisp.dhis.android.dataentry.main;
 
-import org.hisp.dhis.android.core.data.database.Transaction;
+import org.hisp.dhis.android.dataentry.commons.PerActivity;
 
-public class SqlBriteTransaction implements Transaction {
+import dagger.Subcomponent;
 
-    private final BriteDatabase.Transaction transaction;
-
-    public SqlBriteTransaction(BriteDatabase.Transaction transaction) {
-        this.transaction = transaction;
-    }
-
-    @Override
-    public void begin() {
-        // no-op
-        // transaction is started in constructor
-    }
-
-    @Override
-    public void setSuccessful() {
-        transaction.markSuccessful();
-    }
-
-    @Override
-    public void end() {
-        transaction.end();
-    }
+@PerActivity
+@Subcomponent(modules = MainModule.class)
+public interface MainComponent {
+    void inject(MainActivity mainActivity);
 }

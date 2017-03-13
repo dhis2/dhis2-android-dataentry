@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, University of Oslo
+ * Copyright (c) 2016, University of Oslo
  *
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
@@ -25,33 +25,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.hisp.dhis.android.dataentry.database;
 
-import com.squareup.sqlbrite.BriteDatabase;
+package org.hisp.dhis.android.dataentry.main;
 
-import org.hisp.dhis.android.core.data.database.Transaction;
+import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
 
-public class SqlBriteTransaction implements Transaction {
+import org.hisp.dhis.android.dataentry.commons.View;
 
-    private final BriteDatabase.Transaction transaction;
+import io.reactivex.functions.Consumer;
 
-    public SqlBriteTransaction(BriteDatabase.Transaction transaction) {
-        this.transaction = transaction;
-    }
+public interface MainView extends View {
 
-    @Override
-    public void begin() {
-        // no-op
-        // transaction is started in constructor
-    }
+    @NonNull
+    @UiThread
+    Consumer<String> showUsername();
 
-    @Override
-    public void setSuccessful() {
-        transaction.markSuccessful();
-    }
+    @NonNull
+    @UiThread
+    Consumer<String> showUserInfo();
 
-    @Override
-    public void end() {
-        transaction.end();
-    }
+    @NonNull
+    @UiThread
+    Consumer<String> showUserInitials();
 }

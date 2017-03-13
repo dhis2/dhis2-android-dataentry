@@ -171,6 +171,9 @@ dependencies {
     // annotation processor which hoops up into compilation process
     provided "com.google.auto.value:auto-value:${libraries.autovalue}"
     annotationProcessor "com.google.auto.value:auto-value:${libraries.autovalue}"
+    
+    // Extension which generates mappers for work with cursors
+    annotationProcessor "com.gabrielittner.auto.value:auto-value-cursor:${libraries.autovaluecursor}"
 
     // Square libraries
     debugCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"

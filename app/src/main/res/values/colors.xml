@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
     <!-- Theme colors -->
     <color name="color_primary">#FF276696</color>
     <color name="color_primary_dark">#FF194261</color>

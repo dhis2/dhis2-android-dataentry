@@ -25,33 +25,48 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.hisp.dhis.android.dataentry.database;
 
-import com.squareup.sqlbrite.BriteDatabase;
+package org.hisp.dhis.android.dataentry.main.home;
 
-import org.hisp.dhis.android.core.data.database.Transaction;
+import android.support.annotation.NonNull;
 
-public class SqlBriteTransaction implements Transaction {
+import org.hisp.dhis.android.dataentry.commons.View;
+import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 
-    private final BriteDatabase.Transaction transaction;
+import io.reactivex.disposables.CompositeDisposable;
 
-    public SqlBriteTransaction(BriteDatabase.Transaction transaction) {
-        this.transaction = transaction;
+import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
+
+public class HomePresenterImpl implements HomePresenter {
+
+    private final SchedulerProvider schedulerProvider;
+    private final HomeRepository homeRepository;
+    private final CompositeDisposable compositeDisposable;
+
+    public HomePresenterImpl(SchedulerProvider schedulerProvider, HomeRepository homeRepository) {
+        this.homeRepository = homeRepository;
+        this.schedulerProvider = schedulerProvider;
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
-    public void begin() {
-        // no-op
-        // transaction is started in constructor
+    public void onAttach(@NonNull View view) {
+        isNull(view, "HomeView must not be null");
+
+        if (view instanceof HomeView) {
+            HomeView homeView = (HomeView) view;
+
+            compositeDisposable.add(homeRepository.homeEntities()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                            homeView.swapData(),
+                            throwable -> homeView.showError(throwable.getMessage())));
+        }
     }
 
     @Override
-    public void setSuccessful() {
-        transaction.markSuccessful();
-    }
-
-    @Override
-    public void end() {
-        transaction.end();
+    public void onDetach() {
+        compositeDisposable.clear();
     }
 }

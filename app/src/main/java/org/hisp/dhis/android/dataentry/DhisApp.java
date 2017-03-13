@@ -17,6 +17,7 @@ import org.hisp.dhis.android.dataentry.commons.PerActivity;
 import org.hisp.dhis.android.dataentry.database.DbModule;
 import org.hisp.dhis.android.dataentry.login.LoginComponent;
 import org.hisp.dhis.android.dataentry.login.LoginModule;
+import org.hisp.dhis.android.dataentry.main.MainComponent;
 import org.hisp.dhis.android.dataentry.server.PerServer;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.server.ServerModule;
@@ -62,6 +63,10 @@ public class DhisApp extends Application implements Components {
     @Nullable
     @PerActivity
     LoginComponent loginComponent;
+
+    @Nullable
+    @PerActivity
+    MainComponent mainComponent;
 
     @Nullable
     RefWatcher refWatcher;

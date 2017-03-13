@@ -13,7 +13,6 @@ import timber.log.Timber;
 
 import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
 
-// TODO: tests
 class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     private final BriteDatabase sqlBriteDatabase;
 

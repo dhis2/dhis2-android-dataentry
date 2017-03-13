@@ -22,15 +22,14 @@
             android:name=".login.LoginActivity"
             android:theme="@style/AppTheme.PrimaryColorBackground"/>
         <activity
-            android:name=".home.HomeActivity"
+            android:name=".main.MainActivity"
             android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".reports.ReportsActivity"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="${fabricKey}"/>
-
-        <activity android:name=".reports.ReportsActivity">
-        </activity>
     </application>
 
 </manifest>

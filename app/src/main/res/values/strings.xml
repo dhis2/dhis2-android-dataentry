@@ -12,17 +12,23 @@
     <string name="two">2</string>
 
     <!-- Warnings and error messages -->
+    <string name="error_generic">Error</string>
     <string name="error_wrong_server_url">Wrong server url</string>
     <string name="error_wrong_credentials">Wrong credentials</string>
     <string name="error_unexpected_error">Unexpected error</string>
     <string name="error_internal_server_error">Internal server error</string>
 
-    <!-- HomeActivity -->
-    <string name="drawer_item_forms">Forms</string>
+    <!-- MainActivity -->
+    <string name="drawer_item_home">Home</string>
     <string name="drawer_item_other">Other</string>
     <string name="drawer_item_profile">Profile</string>
     <string name="drawer_item_settings">Settings</string>
     <string name="drawer_item_synchronized">Synchronized: %s</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <!-- Common dialogs -->
+    <string name="option_confirm">OK</string>
 
     <!-- Start Section: Forms -->
     <!-- Input hints -->
@@ -50,4 +56,6 @@
     <!-- Fonts  -->
     <string name="font_name_regular">Roboto-Regular.ttf</string>
     <string name="font_name_medium">Roboto-Medium.ttf</string>
+    <string name="font_name_condensed">Roboto-Condensed.ttf</string>
+    <string name="icon_description">Icon</string>
 </resources>

@@ -1,4 +1,32 @@
-package org.hisp.dhis.android.dataentry.home;
+/*
+ * Copyright (c) 2017, University of Oslo
+ *
+ * All rights reserved.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * Neither the name of the HISP project nor the names of its contributors may
+ * be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package org.hisp.dhis.android.dataentry.main;
 
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.dataentry.user.UserRepository;
@@ -23,16 +51,18 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
-public class HomePresenterUnitTests {
+public class MainPresenterUnitTests {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private HomeView homeView;
+    private MainView mainView;
 
     @Mock
     private UserRepository userRepository;
 
     @Mock
     private UserModel userModel;
+
+    private MainPresenter mainPresenter;
 
     @Captor
     private ArgumentCaptor<String> usernameCaptor;
@@ -41,15 +71,15 @@ public class HomePresenterUnitTests {
     private ArgumentCaptor<String> userInitialsCaptor;
 
     private PublishSubject<UserModel> userSubject;
-    private HomePresenter homePresenter;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
         userSubject = PublishSubject.create();
-        homePresenter = new HomePresenterImpl(new MockSchedulersProvider(), userRepository);
         when(userRepository.me()).thenReturn(userSubject);
+
+        mainPresenter = new MainPresenterImpl(new MockSchedulersProvider(), userRepository);
     }
 
     @Test
@@ -57,12 +87,12 @@ public class HomePresenterUnitTests {
         when(userModel.firstName()).thenReturn("John");
         when(userModel.surname()).thenReturn("Watson");
 
-        homePresenter.onAttach(homeView);
+        mainPresenter.onAttach(mainView);
         userSubject.onNext(userModel);
 
-        verify(homeView.showUsername()).accept(usernameCaptor.capture());
-        verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
-        verify(homeView, never()).showUserInfo();
+        verify(mainView.showUsername()).accept(usernameCaptor.capture());
+        verify(mainView.showUserInitials()).accept(userInitialsCaptor.capture());
+        verify(mainView, never()).showUserInfo();
 
         assertThat(usernameCaptor.getValue()).isEqualTo("John Watson");
         assertThat(userInitialsCaptor.getValue()).isEqualTo("JW");
@@ -73,12 +103,12 @@ public class HomePresenterUnitTests {
         when(userModel.firstName()).thenReturn(null);
         when(userModel.surname()).thenReturn("Watson");
 
-        homePresenter.onAttach(homeView);
+        mainPresenter.onAttach(mainView);
         userSubject.onNext(userModel);
 
-        verify(homeView.showUsername()).accept(usernameCaptor.capture());
-        verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
-        verify(homeView, never()).showUserInfo();
+        verify(mainView.showUsername()).accept(usernameCaptor.capture());
+        verify(mainView.showUserInitials()).accept(userInitialsCaptor.capture());
+        verify(mainView, never()).showUserInfo();
 
         assertThat(usernameCaptor.getValue()).isEqualTo("Watson");
         assertThat(userInitialsCaptor.getValue()).isEqualTo("W");
@@ -89,12 +119,12 @@ public class HomePresenterUnitTests {
         when(userModel.firstName()).thenReturn("john");
         when(userModel.surname()).thenReturn("watson");
 
-        homePresenter.onAttach(homeView);
+        mainPresenter.onAttach(mainView);
         userSubject.onNext(userModel);
 
-        verify(homeView.showUsername()).accept(usernameCaptor.capture());
-        verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
-        verify(homeView, never()).showUserInfo();
+        verify(mainView.showUsername()).accept(usernameCaptor.capture());
+        verify(mainView.showUserInitials()).accept(userInitialsCaptor.capture());
+        verify(mainView, never()).showUserInfo();
 
         assertThat(usernameCaptor.getValue()).isEqualTo("john watson");
         assertThat(userInitialsCaptor.getValue()).isEqualTo("JW");
@@ -105,12 +135,12 @@ public class HomePresenterUnitTests {
         when(userModel.firstName()).thenReturn(null);
         when(userModel.surname()).thenReturn(null);
 
-        homePresenter.onAttach(homeView);
+        mainPresenter.onAttach(mainView);
         userSubject.onNext(userModel);
 
-        verify(homeView.showUsername()).accept(usernameCaptor.capture());
-        verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
-        verify(homeView, never()).showUserInfo();
+        verify(mainView.showUsername()).accept(usernameCaptor.capture());
+        verify(mainView.showUserInitials()).accept(userInitialsCaptor.capture());
+        verify(mainView, never()).showUserInfo();
 
         assertThat(usernameCaptor.getValue()).isEqualTo("");
         assertThat(userInitialsCaptor.getValue()).isEqualTo("");
@@ -122,12 +152,12 @@ public class HomePresenterUnitTests {
         when(userModel.surname()).thenReturn("");
         when(userRepository.me()).thenReturn(Observable.just(userModel));
 
-        homePresenter.onAttach(homeView);
+        mainPresenter.onAttach(mainView);
         userSubject.onNext(userModel);
 
-        verify(homeView.showUsername()).accept(usernameCaptor.capture());
-        verify(homeView.showUserInitials()).accept(userInitialsCaptor.capture());
-        verify(homeView, never()).showUserInfo();
+        verify(mainView.showUsername()).accept(usernameCaptor.capture());
+        verify(mainView.showUserInitials()).accept(userInitialsCaptor.capture());
+        verify(mainView, never()).showUserInfo();
 
         assertThat(usernameCaptor.getValue()).isEqualTo("");
         assertThat(userInitialsCaptor.getValue()).isEqualTo("");
@@ -135,23 +165,25 @@ public class HomePresenterUnitTests {
 
     @Test
     public void onDetachShouldNotInteractWithView() {
-        homePresenter.onAttach(homeView);
         userSubject.onNext(userModel);
+        when(userRepository.me()).thenReturn(Observable.just(userModel));
+
+        mainPresenter.onAttach(mainView);
 
         verify(userRepository).me();
-        verify(homeView).showUsername();
-        verify(homeView).showUserInitials();
+        verify(mainView).showUsername();
+        verify(mainView).showUserInitials();
 
-        homePresenter.onDetach();
-        verifyNoMoreInteractions(userRepository, homeView);
+        mainPresenter.onDetach();
+        verifyNoMoreInteractions(userRepository, mainView);
     }
 
     @Test
     public void onDetachShouldUnsubscribeFromRepository() {
-        homePresenter.onAttach(homeView);
+        mainPresenter.onAttach(mainView);
         assertThat(userSubject.hasObservers()).isTrue();
 
-        homePresenter.onDetach();
+        mainPresenter.onDetach();
         assertThat(userSubject.hasObservers()).isFalse();
     }
 }

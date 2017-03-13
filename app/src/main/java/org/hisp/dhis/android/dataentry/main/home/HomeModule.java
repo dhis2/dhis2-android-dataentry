@@ -25,33 +25,31 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.hisp.dhis.android.dataentry.database;
+
+package org.hisp.dhis.android.dataentry.main.home;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
-import org.hisp.dhis.android.core.data.database.Transaction;
+import org.hisp.dhis.android.dataentry.commons.PerFragment;
+import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 
-public class SqlBriteTransaction implements Transaction {
+import dagger.Module;
+import dagger.Provides;
 
-    private final BriteDatabase.Transaction transaction;
+@Module
+@PerFragment
+public class HomeModule {
 
-    public SqlBriteTransaction(BriteDatabase.Transaction transaction) {
-        this.transaction = transaction;
+    @Provides
+    @PerFragment
+    HomePresenter homePresenter(SchedulerProvider schedulerProvider,
+                                HomeRepository homeRepository) {
+        return new HomePresenterImpl(schedulerProvider, homeRepository);
     }
 
-    @Override
-    public void begin() {
-        // no-op
-        // transaction is started in constructor
-    }
-
-    @Override
-    public void setSuccessful() {
-        transaction.markSuccessful();
-    }
-
-    @Override
-    public void end() {
-        transaction.end();
+    @Provides
+    @PerFragment
+    HomeRepository homeRepository(BriteDatabase briteDatabase) {
+        return new HomeRepositoryImpl(briteDatabase);
     }
 }

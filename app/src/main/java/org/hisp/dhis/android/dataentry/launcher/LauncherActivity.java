@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import org.hisp.dhis.android.dataentry.AppComponent;
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.home.HomeActivity;
+import org.hisp.dhis.android.dataentry.main.MainActivity;
 import org.hisp.dhis.android.dataentry.login.LoginActivity;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 
@@ -50,7 +50,7 @@ public class LauncherActivity extends AppCompatActivity implements LauncherView 
 
     @Override
     public void navigateToHomeView() {
-        startActivity(HomeActivity.create(this));
+        startActivity(MainActivity.create(this));
         finish();
     }
 }
