@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.commons;
+package org.hisp.dhis.android.dataentry.commons.views;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
