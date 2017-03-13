@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.commons;
+package org.hisp.dhis.android.dataentry.commons.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

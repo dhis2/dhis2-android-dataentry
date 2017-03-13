@@ -18,14 +18,14 @@
         android:layout_marginEnd="@dimen/keyline_default"
         android:layout_marginRight="@dimen/keyline_default">
 
-        <org.hisp.dhis.android.dataentry.commons.views.CircleView
+        <org.hisp.dhis.android.dataentry.commons.ui.CircleView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             app:circle_radius="@dimen/navigation_avatar_radius"
             app:fill_color="@android:color/white"/>
 
-        <org.hisp.dhis.android.dataentry.commons.views.FontTextView
+        <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
             android:id="@+id/textview_username_initials"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -44,7 +44,7 @@
         android:gravity="top"
         android:orientation="vertical">
 
-        <org.hisp.dhis.android.dataentry.commons.views.FontTextView
+        <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
             android:id="@+id/textview_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
             app:font="@string/font_name_medium"
             tools:text="John Watson"/>
 
-        <org.hisp.dhis.android.dataentry.commons.views.FontTextView
+        <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
             android:id="@+id/textview_user_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

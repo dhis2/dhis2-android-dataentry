@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.commons.views;
+package org.hisp.dhis.android.dataentry.commons.ui;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;

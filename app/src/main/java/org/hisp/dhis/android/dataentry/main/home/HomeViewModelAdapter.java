@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.views.FontTextView;
+import org.hisp.dhis.android.dataentry.commons.ui.FontTextView;
 
 import java.util.ArrayList;
 import java.util.List;

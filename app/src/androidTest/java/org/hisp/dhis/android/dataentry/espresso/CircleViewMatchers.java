@@ -6,7 +6,7 @@ import android.view.View;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hisp.dhis.android.dataentry.commons.views.CircleView;
+import org.hisp.dhis.android.dataentry.commons.ui.CircleView;
 
 public class CircleViewMatchers {
     private CircleViewMatchers() {

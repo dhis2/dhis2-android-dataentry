@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.commons.views;
+package org.hisp.dhis.android.dataentry.commons.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;

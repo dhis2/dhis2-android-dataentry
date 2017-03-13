@@ -3,7 +3,7 @@ package org.hisp.dhis.android.dataentry.launcher;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.hisp.dhis.android.dataentry.commons.views.View;
+import org.hisp.dhis.android.dataentry.commons.ui.View;
 import org.hisp.dhis.android.dataentry.server.UserManager;
 import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 

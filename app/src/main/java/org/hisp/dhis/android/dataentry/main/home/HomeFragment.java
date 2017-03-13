@@ -14,8 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.BaseFragment;
-import org.hisp.dhis.android.dataentry.commons.views.DividerDecoration;
+import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
+import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
 
 import java.util.List;
 

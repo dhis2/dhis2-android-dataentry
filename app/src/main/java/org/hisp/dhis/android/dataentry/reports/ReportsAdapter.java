@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.views.CircleView;
+import org.hisp.dhis.android.dataentry.commons.ui.CircleView;
 
 import java.util.ArrayList;
 import java.util.List;
