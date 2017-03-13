@@ -2,7 +2,7 @@ package org.hisp.dhis.android.dataentry.reports;
 
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.dataentry.commons.View;
+import org.hisp.dhis.android.dataentry.commons.views.View;
 import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 
 import io.reactivex.disposables.CompositeDisposable;

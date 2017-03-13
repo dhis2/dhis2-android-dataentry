@@ -2,7 +2,7 @@ package org.hisp.dhis.android.dataentry.main.home;
 
 import android.support.annotation.UiThread;
 
-import org.hisp.dhis.android.dataentry.commons.View;
+import org.hisp.dhis.android.dataentry.commons.views.View;
 
 import java.util.List;
 

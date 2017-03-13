@@ -1,6 +1,6 @@
 package org.hisp.dhis.android.dataentry.reports;
 
-import org.hisp.dhis.android.dataentry.commons.PerActivity;
+import org.hisp.dhis.android.dataentry.commons.dagger.PerActivity;
 
 import dagger.Subcomponent;
 

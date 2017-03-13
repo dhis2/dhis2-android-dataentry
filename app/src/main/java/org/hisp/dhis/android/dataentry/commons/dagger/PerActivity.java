@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.commons;
+package org.hisp.dhis.android.dataentry.commons.dagger;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

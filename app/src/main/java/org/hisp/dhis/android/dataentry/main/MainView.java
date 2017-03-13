@@ -3,7 +3,7 @@ package org.hisp.dhis.android.dataentry.main;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
-import org.hisp.dhis.android.dataentry.commons.View;
+import org.hisp.dhis.android.dataentry.commons.views.View;
 
 import io.reactivex.functions.Consumer;
 

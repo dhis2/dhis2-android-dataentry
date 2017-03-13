@@ -3,7 +3,7 @@ package org.hisp.dhis.android.dataentry.main;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.core.user.UserModel;
-import org.hisp.dhis.android.dataentry.commons.View;
+import org.hisp.dhis.android.dataentry.commons.views.View;
 import org.hisp.dhis.android.dataentry.user.UserRepository;
 import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 

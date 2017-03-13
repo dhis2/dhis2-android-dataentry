@@ -1,6 +1,6 @@
 package org.hisp.dhis.android.dataentry.main;
 
-import org.hisp.dhis.android.dataentry.commons.PerActivity;
+import org.hisp.dhis.android.dataentry.commons.dagger.PerActivity;
 import org.hisp.dhis.android.dataentry.user.UserRepository;
 import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
 
