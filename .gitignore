@@ -34,4 +34,4 @@ fabric.properties
 secrets.properties
 
 # ignore .idea directory
-.idea/*
+.idea/
