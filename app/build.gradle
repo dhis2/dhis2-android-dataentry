@@ -201,9 +201,15 @@ dependencies {
     androidTestCompile "org.mockito:mockito-android:${libraries.mockito}"
     androidTestCompile "org.assertj:assertj-core:${libraries.assertj}"
 
-    androidTestCompile "com.android.support.test.espresso:espresso-idling-resource:${libraries.espresso}"
-    androidTestCompile "com.android.support.test.espresso:espresso-core:${libraries.espresso}"
-    androidTestCompile "com.android.support.test.espresso:espresso-intents:${libraries.espresso}"
+    androidTestCompile("com.android.support.test.espresso:espresso-idling-resource:${libraries.espresso}") {
+        exclude module: "support-annotations"
+    }
+    androidTestCompile("com.android.support.test.espresso:espresso-core:${libraries.espresso}") {
+        exclude module: "support-annotations"
+    }
+    androidTestCompile("com.android.support.test.espresso:espresso-intents:${libraries.espresso}") {
+        exclude module: "support-annotations"
+    }
     androidTestCompile("com.android.support.test.espresso:espresso-contrib:${libraries.espresso}") {
         // Causes IncompatibleClassChangeError
         exclude module: "support-annotations"
