@@ -17,6 +17,7 @@ import java.util.List;
 import io.reactivex.processors.PublishProcessor;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -64,19 +65,26 @@ public class ReportsPresenterUnitTests {
 
     @Test
     public void updatesShouldBePropagatedToView() throws Exception {
-        List<ReportViewModel> reports = Arrays.asList(ReportViewModel.create("test_report_id_one",
+        List<ReportViewModel> reportsOne = Arrays.asList(ReportViewModel.create("test_report_id_one",
                 ReportViewModel.Status.SYNCED, Arrays.asList("test_label_one", "test_label_two")));
 
         when(reportsRepository.reports()).thenReturn(reportsPublisher);
 
         reportsPresenter.onAttach(reportsView);
-
-        // push new model to the presenter
-        reportsPublisher.onNext(reports);
+        reportsPublisher.onNext(reportsOne);
 
         verify(reportsView.renderReportViewModels()).accept(reportViewModelsCaptor.capture());
         verify(reportsRepository).reports();
-        assertThat(reportViewModelsCaptor.getValue()).isEqualTo(reports);
+        assertThat(reportViewModelsCaptor.getValue()).isEqualTo(reportsOne);
+
+        List<ReportViewModel> reportsTwo = Arrays.asList(ReportViewModel.create("test_report_id_two",
+                ReportViewModel.Status.SYNCED, Arrays.asList("test_label_three", "test_label_four")));
+
+        reportsPublisher.onNext(reportsTwo);
+
+        verify(reportsView.renderReportViewModels(), times(2)).accept(reportViewModelsCaptor.capture());
+        verify(reportsRepository).reports();
+        assertThat(reportViewModelsCaptor.getValue()).isEqualTo(reportsTwo);
     }
 
     @Test
