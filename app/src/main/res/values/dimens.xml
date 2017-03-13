@@ -21,4 +21,13 @@
     <dimen name="navigation_header_height">192dp</dimen>
     <dimen name="navigation_avatar_radius">30dp</dimen>
     <dimen name="navigation_drawer_width">304dp</dimen>
+
+    <!-- Lists -->
+    <dimen name="list_item_text_left_padding">72dp</dimen>
+
+    <!-- Single line list -->
+    <dimen name="single_line_list_item_height">48dp</dimen>
+    <dimen name="single_line_list_text_size">16sp</dimen>
+    <dimen name="single_line_list_vertical_padding">8dp</dimen>
+
 </resources>

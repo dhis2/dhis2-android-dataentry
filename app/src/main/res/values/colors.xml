@@ -15,5 +15,6 @@
 
     <!-- Custom colors -->
     <color name="color_white_transparent">#CCFFFFFF</color>
+    <color name="color_white">#FFFFFF</color>
 
 </resources>

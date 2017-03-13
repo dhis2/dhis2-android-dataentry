@@ -10,7 +10,7 @@ import com.squareup.spoon.Spoon;
 
 import org.hisp.dhis.android.dataentry.DhisInstrumentationTestsApp;
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.home.HomeActivity;
+import org.hisp.dhis.android.dataentry.main.MainActivity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -157,7 +157,7 @@ public class LoginViewTests {
                 .clickOnLoginButton();
 
         // if login is successful, home activity should be started
-        Intents.intended(hasComponent(HomeActivity.class.getName()));
+        Intents.intended(hasComponent(MainActivity.class.getName()));
         Intents.release();
 
         Spoon.screenshot(loginViewRule.getActivity(), "logged_in_state");

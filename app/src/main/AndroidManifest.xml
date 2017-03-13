@@ -24,7 +24,7 @@
             android:theme="@style/AppTheme.PrimaryColorBackground" />
 
         <activity
-            android:name=".home.HomeActivity"
+            android:name=".main.MainActivity"
             android:theme="@style/AppTheme" />
 
         <meta-data

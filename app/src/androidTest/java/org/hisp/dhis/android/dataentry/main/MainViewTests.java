@@ -1,4 +1,32 @@
-package org.hisp.dhis.android.dataentry.home;
+/*
+ * Copyright (c) 2017, University of Oslo
+ *
+ * All rights reserved.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * Neither the name of the HISP project nor the names of its contributors may
+ * be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package org.hisp.dhis.android.dataentry.main;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -28,15 +56,15 @@ import java.util.Date;
 import okhttp3.HttpUrl;
 
 @RunWith(AndroidJUnit4.class)
-public class HomeViewTests {
+public class MainViewTests {
     private Resources resources;
-    private HomeRobot homeRobot;
+    private MainRobot mainRobot;
     private ContentValues user;
 
     private DatabaseRule databaseRule = new DatabaseRule(((Components) InstrumentationRegistry.getTargetContext()
             .getApplicationContext()).appComponent().briteDatabase());
     private ActivityTestRule activityTestRule
-            = new ActivityTestRule<>(HomeActivity.class, true, false);
+            = new ActivityTestRule<>(MainActivity.class, true, false);
 
     @Rule
     public RuleChain rules = RuleChain.emptyRuleChain()
@@ -46,7 +74,7 @@ public class HomeViewTests {
     @Before
     public void setUp() throws Exception {
         resources = InstrumentationRegistry.getTargetContext().getResources();
-        homeRobot = new HomeRobot();
+        mainRobot = new MainRobot();
 
         user = new ContentValues();
         user.put(UserModel.Columns.ID, 22L);
@@ -103,14 +131,14 @@ public class HomeViewTests {
 
     @Test
     public void drawerShouldContainCorrectInformationAboutUser() {
-        homeRobot.openSlidingPanel()
+        mainRobot.openSlidingPanel()
                 .checkUsername("test_first_name test_surname")
                 .checkUserInitials("TT");
     }
 
     @Test
     public void drawerShouldObserveChangesInDatabase() {
-        homeRobot.openSlidingPanel();
+        mainRobot.openSlidingPanel();
 
         user.put(UserModel.Columns.FIRST_NAME, "another_first_name");
         user.put(UserModel.Columns.SURNAME, "another_surname");
@@ -118,14 +146,14 @@ public class HomeViewTests {
         databaseRule.briteDatabase().update(UserModel.TABLE, user,
                 UserModel.Columns.UID + " = ?", String.valueOf("test_user_uid"));
 
-        homeRobot
+        mainRobot
                 .checkUsername("another_first_name another_surname")
                 .checkUserInitials("AA");
     }
 
     @Test
-    public void homeViewShouldHandleConfigurationChanges() {
-        homeRobot.openSlidingPanel()
+    public void mainViewShouldHandleConfigurationChanges() {
+        mainRobot.openSlidingPanel()
                 .checkUsername("test_first_name test_surname")
                 .checkUserInitials("TT")
                 .rotateToLandscape()
@@ -136,14 +164,12 @@ public class HomeViewTests {
                 .checkUserInitials("TT");
     }
 
-    // ToDo: implement tests which verify that correct fragments are attached when menu items are selected.
-//    @Test
-//    public void formsItemShouldBeSelectedByDefault() {
-//        homeRobot.checkToolbarTitle(resources.getString(R.string.drawer_item_forms))
-//                .openSlidingPanel()
-//                .formsMenuItemIsSelected()
-//                .rotateToLandscape();
-//    }
+    @Test
+    public void homeScreenShouldBeSelectedByDefault() {
+        mainRobot.checkToolbarTitle(resources.getString(R.string.drawer_item_home))
+                .openSlidingPanel()
+                .homeMenuItemIsSelected();
+    }
 
     @After
     public void tearDown() throws Exception {

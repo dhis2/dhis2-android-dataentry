@@ -29,9 +29,9 @@ import static org.mockito.Mockito.verify;
 // ToDo: research other ways of testing DatabaseAdapter
 public class SqlBriteDatabaseAdapterTests {
 
-    BriteDatabase sqlBriteDatabase;
+    private BriteDatabase sqlBriteDatabase;
 
-    SqlBrite sqlBrite;
+    private SqlBrite sqlBrite;
 
     @Mock
     DbOpenHelper dbOpenHelper;
@@ -51,7 +51,7 @@ public class SqlBriteDatabaseAdapterTests {
     @Mock
     Scheduler scheduler;
 
-    SqlBriteDatabaseAdapter sqlBriteDatabaseAdapter; // the class we are testing
+    private SqlBriteDatabaseAdapter sqlBriteDatabaseAdapter; // the class we are testing
 
     @Before
     public void setup() {
@@ -109,6 +109,6 @@ public class SqlBriteDatabaseAdapterTests {
     public void transactionIsCreated() throws Exception {
         Mockito.when(sqlBriteDatabase.newTransaction()).thenReturn(transaction);
         sqlBriteDatabaseAdapter.beginNewTransaction();
-        BriteDatabase.Transaction transaction = verify(sqlBriteDatabase).newTransaction();
+        BriteDatabase.Transaction result = verify(sqlBriteDatabase).newTransaction();
     }
 }

@@ -1,7 +1,8 @@
-package org.hisp.dhis.android.dataentry.home;
+package org.hisp.dhis.android.dataentry.main;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -11,7 +12,9 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +22,14 @@ import android.widget.TextView;
 
 import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.ToolbarFragment;
+import org.hisp.dhis.android.dataentry.commons.DummyFragment;
+import org.hisp.dhis.android.dataentry.main.home.HomeFragment;
 
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
 
-public class HomeActivity extends AppCompatActivity implements HomeView,
+public class MainActivity extends AppCompatActivity implements MainView,
         NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener {
 
     // drawer layout
@@ -38,16 +42,20 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
     TextView userInfo;
 
     @Inject
-    HomePresenter homePresenter;
+    MainPresenter mainPresenter;
 
     // Delaying attachment of fragment
     // in order to avoid animation lag
     @Nullable
     Runnable pendingRunnable;
 
+    // Handles toggling of the drawer from the hamburger icon, animating the icon
+    // and keeping it in sync with drawer state
+    private ActionBarDrawerToggle drawerToggle;
+
     @NonNull
     public static Intent create(@NonNull Activity activity) {
-        return new Intent(activity, HomeActivity.class);
+        return new Intent(activity, MainActivity.class);
     }
 
     @Override
@@ -55,14 +63,15 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        ((Components) getApplicationContext()).userComponent()
-                .plus(new HomeModule())
-                .inject(this);
+        ((Components) getApplicationContext()).userComponent().plus(new MainModule()).inject(this);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
 
+        setupToolbar();
+
         drawerLayout.addDrawerListener(this);
+        drawerLayout.addDrawerListener(drawerToggle);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.inflateMenu(R.menu.menu_drawer);
 
@@ -80,19 +89,26 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
 
         if (savedInstanceState == null) {
             onNavigationItemSelected(navigationView.getMenu()
-                    .findItem(R.id.drawer_item_forms));
+                    .findItem(R.id.drawer_item_home));
         }
+    }
+
+    private void setupToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        drawerToggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
     }
 
     @Override
     protected void onResume() {
-        homePresenter.onAttach(this);
+        mainPresenter.onAttach(this);
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        homePresenter.onDetach();
+        mainPresenter.onDetach();
         super.onPause();
     }
 
@@ -132,9 +148,15 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        attachFragment(ToolbarFragment.create(menuItem.getTitle().toString()));
 
         navigationView.setCheckedItem(menuItem.getItemId());
+        getSupportActionBar().setTitle(menuItem.getTitle());
+
+        if (menuItem.getItemId() == R.id.drawer_item_home) {
+            attachFragment(new HomeFragment());
+        } else {
+            attachFragment(new DummyFragment());
+        }
         drawerLayout.closeDrawers();
 
         return true;
@@ -144,7 +166,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
     @UiThread
     @Override
     public Consumer<String> showUsername() {
-        return (username) -> this.username.setText(username);
+        return username1 -> username.setText(username1);
     }
 
     @NonNull
@@ -167,4 +189,28 @@ public class HomeActivity extends AppCompatActivity implements HomeView,
                 .replace(R.id.content_frame, fragment)
                 .commit();
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggles
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
 }
