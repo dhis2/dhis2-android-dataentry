@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.database;
+package org.hisp.dhis.android.dataentry.commons.database;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;

@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.database;
+package org.hisp.dhis.android.dataentry.commons.database;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

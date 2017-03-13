@@ -2,7 +2,7 @@ package org.hisp.dhis.android.dataentry;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
-import org.hisp.dhis.android.dataentry.database.DbModule;
+import org.hisp.dhis.android.dataentry.commons.database.DbModule;
 import org.hisp.dhis.android.dataentry.launcher.LauncherComponent;
 import org.hisp.dhis.android.dataentry.launcher.LauncherModule;
 import org.hisp.dhis.android.dataentry.login.LoginComponent;

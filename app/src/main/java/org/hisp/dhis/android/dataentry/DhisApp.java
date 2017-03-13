@@ -14,7 +14,7 @@ import com.squareup.leakcanary.RefWatcher;
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.dataentry.commons.dagger.PerActivity;
-import org.hisp.dhis.android.dataentry.database.DbModule;
+import org.hisp.dhis.android.dataentry.commons.database.DbModule;
 import org.hisp.dhis.android.dataentry.login.LoginComponent;
 import org.hisp.dhis.android.dataentry.login.LoginModule;
 import org.hisp.dhis.android.dataentry.main.MainComponent;
