@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.views.CircleView;
+import org.hisp.dhis.android.dataentry.commons.ui.CircleView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static org.hisp.dhis.android.dataentry.utils.StringUtils.htmlify;
+import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.htmlify;
 
 class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
 

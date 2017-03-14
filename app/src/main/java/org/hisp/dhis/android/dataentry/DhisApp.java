@@ -13,21 +13,21 @@ import com.squareup.leakcanary.RefWatcher;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
-import org.hisp.dhis.android.dataentry.commons.PerActivity;
-import org.hisp.dhis.android.dataentry.database.DbModule;
+import org.hisp.dhis.android.dataentry.commons.dagger.PerActivity;
+import org.hisp.dhis.android.dataentry.commons.database.DbModule;
 import org.hisp.dhis.android.dataentry.login.LoginComponent;
 import org.hisp.dhis.android.dataentry.login.LoginModule;
 import org.hisp.dhis.android.dataentry.main.MainComponent;
-import org.hisp.dhis.android.dataentry.server.PerServer;
+import org.hisp.dhis.android.dataentry.commons.dagger.PerServer;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
 import org.hisp.dhis.android.dataentry.server.ServerModule;
 import org.hisp.dhis.android.dataentry.server.UserManager;
-import org.hisp.dhis.android.dataentry.user.PerUser;
+import org.hisp.dhis.android.dataentry.commons.dagger.PerUser;
 import org.hisp.dhis.android.dataentry.user.UserComponent;
 import org.hisp.dhis.android.dataentry.user.UserModule;
-import org.hisp.dhis.android.dataentry.utils.CrashReportingTree;
-import org.hisp.dhis.android.dataentry.utils.SchedulerModule;
-import org.hisp.dhis.android.dataentry.utils.SchedulersProviderImpl;
+import org.hisp.dhis.android.dataentry.commons.utils.CrashReportingTree;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerModule;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulersProviderImpl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -2,12 +2,12 @@ package org.hisp.dhis.android.dataentry.main.home;
 
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.dataentry.commons.View;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.ui.View;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 
 import io.reactivex.disposables.CompositeDisposable;
 
-import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
+import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
 class HomePresenterImpl implements HomePresenter {
 

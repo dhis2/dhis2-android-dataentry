@@ -2,7 +2,7 @@ package org.hisp.dhis.android.dataentry.login;
 
 import android.support.annotation.UiThread;
 
-import org.hisp.dhis.android.dataentry.commons.View;
+import org.hisp.dhis.android.dataentry.commons.ui.View;
 
 interface LoginView extends View {
     @UiThread

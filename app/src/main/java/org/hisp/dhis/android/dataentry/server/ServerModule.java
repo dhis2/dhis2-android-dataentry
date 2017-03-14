@@ -7,6 +7,7 @@ import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.core.data.api.Authenticator;
 import org.hisp.dhis.android.core.data.api.BasicAuthenticatorFactory;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
+import org.hisp.dhis.android.dataentry.commons.dagger.PerServer;
 
 import dagger.Module;
 import dagger.Provides;

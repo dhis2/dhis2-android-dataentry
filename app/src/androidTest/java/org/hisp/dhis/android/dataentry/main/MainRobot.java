@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.CheckedTextView;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.espresso.OrientationChangeAction;
+import org.hisp.dhis.android.dataentry.commons.espresso.OrientationChangeAction;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -22,7 +22,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hisp.dhis.android.dataentry.espresso.CustomViewMatchers.withToolbarTitle;
+import static org.hisp.dhis.android.dataentry.commons.espresso.CustomViewMatchers.withToolbarTitle;
 
 class MainRobot {
 

@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.BaseFragment;
+import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 
 import java.util.List;
 

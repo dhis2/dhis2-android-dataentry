@@ -22,7 +22,7 @@ import android.widget.TextView;
 
 import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.DummyFragment;
+import org.hisp.dhis.android.dataentry.commons.ui.DummyFragment;
 import org.hisp.dhis.android.dataentry.main.home.HomeFragment;
 
 import javax.inject.Inject;

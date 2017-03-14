@@ -1,7 +1,7 @@
 package org.hisp.dhis.android.dataentry.login;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.espresso.OrientationChangeAction;
+import org.hisp.dhis.android.dataentry.commons.espresso.OrientationChangeAction;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.clearText;
@@ -17,8 +17,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hisp.dhis.android.dataentry.espresso.CustomViewMatchers.withErrorText;
-import static org.hisp.dhis.android.dataentry.espresso.CustomViewMatchers.withHint;
+import static org.hisp.dhis.android.dataentry.commons.espresso.CustomViewMatchers.withErrorText;
+import static org.hisp.dhis.android.dataentry.commons.espresso.CustomViewMatchers.withHint;
 
 class LoginRobot {
     LoginRobot typeServerUrl(String serverUrl) {

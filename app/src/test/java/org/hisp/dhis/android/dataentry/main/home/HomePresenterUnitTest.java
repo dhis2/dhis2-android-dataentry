@@ -1,6 +1,6 @@
 package org.hisp.dhis.android.dataentry.main.home;
 
-import org.hisp.dhis.android.dataentry.utils.MockSchedulersProvider;
+import org.hisp.dhis.android.dataentry.commons.schedulers.MockSchedulersProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;

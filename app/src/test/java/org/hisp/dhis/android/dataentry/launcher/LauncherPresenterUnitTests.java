@@ -2,7 +2,7 @@ package org.hisp.dhis.android.dataentry.launcher;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
 import org.hisp.dhis.android.dataentry.server.UserManager;
-import org.hisp.dhis.android.dataentry.utils.MockSchedulersProvider;
+import org.hisp.dhis.android.dataentry.commons.schedulers.MockSchedulersProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

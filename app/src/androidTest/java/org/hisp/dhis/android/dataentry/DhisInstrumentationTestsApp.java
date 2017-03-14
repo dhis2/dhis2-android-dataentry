@@ -5,10 +5,10 @@ import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingResource;
 
 import org.hisp.dhis.android.core.configuration.ConfigurationModel;
-import org.hisp.dhis.android.dataentry.database.DbModule;
+import org.hisp.dhis.android.dataentry.commons.database.DbModule;
 import org.hisp.dhis.android.dataentry.server.ServerComponent;
-import org.hisp.dhis.android.dataentry.utils.IdlingSchedulerProvider;
-import org.hisp.dhis.android.dataentry.utils.SchedulerModule;
+import org.hisp.dhis.android.dataentry.commons.schedulers.IdlingSchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerModule;
 
 import okhttp3.HttpUrl;
 

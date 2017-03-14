@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.views.FontTextView;
+import org.hisp.dhis.android.dataentry.commons.ui.FontTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static org.hisp.dhis.android.dataentry.utils.Preconditions.isNull;
+import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
 class HomeViewModelAdapter extends RecyclerView.Adapter {
     private final LayoutInflater layoutInflater;

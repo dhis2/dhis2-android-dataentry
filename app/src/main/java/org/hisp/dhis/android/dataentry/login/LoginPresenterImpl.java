@@ -6,10 +6,10 @@ import android.support.annotation.UiThread;
 
 import org.hisp.dhis.android.core.user.User;
 import org.hisp.dhis.android.dataentry.Components;
-import org.hisp.dhis.android.dataentry.commons.View;
+import org.hisp.dhis.android.dataentry.commons.ui.View;
 import org.hisp.dhis.android.dataentry.server.ConfigurationRepository;
 import org.hisp.dhis.android.dataentry.server.UserManager;
-import org.hisp.dhis.android.dataentry.utils.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

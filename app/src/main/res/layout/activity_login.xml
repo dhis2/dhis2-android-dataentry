@@ -22,7 +22,7 @@
             android:layout_height="110dp"
             android:layout_centerHorizontal="true">
 
-            <org.hisp.dhis.android.dataentry.commons.views.CircleView
+            <org.hisp.dhis.android.dataentry.commons.ui.CircleView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:circle_radius="50dp"
@@ -35,7 +35,7 @@
                 android:layout_height="match_parent"
                 android:indeterminate="true"/>
 
-            <org.hisp.dhis.android.dataentry.commons.views.FontTextView
+            <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -71,7 +71,7 @@
                     android:layout_height="56dp"
                     android:layout_marginBottom="8dp">
 
-                    <org.hisp.dhis.android.dataentry.commons.views.FontTextInputEditText
+                    <org.hisp.dhis.android.dataentry.commons.ui.FontTextInputEditText
                         android:id="@+id/edittext_server_url"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -88,7 +88,7 @@
                     android:layout_height="56dp"
                     android:layout_marginBottom="8dp">
 
-                    <org.hisp.dhis.android.dataentry.commons.views.FontTextInputEditText
+                    <org.hisp.dhis.android.dataentry.commons.ui.FontTextInputEditText
                         android:id="@+id/edittext_username"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -105,7 +105,7 @@
                     android:layout_height="56dp"
                     android:layout_marginBottom="16dp">
 
-                    <org.hisp.dhis.android.dataentry.commons.views.FontTextInputEditText
+                    <org.hisp.dhis.android.dataentry.commons.ui.FontTextInputEditText
                         android:id="@+id/edittext_password"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -116,7 +116,7 @@
                         app:font="@string/font_name_regular"/>
                 </android.support.design.widget.TextInputLayout>
 
-                <org.hisp.dhis.android.dataentry.commons.views.FontButton
+                <org.hisp.dhis.android.dataentry.commons.ui.FontButton
                     android:id="@+id/button_log_in"
                     android:layout_width="196dp"
                     android:layout_height="40dp"

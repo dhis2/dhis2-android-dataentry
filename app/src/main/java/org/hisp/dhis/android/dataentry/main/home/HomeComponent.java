@@ -1,6 +1,6 @@
 package org.hisp.dhis.android.dataentry.main.home;
 
-import org.hisp.dhis.android.dataentry.commons.PerFragment;
+import org.hisp.dhis.android.dataentry.commons.dagger.PerFragment;
 
 import dagger.Subcomponent;
 

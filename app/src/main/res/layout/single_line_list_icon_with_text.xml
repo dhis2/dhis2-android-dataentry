@@ -14,7 +14,7 @@
         android:paddingStart="@dimen/keyline_default"
         tools:src="@drawable/ic_border_all_black"/>
     
-    <org.hisp.dhis.android.dataentry.commons.views.FontTextView
+    <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
