@@ -59,6 +59,8 @@ public class HomeRepositoryIntegrationTests {
         databaseRule.database().insert(TrackedEntityModel.TABLE, null, trackedEntity);
         databaseRule.database().insert(ProgramModel.TABLE, null, program);
 
+        // this program should not be returned
+        databaseRule.database().insert(ProgramModel.TABLE, null, programWithRegistration);
 
         TestObserver<List<HomeViewModel>> testObserver = homeRepository.homeViewModels().test();
 
