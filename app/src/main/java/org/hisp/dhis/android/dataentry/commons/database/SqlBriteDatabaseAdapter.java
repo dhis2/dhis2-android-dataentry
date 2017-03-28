@@ -47,8 +47,8 @@ class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     }
 
     @Override
-    public void delete(String s) {
-        Timber.d(s);
+    public int delete(String table) {
+        return sqlBriteDatabase.delete(table, null);
     }
 
     @Override
