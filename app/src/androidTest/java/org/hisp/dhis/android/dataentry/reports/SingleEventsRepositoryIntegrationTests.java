@@ -37,8 +37,6 @@ public class SingleEventsRepositoryIntegrationTests {
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
 
-    //    private ReportViewModel reportViewModelOne;
-//    private ReportViewModel reportViewModelTwo;
     private ReportsRepository reportsRepository;
 
     @Before
