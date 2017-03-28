@@ -22,7 +22,7 @@ public final class ReportsModule {
     @PerActivity
     @Provides
     ReportsRepository reportsRepository(BriteDatabase briteDatabase) {
-        return new ReportsRepositoryImpl(briteDatabase, programUid);
+        return new SingleEventsRepositoryImpl(briteDatabase, programUid);
     }
 
     @PerActivity
