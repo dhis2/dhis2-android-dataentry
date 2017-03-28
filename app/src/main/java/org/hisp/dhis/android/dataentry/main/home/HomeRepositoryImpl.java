@@ -24,7 +24,8 @@ class HomeRepositoryImpl implements HomeRepository {
      (SELECT uid,displayName,'TRACKED_ENTITY' AS homeViewModelType FROM TrackedEntity
      UNION SELECT
      uid,displayName,'PROGRAM' AS homeViewModelType FROM Program WHERE Program.programType = 'WITHOUT_REGISTRATION')
-     ORDER BY homeViewModelType DESC */
+     ORDER BY homeViewModelType DESC
+     */
     private final static String SELECT_HOME_ENTITIES = String.format(Locale.US,
             "SELECT * FROM " +
                     "(SELECT %s,%s,'%s' AS %s FROM %s " +
