@@ -20,19 +20,35 @@ import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
         "PMD.AvoidDuplicateLiterals"
 })
 final class SingleEventsRepositoryImpl implements ReportsRepository {
+//    private static final String SELECT_EVENTS = "SELECT" +
+//            "  Event.uid," +
+//            "  Event.state," +
+//            "  DataElement.displayName," +
+//            "  TrackedEntityDataValue.value " +
+//            "FROM Event" +
+//            "  LEFT OUTER JOIN ProgramStageDataElement ON " +
+//            "(ProgramStageDataElement.programStage = Event.programStage AND ProgramStageDataElement.displayInReports = 1)" +
+//            "  LEFT OUTER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement" +
+//            "  LEFT OUTER JOIN TrackedEntityDataValue ON " +
+//            "(TrackedEntityDataValue.event = Event.uid AND TrackedEntityDataValue.dataElement = DataElement.uid)" +
+//            "WHERE Event.program = ? AND NOT Event.state = 'TO_DELETE'" +
+//            "ORDER BY datetime(Event.created) DESC, Event.uid ASC, ProgramStageDataElement.sortOrder ASC;";
+
     private static final String SELECT_EVENTS = "SELECT" +
             "  Event.uid," +
             "  Event.state," +
             "  DataElement.displayName," +
             "  TrackedEntityDataValue.value " +
             "FROM Event" +
-            "  LEFT OUTER JOIN ProgramStageDataElement ON " +
-            "(ProgramStageDataElement.programStage = Event.programStage AND ProgramStageDataElement.displayInReports = 1)" +
-            "  LEFT OUTER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement" +
-            "  LEFT OUTER JOIN TrackedEntityDataValue ON " +
-            "(TrackedEntityDataValue.event = Event.uid AND TrackedEntityDataValue.dataElement = DataElement.uid)" +
+            "  LEFT OUTER JOIN (" +
+            "      ProgramStageDataElement INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement" +
+            "    ) ON (ProgramStageDataElement.programStage = Event.programStage AND ProgramStageDataElement.displayInReports = 1)" +
+            "  LEFT OUTER JOIN TrackedEntityDataValue" +
+            "    ON (TrackedEntityDataValue.event = Event.uid AND TrackedEntityDataValue.dataElement = DataElement.uid)" +
             "WHERE Event.program = ? AND NOT Event.state = 'TO_DELETE'" +
-            "ORDER BY datetime(Event.created) DESC, Event.uid ASC, ProgramStageDataElement.sortOrder ASC;";
+            "ORDER BY datetime(Event.created) DESC," +
+            "  ProgramStageDataElement.sortOrder ASC," +
+            "  Event.uid ASC;";
 
     @NonNull
     private final String programUid;
