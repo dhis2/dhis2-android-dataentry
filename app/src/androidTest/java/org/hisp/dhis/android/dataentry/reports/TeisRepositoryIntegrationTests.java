@@ -55,12 +55,11 @@ public class TeisRepositoryIntegrationTests {
         trackedEntity.put(TrackedEntityModel.Columns.UID, "tracked_entity_uid");
         db.insert(TrackedEntityModel.TABLE, null, trackedEntity);
 
-        ContentValues programOne = new ContentValues();
-        programOne.put(ProgramModel.Columns.UID, "program_uid");
-        programOne.put(ProgramModel.Columns.TRACKED_ENTITY, "tracked_entity_uid");
-        db.insert(ProgramModel.TABLE, null, programOne);
+        ContentValues program = new ContentValues();
+        program.put(ProgramModel.Columns.UID, "program_uid");
+        program.put(ProgramModel.Columns.TRACKED_ENTITY, "tracked_entity_uid");
+        db.insert(ProgramModel.TABLE, null, program);
 
-        // TrackedEntityAttributes
         db.insert(TrackedEntityAttributeModel.TABLE, null, tea("tea_uid_one", "tea_one"));
         db.insert(TrackedEntityAttributeModel.TABLE, null, tea("tea_uid_two", "tea_two"));
         db.insert(TrackedEntityAttributeModel.TABLE, null, tea("tea_uid_three", "tea_three"));
