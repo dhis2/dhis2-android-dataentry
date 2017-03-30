@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.squareup.sqlbrite.BriteDatabase;
+
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
@@ -99,18 +101,6 @@ public class EnrollmentRepositoryIntegrationTests {
     }
 
     @Test
-    public void reportsWithoutAnyDataShouldPropagateEmptyList() {
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
-
-        testObserver.assertValueCount(1);
-        testObserver.assertNoErrors();
-        testObserver.assertNotComplete();
-
-        List<ReportViewModel> reports = testObserver.values().get(0);
-        assertThat(reports.size()).isEqualTo(0);
-    }
-
-    @Test
     public void reportsShouldPropagateCorrectResults() throws ParseException {
         SQLiteDatabase db = databaseRule.database();
 
@@ -148,6 +138,155 @@ public class EnrollmentRepositoryIntegrationTests {
         assertThat(reports.size()).isEqualTo(2);
         assertThat(reports.get(0)).isEqualTo(reportViewModelTwo);
         assertThat(reports.get(1)).isEqualTo(reportViewModelOne);
+    }
+
+    @Test
+    public void reportsShouldObserveChangesInDatabase() throws ParseException {
+        SQLiteDatabase db = databaseRule.database();
+        BriteDatabase briteDatabase = databaseRule.briteDatabase();
+
+        // Enrollments
+        db.insert(EnrollmentModel.TABLE, null, enrollment("enrollment_uid_one",
+                "program_uid_one", "organization_unit_uid", "tei_uid",
+                BaseIdentifiableObject.DATE_FORMAT.parse("2014-04-06T00:05:57.495"), "2014-05-01",
+                State.SYNCED, EnrollmentStatus.ACTIVE));
+        ReportViewModel reportViewModelOne = ReportViewModel.create("enrollment_uid_one",
+                ReportViewModel.Status.SYNCED, Arrays.asList("program: -",
+                        "enrollment_date_label: 2014-05-01", "", "enrollment_status: ACTIVE"));
+
+        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+
+        testObserver.assertValueCount(1);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+
+        assertThat(testObserver.values().get(0).size()).isEqualTo(1);
+        assertThat(testObserver.values().get(0).get(0)).isEqualTo(reportViewModelOne);
+
+        // insert new row
+        briteDatabase.insert(EnrollmentModel.TABLE, enrollment("enrollment_uid_two",
+                "program_uid_two", "organization_unit_uid", "tei_uid",
+                BaseIdentifiableObject.DATE_FORMAT.parse("2016-06-06T00:05:57.495"), "2016-10-01",
+                State.TO_UPDATE, EnrollmentStatus.COMPLETED));
+        ReportViewModel reportViewModelTwo = ReportViewModel.create("enrollment_uid_two",
+                ReportViewModel.Status.TO_SYNC, Arrays.asList("program: program_display_name_two",
+                        "program_enrollment_date_label_two: 2016-10-01", "tea_two: teav_two",
+                        "tea_one: teav_one", "enrollment_status: COMPLETED"));
+
+        testObserver.assertValueCount(2);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+
+        assertThat(testObserver.values().get(1).size()).isEqualTo(2);
+        assertThat(testObserver.values().get(1).get(0)).isEqualTo(reportViewModelTwo);
+        assertThat(testObserver.values().get(1).get(1)).isEqualTo(reportViewModelOne);
+
+        // mark row as deleted
+        ContentValues updatedEnrollment = new ContentValues();
+        updatedEnrollment.put(EnrollmentModel.Columns.STATE, State.TO_DELETE.toString());
+        briteDatabase.update(EnrollmentModel.TABLE, updatedEnrollment,
+                EnrollmentModel.Columns.UID + " = ?", "enrollment_uid_one");
+
+        testObserver.assertValueCount(3);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+
+        assertThat(testObserver.values().get(2).size()).isEqualTo(1);
+        assertThat(testObserver.values().get(2).get(0)).isEqualTo(reportViewModelTwo);
+    }
+
+    @Test
+    public void reportsWithoutVisiblePteaMustBePropagated() throws ParseException {
+        SQLiteDatabase db = databaseRule.database();
+
+        // insert enrollment which doesn't have any visible PTEAs
+        db.insert(EnrollmentModel.TABLE, null, enrollment("enrollment_uid_one",
+                "program_uid_one", "organization_unit_uid", "tei_uid",
+                BaseIdentifiableObject.DATE_FORMAT.parse("2014-04-06T00:05:57.495"), "2014-05-01",
+                State.SYNCED, EnrollmentStatus.ACTIVE));
+        ReportViewModel reportViewModelOne = ReportViewModel.create("enrollment_uid_one",
+                ReportViewModel.Status.SYNCED, Arrays.asList("program: -",
+                        "enrollment_date_label: 2014-05-01", "", "enrollment_status: ACTIVE"));
+
+        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+
+        testObserver.assertValueCount(1);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+
+        List<ReportViewModel> reports = testObserver.values().get(0);
+
+        assertThat(reports.size()).isEqualTo(1);
+        assertThat(reports.get(0)).isEqualTo(reportViewModelOne);
+    }
+
+    @Test
+    public void reportsWithoutTeavsShouldBePropagated() throws ParseException {
+        SQLiteDatabase db = databaseRule.database();
+
+        // remove all TEAVs
+        db.delete(TrackedEntityAttributeValueModel.TABLE, null, null);
+
+        db.insert(EnrollmentModel.TABLE, null, enrollment("enrollment_uid_two",
+                "program_uid_two", "organization_unit_uid", "tei_uid",
+                BaseIdentifiableObject.DATE_FORMAT.parse("2016-06-06T00:05:57.495"), "2016-10-01",
+                State.TO_UPDATE, EnrollmentStatus.COMPLETED));
+        ReportViewModel reportViewModelTwo = ReportViewModel.create("enrollment_uid_two",
+                ReportViewModel.Status.TO_SYNC, Arrays.asList("program: program_display_name_two",
+                        "program_enrollment_date_label_two: 2016-10-01", "tea_two: -",
+                        "tea_one: -", "enrollment_status: COMPLETED"));
+
+        // insert enrollment which doesn't have any visible PTEAs
+        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+
+        testObserver.assertValueCount(1);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+
+        List<ReportViewModel> reports = testObserver.values().get(0);
+
+        assertThat(reports.size()).isEqualTo(1);
+        assertThat(reports.get(0)).isEqualTo(reportViewModelTwo);
+    }
+
+    @Test
+    public void reportsWithoutVisiblePteaAndTeavsShouldBePropagated() throws ParseException {
+        SQLiteDatabase db = databaseRule.database();
+
+        // remove all TEAVs
+        db.delete(TrackedEntityAttributeValueModel.TABLE, null, null);
+
+        db.insert(EnrollmentModel.TABLE, null, enrollment("enrollment_uid_one",
+                "program_uid_one", "organization_unit_uid", "tei_uid",
+                BaseIdentifiableObject.DATE_FORMAT.parse("2014-04-06T00:05:57.495"), "2014-05-01",
+                State.SYNCED, EnrollmentStatus.ACTIVE));
+        ReportViewModel reportViewModelOne = ReportViewModel.create("enrollment_uid_one",
+                ReportViewModel.Status.SYNCED, Arrays.asList("program: -",
+                        "enrollment_date_label: 2014-05-01", "", "enrollment_status: ACTIVE"));
+
+        // insert enrollment which doesn't have any visible PTEAs
+        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+
+        testObserver.assertValueCount(1);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+
+        List<ReportViewModel> reports = testObserver.values().get(0);
+
+        assertThat(reports.size()).isEqualTo(1);
+        assertThat(reports.get(0)).isEqualTo(reportViewModelOne);
+    }
+
+    @Test
+    public void reportsWithoutAnyDataShouldPropagateEmptyList() {
+        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+
+        testObserver.assertValueCount(1);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+
+        List<ReportViewModel> reports = testObserver.values().get(0);
+        assertThat(reports.size()).isEqualTo(0);
     }
 
     @NonNull

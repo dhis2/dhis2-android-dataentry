@@ -264,6 +264,47 @@ public class TeisRepositoryIntegrationTests {
     }
 
     @Test
+    public void reportsWithoutTeavsShouldBePropagated() throws ParseException {
+        SQLiteDatabase db = databaseRule.database();
+
+        // ProgramTrackedEntityAttributes
+        db.insert(ProgramTrackedEntityAttributeModel.TABLE, null,
+                ptea("ptea_uid_one", "program_uid", "tea_uid_one", true, 2));
+        db.insert(ProgramTrackedEntityAttributeModel.TABLE, null,
+                ptea("ptea_uid_two", "program_uid", "tea_uid_two", true, 1));
+        db.insert(ProgramTrackedEntityAttributeModel.TABLE, null,
+                ptea("ptea_uid_three", "program_uid", "tea_uid_three", false, 0));
+
+        // TrackedEntityInstances
+        db.insert(TrackedEntityInstanceModel.TABLE, null,
+                tei("tei_uid_one", BaseIdentifiableObject.DATE_FORMAT.parse("2016-04-06T00:05:57.495"),
+                        "organization_unit_uid", "tracked_entity_uid", State.SYNCED));
+        db.insert(TrackedEntityInstanceModel.TABLE, null,
+                tei("tei_uid_two", BaseIdentifiableObject.DATE_FORMAT.parse("2017-04-06T00:05:57.495"),
+                        "organization_unit_uid", "tracked_entity_uid", State.TO_UPDATE));
+        db.insert(TrackedEntityInstanceModel.TABLE, null,
+                tei("tei_uid_three", BaseIdentifiableObject.DATE_FORMAT.parse("2013-04-06T00:05:57.495"),
+                        "organization_unit_uid", "tracked_entity_uid", State.TO_DELETE));
+
+        ReportViewModel reportViewModelTwo = ReportViewModel.create("tei_uid_two",
+                ReportViewModel.Status.TO_SYNC, Arrays.asList("tea_two: -", "tea_one: -"));
+        ReportViewModel reportViewModelOne = ReportViewModel.create("tei_uid_one",
+                ReportViewModel.Status.SYNCED, Arrays.asList("tea_two: -", "tea_one: -"));
+
+        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+
+        testObserver.assertValueCount(1);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+
+        List<ReportViewModel> reports = testObserver.values().get(0);
+
+        assertThat(reports.size()).isEqualTo(2);
+        assertThat(reports.get(0)).isEqualTo(reportViewModelTwo);
+        assertThat(reports.get(1)).isEqualTo(reportViewModelOne);
+    }
+
+    @Test
     public void reportsWithoutVisiblePteaAndTeavsShouldBePropagated() throws ParseException {
         SQLiteDatabase db = databaseRule.database();
 
