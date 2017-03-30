@@ -5,25 +5,27 @@ import android.support.annotation.NonNull;
 import com.google.auto.value.AutoValue;
 
 @AutoValue
-public abstract class Quintet<T> {
-    @NonNull
-    public abstract T val0();
+public abstract class Quintet<A, B, C, D, E> {
 
     @NonNull
-    public abstract T val1();
+    public abstract A val0();
 
     @NonNull
-    public abstract T val2();
+    public abstract B val1();
 
     @NonNull
-    public abstract T val3();
+    public abstract C val2();
 
     @NonNull
-    public abstract T val4();
+    public abstract D val3();
 
     @NonNull
-    public static <T> Quintet<T> create(@NonNull T val0, @NonNull T val1, @NonNull T val2,
-            @NonNull T val3, @NonNull T val4) {
+    public abstract E val4();
+
+    @NonNull
+    public static <A, B, C, D, E> Quintet<A, B, C, D, E> create(@NonNull A val0,
+            @NonNull B val1, @NonNull C val2,
+            @NonNull D val3, @NonNull E val4) {
         return new AutoValue_Quintet<>(val0, val1, val2, val3, val4);
     }
 }
