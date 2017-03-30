@@ -289,6 +289,28 @@ public class SingleEventsRepositoryIntegrationTests {
         assertThat(reports.get(1)).isEqualTo(reportViewModelOne);
     }
 
+    @Test
+    public void reportsWithoutEventsMustPropagateEmptyList() {
+        SQLiteDatabase db = databaseRule.database();
+        db.insert(ProgramStageDataElementModel.TABLE, null,
+                programStageDataElement("ps_data_element_one", "ps_uid", "data_element_one_uid", true));
+        db.insert(ProgramStageDataElementModel.TABLE, null,
+                programStageDataElement("ps_data_element_two", "ps_uid", "data_element_two_uid", true));
+        db.insert(ProgramStageDataElementModel.TABLE, null,
+                programStageDataElement("ps_data_element_three", "ps_uid", "data_element_three_uid", false));
+
+        db.delete(EventModel.TABLE, null, null);
+
+        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+
+        testObserver.assertValueCount(1);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+
+        List<ReportViewModel> reports = testObserver.values().get(0);
+        assertThat(reports.size()).isEqualTo(0);
+    }
+
     private static ContentValues dataValue(String event, String dataelement, String value) {
         ContentValues dataValue = new ContentValues();
         dataValue.put(TrackedEntityDataValueModel.Columns.EVENT, event);
