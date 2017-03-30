@@ -25,20 +25,19 @@ final class TeisRepositoryImpl implements ReportsRepository {
             "  TrackedEntityInstance.state," +
             "  TrackedEntityAttribute.displayName," +
             "  TrackedEntityAttributeValue.value " +
-            "FROM (TrackedEntityInstance " +
+            "FROM (TrackedEntityInstance" +
             "  INNER JOIN Program ON Program.trackedEntity = TrackedEntityInstance.trackedEntity)" +
             "  LEFT OUTER JOIN (" +
-            "      ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute ON (" +
-            "      TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute AND" +
-            "      trackedEntityAttribute.displayInListNoProgram = 1)" +
-            "    ) ON ProgramTrackedEntityAttribute.program = Program.uid" +
+            "      ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute " +
+            "        ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute" +
+            "    ) ON ProgramTrackedEntityAttribute.program = Program.uid AND ProgramTrackedEntityAttribute.displayInList = 1" +
             "  LEFT OUTER JOIN TrackedEntityAttributeValue" +
             "    ON (TrackedEntityAttributeValue.trackedEntityAttribute = TrackedEntityAttribute.uid AND" +
             "        TrackedEntityAttributeValue.trackedEntityInstance = trackedEntityInstance.uid)" +
             "WHERE TrackedEntityInstance.trackedEntity = ? AND NOT TrackedEntityInstance.state = 'TO_DELETE'" +
-            "ORDER BY datetime(TrackedEntityInstance.created) DESC, " +
-            "  TrackedEntityInstance.uid ASC, " +
-            "  TrackedEntityAttribute.sortOrderInListNoProgram ASC;";
+            "ORDER BY datetime(TrackedEntityInstance.created) DESC," +
+            "  TrackedEntityInstance.uid ASC," +
+            "  ProgramTrackedEntityAttribute.sortOrder ASC;";
 
     @NonNull
     private final String trackedEntityUid;
