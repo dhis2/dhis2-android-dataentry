@@ -1,10 +1,16 @@
 package org.hisp.dhis.android.dataentry.main;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -15,6 +21,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +30,7 @@ import android.widget.TextView;
 
 import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.commons.SyncService;
 import org.hisp.dhis.android.dataentry.commons.ui.DummyFragment;
 import org.hisp.dhis.android.dataentry.main.home.HomeFragment;
 
@@ -31,6 +40,10 @@ import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity implements MainView,
         NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener {
+    public static final long INTERVAL = AlarmManager.INTERVAL_HOUR * 6;
+    public static final int ALARM_ID = R.string.sync_notification_id;
+    public static final String SYNC_SERVICE_ENABLED = "SyncServiceEnabled";
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     // drawer layout
     DrawerLayout drawerLayout;
@@ -70,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
         setupToolbar();
 
+        setupSyncServiceAlarm();
+
         drawerLayout.addDrawerListener(this);
         drawerLayout.addDrawerListener(drawerToggle);
         navigationView.setNavigationItemSelectedListener(this);
@@ -91,6 +106,12 @@ public class MainActivity extends AppCompatActivity implements MainView,
             onNavigationItemSelected(navigationView.getMenu()
                     .findItem(R.id.drawer_item_home));
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void setupToolbar() {
@@ -192,9 +213,18 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
+        } else if (id == R.id.action_sync) {
+            Log.d(this.getClass().getSimpleName(), "onOptionsItemSelected Action Sync!");
+            Intent syncIntent = new Intent(getApplicationContext(), SyncService.class);
+            syncIntent.setAction("ACTION_SYNC");
+            startService(syncIntent);
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
 
     }
@@ -213,4 +243,41 @@ public class MainActivity extends AppCompatActivity implements MainView,
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
+    private void setupSyncServiceAlarm() {
+        SharedPreferences sharedPreferences = getSharedPreferences("Sync", MODE_PRIVATE);
+        boolean alreadyEnabled = sharedPreferences.getBoolean(SYNC_SERVICE_ENABLED, false);
+        if ( !alreadyEnabled) {
+            Context context = getApplicationContext();
+            Intent syncIntent = new Intent(context, SyncService.class);
+            syncIntent.setAction("ACTION_SYNC");
+            PendingIntent pendingAlarmIntent = PendingIntent.getService(context, ALARM_ID, syncIntent, 0);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + INTERVAL,
+                    INTERVAL, pendingAlarmIntent);
+            //TODO: save in shared pref:
+            sharedPreferences.edit().putBoolean(SYNC_SERVICE_ENABLED, true).apply();
+        }
+    }
+
+    public static class BootReceiver extends BroadcastReceiver {
+
+        public BootReceiver() {
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+
+                Log.d("BootReceiver", "Received: " + intent.getAction());
+                Intent syncIntent =   new Intent(context, SyncService.class);
+                syncIntent.setAction("ACTION_SYNC");
+
+                PendingIntent pendingAlarmIntent = PendingIntent.getService(context, ALARM_ID, syncIntent, 0);
+                AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context
+                        .ALARM_SERVICE);
+                alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + INTERVAL,
+                        INTERVAL, pendingAlarmIntent);
+            }
+        }
+    }
 }
