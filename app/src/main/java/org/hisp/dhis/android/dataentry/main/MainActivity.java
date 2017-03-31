@@ -218,9 +218,8 @@ public class MainActivity extends AppCompatActivity implements MainView,
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         } else if (id == R.id.action_sync) {
-            Log.d(this.getClass().getSimpleName(), "onOptionsItemSelected Action Sync!");
             Intent syncIntent = new Intent(getApplicationContext(), SyncService.class);
-            syncIntent.setAction("ACTION_SYNC");
+//            syncIntent.setAction("ACTION_SYNC");
             startService(syncIntent);
             return true;
         }
@@ -244,18 +243,22 @@ public class MainActivity extends AppCompatActivity implements MainView,
     }
 
     private void setupSyncServiceAlarm() {
+        Log.d(TAG, "setupSyncServiceAlarm() called");
         SharedPreferences sharedPreferences = getSharedPreferences("Sync", MODE_PRIVATE);
         boolean alreadyEnabled = sharedPreferences.getBoolean(SYNC_SERVICE_ENABLED, false);
         if ( !alreadyEnabled) {
+            Log.d(TAG, "setupSyncServiceAlarm: Enabling!");
             Context context = getApplicationContext();
             Intent syncIntent = new Intent(context, SyncService.class);
-            syncIntent.setAction("ACTION_SYNC");
+//            syncIntent.setAction("ACTION_SYNC");
             PendingIntent pendingAlarmIntent = PendingIntent.getService(context, ALARM_ID, syncIntent, 0);
             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + INTERVAL,
                     INTERVAL, pendingAlarmIntent);
             //TODO: save in shared pref:
             sharedPreferences.edit().putBoolean(SYNC_SERVICE_ENABLED, true).apply();
+        } else {
+            Log.d(TAG, "setupSyncServiceAlarm: Already Enabled! Do nothing.");
         }
     }
 

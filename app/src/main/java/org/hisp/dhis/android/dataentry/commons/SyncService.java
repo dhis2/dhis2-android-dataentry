@@ -6,77 +6,106 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import org.hisp.dhis.android.core.D2;
+import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.server.ServerComponent;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
+import javax.inject.Inject;
 
-import static android.content.ContentValues.TAG;
+import retrofit2.Response;
+import rx.Observable;
+import rx.Subscriber;
+import rx.schedulers.Schedulers;
+
 
 //TODO: refactor to use RxJava !!!
 public class SyncService extends Service {
-    private final int NOTIFICATION_ID = R.string.sync_notification_id;
+    private final static String TAG = SyncService.class.getSimpleName();
+    private final static int IMPORTER_ERROR = 409;
+    private final static int NOTIFICATION_ID = R.string.sync_notification_id;
+
+//    @Inject
+    public D2 d2;
+
     private NotificationManager notificationManager;
-    private AtomicBoolean start = new AtomicBoolean(false);
+    private Observable<Response> metadataObservable;
+    Subscriber<Response> subscriber;
 
-    public enum SyncServiceState {SYNCING, ERROR, FATAL, SYNCED;}
-
-    private SyncServiceState state = SyncServiceState.SYNCING;
 
     //TODO: find out where in onCreate or onStartCommand should the RxJava start.
     @Override
     public void onCreate() {
         super.onCreate();
+
+        d2 = ((DhisApp) getApplicationContext()).serverComponent().sdk(); //I should probably not be doing this...
+
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        metadataObservable = Observable.create(new Observable.OnSubscribe<Response>() {
+            @Override
+            public void call(Subscriber<? super Response> subscriber) {
+                try {
+                    Log.d(TAG, "call() called with: subscriber = [" + subscriber + "]");
+                    Response result = d2.syncMetaData().call();
+                    //TODO: check if result.isSuccessfull() then call d2.dataSync()... and return either only at
+                    // the end (success) or upon error (failure)
+                    subscriber.onNext(result);
+//                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        subscriber = new Subscriber<Response>() {
+            @Override
+            public void onCompleted() {
+                //unsubscribe();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                //??? Exception was thrown by the Call. What does that entail ?
+                showSyncErrorNotification();
+                unsubscribe();
+            }
+
+            @Override
+            public void onNext(Response response) {
+                int code = response.code();
+                if (response.isSuccessful()) {
+                    showSyncCompleteNotification();
+                } else if (code == IMPORTER_ERROR) {
+                    showFatalSyncError();
+                } else if (!response.isSuccessful()) {
+                    showSyncErrorNotification();
+                } else {
+                    notificationManager.cancel(NOTIFICATION_ID);
+                }
+            }
+        };
+        subscriber.unsubscribe();
     }
 
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
 
-/*        Log.d(TAG, "onStartCommand() called with: intent = [" + intent + "], flags = [" + flags + "], startId = [" +
-                startId + "]");*/
-
-        if (!start.get()) {
-            start.set(true);
+        //TODO: rewrite this! it is wrong!
+        if (subscriber.isUnsubscribed()) {
+            Log.d(TAG, "onStartCommand: Syncing !");
             showSyncNotification();
-            Executors.newSingleThreadExecutor().submit(new Runnable() {
-                @Override
-                public void run() {
-                    /*for (int i = 0; i < 10; i++) {
-                        try {
-                            sleep(1200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        Log.d("ServiceThread", "something " + i);
-                    }*/
-                    switch (state) {
-                        case SYNCING: { //interrupted.
-                            notificationManager.cancel(NOTIFICATION_ID);
-                            break;
-                        }
-                        case ERROR: {
-                            showSyncErrorNotification();
-                            break;
-                        }
-                        case FATAL: {
-                            showFatalSyncError();
-                            break;
-                        }
-                        case SYNCED: {
-                            showSyncCompleteNotification();
-                            break;
-                        }
-                    }
-                }
-            });
+            metadataObservable.subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.immediate())
+                    .subscribe(subscriber);
         } else {
+            //noop...
             Log.d(TAG, "onStartCommand: Rejected !");
         }
-
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -85,6 +114,8 @@ public class SyncService extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
+
+    //// All the notification helper methods :
 
     private void showSyncNotification() {
         String title = getString(R.string.syncing_title);
