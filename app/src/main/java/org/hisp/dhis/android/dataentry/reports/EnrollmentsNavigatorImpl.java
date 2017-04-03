@@ -2,19 +2,10 @@ package org.hisp.dhis.android.dataentry.reports;
 
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.dataentry.commons.ui.Navigator;
-
-final class EnrollmentsNavigatorImpl implements Navigator {
-
-    @NonNull
-    private final String enrollmentUid;
-
-    public EnrollmentsNavigatorImpl(@NonNull String enrollmentUid) {
-        this.enrollmentUid = enrollmentUid;
-    }
+final class EnrollmentsNavigatorImpl implements ReportsNavigator {
 
     @Override
-    public void navigateTo() {
+    public void navigateTo(@NonNull String enrollmentUid) {
         // ToDo: navigate to data entry
     }
 }
