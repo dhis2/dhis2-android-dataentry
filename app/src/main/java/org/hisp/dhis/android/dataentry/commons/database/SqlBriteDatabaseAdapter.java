@@ -9,8 +9,6 @@ import com.squareup.sqlbrite.BriteDatabase;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.data.database.Transaction;
 
-import timber.log.Timber;
-
 import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
 class SqlBriteDatabaseAdapter implements DatabaseAdapter {
