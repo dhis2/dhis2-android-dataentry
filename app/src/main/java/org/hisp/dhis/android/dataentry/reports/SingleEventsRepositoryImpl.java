@@ -27,8 +27,8 @@ final class SingleEventsRepositoryImpl implements ReportsRepository {
             "  TrackedEntityDataValue.value " +
             "FROM Event" +
             "  LEFT OUTER JOIN (" +
-            "    SELECT DataElement.displayName AS label, " +
-            "           DataElement.uid AS dataElementUid, " +
+            "    SELECT  DataElement.uid AS de," +
+            "           DataElement.displayName AS label," +
             "           ProgramStageDataElement.displayInReports AS showInReports, " +
             "           ProgramStageDataElement.sortOrder AS formOrder, " +
             "           ProgramStageDataElement.programStage AS stage " +
@@ -38,7 +38,7 @@ final class SingleEventsRepositoryImpl implements ReportsRepository {
             "      AND EventDataElement.showInReports = 1)" +
             "  LEFT OUTER JOIN TrackedEntityDataValue" +
             "    ON (TrackedEntityDataValue.event = Event.uid " +
-            "    AND TrackedEntityDataValue.dataElement = EventDataElement.dataElementUid) " +
+            "    AND TrackedEntityDataValue.dataElement = EventDataElement.de) " +
             "WHERE Event.program = ? AND NOT Event.state = 'TO_DELETE' " +
             "ORDER BY datetime(Event.created) DESC," +
             "  EventDataElement.formOrder ASC," +
