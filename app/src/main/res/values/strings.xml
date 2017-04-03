@@ -27,6 +27,11 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
+    <!-- ReportsActivity -->
+    <string name="report_view_program">Program</string>
+    <string name="report_view_enrollment_status">Status</string>
+    <string name="report_view_enrollment_date">Enrollment date</string>
+
     <!-- Common dialogs -->
     <string name="option_confirm">OK</string>
 
