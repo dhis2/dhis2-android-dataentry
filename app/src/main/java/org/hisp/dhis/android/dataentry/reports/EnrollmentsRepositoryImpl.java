@@ -29,20 +29,25 @@ final class EnrollmentsRepositoryImpl implements ReportsRepository {
             "  Enrollment.enrollmentDate," +
             "  Enrollment.state," +
             "  Enrollment.status," +
-            "  TrackedEntityAttribute.displayName," +
+            "  InstanceAttribute.label," +
             "  TrackedEntityAttributeValue.value " +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)" +
             "  LEFT OUTER JOIN (" +
-            "    ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute" +
+            "    SELECT TrackedEntityAttribute.uid AS tea, " +
+            "           TrackedEntityAttribute.displayName AS label, " +
+            "           ProgramTrackedEntityAttribute.displayInList AS showInList, " +
+            "           ProgramTrackedEntityAttribute.program AS program, " +
+            "           ProgramTrackedEntityAttribute.sortOrder AS formOrder " +
+            "    FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute" +
             "      ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute" +
-            "    ) ON ProgramTrackedEntityAttribute.program = Program.uid " +
-            "        AND ProgramTrackedEntityAttribute.displayInList = 1" +
+            "    ) AS InstanceAttribute ON InstanceAttribute.program = Program.uid " +
+            "        AND InstanceAttribute.showInList = 1" +
             "  LEFT OUTER JOIN TrackedEntityAttributeValue" +
-            "      ON (TrackedEntityAttributeValue.trackedEntityAttribute = TrackedEntityAttribute.uid " +
+            "      ON (TrackedEntityAttributeValue.trackedEntityAttribute = InstanceAttribute.tea " +
             "        AND TrackedEntityAttributeValue.trackedEntityInstance = Enrollment.trackedEntityInstance) " +
             "WHERE Enrollment.trackedEntityInstance = ? AND NOT Enrollment.state = 'TO_DELETE' " +
             "ORDER BY datetime(Enrollment.created) DESC, " +
-            "Enrollment.enrollment ASC, ProgramTrackedEntityAttribute.sortOrder ASC;";
+            "Enrollment.enrollment ASC, InstanceAttribute.formOrder ASC;";
 
     @NonNull
     private final BriteDatabase briteDatabase;
