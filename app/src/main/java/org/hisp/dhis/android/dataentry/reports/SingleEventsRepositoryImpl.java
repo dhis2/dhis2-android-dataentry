@@ -23,20 +23,25 @@ final class SingleEventsRepositoryImpl implements ReportsRepository {
     private static final String SELECT_EVENTS = "SELECT" +
             "  Event.uid," +
             "  Event.state," +
-            "  DataElement.displayName," +
+            "  EventDataElement.label," +
             "  TrackedEntityDataValue.value " +
             "FROM Event" +
             "  LEFT OUTER JOIN (" +
-            "    ProgramStageDataElement INNER JOIN DataElement " +
-            "      ON DataElement.uid = ProgramStageDataElement.dataElement" +
-            "    ) ON (ProgramStageDataElement.programStage = Event.programStage " +
-            "      AND ProgramStageDataElement.displayInReports = 1)" +
+            "    SELECT DataElement.displayName AS label, " +
+            "           DataElement.uid AS dataElementUid, " +
+            "           ProgramStageDataElement.displayInReports AS showInReports, " +
+            "           ProgramStageDataElement.sortOrder AS formOrder, " +
+            "           ProgramStageDataElement.programStage AS stage " +
+            "       FROM ProgramStageDataElement INNER JOIN DataElement " +
+            "           ON DataElement.uid = ProgramStageDataElement.dataElement" +
+            "    ) AS EventDataElement ON (EventDataElement.stage = Event.programStage " +
+            "      AND EventDataElement.showInReports = 1)" +
             "  LEFT OUTER JOIN TrackedEntityDataValue" +
             "    ON (TrackedEntityDataValue.event = Event.uid " +
-            "    AND TrackedEntityDataValue.dataElement = DataElement.uid) " +
+            "    AND TrackedEntityDataValue.dataElement = EventDataElement.dataElementUid) " +
             "WHERE Event.program = ? AND NOT Event.state = 'TO_DELETE' " +
             "ORDER BY datetime(Event.created) DESC," +
-            "  ProgramStageDataElement.sortOrder ASC," +
+            "  EventDataElement.formOrder ASC," +
             "  Event.uid ASC;";
 
     @NonNull
