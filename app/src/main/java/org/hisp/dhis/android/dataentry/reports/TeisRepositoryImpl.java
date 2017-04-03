@@ -23,22 +23,27 @@ final class TeisRepositoryImpl implements ReportsRepository {
     private static final String SELECT_TEIS = "SELECT" +
             "  TrackedEntityInstance.uid," +
             "  TrackedEntityInstance.state," +
-            "  TrackedEntityAttribute.displayName," +
+            "  InstanceAttribute.label," +
             "  TrackedEntityAttributeValue.value " +
             "FROM (TrackedEntityInstance" +
             "  INNER JOIN Program ON Program.trackedEntity = TrackedEntityInstance.trackedEntity)" +
             "    LEFT OUTER JOIN (" +
-            "      ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute " +
+            "      SELECT TrackedEntityAttribute.uid AS tea, " +
+            "             TrackedEntityAttribute.displayName AS label, " +
+            "             ProgramTrackedEntityAttribute.displayInList AS showInList, " +
+            "             ProgramTrackedEntityAttribute.program AS program, " +
+            "             ProgramTrackedEntityAttribute.sortOrder AS formOrder " +
+            "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute " +
             "        ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute" +
-            "      ) ON ProgramTrackedEntityAttribute.program = Program.uid " +
-            "    AND ProgramTrackedEntityAttribute.displayInList = 1" +
+            "      ) AS InstanceAttribute ON InstanceAttribute.program = Program.uid " +
+            "    AND InstanceAttribute.showInList = 1" +
             "  LEFT OUTER JOIN TrackedEntityAttributeValue" +
-            "    ON (TrackedEntityAttributeValue.trackedEntityAttribute = TrackedEntityAttribute.uid " +
+            "    ON (TrackedEntityAttributeValue.trackedEntityAttribute = InstanceAttribute.tea " +
             "    AND TrackedEntityAttributeValue.trackedEntityInstance = TrackedEntityInstance.uid) " +
             "WHERE TrackedEntityInstance.trackedEntity = ? AND NOT TrackedEntityInstance.state = 'TO_DELETE' " +
             "ORDER BY datetime(TrackedEntityInstance.created) DESC," +
             "  TrackedEntityInstance.uid ASC," +
-            "  ProgramTrackedEntityAttribute.sortOrder ASC;";
+            "  InstanceAttribute.formOrder ASC;";
 
     @NonNull
     private final String trackedEntityUid;
