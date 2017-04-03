@@ -27,14 +27,14 @@ final class TeisRepositoryImpl implements ReportsRepository {
             "  TrackedEntityAttributeValue.value " +
             "FROM (TrackedEntityInstance" +
             "  INNER JOIN Program ON Program.trackedEntity = TrackedEntityInstance.trackedEntity)" +
-            "  LEFT OUTER JOIN (" +
+            "    LEFT OUTER JOIN (" +
             "      ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute " +
             "        ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute" +
-            "    ) ON ProgramTrackedEntityAttribute.program = Program.uid " +
-            "        AND ProgramTrackedEntityAttribute.displayInList = 1" +
+            "      ) ON ProgramTrackedEntityAttribute.program = Program.uid " +
+            "    AND ProgramTrackedEntityAttribute.displayInList = 1" +
             "  LEFT OUTER JOIN TrackedEntityAttributeValue" +
-            "    ON (TrackedEntityAttributeValue.trackedEntityAttribute = TrackedEntityAttribute.uid AND" +
-            "        TrackedEntityAttributeValue.trackedEntityInstance = TrackedEntityInstance.uid) " +
+            "    ON (TrackedEntityAttributeValue.trackedEntityAttribute = TrackedEntityAttribute.uid " +
+            "    AND TrackedEntityAttributeValue.trackedEntityInstance = TrackedEntityInstance.uid) " +
             "WHERE TrackedEntityInstance.trackedEntity = ? AND NOT TrackedEntityInstance.state = 'TO_DELETE' " +
             "ORDER BY datetime(TrackedEntityInstance.created) DESC," +
             "  TrackedEntityInstance.uid ASC," +

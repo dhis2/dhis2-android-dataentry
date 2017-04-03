@@ -33,13 +33,13 @@ final class EnrollmentsRepositoryImpl implements ReportsRepository {
             "  TrackedEntityAttributeValue.value " +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)" +
             "  LEFT OUTER JOIN (" +
-            "      ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute" +
-            "        ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute" +
+            "    ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute" +
+            "      ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute" +
             "    ) ON ProgramTrackedEntityAttribute.program = Program.uid " +
-            "           AND ProgramTrackedEntityAttribute.displayInList = 1" +
+            "        AND ProgramTrackedEntityAttribute.displayInList = 1" +
             "  LEFT OUTER JOIN TrackedEntityAttributeValue" +
-            "    ON (TrackedEntityAttributeValue.trackedEntityAttribute = TrackedEntityAttribute.uid AND" +
-            "        TrackedEntityAttributeValue.trackedEntityInstance = Enrollment.trackedEntityInstance) " +
+            "      ON (TrackedEntityAttributeValue.trackedEntityAttribute = TrackedEntityAttribute.uid " +
+            "        AND TrackedEntityAttributeValue.trackedEntityInstance = Enrollment.trackedEntityInstance) " +
             "WHERE Enrollment.trackedEntityInstance = ? AND NOT Enrollment.state = 'TO_DELETE' " +
             "ORDER BY datetime(Enrollment.created) DESC, " +
             "Enrollment.enrollment ASC, ProgramTrackedEntityAttribute.sortOrder ASC;";
