@@ -30,7 +30,8 @@ final class TeisRepositoryImpl implements ReportsRepository {
             "  LEFT OUTER JOIN (" +
             "      ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute " +
             "        ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute" +
-            "    ) ON ProgramTrackedEntityAttribute.program = Program.uid AND ProgramTrackedEntityAttribute.displayInList = 1" +
+            "    ) ON ProgramTrackedEntityAttribute.program = Program.uid " +
+            "        AND ProgramTrackedEntityAttribute.displayInList = 1" +
             "  LEFT OUTER JOIN TrackedEntityAttributeValue" +
             "    ON (TrackedEntityAttributeValue.trackedEntityAttribute = TrackedEntityAttribute.uid AND" +
             "        TrackedEntityAttributeValue.trackedEntityInstance = TrackedEntityInstance.uid)" +
