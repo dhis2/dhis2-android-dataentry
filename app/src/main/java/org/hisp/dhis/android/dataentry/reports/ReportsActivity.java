@@ -13,16 +13,40 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ReportsActivity extends AppCompatActivity {
-    static final String ARG_FORM_UID = "arg:formUid";
-    static final String ARG_FORM_NAME = "arg:formName";
+    static final String ARG_ENTITY_UID = "arg:entityUid";
+    static final String ARG_ENTITY_NAME = "arg:entityName";
+    static final String ARG_ENTITY_TYPE = "arg:entityType";
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    public static Intent create(@NonNull Activity activity, @NonNull String programUid, @NonNull String programName) {
+    @NonNull
+    public static Intent createIntentForTeis(@NonNull Activity activity,
+            @NonNull String teUid, @NonNull String teName) {
         Intent intent = new Intent(activity, ReportsActivity.class);
-        intent.putExtra(ARG_FORM_UID, programUid);
-        intent.putExtra(ARG_FORM_NAME, programName);
+        intent.putExtra(ARG_ENTITY_UID, teUid);
+        intent.putExtra(ARG_ENTITY_NAME, teName);
+        intent.putExtra(ARG_ENTITY_TYPE, ReportViewModel.TYPE_TEIS);
+        return intent;
+    }
+
+    @NonNull
+    public static Intent createIntentForEvents(@NonNull Activity activity,
+            @NonNull String programUid, @NonNull String programName) {
+        Intent intent = new Intent(activity, ReportsActivity.class);
+        intent.putExtra(ARG_ENTITY_UID, programUid);
+        intent.putExtra(ARG_ENTITY_NAME, programName);
+        intent.putExtra(ARG_ENTITY_TYPE, ReportViewModel.TYPE_EVENTS);
+        return intent;
+    }
+
+    @NonNull
+    public static Intent createIntentForEnrollments(@NonNull Activity activity,
+            @NonNull String teiUid, @NonNull String teName) {
+        Intent intent = new Intent(activity, ReportsActivity.class);
+        intent.putExtra(ARG_ENTITY_UID, teiUid);
+        intent.putExtra(ARG_ENTITY_NAME, teName);
+        intent.putExtra(ARG_ENTITY_TYPE, ReportViewModel.TYPE_ENROLLMENTS);
         return intent;
     }
 
@@ -35,19 +59,34 @@ public class ReportsActivity extends AppCompatActivity {
         setUpToolbar();
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, ReportsFragment.create(getFormUid()))
+                .replace(R.id.content_frame, reportsFragment())
                 .commitNow();
     }
 
+    @NonNull
+    private ReportsFragment reportsFragment() {
+        switch (getIntent().getStringExtra(ARG_ENTITY_TYPE)) {
+            case ReportViewModel.TYPE_TEIS:
+                return ReportsFragment.createForTeis(getEntityUid(), getEntityName());
+            case ReportViewModel.TYPE_EVENTS:
+                return ReportsFragment.createForEvents(getEntityUid(), getEntityName());
+            case ReportViewModel.TYPE_ENROLLMENTS:
+                return ReportsFragment.createForEnrollments(getEntityUid(), getEntityName());
+            default:
+                throw new IllegalArgumentException("Unsupported entity type: " +
+                        getIntent().getStringExtra(ARG_ENTITY_TYPE));
+        }
+    }
+
     private void setUpToolbar() {
-        toolbar.setTitle(getFormName());
+        toolbar.setTitle(getEntityName());
     }
 
-    private String getFormUid() {
-        return getIntent().getExtras().getString(ARG_FORM_UID, "");
+    private String getEntityUid() {
+        return getIntent().getExtras().getString(ARG_ENTITY_UID, "");
     }
 
-    private String getFormName() {
-        return getIntent().getExtras().getString(ARG_FORM_NAME, "");
+    private String getEntityName() {
+        return getIntent().getExtras().getString(ARG_ENTITY_NAME, "");
     }
 }

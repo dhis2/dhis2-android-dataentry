@@ -9,6 +9,9 @@ import java.util.List;
 
 @AutoValue
 abstract class ReportViewModel {
+    public static final String TYPE_TEIS = "type:teis";
+    public static final String TYPE_EVENTS = "type:events";
+    public static final String TYPE_ENROLLMENTS = "type:enrollments";
 
     @NonNull
     public abstract String id();
