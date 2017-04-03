@@ -39,8 +39,8 @@ final class EnrollmentsRepositoryImpl implements ReportsRepository {
             "           AND ProgramTrackedEntityAttribute.displayInList = 1" +
             "  LEFT OUTER JOIN TrackedEntityAttributeValue" +
             "    ON (TrackedEntityAttributeValue.trackedEntityAttribute = TrackedEntityAttribute.uid AND" +
-            "        TrackedEntityAttributeValue.trackedEntityInstance = Enrollment.trackedEntityInstance)" +
-            "WHERE Enrollment.trackedEntityInstance = ? AND NOT Enrollment.state = 'TO_DELETE'" +
+            "        TrackedEntityAttributeValue.trackedEntityInstance = Enrollment.trackedEntityInstance) " +
+            "WHERE Enrollment.trackedEntityInstance = ? AND NOT Enrollment.state = 'TO_DELETE' " +
             "ORDER BY datetime(Enrollment.created) DESC, " +
             "Enrollment.enrollment ASC, ProgramTrackedEntityAttribute.sortOrder ASC;";
 
