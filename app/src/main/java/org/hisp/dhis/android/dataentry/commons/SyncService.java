@@ -12,13 +12,10 @@ import android.util.Log;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.server.ServerComponent;
-
-import javax.inject.Inject;
 
 import retrofit2.Response;
-import rx.Observable;
-import rx.Subscriber;
+import rx.Single;
+import rx.SingleSubscriber;
 import rx.schedulers.Schedulers;
 
 
@@ -27,56 +24,60 @@ public class SyncService extends Service {
     private final static String TAG = SyncService.class.getSimpleName();
     private final static int IMPORTER_ERROR = 409;
     private final static int NOTIFICATION_ID = R.string.sync_notification_id;
+    private boolean syncing = false;
 
-//    @Inject
+    //    @Inject
     public D2 d2;
 
     private NotificationManager notificationManager;
-    private Observable<Response> metadataObservable;
-    Subscriber<Response> subscriber;
+    private Single<Response> metadataObservable;
+    private SingleSubscriber<Response> subscriber;
 
 
     //TODO: find out where in onCreate or onStartCommand should the RxJava start.
     @Override
     public void onCreate() {
         super.onCreate();
-
         d2 = ((DhisApp) getApplicationContext()).serverComponent().sdk(); //I should probably not be doing this...
-
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+    }
 
-        metadataObservable = Observable.create(new Observable.OnSubscribe<Response>() {
-            @Override
-            public void call(Subscriber<? super Response> subscriber) {
-                try {
-                    Log.d(TAG, "call() called with: subscriber = [" + subscriber + "]");
-                    Response result = d2.syncMetaData().call();
-                    //TODO: check if result.isSuccessfull() then call d2.dataSync()... and return either only at
-                    // the end (success) or upon error (failure)
-                    subscriber.onNext(result);
-//                    subscriber.onCompleted();
-                } catch (Exception e) {
-                    subscriber.onError(e);
-                    e.printStackTrace();
-                }
+    @Override
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+
+        //TODO: rewrite this! it is wrong!
+        if (subscriber == null || metadataObservable == null || subscriber.isUnsubscribed()) {
+            createSingleAndSubscriber();
+            Log.d(TAG, "onStartCommand: Syncing !");
+            showSyncNotification();
+            metadataObservable.subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.immediate())
+                    .subscribe(subscriber);
+        } else {
+            //noop...
+            Log.d(TAG, "onStartCommand: Ignored !");
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void createSingleAndSubscriber() {
+        metadataObservable = Single.create(singleSubscriber -> {
+            try {
+                Log.d(TAG, "call() called with: subscriber = [" + subscriber + "]");
+                Thread.sleep(3000);
+                Response result = d2.syncMetaData().call();
+                //TODO: check if result.isSuccessfull() then call d2.dataSync()... and return either only at
+                // the end (success) or upon error (failure)
+                subscriber.onSuccess(result);
+            } catch (Exception e) {
+                subscriber.onError(e);
+                e.printStackTrace();
             }
         });
 
-        subscriber = new Subscriber<Response>() {
+        subscriber = new SingleSubscriber<Response>() {
             @Override
-            public void onCompleted() {
-                //unsubscribe();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                //??? Exception was thrown by the Call. What does that entail ?
-                showSyncErrorNotification();
-                unsubscribe();
-            }
-
-            @Override
-            public void onNext(Response response) {
+            public void onSuccess(Response response) {
                 int code = response.code();
                 if (response.isSuccessful()) {
                     showSyncCompleteNotification();
@@ -87,26 +88,16 @@ public class SyncService extends Service {
                 } else {
                     notificationManager.cancel(NOTIFICATION_ID);
                 }
+                unsubscribe();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                //??? Exception was thrown by the Call. What does that entail ?
+                showSyncErrorNotification();
+                unsubscribe();
             }
         };
-        subscriber.unsubscribe();
-    }
-
-    @Override
-    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-
-        //TODO: rewrite this! it is wrong!
-        if (subscriber.isUnsubscribed()) {
-            Log.d(TAG, "onStartCommand: Syncing !");
-            showSyncNotification();
-            metadataObservable.subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.immediate())
-                    .subscribe(subscriber);
-        } else {
-            //noop...
-            Log.d(TAG, "onStartCommand: Rejected !");
-        }
-        return super.onStartCommand(intent, flags, startId);
     }
 
     @Nullable
