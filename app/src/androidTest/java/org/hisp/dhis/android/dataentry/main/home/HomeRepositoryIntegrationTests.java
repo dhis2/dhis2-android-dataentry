@@ -65,6 +65,8 @@ public class HomeRepositoryIntegrationTests {
         TestObserver<List<HomeViewModel>> testObserver = homeRepository.homeViewModels().test();
 
         testObserver.assertValueCount(1); // One list is returned
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
 
         assertThat(testObserver.values().get(0).size()).isEqualTo(2); // List contains two HomeViewModels
 
@@ -73,10 +75,6 @@ public class HomeRepositoryIntegrationTests {
 
         // Program type should be returned last
         assertThat(testObserver.values().get(0).get(1).type()).isEqualTo(HomeViewModel.Type.PROGRAM);
-
-        testObserver.assertNoErrors();
-
-        testObserver.assertNotComplete();
 
     }
 
@@ -94,14 +92,13 @@ public class HomeRepositoryIntegrationTests {
                 TrackedEntityModel.Columns.ID + " = ?", String.valueOf(333L));
 
         assertThat(updated).isEqualTo(1);
+
         testObserver.assertValueCount(2);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
 
         assertThat(testObserver.values().get(0).get(0).title()).isEqualTo("test_tracked_entity_display_name");
         assertThat(testObserver.values().get(1).get(0).title()).isEqualTo("test_another_tracked_entity_display_name");
-
-        testObserver.assertNoErrors();
-
-        testObserver.assertNotComplete();
 
     }
 
@@ -119,14 +116,13 @@ public class HomeRepositoryIntegrationTests {
                 ProgramModel.Columns.ID + " = ?", String.valueOf(177L));
 
         assertThat(updated).isEqualTo(1);
+
         testObserver.assertValueCount(2);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
 
         assertThat(testObserver.values().get(0).get(1).title()).isEqualTo("test_program_display_name");
         assertThat(testObserver.values().get(1).get(1).title()).isEqualTo("test_another_program_display_name");
-
-        testObserver.assertNoErrors();
-
-        testObserver.assertNotComplete();
 
     }
 
@@ -138,11 +134,10 @@ public class HomeRepositoryIntegrationTests {
         TestObserver<List<HomeViewModel>> testObserver = homeRepository.homeViewModels().test();
 
         testObserver.assertValueCount(1);
-        assertThat(testObserver.values().get(0).size()).isEqualTo(0); // List should be empty
-
         testObserver.assertNoErrors();
-
         testObserver.assertNotComplete();
+
+        assertThat(testObserver.values().get(0).size()).isEqualTo(0); // List should be empty
 
     }
 }
