@@ -54,16 +54,21 @@ public class HomeRepositoryIntegrationTests {
     }
 
     @Test
-    public void homeEntitiesShouldReturnCorrectTypes() {
+    public void homeViewModelsShouldReturnCorrectTypes() {
 
         databaseRule.database().insert(TrackedEntityModel.TABLE, null, trackedEntity);
         databaseRule.database().insert(ProgramModel.TABLE, null, program);
 
-        TestObserver<List<HomeViewModel>> testObserver = homeRepository.homeEntities().test();
+        // this program should not be returned
+        databaseRule.database().insert(ProgramModel.TABLE, null, programWithRegistration);
+
+        TestObserver<List<HomeViewModel>> testObserver = homeRepository.homeViewModels().test();
 
         testObserver.assertValueCount(1); // One list is returned
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
 
-        assertThat(testObserver.values().get(0).size()).isEqualTo(2); // List contains both HomeViewModels
+        assertThat(testObserver.values().get(0).size()).isEqualTo(2); // List contains two HomeViewModels
 
         // TrackedEntity type should be returned first
         assertThat(testObserver.values().get(0).get(0).type()).isEqualTo(HomeViewModel.Type.TRACKED_ENTITY);
@@ -71,19 +76,15 @@ public class HomeRepositoryIntegrationTests {
         // Program type should be returned last
         assertThat(testObserver.values().get(0).get(1).type()).isEqualTo(HomeViewModel.Type.PROGRAM);
 
-        testObserver.assertNoErrors();
-
-        testObserver.assertNotComplete();
-
     }
 
     @Test
-    public void homeEntitiesShouldObserveChangesInTrackedEntityTable() {
+    public void homeViewModelsShouldObserveChangesInTrackedEntityTable() {
 
         databaseRule.database().insert(TrackedEntityModel.TABLE, null, trackedEntity);
         databaseRule.database().insert(ProgramModel.TABLE, null, program);
 
-        TestObserver<List<HomeViewModel>> testObserver = homeRepository.homeEntities().test();
+        TestObserver<List<HomeViewModel>> testObserver = homeRepository.homeViewModels().test();
 
         trackedEntity.put(TrackedEntityModel.Columns.DISPLAY_NAME, "test_another_tracked_entity_display_name");
 
@@ -91,24 +92,23 @@ public class HomeRepositoryIntegrationTests {
                 TrackedEntityModel.Columns.ID + " = ?", String.valueOf(333L));
 
         assertThat(updated).isEqualTo(1);
+
         testObserver.assertValueCount(2);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
 
         assertThat(testObserver.values().get(0).get(0).title()).isEqualTo("test_tracked_entity_display_name");
         assertThat(testObserver.values().get(1).get(0).title()).isEqualTo("test_another_tracked_entity_display_name");
 
-        testObserver.assertNoErrors();
-
-        testObserver.assertNotComplete();
-
     }
 
     @Test
-    public void homeEntitiesShouldObserveChangesInProgramTable() {
+    public void homeViewModelsShouldObserveChangesInProgramTable() {
 
         databaseRule.database().insert(TrackedEntityModel.TABLE, null, trackedEntity);
         databaseRule.database().insert(ProgramModel.TABLE, null, program);
 
-        TestObserver<List<HomeViewModel>> testObserver = homeRepository.homeEntities().test();
+        TestObserver<List<HomeViewModel>> testObserver = homeRepository.homeViewModels().test();
 
         program.put(ProgramModel.Columns.DISPLAY_NAME, "test_another_program_display_name");
 
@@ -116,30 +116,28 @@ public class HomeRepositoryIntegrationTests {
                 ProgramModel.Columns.ID + " = ?", String.valueOf(177L));
 
         assertThat(updated).isEqualTo(1);
+
         testObserver.assertValueCount(2);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
 
         assertThat(testObserver.values().get(0).get(1).title()).isEqualTo("test_program_display_name");
         assertThat(testObserver.values().get(1).get(1).title()).isEqualTo("test_another_program_display_name");
 
-        testObserver.assertNoErrors();
-
-        testObserver.assertNotComplete();
-
     }
 
     @Test
-    public void homeEntitiesShouldNotReturnProgramsWithRegistration() {
+    public void homeViewModelsShouldNotReturnProgramsWithRegistration() {
 
         databaseRule.database().insert(ProgramModel.TABLE, null, programWithRegistration);
 
-        TestObserver<List<HomeViewModel>> testObserver = homeRepository.homeEntities().test();
+        TestObserver<List<HomeViewModel>> testObserver = homeRepository.homeViewModels().test();
 
         testObserver.assertValueCount(1);
-        assertThat(testObserver.values().get(0).size()).isEqualTo(0); // List should be empty
-
         testObserver.assertNoErrors();
-
         testObserver.assertNotComplete();
+
+        assertThat(testObserver.values().get(0).size()).isEqualTo(0); // List should be empty
 
     }
 }

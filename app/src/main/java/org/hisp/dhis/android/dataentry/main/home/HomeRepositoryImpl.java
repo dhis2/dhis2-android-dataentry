@@ -48,7 +48,7 @@ class HomeRepositoryImpl implements HomeRepository {
 
     @NonNull
     @Override
-    public Observable<List<HomeViewModel>> homeEntities() {
+    public Observable<List<HomeViewModel>> homeViewModels() {
         return RxJavaInterop.toV2Observable(
                 briteDatabase.createQuery(TABLE_SET, SELECT_HOME_ENTITIES)
                         .mapToList(HomeViewModel::fromCursor));

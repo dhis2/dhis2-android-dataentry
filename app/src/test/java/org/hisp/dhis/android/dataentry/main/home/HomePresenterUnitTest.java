@@ -31,7 +31,7 @@ public class HomePresenterUnitTest {
     private HomePresenter homePresenter; // the class we are testing
 
     @Captor
-    private ArgumentCaptor<List<HomeViewModel>> homeEntityListCaptor;
+    private ArgumentCaptor<List<HomeViewModel>> homeViewModelListCaptor;
 
     @Before
     public void setUp() throws Exception {
@@ -46,13 +46,13 @@ public class HomePresenterUnitTest {
         List<HomeViewModel> homeViewModelList = new ArrayList<>();
         homeViewModelList.add(HomeViewModel.create("test_id", "test_display_name", HomeViewModel.Type.PROGRAM));
 
-        when(homeRepository.homeEntities()).thenReturn(Observable.just(homeViewModelList));
+        when(homeRepository.homeViewModels()).thenReturn(Observable.just(homeViewModelList));
 
         homePresenter.onAttach(homeView);
 
-        verify(homeView.swapData()).accept(homeEntityListCaptor.capture());
+        verify(homeView.swapData()).accept(homeViewModelListCaptor.capture());
 
-        assertThat(homeEntityListCaptor.getValue()).isEqualTo(homeViewModelList);
+        assertThat(homeViewModelListCaptor.getValue()).isEqualTo(homeViewModelList);
 
     }
 
@@ -60,7 +60,7 @@ public class HomePresenterUnitTest {
     public void updatesShouldBePropagatedToView() throws Exception {
 
         PublishSubject<List<HomeViewModel>> subject = PublishSubject.create();
-        when(homeRepository.homeEntities()).thenReturn(subject);
+        when(homeRepository.homeViewModels()).thenReturn(subject);
 
         List<HomeViewModel> homeViewModelList = new ArrayList<>();
         homeViewModelList.add(HomeViewModel.create("test_id", "test_display_name", HomeViewModel.Type.PROGRAM));
@@ -68,9 +68,9 @@ public class HomePresenterUnitTest {
         homePresenter.onAttach(homeView);
 
         subject.onNext(homeViewModelList);
-        verify(homeView.swapData()).accept(homeEntityListCaptor.capture());
+        verify(homeView.swapData()).accept(homeViewModelListCaptor.capture());
 
-        assertThat(homeEntityListCaptor.getValue()).isEqualTo(homeViewModelList);
+        assertThat(homeViewModelListCaptor.getValue()).isEqualTo(homeViewModelList);
 
         List<HomeViewModel> secondHomeViewModelList = new ArrayList<>();
         secondHomeViewModelList.add(
@@ -78,9 +78,9 @@ public class HomePresenterUnitTest {
 
         subject.onNext(secondHomeViewModelList);
 
-        verify(homeView.swapData(), times(2)).accept(homeEntityListCaptor.capture());
+        verify(homeView.swapData(), times(2)).accept(homeViewModelListCaptor.capture());
 
-        assertThat(homeEntityListCaptor.getValue()).isEqualTo(secondHomeViewModelList);
+        assertThat(homeViewModelListCaptor.getValue()).isEqualTo(secondHomeViewModelList);
 
     }
 
@@ -88,7 +88,7 @@ public class HomePresenterUnitTest {
     public void onDetachShouldRemoveObservers() {
 
         PublishSubject<List<HomeViewModel>> subject = PublishSubject.create();
-        when(homeRepository.homeEntities()).thenReturn(subject);
+        when(homeRepository.homeViewModels()).thenReturn(subject);
 
         homePresenter.onAttach(homeView);
         assertThat(subject.hasObservers()).isTrue();

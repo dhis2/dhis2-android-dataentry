@@ -9,5 +9,5 @@ import io.reactivex.Observable;
 interface HomeRepository {
 
     @NonNull
-    Observable<List<HomeViewModel>> homeEntities();
+    Observable<List<HomeViewModel>> homeViewModels();
 }

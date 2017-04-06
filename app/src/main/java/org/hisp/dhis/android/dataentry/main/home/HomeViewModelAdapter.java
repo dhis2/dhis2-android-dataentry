@@ -100,7 +100,7 @@ class HomeViewModelAdapter extends RecyclerView.Adapter {
         }
 
         @OnClick(R.id.container)
-        public void onHomeEntityClick() {
+        public void onHomeViewModelClick() {
             if (onHomeItemClickListener != null) {
                 onHomeItemClickListener.onHomeItemClicked(homeViewModel);
             }
