@@ -20,7 +20,8 @@ final class TeisNavigatorImpl implements ReportsNavigator {
 
     @Override
     public void navigateTo(@NonNull String teiUid) {
-        Intent intent = ReportsActivity.createIntentForEnrollments(currentActivity, teiUid, teName);
+        Intent intent = ReportsActivity.createIntent(currentActivity,
+                ReportsArguments.createForEnrollments(teiUid, teName));
         ActivityCompat.startActivity(currentActivity, intent, null);
     }
 }

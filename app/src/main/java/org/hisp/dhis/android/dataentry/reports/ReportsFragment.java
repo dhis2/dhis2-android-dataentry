@@ -23,9 +23,7 @@ import io.reactivex.functions.Consumer;
 
 public final class ReportsFragment extends BaseFragment
         implements ReportsView, ReportsAdapter.OnReportViewModelClickListener {
-    private static final String ARG_ENTITY_UID = "arg:entityUid";
-    private static final String ARG_ENTITY_NAME = "arg:entityName";
-    private static final String ARG_ENTITY_TYPE = "arg:entityType";
+    private static final String ARG_ARGUMENTS = "arg:arguments";
 
     @BindView(R.id.recyclerview_reports)
     RecyclerView recyclerViewReports;
@@ -39,37 +37,9 @@ public final class ReportsFragment extends BaseFragment
     ReportsAdapter reportsAdapter;
 
     @NonNull
-    public static ReportsFragment createForEvents(@NonNull String programUid, @NonNull String programName) {
+    public static ReportsFragment create(@NonNull ReportsArguments reportsArguments) {
         Bundle arguments = new Bundle();
-        arguments.putString(ARG_ENTITY_UID, programUid);
-        arguments.putString(ARG_ENTITY_TYPE, ReportViewModel.TYPE_EVENTS);
-        arguments.putString(ARG_ENTITY_NAME, programName);
-
-        ReportsFragment reportsFragment = new ReportsFragment();
-        reportsFragment.setArguments(arguments);
-
-        return reportsFragment;
-    }
-
-    @NonNull
-    public static ReportsFragment createForTeis(@NonNull String teUid, @NonNull String teName) {
-        Bundle arguments = new Bundle();
-        arguments.putString(ARG_ENTITY_UID, teUid);
-        arguments.putString(ARG_ENTITY_TYPE, ReportViewModel.TYPE_TEIS);
-        arguments.putString(ARG_ENTITY_NAME, teName);
-
-        ReportsFragment reportsFragment = new ReportsFragment();
-        reportsFragment.setArguments(arguments);
-
-        return reportsFragment;
-    }
-
-    @NonNull
-    public static ReportsFragment createForEnrollments(@NonNull String teiUid, @NonNull String teName) {
-        Bundle arguments = new Bundle();
-        arguments.putString(ARG_ENTITY_UID, teiUid);
-        arguments.putString(ARG_ENTITY_TYPE, ReportViewModel.TYPE_ENROLLMENTS);
-        arguments.putString(ARG_ENTITY_NAME, teName);
+        arguments.putParcelable(ARG_ARGUMENTS, reportsArguments);
 
         ReportsFragment reportsFragment = new ReportsFragment();
         reportsFragment.setArguments(arguments);
@@ -81,9 +51,13 @@ public final class ReportsFragment extends BaseFragment
     public void onAttach(Context context) {
         super.onAttach(context);
 
+        ReportsArguments reportsArguments = getArguments().getParcelable(ARG_ARGUMENTS);
+        if (reportsArguments == null) {
+            throw new IllegalStateException("ReportsArguments must be supplied");
+        }
+
         ((DhisApp) context.getApplicationContext()).userComponent()
-                .plus(new ReportsModule(getActivity(), getEntityUid(),
-                        getEntityType(), getEntityName()))
+                .plus(new ReportsModule(getActivity(), reportsArguments))
                 .inject(this);
     }
 
@@ -125,18 +99,6 @@ public final class ReportsFragment extends BaseFragment
         reportsAdapter = new ReportsAdapter(getContext(), this);
         recyclerViewReports.setLayoutManager(layoutManager);
         recyclerViewReports.setAdapter(reportsAdapter);
-    }
-
-    private String getEntityUid() {
-        return getArguments().getString(ARG_ENTITY_UID, "");
-    }
-
-    private String getEntityType() {
-        return getArguments().getString(ARG_ENTITY_TYPE, "");
-    }
-
-    private String getEntityName() {
-        return getArguments().getString(ARG_ENTITY_NAME, "");
     }
 
     @Override

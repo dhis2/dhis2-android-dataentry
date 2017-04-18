@@ -20,53 +20,45 @@ public final class ReportsModule {
     private final Activity activity;
 
     @NonNull
-    private final String entityUid;
+    private final ReportsArguments reportsArguments;
 
-    @NonNull
-    private final String entityType;
-
-    @NonNull
-    private final String entityName;
-
-    ReportsModule(@NonNull Activity activity, @NonNull String entityUid,
-            @NonNull String entityType, @NonNull String entityName) {
+    ReportsModule(@NonNull Activity activity, @NonNull ReportsArguments reportsArguments) {
         this.activity = activity;
-        this.entityUid = entityUid;
-        this.entityType = entityType;
-        this.entityName = entityName;
+        this.reportsArguments = reportsArguments;
     }
 
     @PerActivity
     @Provides
     ReportsNavigator navigator() {
-        switch (entityType) {
-            case ReportViewModel.TYPE_TEIS:
-                return new TeisNavigatorImpl(activity, entityName);
-            case ReportViewModel.TYPE_EVENTS:
+        switch (reportsArguments.entityType()) {
+            case ReportsArguments.TYPE_TEIS:
+                return new TeisNavigatorImpl(activity, reportsArguments.entityName());
+            case ReportsArguments.TYPE_EVENTS:
                 return new SingleEventsNavigatorImpl();
-            case ReportViewModel.TYPE_ENROLLMENTS:
+            case ReportsArguments.TYPE_ENROLLMENTS:
                 return new EnrollmentsNavigatorImpl();
             default:
-                throw new IllegalArgumentException("Unsupported entity type: " + entityType);
+                throw new IllegalArgumentException("Unsupported entity type: "
+                        + reportsArguments.entityType());
         }
     }
 
     @PerActivity
     @Provides
     ReportsRepository reportsRepository(BriteDatabase briteDatabase) {
-        switch (entityType) {
-            case ReportViewModel.TYPE_TEIS:
-                return new TeisRepositoryImpl(briteDatabase, entityUid);
-            case ReportViewModel.TYPE_EVENTS:
-                return new SingleEventsRepositoryImpl(briteDatabase, entityUid);
-            case ReportViewModel.TYPE_ENROLLMENTS:
-                return new EnrollmentsRepositoryImpl(briteDatabase, entityUid,
+        switch (reportsArguments.entityType()) {
+            case ReportsArguments.TYPE_TEIS:
+                return new TeisRepositoryImpl(briteDatabase, reportsArguments.entityUid());
+            case ReportsArguments.TYPE_EVENTS:
+                return new SingleEventsRepositoryImpl(briteDatabase, reportsArguments.entityUid());
+            case ReportsArguments.TYPE_ENROLLMENTS:
+                return new EnrollmentsRepositoryImpl(briteDatabase, reportsArguments.entityUid(),
                         activity.getString(R.string.report_view_program),
                         activity.getString(R.string.report_view_enrollment_status),
-                        activity.getString(R.string.report_view_enrollment_date)
-                );
+                        activity.getString(R.string.report_view_enrollment_date));
             default:
-                throw new IllegalArgumentException("Unsupported entity type: " + entityType);
+                throw new IllegalArgumentException("Unsupported entity type: "
+                        + reportsArguments.entityType());
         }
     }
 

@@ -77,9 +77,8 @@ public class ReportsViewTests {
 
         // launch new activity for events
         Intent intent = new Intent();
-        intent.putExtra(ReportsActivity.ARG_ENTITY_UID, "program_uid");
-        intent.putExtra(ReportsActivity.ARG_ENTITY_NAME, "program_form_name");
-        intent.putExtra(ReportsActivity.ARG_ENTITY_TYPE, ReportViewModel.TYPE_EVENTS);
+        intent.putExtra(ReportsActivity.ARG_ARGUMENTS,
+                ReportsArguments.createForEvents("program_uid", "program_form_name"));
         activityTestRule.launchActivity(intent);
     }
 
