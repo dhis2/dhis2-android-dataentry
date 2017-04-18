@@ -70,7 +70,7 @@ public class SingleEventsRepositoryIntegrationTests {
                 BaseIdentifiableObject.DATE_FORMAT.parse("2017-04-06T00:05:57.495"),
                 "organisation_unit_uid", "program_uid", "ps_uid", State.SYNCED));
 
-        reportsRepository = new SingleEventsRepositoryImpl(databaseRule.briteDatabase(), "program_uid");
+        reportsRepository = new SingleEventsRepositoryImpl(databaseRule.briteDatabase());
     }
 
     @Test
@@ -103,7 +103,8 @@ public class SingleEventsRepositoryIntegrationTests {
                 ReportViewModel.Status.SYNCED, Arrays.asList("data_element_one_name: data_value_four",
                         "data_element_two_name: data_value_five"));
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver
+                = reportsRepository.reports("program_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -143,7 +144,8 @@ public class SingleEventsRepositoryIntegrationTests {
                 ReportViewModel.Status.SYNCED, Arrays.asList("data_element_one_name: data_value_four",
                         "data_element_two_name: data_value_five"));
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("program_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -221,7 +223,8 @@ public class SingleEventsRepositoryIntegrationTests {
         ReportViewModel reportViewModelTwo = ReportViewModel.create("event_two",
                 ReportViewModel.Status.SYNCED, Arrays.asList(""));
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("program_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -248,7 +251,8 @@ public class SingleEventsRepositoryIntegrationTests {
         ReportViewModel reportViewModelTwo = ReportViewModel.create("event_two",
                 ReportViewModel.Status.SYNCED, Arrays.asList(""));
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("program_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -277,7 +281,8 @@ public class SingleEventsRepositoryIntegrationTests {
                 ReportViewModel.Status.SYNCED, Arrays.asList(
                         "data_element_one_name: -", "data_element_two_name: -"));
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("program_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -301,7 +306,8 @@ public class SingleEventsRepositoryIntegrationTests {
 
         db.delete(EventModel.TABLE, null, null);
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("program_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();

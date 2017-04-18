@@ -48,11 +48,11 @@ public final class ReportsModule {
     ReportsRepository reportsRepository(BriteDatabase briteDatabase) {
         switch (reportsArguments.entityType()) {
             case ReportsArguments.TYPE_TEIS:
-                return new TeisRepositoryImpl(briteDatabase, reportsArguments.entityUid());
+                return new TeisRepositoryImpl(briteDatabase);
             case ReportsArguments.TYPE_EVENTS:
-                return new SingleEventsRepositoryImpl(briteDatabase, reportsArguments.entityUid());
+                return new SingleEventsRepositoryImpl(briteDatabase);
             case ReportsArguments.TYPE_ENROLLMENTS:
-                return new EnrollmentsRepositoryImpl(briteDatabase, reportsArguments.entityUid(),
+                return new EnrollmentsRepositoryImpl(briteDatabase,
                         activity.getString(R.string.report_view_program),
                         activity.getString(R.string.report_view_enrollment_status),
                         activity.getString(R.string.report_view_enrollment_date));
@@ -66,6 +66,6 @@ public final class ReportsModule {
     @Provides
     ReportsPresenter reportsPresenter(ReportsRepository reportsRepository,
             SchedulerProvider schedulerProvider) {
-        return new ReportsPresenterImpl(schedulerProvider, reportsRepository);
+        return new ReportsPresenterImpl(reportsArguments, schedulerProvider, reportsRepository);
     }
 }

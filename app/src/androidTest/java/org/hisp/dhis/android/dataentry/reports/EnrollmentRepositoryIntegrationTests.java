@@ -97,7 +97,7 @@ public class EnrollmentRepositoryIntegrationTests {
                 teav("tei_uid", "tea_uid_two", "teav_two"));
 
         reportsRepository = new EnrollmentsRepositoryImpl(databaseRule.briteDatabase(),
-                "tei_uid", "program", "enrollment_status", "enrollment_date_label");
+                "program", "enrollment_status", "enrollment_date_label");
     }
 
     @Test
@@ -127,7 +127,8 @@ public class EnrollmentRepositoryIntegrationTests {
                 ReportViewModel.Status.SYNCED, Arrays.asList("program: -",
                         "enrollment_date_label: 2014-05-01", "", "enrollment_status: ACTIVE"));
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("tei_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -154,7 +155,8 @@ public class EnrollmentRepositoryIntegrationTests {
                 ReportViewModel.Status.SYNCED, Arrays.asList("program: -",
                         "enrollment_date_label: 2014-05-01", "", "enrollment_status: ACTIVE"));
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("tei_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -208,7 +210,8 @@ public class EnrollmentRepositoryIntegrationTests {
                 ReportViewModel.Status.SYNCED, Arrays.asList("program: -",
                         "enrollment_date_label: 2014-05-01", "", "enrollment_status: ACTIVE"));
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("tei_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -237,7 +240,8 @@ public class EnrollmentRepositoryIntegrationTests {
                         "tea_one: -", "enrollment_status: COMPLETED"));
 
         // insert enrollment which doesn't have any visible PTEAs
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver
+                = reportsRepository.reports("tei_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -265,7 +269,8 @@ public class EnrollmentRepositoryIntegrationTests {
                         "enrollment_date_label: 2014-05-01", "", "enrollment_status: ACTIVE"));
 
         // insert enrollment which doesn't have any visible PTEAs
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("tei_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -279,7 +284,8 @@ public class EnrollmentRepositoryIntegrationTests {
 
     @Test
     public void reportsWithoutAnyDataShouldPropagateEmptyList() {
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("tei_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();

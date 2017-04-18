@@ -53,9 +53,6 @@ final class EnrollmentsRepositoryImpl implements ReportsRepository {
     private final BriteDatabase briteDatabase;
 
     @NonNull
-    private final String teiUid;
-
-    @NonNull
     private final String promptProgram;
 
     @NonNull
@@ -64,11 +61,10 @@ final class EnrollmentsRepositoryImpl implements ReportsRepository {
     @NonNull
     private final String promptEnrollmentDateLabel;
 
-    EnrollmentsRepositoryImpl(@NonNull BriteDatabase briteDatabase, @NonNull String teiUid,
+    EnrollmentsRepositoryImpl(@NonNull BriteDatabase briteDatabase,
             @NonNull String promptProgram, @NonNull String promptEnrollmentStatus,
             @NonNull String promptEnrollmentDateLabel) {
         this.briteDatabase = briteDatabase;
-        this.teiUid = teiUid;
         this.promptProgram = promptProgram;
         this.promptEnrollmentStatus = promptEnrollmentStatus;
         this.promptEnrollmentDateLabel = promptEnrollmentDateLabel;
@@ -76,8 +72,8 @@ final class EnrollmentsRepositoryImpl implements ReportsRepository {
 
     @NonNull
     @Override
-    public Flowable<List<ReportViewModel>> reports() {
-        return toV2Flowable(briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENTS, teiUid)
+    public Flowable<List<ReportViewModel>> reports(@NonNull String uid) {
+        return toV2Flowable(briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENTS, uid)
                 .mapToList(this::mapToPairs))
                 .switchMap(rows -> Flowable.fromIterable(rows)
                         .groupBy(Pair::val0, Pair::val1)

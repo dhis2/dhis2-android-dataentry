@@ -46,20 +46,16 @@ final class TeisRepositoryImpl implements ReportsRepository {
             "  InstanceAttribute.formOrder ASC;";
 
     @NonNull
-    private final String trackedEntityUid;
-
-    @NonNull
     private final BriteDatabase briteDatabase;
 
-    TeisRepositoryImpl(@NonNull BriteDatabase briteDatabase, @NonNull String trackedEntityUid) {
+    TeisRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
-        this.trackedEntityUid = trackedEntityUid;
     }
 
     @NonNull
     @Override
-    public Flowable<List<ReportViewModel>> reports() {
-        return toV2Flowable(briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEIS, trackedEntityUid)
+    public Flowable<List<ReportViewModel>> reports(@NonNull String uid) {
+        return toV2Flowable(briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEIS, uid)
                 .mapToList(this::mapToPairs))
                 .switchMap(rows -> Flowable.fromIterable(rows)
                         .groupBy(Pair::val0, Pair::val1)

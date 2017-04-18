@@ -45,20 +45,16 @@ final class SingleEventsRepositoryImpl implements ReportsRepository {
             "  Event.uid ASC;";
 
     @NonNull
-    private final String programUid;
-
-    @NonNull
     private final BriteDatabase briteDatabase;
 
-    SingleEventsRepositoryImpl(@NonNull BriteDatabase briteDatabase, @NonNull String programUid) {
+    SingleEventsRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
-        this.programUid = programUid;
     }
 
     @NonNull
     @Override
-    public Flowable<List<ReportViewModel>> reports() {
-        return toV2Flowable(briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENTS, programUid)
+    public Flowable<List<ReportViewModel>> reports(@NonNull String uid) {
+        return toV2Flowable(briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENTS, uid)
                 .mapToList(this::mapToPairs))
                 .switchMap(rows -> Flowable.fromIterable(rows)
                         .groupBy(Pair::val0, Pair::val1)

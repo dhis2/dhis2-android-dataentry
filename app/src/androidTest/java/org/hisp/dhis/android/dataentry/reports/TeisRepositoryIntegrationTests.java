@@ -64,7 +64,7 @@ public class TeisRepositoryIntegrationTests {
         db.insert(TrackedEntityAttributeModel.TABLE, null, tea("tea_uid_two", "tea_two"));
         db.insert(TrackedEntityAttributeModel.TABLE, null, tea("tea_uid_three", "tea_three"));
 
-        reportsRepository = new TeisRepositoryImpl(databaseRule.briteDatabase(), "tracked_entity_uid");
+        reportsRepository = new TeisRepositoryImpl(databaseRule.briteDatabase());
     }
 
     @Test
@@ -106,7 +106,8 @@ public class TeisRepositoryIntegrationTests {
         ReportViewModel reportViewModelOne = ReportViewModel.create("tei_uid_one",
                 ReportViewModel.Status.SYNCED, Arrays.asList("tea_two: teav_two", "tea_one: teav_one"));
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("tracked_entity_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -145,7 +146,8 @@ public class TeisRepositoryIntegrationTests {
         transaction.markSuccessful();
         transaction.close();
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("tracked_entity_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -201,7 +203,8 @@ public class TeisRepositoryIntegrationTests {
         db.insert(ProgramTrackedEntityAttributeModel.TABLE, null,
                 ptea("ptea_uid_three", "program_uid", "tea_uid_three", false, 0));
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("tracked_entity_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -250,7 +253,8 @@ public class TeisRepositoryIntegrationTests {
         ReportViewModel reportViewModelOne = ReportViewModel.create("tei_uid_one",
                 ReportViewModel.Status.SYNCED, Arrays.asList(""));
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("tracked_entity_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -291,7 +295,8 @@ public class TeisRepositoryIntegrationTests {
         ReportViewModel reportViewModelOne = ReportViewModel.create("tei_uid_one",
                 ReportViewModel.Status.SYNCED, Arrays.asList("tea_two: -", "tea_one: -"));
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("tracked_entity_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -332,7 +337,8 @@ public class TeisRepositoryIntegrationTests {
         ReportViewModel reportViewModelOne = ReportViewModel.create("tei_uid_one",
                 ReportViewModel.Status.SYNCED, Arrays.asList(""));
 
-        TestSubscriber<List<ReportViewModel>> testObserver = reportsRepository.reports().test();
+        TestSubscriber<List<ReportViewModel>> testObserver =
+                reportsRepository.reports("tracked_entity_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
