@@ -88,6 +88,7 @@ ext {
             sqlbrite         : "1.1.1",
             autovalue        : "1.3",
             autovaluecursor  : "1.0.1",
+            autovalueparcel  : "0.2.5",
 
             // test dependencies
             equalsverifier   : "2.2.1",
