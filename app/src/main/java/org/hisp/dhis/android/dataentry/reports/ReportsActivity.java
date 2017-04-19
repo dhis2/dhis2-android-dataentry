@@ -13,16 +13,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ReportsActivity extends AppCompatActivity {
-    static final String ARG_FORM_UID = "arg:formUid";
-    static final String ARG_FORM_NAME = "arg:formName";
+    static final String ARG_ARGUMENTS = "arg:arguments";
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    public static Intent create(@NonNull Activity activity, @NonNull String programUid, @NonNull String programName) {
+    @NonNull
+    public static Intent createIntent(@NonNull Activity activity,
+            @NonNull ReportsArguments reportsArguments) {
         Intent intent = new Intent(activity, ReportsActivity.class);
-        intent.putExtra(ARG_FORM_UID, programUid);
-        intent.putExtra(ARG_FORM_NAME, programName);
+        intent.putExtra(ARG_ARGUMENTS, reportsArguments);
         return intent;
     }
 
@@ -32,22 +32,16 @@ public class ReportsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reports);
         ButterKnife.bind(this);
 
-        setUpToolbar();
+        ReportsArguments reportsArguments = getIntent()
+                .getExtras().getParcelable(ARG_ARGUMENTS);
 
+        if (reportsArguments == null) {
+            throw new IllegalStateException("ReportsArguments must be supplied.");
+        }
+
+        toolbar.setTitle(reportsArguments.entityName());
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, ReportsFragment.create(getFormUid()))
+                .replace(R.id.content_frame, ReportsFragment.create(reportsArguments))
                 .commitNow();
-    }
-
-    private void setUpToolbar() {
-        toolbar.setTitle(getFormName());
-    }
-
-    private String getFormUid() {
-        return getIntent().getExtras().getString(ARG_FORM_UID, "");
-    }
-
-    private String getFormName() {
-        return getIntent().getExtras().getString(ARG_FORM_NAME, "");
     }
 }

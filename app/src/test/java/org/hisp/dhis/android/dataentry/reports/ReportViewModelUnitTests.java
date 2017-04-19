@@ -7,6 +7,7 @@ import org.junit.runners.JUnit4;
 import java.util.Arrays;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -17,7 +18,9 @@ public class ReportViewModelUnitTests {
     @Test
     public void equalsHasCodeShouldConformToContract() {
         EqualsVerifier.forClass(ReportViewModel.create("test_id", ReportViewModel.Status.SYNCED,
-                Arrays.asList("test_label_one", "test_label_two")).getClass());
+                Arrays.asList("test_label_one", "test_label_two")).getClass())
+                .suppress(Warning.NULL_FIELDS)
+                .verify();
     }
 
     @Test

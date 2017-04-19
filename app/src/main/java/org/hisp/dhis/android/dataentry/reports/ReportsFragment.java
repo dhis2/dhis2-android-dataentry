@@ -21,19 +21,25 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import io.reactivex.functions.Consumer;
 
-public final class ReportsFragment extends BaseFragment implements ReportsView {
-    private static final String ARG_FORM_UID = "arg:formUid";
+public final class ReportsFragment extends BaseFragment
+        implements ReportsView, ReportsAdapter.OnReportViewModelClickListener {
+    private static final String ARG_ARGUMENTS = "arg:arguments";
 
     @BindView(R.id.recyclerview_reports)
     RecyclerView recyclerViewReports;
 
     @Inject
     ReportsPresenter presenter;
+
+    @Inject
+    ReportsNavigator reportsNavigator;
+
     ReportsAdapter reportsAdapter;
 
-    public static ReportsFragment create(@NonNull String formUid) {
+    @NonNull
+    public static ReportsFragment create(@NonNull ReportsArguments reportsArguments) {
         Bundle arguments = new Bundle();
-        arguments.putString(ARG_FORM_UID, formUid);
+        arguments.putParcelable(ARG_ARGUMENTS, reportsArguments);
 
         ReportsFragment reportsFragment = new ReportsFragment();
         reportsFragment.setArguments(arguments);
@@ -45,9 +51,13 @@ public final class ReportsFragment extends BaseFragment implements ReportsView {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        // inject dependencies
+        ReportsArguments reportsArguments = getArguments().getParcelable(ARG_ARGUMENTS);
+        if (reportsArguments == null) {
+            throw new IllegalStateException("ReportsArguments must be supplied");
+        }
+
         ((DhisApp) context.getApplicationContext()).userComponent()
-                .plus(new ReportsModule(getFormUid()))
+                .plus(new ReportsModule(getActivity(), reportsArguments))
                 .inject(this);
     }
 
@@ -86,12 +96,13 @@ public final class ReportsFragment extends BaseFragment implements ReportsView {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-        reportsAdapter = new ReportsAdapter(getContext());
+        reportsAdapter = new ReportsAdapter(getContext(), this);
         recyclerViewReports.setLayoutManager(layoutManager);
         recyclerViewReports.setAdapter(reportsAdapter);
     }
 
-    private String getFormUid() {
-        return getArguments().getString(ARG_FORM_UID, "");
+    @Override
+    public void onClick(@NonNull ReportViewModel reportViewModel) {
+        reportsNavigator.navigateTo(reportViewModel.id());
     }
 }
