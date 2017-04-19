@@ -13,13 +13,24 @@
         <item name="android:windowBackground">@color/color_primary</item>
     </style>
 
+    <style name="AppTheme.SelectableItemBackground" parent="AppTheme">
+        <!-- General properties -->
+        <item name="android:windowBackground">?attr/selectableItemBackground</item>
+    </style>
+
+    <!-- This theme is used to avoid overdraw in cases where the root element of a layout file has a
+         background set from both the theme and the layout. Do not use this theme for Activity
+         layout files, as a black background will appear when content view is loading. -->
+    <style name="AppTheme.NoWindowBackground" parent="AppTheme">
+        <item name="android:windowBackground">@null</item>
+    </style>
+
     <!-- BEGIN SECTION: Lists -->
     <!-- All specifications are as per https://material.google.com/components/lists.html#lists-specs -->
     <!-- Two line list -->
-    <style name="TwoLineListItem">
+    <style name="TwoLineListItem" parent="AppTheme.SelectableItemBackground">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">72dp</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:gravity">center_vertical</item>
     </style>
 
@@ -29,10 +40,9 @@
     </style>
 
     <!-- Single line list with icon and text -->
-    <style name="SingleLineListItemWithIconAndText">
+    <style name="SingleLineListItemWithIconAndText" parent="AppTheme.SelectableItemBackground">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dp</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:gravity">start|center_vertical</item>
     </style>
     <!-- END SECTION: Lists -->
