@@ -25,6 +25,9 @@ import static android.text.InputType.TYPE_CLASS_TEXT;
 
 final public class FormItemViewModelFactoryImpl implements FormItemViewModelFactory {
 
+    private final static String EMPTY_STRING = "";
+    private final static String TRUE = "TRUE";
+
     private final EditTextHintCache editTextHintCache;
 
     public FormItemViewModelFactoryImpl(@NonNull EditTextHintCache editTextHintCache) {
@@ -50,8 +53,6 @@ final public class FormItemViewModelFactoryImpl implements FormItemViewModelFact
         } else if (isEditTextType(valueType)) {
             return createEditTextViewModel(uid, label, mandatory, value, valueType);
         } else {
-            final String EMPTY_STRING = "";
-            final String TRUE = "TRUE";
             switch (valueType) {
                 case BOOLEAN:
                     Boolean boolValue;
