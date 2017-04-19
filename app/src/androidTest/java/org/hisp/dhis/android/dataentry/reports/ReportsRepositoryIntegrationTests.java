@@ -44,7 +44,7 @@ public class ReportsRepositoryIntegrationTests {
     @Before
     public void setUp() throws Exception {
         SQLiteDatabase database = databaseRule.database();
-        
+
         ContentValues orgUnit = new ContentValues();
         orgUnit.put(OrganisationUnitModel.Columns.UID, "organisation_unit_uid");
         database.insert(OrganisationUnitModel.TABLE, null, orgUnit);
@@ -185,7 +185,7 @@ public class ReportsRepositoryIntegrationTests {
     }
 
     private static ContentValues programStageDataElement(String uid, String programStage,
-            String dataElement, boolean showInReports) {
+                                                         String dataElement, boolean showInReports) {
         ContentValues programStageDataElement = new ContentValues();
         programStageDataElement.put(ProgramStageDataElementModel.Columns.UID, uid);
         programStageDataElement.put(ProgramStageDataElementModel.Columns.PROGRAM_STAGE, programStage);
@@ -195,7 +195,7 @@ public class ReportsRepositoryIntegrationTests {
     }
 
     private static ContentValues event(String uid, Date created, String orgUnit,
-            String program, String programStage, State state) {
+                                       String program, String programStage, State state) {
         ContentValues event = new ContentValues();
         event.put(EventModel.Columns.UID, uid);
         event.put(EventModel.Columns.CREATED,
