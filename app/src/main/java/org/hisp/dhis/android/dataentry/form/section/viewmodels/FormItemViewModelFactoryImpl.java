@@ -55,13 +55,7 @@ final public class FormItemViewModelFactoryImpl implements FormItemViewModelFact
         } else {
             switch (valueType) {
                 case BOOLEAN:
-                    Boolean boolValue;
-                    if (value == null || value.equals(EMPTY_STRING)) {
-                        boolValue = null;
-                    } else {
-                        boolValue = TRUE.equals(value.toUpperCase(Locale.ENGLISH));
-                    }
-                    return RadioButtonViewModel.create(uid, label, mandatory, boolValue);
+                    return createRadioButtonViewModel(uid, label, mandatory, value);
                 case TRUE_ONLY:
                     return CheckBoxViewModel.create(uid, label, mandatory,
                             value != null && TRUE.equals(value.toUpperCase(Locale.ENGLISH)));
@@ -100,6 +94,18 @@ final public class FormItemViewModelFactoryImpl implements FormItemViewModelFact
             }
         }
 
+    }
+
+    @NonNull
+    private FormItemViewModel createRadioButtonViewModel(@NonNull String uid, @NonNull String label,
+                                                         @NonNull Boolean mandatory, @Nullable String value) {
+        Boolean boolValue;
+        if (value == null || value.equals(EMPTY_STRING)) {
+            boolValue = null;
+        } else {
+            boolValue = TRUE.equals(value.toUpperCase(Locale.ENGLISH));
+        }
+        return RadioButtonViewModel.create(uid, label, mandatory, boolValue);
     }
 
     @NonNull
