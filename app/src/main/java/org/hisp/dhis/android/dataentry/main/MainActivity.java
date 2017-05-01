@@ -74,8 +74,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
         setupToolbar();
 
-        // setupSyncServiceAlarm();
-
         drawerLayout.addDrawerListener(this);
         drawerLayout.addDrawerListener(drawerToggle);
         navigationView.setNavigationItemSelectedListener(this);
