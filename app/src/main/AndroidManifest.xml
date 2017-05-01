@@ -30,8 +30,7 @@
         <service
             android:name=".service.SyncService"
             android:enabled="true"
-            android:exported="false"
-            />
+            android:exported="false"/>
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="${fabricKey}"/>
