@@ -2,6 +2,7 @@ package org.hisp.dhis.android.dataentry.main.home;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -41,10 +42,16 @@ public class HomeFragment extends BaseFragment implements HomeView {
     private AlertDialog alertDialog;
     private Unbinder unbinder;
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        getUserComponent().plus(new HomeModule()).inject(this);
+    }
+
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         unbinder = ButterKnife.bind(this, view);
         return view;
@@ -67,16 +74,6 @@ public class HomeFragment extends BaseFragment implements HomeView {
                 ContextCompat.getDrawable(getActivity(), R.drawable.divider)));
     }
 
-    private void setupSwipeRefreshLayout() {
-        swipeRefreshLayout.setColorSchemeResources(R.color.color_primary);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        getUserComponent().plus(new HomeModule()).inject(this);
-    }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -89,8 +86,11 @@ public class HomeFragment extends BaseFragment implements HomeView {
         homePresenter.onAttach(this);
     }
 
-    private void setupAdapter() {
+    private void setupSwipeRefreshLayout() {
+        swipeRefreshLayout.setColorSchemeResources(R.color.color_primary);
+    }
 
+    private void setupAdapter() {
         homeViewModelAdapter = new HomeViewModelAdapter(getActivity());
         homeViewModelAdapter.setOnHomeItemClickListener(homeEntity -> {
             /*if (homeEntity.getType() == HomeViewModel.Type.TRACKED_ENTITY) {
