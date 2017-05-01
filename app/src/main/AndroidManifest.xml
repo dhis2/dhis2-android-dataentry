@@ -32,14 +32,6 @@
             android:enabled="true"
             android:exported="false"
             />
-        <!-- TODO: make and add boot receiver : -->
-        <receiver
-            android:name=".main.MainActivity$BootReceiver"
-            android:enabled="false">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="${fabricKey}"/>
