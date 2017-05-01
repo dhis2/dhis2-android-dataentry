@@ -2,7 +2,6 @@ package org.hisp.dhis.android.dataentry.server;
 
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.dataentry.commons.dagger.PerServer;
 import org.hisp.dhis.android.dataentry.user.UserComponent;
 import org.hisp.dhis.android.dataentry.user.UserModule;
@@ -10,15 +9,12 @@ import org.hisp.dhis.android.dataentry.user.UserModule;
 import dagger.Subcomponent;
 
 @PerServer
-@Subcomponent(
-        modules = {
-                ServerModule.class
-        }
-)
+@Subcomponent(modules = ServerModule.class)
 public interface ServerComponent {
+
+    @NonNull
     UserManager userManager();
 
-    D2 sdk();
-
+    @NonNull
     UserComponent plus(@NonNull UserModule userModule);
 }
