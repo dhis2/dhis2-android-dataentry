@@ -12,7 +12,7 @@
         android:contentDescription="@string/icon_description"
         android:paddingLeft="@dimen/keyline_default"
         android:paddingStart="@dimen/keyline_default"
-        tools:src="@drawable/ic_border_all_black"/>
+        tools:src="@drawable/ic_border_all"/>
     
     <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
         android:id="@+id/text"
