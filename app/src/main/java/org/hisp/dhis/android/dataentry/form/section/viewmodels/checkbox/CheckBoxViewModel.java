@@ -14,8 +14,8 @@ public abstract class CheckBoxViewModel extends EditableViewModel {
     public abstract Boolean value();
 
     @NonNull
-    public static CheckBoxViewModel create(@NonNull String uid, @NonNull String label, @NonNull Boolean mandatory,
-                                           @NonNull Boolean value) {
+    public static CheckBoxViewModel create(@NonNull String uid, @NonNull String label,
+            @NonNull Boolean mandatory, @NonNull Boolean value) {
         return new AutoValue_CheckBoxViewModel(uid, label, mandatory, value);
     }
 }

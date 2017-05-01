@@ -1,6 +1,5 @@
 package org.hisp.dhis.android.dataentry.form.section;
 
-
 import android.content.Context;
 import android.util.SparseArray;
 

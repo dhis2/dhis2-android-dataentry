@@ -14,8 +14,7 @@ public abstract class TextViewModel extends FormItemViewModel {
 
     @NonNull
     public static TextViewModel create(@NonNull String uid,
-                                       @NonNull String label,
-                                       @NonNull String value) {
+            @NonNull String label, @NonNull String value) {
         return new AutoValue_TextViewModel(uid, label, value);
     }
 }

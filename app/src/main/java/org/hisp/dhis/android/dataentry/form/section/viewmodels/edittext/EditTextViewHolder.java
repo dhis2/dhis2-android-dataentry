@@ -41,7 +41,7 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
     private final CompositeDisposable valueChangeObservers;
     private final Observable<Pair<String, String>> valueChangeObservable;
 
-    EditTextViewHolder(View itemView) {
+    EditTextViewHolder(@NonNull View itemView) {
         super(itemView);
 
         ButterKnife.bind(this, itemView);
@@ -58,7 +58,8 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
         editText.setOnFocusChangeListener((v, hasFocus) -> toggleHintVisibility(hasFocus));
     }
 
-    void update(EditTextViewModel viewModel, DisposableObserver<Pair<String, String>> onValueChangeObserver) {
+    void update(@NonNull EditTextViewModel viewModel,
+            @NonNull DisposableObserver<Pair<String, String>> onValueChangeObserver) {
 
         this.viewModel = viewModel;
 
@@ -94,7 +95,7 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
     }
 
     @NonNull
-    private Pair<String, String> pairUidAndValue(TextViewAfterTextChangeEvent textChangeEvent) {
+    private Pair<String, String> pairUidAndValue(@NonNull TextViewAfterTextChangeEvent textChangeEvent) {
         String value;
         if (textChangeEvent.editable() == null) {
             value = "";

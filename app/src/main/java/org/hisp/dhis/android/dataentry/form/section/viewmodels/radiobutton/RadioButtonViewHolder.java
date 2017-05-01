@@ -21,10 +21,9 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
 
 final class RadioButtonViewHolder extends RecyclerView.ViewHolder {
-
-    static final String EMPTY_FIELD = "";
-    static final String TRUE = "true";
-    static final String FALSE = "false";
+    private static final String EMPTY_FIELD = "";
+    private static final String TRUE = "true";
+    private static final String FALSE = "false";
 
     // Views
     @BindView(R.id.textview_row_label)
@@ -44,7 +43,7 @@ final class RadioButtonViewHolder extends RecyclerView.ViewHolder {
     private final CompositeDisposable valueChangeObservers;
     private final Observable<Pair<String, String>> valueChangeObservable;
 
-    RadioButtonViewHolder(View itemView) {
+    RadioButtonViewHolder(@NonNull View itemView) {
         super(itemView);
 
         ButterKnife.bind(this, itemView);
@@ -58,7 +57,8 @@ final class RadioButtonViewHolder extends RecyclerView.ViewHolder {
                 .map(this::pairUidAndValue);
     }
 
-    void update(RadioButtonViewModel viewModel, DisposableObserver<Pair<String, String>> onValueChangeObserver) {
+    void update(@NonNull RadioButtonViewModel viewModel,
+            @NonNull DisposableObserver<Pair<String, String>> onValueChangeObserver) {
         this.viewModel = viewModel;
 
         valueChangeObservers.clear();

@@ -13,11 +13,8 @@ public abstract class OptionSetViewModel extends EditableTextViewModel {
     public abstract String hint();
 
     @NonNull
-    public static OptionSetViewModel create(@NonNull String uid,
-                                            @NonNull String label,
-                                            @NonNull Boolean mandatory,
-                                            @NonNull String value,
-                                            @NonNull String hint) {
+    public static OptionSetViewModel create(@NonNull String uid, @NonNull String label,
+            @NonNull Boolean mandatory, @NonNull String value, @NonNull String hint) {
         return new AutoValue_OptionSetViewModel(uid, label, mandatory, value, hint);
     }
 }

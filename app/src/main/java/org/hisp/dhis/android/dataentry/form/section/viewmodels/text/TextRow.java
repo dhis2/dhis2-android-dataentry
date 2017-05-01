@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dataentry.form.section.viewmodels.text;
 
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -12,13 +13,13 @@ import io.reactivex.observers.DisposableObserver;
 public class TextRow implements Row<TextViewHolder, TextViewModel> {
 
     @Override
-    public TextViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent) {
+    public TextViewHolder onCreateViewHolder(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
         return new TextViewHolder(inflater.inflate(R.layout.recyclerview_row_textview, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(TextViewHolder viewHolder, TextViewModel viewModel,
-                                 DisposableObserver<Pair<String, String>> onValueChangeObserver) {
+    public void onBindViewHolder(@NonNull TextViewHolder viewHolder, @NonNull TextViewModel viewModel,
+            @NonNull DisposableObserver<Pair<String, String>> onValueChangeObserver) {
         viewHolder.update(viewModel);
     }
 }

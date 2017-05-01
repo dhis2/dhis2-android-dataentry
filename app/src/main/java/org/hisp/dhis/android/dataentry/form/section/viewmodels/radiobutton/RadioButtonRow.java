@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dataentry.form.section.viewmodels.radiobutton;
 
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -12,13 +13,13 @@ import io.reactivex.observers.DisposableObserver;
 final public class RadioButtonRow implements Row<RadioButtonViewHolder, RadioButtonViewModel> {
 
     @Override
-    public RadioButtonViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent) {
+    public RadioButtonViewHolder onCreateViewHolder(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
         return new RadioButtonViewHolder(inflater.inflate(R.layout.recyclerview_row_radiobutton, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(RadioButtonViewHolder viewHolder, RadioButtonViewModel viewModel,
-                                 DisposableObserver<Pair<String, String>> onValueChangeObserver) {
+    public void onBindViewHolder(@NonNull RadioButtonViewHolder viewHolder, @NonNull RadioButtonViewModel viewModel,
+            @NonNull DisposableObserver<Pair<String, String>> onValueChangeObserver) {
         viewHolder.update(viewModel, onValueChangeObserver);
     }
 }

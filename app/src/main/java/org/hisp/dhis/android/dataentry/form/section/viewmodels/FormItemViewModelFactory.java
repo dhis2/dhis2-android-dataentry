@@ -11,6 +11,6 @@ public interface FormItemViewModelFactory {
     FormItemViewModel fromCursor(Cursor cursor);
 
     FormItemViewModel create(@NonNull String uid, @NonNull String label, @NonNull Boolean mandatory,
-                             @NonNull String value, @NonNull ValueType valueType,
-                             @Nullable String optionSet);
+            @NonNull String value, @NonNull ValueType valueType,
+            @Nullable String optionSet);
 }

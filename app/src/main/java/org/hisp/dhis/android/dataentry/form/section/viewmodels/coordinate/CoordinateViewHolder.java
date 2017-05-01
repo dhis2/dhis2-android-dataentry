@@ -43,8 +43,7 @@ class CoordinateViewHolder extends RecyclerView.ViewHolder {
     private final CompositeDisposable valueChangeObservers;
     private final Observable<Pair<String, String>> valueChangeObservable;
 
-    CoordinateViewHolder(View itemView) {
-
+    CoordinateViewHolder(@NonNull View itemView) {
         super(itemView);
 
         ButterKnife.bind(this, itemView);
@@ -60,7 +59,8 @@ class CoordinateViewHolder extends RecyclerView.ViewHolder {
         latitudeEditText.setOnFocusChangeListener(this::toggleHintVisibility);
     }
 
-    void update(CoordinateViewModel viewModel, DisposableObserver<Pair<String, String>> valueChangeObserver) {
+    void update(@NonNull CoordinateViewModel viewModel,
+            @NonNull DisposableObserver<Pair<String, String>> valueChangeObserver) {
         this.viewModel = viewModel;
 
         valueChangeObservers.clear();
@@ -74,13 +74,12 @@ class CoordinateViewHolder extends RecyclerView.ViewHolder {
     }
 
     @NonNull
-    private Pair<String, String> pairUidAndValue(TextViewAfterTextChangeEvent textViewAfterTextChangeEvent) {
+    private Pair<String, String> pairUidAndValue(@NonNull TextViewAfterTextChangeEvent textViewAfterTextChangeEvent) {
         String coordinateString = textViewAfterTextChangeEvent.editable() + "," + longitudeEditText.getText();
         return Pair.create(viewModel.uid(), coordinateString);
     }
 
-    private void toggleHintVisibility(View view, Boolean hasFocus) {
-
+    private void toggleHintVisibility(@NonNull View view, @NonNull Boolean hasFocus) {
         if (view.getId() == R.id.coordinate_row_latitude_textinputlayout) {
             if (hasFocus || isEmpty(latitudeEditText.getText())) {
                 latitudeInputLayout.setHintEnabled(true);

@@ -14,10 +14,8 @@ public abstract class RadioButtonViewModel extends EditableViewModel {
     public abstract Boolean value();
 
     @NonNull
-    public static RadioButtonViewModel create(@NonNull String uid,
-                                              @NonNull String label,
-                                              @NonNull Boolean mandatory,
-                                              @Nullable Boolean value) {
+    public static RadioButtonViewModel create(@NonNull String uid, @NonNull String label,
+            @NonNull Boolean mandatory, @Nullable Boolean value) {
         return new AutoValue_RadioButtonViewModel(uid, label, mandatory, value);
     }
 }

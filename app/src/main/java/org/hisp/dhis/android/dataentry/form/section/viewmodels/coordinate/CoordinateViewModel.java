@@ -16,10 +16,8 @@ public abstract class CoordinateViewModel extends EditableViewModel {
     public abstract String longitude();
 
     @NonNull
-    public static CoordinateViewModel create(@NonNull String uid,
-                                             @NonNull String label,
-                                             @NonNull Boolean mandatory,
-                                             @NonNull String latitude, @NonNull String longitude) {
+    public static CoordinateViewModel create(@NonNull String uid, @NonNull String label,
+            @NonNull Boolean mandatory, @NonNull String latitude, @NonNull String longitude) {
         return new AutoValue_CoordinateViewModel(uid, label, mandatory, latitude, longitude);
     }
 }

@@ -10,8 +10,8 @@ import org.hisp.dhis.android.dataentry.form.section.viewmodels.EditableTextViewM
 public abstract class DateViewModel extends EditableTextViewModel {
 
     @NonNull
-    public static DateViewModel create(@NonNull String uid, @NonNull String label, @NonNull Boolean mandatory,
-                                       @NonNull String value) {
+    public static DateViewModel create(@NonNull String uid, @NonNull String label,
+            @NonNull Boolean mandatory, @NonNull String value) {
         return new AutoValue_DateViewModel(uid, label, mandatory, value);
     }
 }

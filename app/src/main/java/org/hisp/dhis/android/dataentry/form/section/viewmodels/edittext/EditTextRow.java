@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dataentry.form.section.viewmodels.edittext;
 
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -16,14 +17,16 @@ public final class EditTextRow implements Row<EditTextViewHolder, EditTextViewMo
     }
 
     @Override
-    public EditTextViewHolder onCreateViewHolder(LayoutInflater inflater, ViewGroup parent) {
+    public EditTextViewHolder onCreateViewHolder(
+            @NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
         return new EditTextViewHolder(inflater.inflate(
                 R.layout.recyclerview_row_edittext, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(EditTextViewHolder viewHolder, EditTextViewModel viewModel,
-                                 DisposableObserver<Pair<String, String>> onValueChangeObserver) {
+    public void onBindViewHolder(@NonNull EditTextViewHolder viewHolder,
+            @NonNull EditTextViewModel viewModel,
+            @NonNull DisposableObserver<Pair<String, String>> onValueChangeObserver) {
         viewHolder.update(viewModel, onValueChangeObserver);
     }
 

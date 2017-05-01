@@ -18,7 +18,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
 
 final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
-
     private static final String TRUE = "true";
     private static final String EMPTY_FIELD = "";
 
@@ -33,7 +32,7 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
     private final CompositeDisposable valueChangeObservers;
     private final Observable<Pair<String, String>> valueChangeObservable;
 
-    CheckBoxViewHolder(View itemView) {
+    CheckBoxViewHolder(@NonNull View itemView) {
         super(itemView);
 
         ButterKnife.bind(this, itemView);
@@ -48,7 +47,8 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
         itemView.setOnClickListener(v -> checkBox.setChecked(!checkBox.isChecked()));
     }
 
-    void update(CheckBoxViewModel viewModel, DisposableObserver<Pair<String, String>> observer) {
+    void update(@NonNull CheckBoxViewModel viewModel,
+            @NonNull DisposableObserver<Pair<String, String>> observer) {
 
         valueChangeObservers.clear();
 

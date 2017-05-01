@@ -42,8 +42,8 @@ final public class FormItemViewModelFactoryImpl implements FormItemViewModelFact
 
     @Override
     public FormItemViewModel create(@NonNull String uid, @NonNull String label, @NonNull Boolean mandatory,
-                                    @Nullable String value, @NonNull ValueType valueType,
-                                    @Nullable String optionSet) {
+            @Nullable String value, @NonNull ValueType valueType,
+            @Nullable String optionSet) {
 
         Preconditions.isNull(valueType, "Unsupported ValueType: 'NULL' for: " + label + " - " + uid);
 
@@ -98,7 +98,7 @@ final public class FormItemViewModelFactoryImpl implements FormItemViewModelFact
 
     @NonNull
     private FormItemViewModel createRadioButtonViewModel(@NonNull String uid, @NonNull String label,
-                                                         @NonNull Boolean mandatory, @Nullable String value) {
+            @NonNull Boolean mandatory, @Nullable String value) {
         Boolean boolValue;
         if (value == null || value.equals(EMPTY_STRING)) {
             boolValue = null;
@@ -110,7 +110,7 @@ final public class FormItemViewModelFactoryImpl implements FormItemViewModelFact
 
     @NonNull
     private FormItemViewModel createCoordinateViewModel(@NonNull String uid, @NonNull String label,
-                                                        @NonNull Boolean mandatory, @Nullable String value) {
+            @NonNull Boolean mandatory, @Nullable String value) {
         Double latitude;
         Double longitude;
 
@@ -136,7 +136,7 @@ final public class FormItemViewModelFactoryImpl implements FormItemViewModelFact
 
     @NonNull
     private EditTextViewModel createEditTextViewModel(String uid, String label, Boolean mandatory, String value,
-                                                      ValueType valueType) {
+            ValueType valueType) {
         // default values
         EditTextViewModel formViewModel = null;
         Integer inputType = TYPE_CLASS_TEXT;

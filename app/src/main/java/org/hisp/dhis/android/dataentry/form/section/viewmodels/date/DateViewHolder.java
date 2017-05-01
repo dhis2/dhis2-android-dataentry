@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dataentry.form.section.viewmodels.date;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -41,7 +42,7 @@ final class DateViewHolder extends RecyclerView.ViewHolder {
     private final Observable<Pair<String, String>> onValueChangeObservable;
     private final CompositeDisposable onValueChangeObservers;
 
-    DateViewHolder(View itemView, FragmentManager fragmentManager) {
+    DateViewHolder(@NonNull View itemView, @NonNull FragmentManager fragmentManager) {
         super(itemView);
 
         ButterKnife.bind(this, itemView);
@@ -51,12 +52,14 @@ final class DateViewHolder extends RecyclerView.ViewHolder {
 
         onValueChangeObservers = new CompositeDisposable();
 
-        onValueChangeObservable = RxTextView.afterTextChangeEvents(editText).map(textViewAfterTextChangeEvent ->
-                Pair.create(viewModel.uid(), textViewAfterTextChangeEvent.editable().toString()));
+        onValueChangeObservable = RxTextView.afterTextChangeEvents(editText)
+                .map(textViewAfterTextChangeEvent -> Pair.create(viewModel.uid(),
+                        textViewAfterTextChangeEvent.editable().toString()));
 
     }
 
-    void update(DateViewModel viewModel, DisposableObserver<Pair<String, String>> onValueChangeObserver) {
+    void update(@NonNull DateViewModel viewModel,
+            @NonNull DisposableObserver<Pair<String, String>> onValueChangeObserver) {
         onValueChangeObservers.clear();
 
         this.viewModel = viewModel;
@@ -66,7 +69,8 @@ final class DateViewHolder extends RecyclerView.ViewHolder {
         onValueChangeObservers.add(onValueChangeObservable.share().subscribeWith(onValueChangeObserver));
     }
 
-    @SuppressWarnings("PMD.UnusedFormalParameter") // datepicker parameter is unused because of method reference
+    @SuppressWarnings("PMD.UnusedFormalParameter")
+    // datepicker parameter is unused because of method reference
     private void setDate(DatePicker datePicker, int year, int month, int dayOfMonth) {
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);

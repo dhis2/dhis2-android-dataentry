@@ -28,13 +28,9 @@ public abstract class EditTextViewModel extends EditableTextViewModel {
 
     @NonNull
     public static EditTextViewModel create(@NonNull String uid,
-                                           @NonNull String label,
-                                           @NonNull Boolean mandatory,
-                                           @NonNull String value,
-                                           @NonNull Integer inputType,
-                                           @NonNull Integer maxLines,
-                                           @NonNull String hint,
-                                           @NonNull List<InputFilter> inputFilters) {
+            @NonNull String label, @NonNull Boolean mandatory, @NonNull String value,
+            @NonNull Integer inputType, @NonNull Integer maxLines, @NonNull String hint,
+            @NonNull List<InputFilter> inputFilters) {
         return new AutoValue_EditTextViewModel(uid, label, mandatory, value, inputType, maxLines, hint,
                 safeUnmodifiableList(inputFilters));
     }

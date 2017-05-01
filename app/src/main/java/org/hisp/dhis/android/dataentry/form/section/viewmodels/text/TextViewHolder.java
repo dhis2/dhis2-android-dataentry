@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dataentry.form.section.viewmodels.text;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -17,12 +18,12 @@ public class TextViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.textview_row_textview)
     TextView value;
 
-    public TextViewHolder(View itemView) {
+    public TextViewHolder(@NonNull View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
     }
 
-    void update(TextViewModel viewModel) {
+    void update(@NonNull TextViewModel viewModel) {
         label.setText(viewModel.label());
         value.setText(viewModel.value());
     }

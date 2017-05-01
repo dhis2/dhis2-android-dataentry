@@ -29,7 +29,7 @@ public class DatePickerDialogFragment extends DialogFragment {
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@NonNull Bundle savedInstanceState) {
         Calendar calendar = Calendar.getInstance();
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 getContext(), onDateSetListener,
@@ -44,7 +44,7 @@ public class DatePickerDialogFragment extends DialogFragment {
         return datePickerDialog;
     }
 
-    public void show(FragmentManager fragmentManager) {
+    public void show(@NonNull FragmentManager fragmentManager) {
         show(fragmentManager, TAG);
     }
 
