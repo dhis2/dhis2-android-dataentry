@@ -78,52 +78,46 @@ public class SyncService extends Service implements SyncView {
     }
 
     @NonNull
-    private Consumer<Void> renderInProgress() {
-        return (none) -> {
-            String title = getString(R.string.sync_title);
-            String text = getString(R.string.sync_text);
+    private void renderInProgress() {
+        String title = getString(R.string.sync_title);
+        String text = getString(R.string.sync_text);
 
-            Notification notification = new NotificationCompat.Builder(getApplicationContext())
-                    .setSmallIcon(R.drawable.ic_sync_black)
-                    .setContentTitle(title)
-                    .setContentText(text)
-                    .setProgress(0, 0, true)
-                    .setOngoing(true)
-                    .build();
+        Notification notification = new NotificationCompat.Builder(getApplicationContext())
+                .setSmallIcon(R.drawable.ic_sync_black)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setProgress(0, 0, true)
+                .setOngoing(true)
+                .build();
 
-            notificationManager.notify(NOTIFICATION_ID, notification);
-        };
+        notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
     @NonNull
-    private Consumer<Void> renderSuccess() {
-        return (none) -> {
-            String title = getString(R.string.sync_complete_title);
-            String text = getString(R.string.sync_complete_text);
+    private void renderSuccess() {
+        String title = getString(R.string.sync_complete_title);
+        String text = getString(R.string.sync_complete_text);
 
-            Notification notification = new NotificationCompat.Builder(getApplicationContext())
-                    .setSmallIcon(R.drawable.ic_sync_black)
-                    .setContentTitle(title)
-                    .setContentText(text)
-                    .build();
+        Notification notification = new NotificationCompat.Builder(getApplicationContext())
+                .setSmallIcon(R.drawable.ic_sync_black)
+                .setContentTitle(title)
+                .setContentText(text)
+                .build();
 
-            notificationManager.notify(NOTIFICATION_ID, notification);
-        };
+        notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
     @NonNull
-    private Consumer<String> renderFailure() {
-        return (none) -> {
-            String title = getString(R.string.sync_error_title);
-            String text = getString(R.string.sync_error_text);
+    private void renderFailure() {
+        String title = getString(R.string.sync_error_title);
+        String text = getString(R.string.sync_error_text);
 
-            Notification notification = new NotificationCompat.Builder(getApplicationContext())
-                    .setSmallIcon(R.drawable.ic_sync_error_black)
-                    .setContentTitle(title)
-                    .setContentText(text)
-                    .build();
+        Notification notification = new NotificationCompat.Builder(getApplicationContext())
+                .setSmallIcon(R.drawable.ic_sync_error_black)
+                .setContentTitle(title)
+                .setContentText(text)
+                .build();
 
-            notificationManager.notify(NOTIFICATION_ID, notification);
-        };
+        notificationManager.notify(NOTIFICATION_ID, notification);
     }
 }
