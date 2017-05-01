@@ -4,8 +4,7 @@
 
     <item
         android:id="@+id/action_sync"
-        android:icon="@drawable/ic_sync_white_24dp"
+        android:icon="@drawable/ic_sync_white"
         android:title="@string/sync_now"
-        app:showAsAction="ifRoom"
-        />
+        app:showAsAction="ifRoom" />
 </menu>
