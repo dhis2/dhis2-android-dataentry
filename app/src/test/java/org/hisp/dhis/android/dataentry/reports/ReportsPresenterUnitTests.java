@@ -30,6 +30,9 @@ public class ReportsPresenterUnitTests {
     @Mock
     private ReportsRepository reportsRepository;
 
+    @Mock
+    private ReportsArguments reportsArguments;
+
     @Captor
     private ArgumentCaptor<List<ReportViewModel>> reportViewModelsCaptor;
 
@@ -41,8 +44,11 @@ public class ReportsPresenterUnitTests {
         MockitoAnnotations.initMocks(this);
 
         reportsPublisher = PublishProcessor.create();
-        reportsPresenter = new ReportsPresenterImpl(new MockSchedulersProvider(), reportsRepository);
-        when(reportsRepository.reports()).thenReturn(reportsPublisher);
+        reportsPresenter = new ReportsPresenterImpl(reportsArguments,
+                new MockSchedulersProvider(), reportsRepository);
+
+        when(reportsArguments.entityUid()).thenReturn("test_entity_uid");
+        when(reportsRepository.reports("test_entity_uid")).thenReturn(reportsPublisher);
     }
 
     @Test
@@ -59,7 +65,7 @@ public class ReportsPresenterUnitTests {
         reportsPublisher.onNext(reports);
 
         verify(reportsView.renderReportViewModels()).accept(reportViewModelsCaptor.capture());
-        verify(reportsRepository).reports();
+        verify(reportsRepository).reports("test_entity_uid");
         assertThat(reportViewModelsCaptor.getValue()).isEqualTo(reports);
     }
 
@@ -68,13 +74,13 @@ public class ReportsPresenterUnitTests {
         List<ReportViewModel> reportsOne = Arrays.asList(ReportViewModel.create("test_report_id_one",
                 ReportViewModel.Status.SYNCED, Arrays.asList("test_label_one", "test_label_two")));
 
-        when(reportsRepository.reports()).thenReturn(reportsPublisher);
+        when(reportsRepository.reports("test_entity_uid")).thenReturn(reportsPublisher);
 
         reportsPresenter.onAttach(reportsView);
         reportsPublisher.onNext(reportsOne);
 
         verify(reportsView.renderReportViewModels()).accept(reportViewModelsCaptor.capture());
-        verify(reportsRepository).reports();
+        verify(reportsRepository).reports("test_entity_uid");
         assertThat(reportViewModelsCaptor.getValue()).isEqualTo(reportsOne);
 
         List<ReportViewModel> reportsTwo = Arrays.asList(ReportViewModel.create("test_report_id_two",
@@ -83,7 +89,7 @@ public class ReportsPresenterUnitTests {
         reportsPublisher.onNext(reportsTwo);
 
         verify(reportsView.renderReportViewModels(), times(2)).accept(reportViewModelsCaptor.capture());
-        verify(reportsRepository).reports();
+        verify(reportsRepository).reports("test_entity_uid");
         assertThat(reportViewModelsCaptor.getValue()).isEqualTo(reportsTwo);
     }
 

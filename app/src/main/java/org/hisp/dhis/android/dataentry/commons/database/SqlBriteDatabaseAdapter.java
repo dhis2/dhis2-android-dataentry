@@ -9,15 +9,13 @@ import com.squareup.sqlbrite.BriteDatabase;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
 import org.hisp.dhis.android.core.data.database.Transaction;
 
-import timber.log.Timber;
-
 import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
 class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     private final BriteDatabase sqlBriteDatabase;
 
     SqlBriteDatabaseAdapter(@NonNull BriteDatabase briteDatabase) {
-        isNull(briteDatabase, "Brite");
+        isNull(briteDatabase, "briteDatabase == null");
         sqlBriteDatabase = briteDatabase;
     }
 
@@ -48,7 +46,7 @@ class SqlBriteDatabaseAdapter implements DatabaseAdapter {
 
     @Override
     public int delete(String table) {
-        return delete(table, null, null);
+        return sqlBriteDatabase.delete(table, null);
     }
 
     @Override

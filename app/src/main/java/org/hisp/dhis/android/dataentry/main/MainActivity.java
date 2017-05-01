@@ -76,7 +76,9 @@ public class MainActivity extends AppCompatActivity implements MainView,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        ((Components) getApplicationContext()).userComponent().plus(new MainModule()).inject(this);
+        ((Components) getApplicationContext()).userComponent()
+                .plus(new MainModule())
+                .inject(this);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -246,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
         Log.d(TAG, "setupSyncServiceAlarm() called");
         SharedPreferences sharedPreferences = getSharedPreferences("Sync", MODE_PRIVATE);
         boolean alreadyEnabled = sharedPreferences.getBoolean(SYNC_SERVICE_ENABLED, false);
-        if ( !alreadyEnabled) {
+        if (!alreadyEnabled) {
             Log.d(TAG, "setupSyncServiceAlarm: Enabling!");
             Context context = getApplicationContext();
             Intent syncIntent = new Intent(context, SyncService.class);
@@ -272,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
             if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
 
                 Log.d("BootReceiver", "Received: " + intent.getAction());
-                Intent syncIntent =   new Intent(context, SyncService.class);
+                Intent syncIntent = new Intent(context, SyncService.class);
                 syncIntent.setAction("ACTION_SYNC");
 
                 PendingIntent pendingAlarmIntent = PendingIntent.getService(context, ALARM_ID, syncIntent, 0);

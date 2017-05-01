@@ -11,6 +11,9 @@ import timber.log.Timber;
 final class ReportsPresenterImpl implements ReportsPresenter {
 
     @NonNull
+    private final ReportsArguments reportsArguments;
+
+    @NonNull
     private final SchedulerProvider schedulerProvider;
 
     @NonNull
@@ -19,8 +22,10 @@ final class ReportsPresenterImpl implements ReportsPresenter {
     @NonNull
     private final CompositeDisposable compositeDisposable;
 
-    ReportsPresenterImpl(@NonNull SchedulerProvider provider,
+    ReportsPresenterImpl(@NonNull ReportsArguments reportsArguments,
+            @NonNull SchedulerProvider provider,
             @NonNull ReportsRepository reportsRepository) {
+        this.reportsArguments = reportsArguments;
         this.schedulerProvider = provider;
         this.reportsRepository = reportsRepository;
         this.compositeDisposable = new CompositeDisposable();
@@ -30,7 +35,7 @@ final class ReportsPresenterImpl implements ReportsPresenter {
     public void onAttach(@NonNull View view) {
         if (view instanceof ReportsView) {
             ReportsView reportsView = (ReportsView) view;
-            compositeDisposable.add(reportsRepository.reports()
+            compositeDisposable.add(reportsRepository.reports(reportsArguments.entityUid())
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(reportsView.renderReportViewModels(), Timber::e));

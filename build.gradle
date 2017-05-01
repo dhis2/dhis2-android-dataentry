@@ -71,13 +71,13 @@ ext {
     ]
 
     libraries = [
-            support          : "25.2.0",
+            support          : "25.3.1",
             crashlytics      : "2.6.5",
             paperwork        : "1.2.7",
             dagger           : "2.8",
             timber           : "4.5.0",
             leakcanary       : "1.5",
-            dhis2sdk         : "0.1.1-SNAPSHOT",
+            dhis2sdk         : "0.1.6-SNAPSHOT",
             rxjava           : "2.0.4",
             rxandroid        : "2.0.1",
             rxbindings       : "2.0.0",
@@ -88,6 +88,7 @@ ext {
             sqlbrite         : "1.1.1",
             autovalue        : "1.3",
             autovaluecursor  : "1.0.1",
+            autovalueparcel  : "0.2.5",
 
             // test dependencies
             equalsverifier   : "2.2.1",

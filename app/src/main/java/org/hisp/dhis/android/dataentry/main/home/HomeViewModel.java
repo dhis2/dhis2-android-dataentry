@@ -7,12 +7,10 @@ import com.gabrielittner.auto.value.cursor.ColumnAdapter;
 import com.gabrielittner.auto.value.cursor.ColumnName;
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.core.common.BaseIdentifiableObjectModel;
-
 @AutoValue
 abstract class HomeViewModel {
 
-    static class Columns extends BaseIdentifiableObjectModel.Columns {
+    static class Columns {
         static final String UID = "uid";
         static final String DISPLAY_NAME = "displayName";
         static final String HOME_VIEW_MODEL_TYPE = "homeViewModelType";
