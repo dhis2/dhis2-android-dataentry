@@ -67,18 +67,15 @@
 
     <!-- SyncService strings: -->
     <string name="sync_now">Synchronise now</string>
+    <string name="sync_text">Synchronising with server</string>
+    <string name="sync_title">Syncing now</string>
 
-    <string name="syncing_title">Syncing now</string>
-    <string name="syncing_text">Synchronising with server.</string>
-
-    <string name="sync_complete_title">Sync complete</string>
-    <string name="sync_complete_text"></string>
+    <string name="sync_complete_title">Finished</string>
+    <string name="sync_complete_text">Sync complete</string>
 
     <string name="sync_error_title">Sync Error</string>
     <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
 
-    <string name="fatal_sync_error_title">Fatal Sync Error</string>
-    <string name="fatal_sync_error_text">An error has occurred during synchronisation.</string>
-
-    <string name="sync_notification_id">42</string>
+    <!--<string name="fatal_sync_error_title">Fatal Sync Error</string>-->
+    <!--<string name="fatal_sync_error_text">An error has occurred during synchronisation.</string>-->
 </resources>
