@@ -28,7 +28,7 @@
             android:name=".reports.ReportsActivity"/>
 
         <service
-            android:name=".commons.SyncService"
+            android:name=".service.SyncService"
             android:enabled="true"
             android:exported="false"
             />
