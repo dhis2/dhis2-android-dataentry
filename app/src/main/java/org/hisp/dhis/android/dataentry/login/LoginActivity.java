@@ -134,8 +134,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             R.id.edittext_server_url, R.id.edittext_username, R.id.edittext_password
     })
     public void onTextChanged() {
-        loginButton.setEnabled(!isEmpty(serverUrl.getText()) &&
-                !isEmpty(username.getText()) && !isEmpty(password.getText()));
+        loginButton.setEnabled(
+                !isEmpty(serverUrl.getText()) &&
+                        !isEmpty(username.getText()) &&
+                        !isEmpty(password.getText())
+        );
     }
 
     @OnClick(value = {

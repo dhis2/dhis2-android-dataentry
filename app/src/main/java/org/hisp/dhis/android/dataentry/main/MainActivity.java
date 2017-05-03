@@ -15,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.DummyFragment;
 import org.hisp.dhis.android.dataentry.main.home.HomeFragment;
+import org.hisp.dhis.android.dataentry.service.SyncService;
 
 import javax.inject.Inject;
 
@@ -63,7 +65,9 @@ public class MainActivity extends AppCompatActivity implements MainView,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        ((Components) getApplicationContext()).userComponent().plus(new MainModule()).inject(this);
+        ((Components) getApplicationContext()).userComponent()
+                .plus(new MainModule())
+                .inject(this);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -91,6 +95,12 @@ public class MainActivity extends AppCompatActivity implements MainView,
             onNavigationItemSelected(navigationView.getMenu()
                     .findItem(R.id.drawer_item_home));
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void setupToolbar() {
@@ -194,7 +204,11 @@ public class MainActivity extends AppCompatActivity implements MainView,
     public boolean onOptionsItemSelected(MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
+        } else if (item.getItemId() == R.id.action_sync) {
+            startService(new Intent(getApplicationContext(), SyncService.class));
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
 
     }
@@ -202,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+
         // Sync the toggle state after onRestoreInstanceState has occurred.
         drawerToggle.syncState();
     }
@@ -209,8 +224,8 @@ public class MainActivity extends AppCompatActivity implements MainView,
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+
         // Pass any configuration change to the drawer toggles
         drawerToggle.onConfigurationChanged(newConfig);
     }
-
 }
