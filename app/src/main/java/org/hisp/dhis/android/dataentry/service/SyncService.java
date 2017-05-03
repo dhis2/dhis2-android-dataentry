@@ -41,8 +41,8 @@ public class SyncService extends Service implements SyncView {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         syncPresenter.onDetach();
+        super.onDestroy();
     }
 
     @Override
@@ -69,7 +69,7 @@ public class SyncService extends Service implements SyncView {
                 renderInProgress();
             } else if (result.isSuccess()) {
                 renderSuccess();
-            } else if (!result.isSuccess()) {
+            } else if (!result.isSuccess()) { // NOPMD
                 renderFailure();
             } else {
                 throw new IllegalStateException();
