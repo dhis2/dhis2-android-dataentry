@@ -9,13 +9,12 @@ import org.hisp.dhis.android.dataentry.user.UserModule;
 import dagger.Subcomponent;
 
 @PerServer
-@Subcomponent(
-        modules = {
-                ServerModule.class
-        }
-)
+@Subcomponent(modules = ServerModule.class)
 public interface ServerComponent {
+
+    @NonNull
     UserManager userManager();
 
+    @NonNull
     UserComponent plus(@NonNull UserModule userModule);
 }

@@ -77,7 +77,7 @@ class HomeViewModelAdapter extends RecyclerView.Adapter {
         @BindView(R.id.icon)
         ImageView icon;
 
-        private HomeViewModel homeViewModel;
+        HomeViewModel homeViewModel;
 
         HomeViewModelViewHolder(View itemView) {
             super(itemView);
@@ -93,7 +93,7 @@ class HomeViewModelAdapter extends RecyclerView.Adapter {
             if (homeViewModel.type() == HomeViewModel.Type.TRACKED_ENTITY) {
                 iconResourceId = R.drawable.ic_widgets_black;
             } else {
-                iconResourceId = R.drawable.ic_border_all_black;
+                iconResourceId = R.drawable.ic_border_all;
             }
 
             icon.setImageResource(iconResourceId);

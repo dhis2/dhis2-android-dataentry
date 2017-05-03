@@ -15,7 +15,7 @@ class SqlBriteDatabaseAdapter implements DatabaseAdapter {
     private final BriteDatabase sqlBriteDatabase;
 
     SqlBriteDatabaseAdapter(@NonNull BriteDatabase briteDatabase) {
-        isNull(briteDatabase, "Brite");
+        isNull(briteDatabase, "briteDatabase == null");
         sqlBriteDatabase = briteDatabase;
     }
 

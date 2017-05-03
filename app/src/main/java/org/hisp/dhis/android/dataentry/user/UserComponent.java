@@ -9,13 +9,13 @@ import org.hisp.dhis.android.dataentry.main.home.HomeComponent;
 import org.hisp.dhis.android.dataentry.main.home.HomeModule;
 import org.hisp.dhis.android.dataentry.reports.ReportsComponent;
 import org.hisp.dhis.android.dataentry.reports.ReportsModule;
+import org.hisp.dhis.android.dataentry.service.ServiceComponent;
+import org.hisp.dhis.android.dataentry.service.ServiceModule;
 
 import dagger.Subcomponent;
 
 @PerUser
-@Subcomponent(modules = {
-        UserModule.class
-})
+@Subcomponent(modules = UserModule.class)
 public interface UserComponent {
 
     @NonNull
@@ -26,4 +26,7 @@ public interface UserComponent {
 
     @NonNull
     ReportsComponent plus(@NonNull ReportsModule reportsModule);
+
+    @NonNull
+    ServiceComponent plus(@NonNull ServiceModule serviceModule);
 }
