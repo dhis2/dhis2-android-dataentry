@@ -74,7 +74,7 @@ public class SyncPresenterTests {
         syncPresenter.sync();
 
         verify(d2).syncMetaData();
-        verify(syncView.render(), times(2)).accept(syncResultCaptor.capture());
+        verify(syncView.update(), times(2)).accept(syncResultCaptor.capture());
         assertThat(syncResultCaptor.getAllValues().get(0)).isEqualTo(SyncResult.progress());
         assertThat(syncResultCaptor.getAllValues().get(1)).isEqualTo(SyncResult.success());
     }
@@ -88,7 +88,7 @@ public class SyncPresenterTests {
         syncPresenter.sync();
 
         verify(d2).syncMetaData();
-        verify(syncView.render(), times(2)).accept(syncResultCaptor.capture());
+        verify(syncView.update(), times(2)).accept(syncResultCaptor.capture());
         assertThat(syncResultCaptor.getAllValues().get(0)).isEqualTo(SyncResult.progress());
         assertThat(syncResultCaptor.getAllValues().get(1)).isEqualTo(SyncResult.failure("oops"));
     }
@@ -105,6 +105,6 @@ public class SyncPresenterTests {
         // trigger sync, view should not be invoked in any way
         syncPresenter.sync();
 
-        verify(syncView, never()).render();
+        verify(syncView, never()).update();
     }
 }

@@ -9,5 +9,5 @@ import io.reactivex.functions.Consumer;
 interface SyncView extends View {
 
     @NonNull
-    Consumer<SyncResult> render();
+    Consumer<SyncResult> update();
 }

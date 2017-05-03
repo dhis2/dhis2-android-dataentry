@@ -62,62 +62,38 @@ public class SyncService extends Service implements SyncView {
 
     @NonNull
     @Override
-    public Consumer<SyncResult> render() {
+    public Consumer<SyncResult> update() {
         return result -> {
+            Notification notification;
             syncResult = result;
+
             if (result.inProgress()) {
-                renderInProgress();
+                notification = new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.ic_sync_black)
+                        .setContentTitle(getString(R.string.sync_title))
+                        .setContentText(getString(R.string.sync_text))
+                        .setProgress(0, 0, true)
+                        .setOngoing(true)
+                        .build();
+
             } else if (result.isSuccess()) {
-                renderSuccess();
+                notification = new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.ic_sync_black)
+                        .setContentTitle(getString(R.string.sync_complete_title))
+                        .setContentText(getString(R.string.sync_complete_text))
+                        .build();
+
             } else if (!result.isSuccess()) { // NOPMD
-                renderFailure();
+                notification = new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.ic_sync_error_black)
+                        .setContentTitle(getString(R.string.sync_error_title))
+                        .setContentText(getString(R.string.sync_error_text))
+                        .build();
+
             } else {
                 throw new IllegalStateException();
             }
+            notificationManager.notify(NOTIFICATION_ID, notification);
         };
-    }
-
-    @NonNull
-    private void renderInProgress() {
-        String title = getString(R.string.sync_title);
-        String text = getString(R.string.sync_text);
-
-        Notification notification = new NotificationCompat.Builder(getApplicationContext())
-                .setSmallIcon(R.drawable.ic_sync_black)
-                .setContentTitle(title)
-                .setContentText(text)
-                .setProgress(0, 0, true)
-                .setOngoing(true)
-                .build();
-
-        notificationManager.notify(NOTIFICATION_ID, notification);
-    }
-
-    @NonNull
-    private void renderSuccess() {
-        String title = getString(R.string.sync_complete_title);
-        String text = getString(R.string.sync_complete_text);
-
-        Notification notification = new NotificationCompat.Builder(getApplicationContext())
-                .setSmallIcon(R.drawable.ic_sync_black)
-                .setContentTitle(title)
-                .setContentText(text)
-                .build();
-
-        notificationManager.notify(NOTIFICATION_ID, notification);
-    }
-
-    @NonNull
-    private void renderFailure() {
-        String title = getString(R.string.sync_error_title);
-        String text = getString(R.string.sync_error_text);
-
-        Notification notification = new NotificationCompat.Builder(getApplicationContext())
-                .setSmallIcon(R.drawable.ic_sync_error_black)
-                .setContentTitle(title)
-                .setContentText(text)
-                .build();
-
-        notificationManager.notify(NOTIFICATION_ID, notification);
     }
 }
