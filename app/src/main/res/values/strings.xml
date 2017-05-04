@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
-
     <string name="app_name">dhis2-android-dataentry</string>
 
     <!-- LoginActivity  -->
@@ -26,6 +24,11 @@
     <string name="drawer_item_synchronized">Synchronized: %s</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+
+    <!-- ReportsActivity -->
+    <string name="report_view_program">Program</string>
+    <string name="report_view_enrollment_status">Status</string>
+    <string name="report_view_enrollment_date">Enrollment date</string>
 
     <!-- Common dialogs -->
     <string name="option_confirm">OK</string>
@@ -69,4 +72,17 @@
 
     <string name="icon_description">Icon</string>
 
+    <!-- SyncService strings: -->
+    <string name="sync_now">Synchronise now</string>
+    <string name="sync_text">Synchronising with server</string>
+    <string name="sync_title">Syncing now</string>
+
+    <string name="sync_complete_title">Finished</string>
+    <string name="sync_complete_text">Sync complete</string>
+
+    <string name="sync_error_title">Sync Error</string>
+    <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
+
+    <!--<string name="fatal_sync_error_title">Fatal Sync Error</string>-->
+    <!--<string name="fatal_sync_error_text">An error has occurred during synchronisation.</string>-->
 </resources>

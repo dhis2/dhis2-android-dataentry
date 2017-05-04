@@ -9,5 +9,5 @@ import io.reactivex.Flowable;
 interface ReportsRepository {
 
     @NonNull
-    Flowable<List<ReportViewModel>> reports();
+    Flowable<List<ReportViewModel>> reports(@NonNull String uid);
 }

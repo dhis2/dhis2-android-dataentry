@@ -3,6 +3,7 @@ package org.hisp.dhis.android.dataentry.reports;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
@@ -33,15 +34,19 @@ class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
     @NonNull
     private final List<ReportViewModel> reportViewModels;
 
-    ReportsAdapter(@NonNull Context context) {
+    @NonNull
+    private final OnReportViewModelClickListener onClickListener;
+
+    ReportsAdapter(@NonNull Context context, @NonNull OnReportViewModelClickListener onClickListener) {
         this.layoutInflater = LayoutInflater.from(context);
+        this.onClickListener = onClickListener;
         this.reportViewModels = new ArrayList<>();
     }
 
     @Override
     public ReportViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ReportViewHolder(layoutInflater.inflate(
-                R.layout.recyclerview_report_item, parent, false));
+                R.layout.recyclerview_report_item, parent, false), onClickListener);
     }
 
     @Override
@@ -58,14 +63,20 @@ class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
         reportViewModels.clear();
         reportViewModels.addAll(reports);
 
-        // ToDo: improve performance of RecyclerView
         notifyDataSetChanged();
+    }
+
+    interface OnReportViewModelClickListener {
+        void onClick(@NonNull ReportViewModel reportViewModel);
     }
 
     static class ReportViewHolder extends RecyclerView.ViewHolder {
 
 //        @BindView(R.id.container_status_icon)
 //        View containerStatus;
+
+        @BindView(R.id.layout_report_item)
+        View layoutReportItem;
 
         @BindView(R.id.circleview_status_background)
         CircleView circleViewStatus;
@@ -79,6 +90,7 @@ class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
         @BindView(R.id.button_delete)
         ImageButton buttonDelete;
 
+        final InternalClickListener internalClickListener;
         final Drawable drawableSent;
         final Drawable drawableOffline;
         final Drawable drawableError;
@@ -87,12 +99,13 @@ class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
         final int colorOffline;
         final int colorError;
 
-        ReportViewHolder(View itemView) {
+        ReportViewHolder(View itemView, OnReportViewModelClickListener outerClickListener) {
             super(itemView);
             ButterKnife.bind(this, itemView);
 
             Context context = itemView.getContext();
 
+            internalClickListener = new InternalClickListener(outerClickListener);
             drawableSent = ContextCompat.getDrawable(context, R.drawable.ic_sent);
             drawableError = ContextCompat.getDrawable(context, R.drawable.ic_error);
             drawableOffline = ContextCompat.getDrawable(context, R.drawable.ic_offline);
@@ -104,6 +117,10 @@ class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
 
         void update(@NonNull ReportViewModel reportViewModel) {
             textViewValues.setText(getLabels(reportViewModel));
+            internalClickListener.update(reportViewModel);
+
+            // update reference to callback
+            layoutReportItem.setOnClickListener(internalClickListener);
 
             // set status
             switch (reportViewModel.status()) {
@@ -133,6 +150,30 @@ class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
 
         private Spanned getLabels(@NonNull ReportViewModel report) {
             return htmlify(report.labels());
+        }
+    }
+
+    private static class InternalClickListener implements View.OnClickListener {
+
+        @NonNull
+        private final OnReportViewModelClickListener outerClickListener;
+
+        @Nullable
+        private ReportViewModel reportViewModel;
+
+        InternalClickListener(@NonNull OnReportViewModelClickListener outerClickListener) {
+            this.outerClickListener = outerClickListener;
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (reportViewModel != null) {
+                outerClickListener.onClick(reportViewModel);
+            }
+        }
+
+        void update(@NonNull ReportViewModel reportViewModel) {
+            this.reportViewModel = reportViewModel;
         }
     }
 }
