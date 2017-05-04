@@ -35,6 +35,11 @@
     </Match>
 
     <Match>
+        <!-- FindBugs complains when a constructor reads a field that has been instantiated by ButterKnife -->
+        <Bug pattern="UR_UNINIT_READ"/>
+    </Match>
+
+    <Match>
         <!-- Since most fields in android components such as activities and fragments
         are instantiated within lifecycle methods (onCreate(), onResume(), etc), this
         rule is triggered even in cases when it is safe to deference variable without
