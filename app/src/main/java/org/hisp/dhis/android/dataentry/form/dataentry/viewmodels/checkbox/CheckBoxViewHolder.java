@@ -18,8 +18,6 @@ import io.reactivex.processors.FlowableProcessor;
 import rx.exceptions.OnErrorNotImplementedException;
 
 final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
-    private static final String TRUE = "true";
-    private static final String EMPTY_FIELD = "";
 
     @BindView(R.id.checkbox_row_checkbox)
     CheckBox checkBox;
@@ -29,6 +27,7 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
 
     private CheckBoxViewModel viewModel;
 
+    @SuppressWarnings("CheckReturnValue")
     CheckBoxViewHolder(@NonNull ViewGroup parent, @NonNull View itemView,
             @NonNull FlowableProcessor<RowAction> processor) {
         super(itemView);
@@ -37,7 +36,7 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
         RxCompoundButton.checkedChanges(checkBox)
                 .skipInitialValue()
                 .takeUntil(RxView.detaches(parent))
-                .map(isChecked -> RowAction.create(viewModel.uid(), isChecked ? TRUE : EMPTY_FIELD))
+                .map(isChecked -> RowAction.create(viewModel.uid(), String.valueOf(isChecked)))
                 .subscribe(action -> processor.onNext(action), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 });
