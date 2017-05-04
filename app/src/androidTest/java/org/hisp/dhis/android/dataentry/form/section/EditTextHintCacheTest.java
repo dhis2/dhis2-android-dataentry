@@ -3,6 +3,7 @@ package org.hisp.dhis.android.dataentry.form.section;
 import android.support.test.InstrumentationRegistry;
 
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.form.dataentry.EditTextHintCacheImpl;
 import org.junit.Before;
 import org.junit.Test;
 
