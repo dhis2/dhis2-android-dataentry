@@ -75,9 +75,9 @@ public class HomeFragment extends BaseFragment implements HomeView {
     private void setupRecyclerView() {
         homeViewModelAdapter = new HomeViewModelAdapter(getActivity());
         homeViewModelAdapter.setOnHomeItemClickListener(homeEntity -> {
-            if (homeEntity.type() == HomeViewModel.Type.PROGRAM) {
-                // todo: start data-entry-fragment
-            }
+//            if (homeEntity.type() == HomeViewModel.Type.PROGRAM) {
+//                // todo: start data-entry-fragment
+//            }
         });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
