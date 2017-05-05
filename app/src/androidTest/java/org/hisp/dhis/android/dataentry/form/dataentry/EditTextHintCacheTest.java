@@ -1,9 +1,8 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels;
+package org.hisp.dhis.android.dataentry.form.dataentry;
 
 import android.support.test.InstrumentationRegistry;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.form.dataentry.EditTextHintCacheImpl;
 import org.junit.Before;
 import org.junit.Test;
 
