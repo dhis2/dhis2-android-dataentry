@@ -50,6 +50,7 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
         setUpRecyclerView();
     }
 
+    @NonNull
     @Override
     public Flowable<RowAction> rowActions() {
         return dataEntryAdapter.asFlowable();

@@ -1,6 +1,14 @@
 package org.hisp.dhis.android.dataentry.form.dataentry;
 
-import org.hisp.dhis.android.dataentry.commons.ui.View;
+import android.support.annotation.NonNull;
 
-public interface DataEntryView extends View {
+import org.hisp.dhis.android.dataentry.commons.ui.View;
+import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.RowAction;
+
+import io.reactivex.Flowable;
+
+interface DataEntryView extends View {
+
+    @NonNull
+    Flowable<RowAction> rowActions();
 }
