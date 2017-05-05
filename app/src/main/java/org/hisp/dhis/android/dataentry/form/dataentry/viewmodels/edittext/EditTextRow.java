@@ -1,32 +1,40 @@
 package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.edittext;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
+import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.FormItemViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.Row;
+import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.RowAction;
 
-import io.reactivex.observers.DisposableObserver;
+import io.reactivex.processors.FlowableProcessor;
 
-public final class EditTextRow implements Row<EditTextViewHolder, EditTextViewModel> {
+public final class EditTextRow implements Row {
 
-    public EditTextRow() {
-        // explicit empty constructor
+    @NonNull
+    private final LayoutInflater inflater;
+
+    @NonNull
+    private final FlowableProcessor<RowAction> processor;
+
+    public EditTextRow(@NonNull LayoutInflater inflater,
+            @NonNull FlowableProcessor<RowAction> processor) {
+        this.inflater = inflater;
+        this.processor = processor;
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreate(@NonNull ViewGroup parent) {
+        return new EditTextViewHolder(parent, inflater.inflate(
+                R.layout.recyclerview_row_edittext, parent, false), processor);
     }
 
     @Override
-    public EditTextViewHolder onCreateViewHolder(
-            @NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        return new EditTextViewHolder(inflater.inflate(
-                R.layout.recyclerview_row_edittext, parent, false));
+    public void onBind(@NonNull ViewHolder viewHolder, @NonNull FormItemViewModel viewModel) {
+        ((EditTextViewHolder) viewHolder).update((EditTextViewModel) viewModel);
     }
-
-    @Override
-    public void onBindViewHolder(@NonNull EditTextViewHolder viewHolder,
-            @NonNull EditTextViewModel viewModel) {
-        viewHolder.update(viewModel);
-    }
-
 }
