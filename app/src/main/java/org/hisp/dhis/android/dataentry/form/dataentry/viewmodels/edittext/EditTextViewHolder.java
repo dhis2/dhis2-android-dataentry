@@ -5,23 +5,24 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.jakewharton.rxbinding2.widget.TextViewAfterTextChangeEvent;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
+import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.RowAction;
 
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Predicate;
-import io.reactivex.observers.DisposableObserver;
+import io.reactivex.processors.FlowableProcessor;
+import rx.exceptions.OnErrorNotImplementedException;
 
 import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
 
@@ -38,31 +39,28 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
 
     private EditTextViewModel viewModel;
 
-    private final CompositeDisposable valueChangeObservers;
-    private final Observable<Pair<String, String>> valueChangeObservable;
-
-    EditTextViewHolder(@NonNull View itemView) {
+    @SuppressWarnings("CheckReturnValue")
+    EditTextViewHolder(@NonNull ViewGroup parent, @NonNull View itemView,
+            @NonNull FlowableProcessor<RowAction> processor) {
         super(itemView);
 
         ButterKnife.bind(this, itemView);
-
-        valueChangeObservers = new CompositeDisposable();
-
-        valueChangeObservable = RxTextView
-                .afterTextChangeEvents(editText)
+        RxTextView.afterTextChangeEvents(editText)
                 .skipInitialValue()
+                .takeUntil(RxView.detaches(parent))
                 .filter(valueHasChanged())
                 .debounce(500, TimeUnit.MILLISECONDS)
-                .map(this::pairUidAndValue);
+                .map(event -> RowAction.create(viewModel.uid(),
+                        event.editable() == null ? "" : event.editable().toString()))
+                .subscribe(action -> processor.onNext(action), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                });
 
         editText.setOnFocusChangeListener((v, hasFocus) -> toggleHintVisibility(hasFocus));
     }
 
-    void update(@NonNull EditTextViewModel viewModel) {
-
-        this.viewModel = viewModel;
-
-        valueChangeObservers.clear();
+    void update(@NonNull EditTextViewModel model) {
+        viewModel = model;
 
         textViewLabel.setText(viewModel.label());
 
@@ -75,8 +73,6 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
         editText.setText(viewModel.value());
         editText.setInputType(viewModel.inputType());
         editText.setMaxLines(viewModel.maxLines());
-
-        // valueChangeObservers.add(valueChangeObservable.share().subscribeWith(onValueChangeObserver));
     }
 
     private void toggleHintVisibility(Boolean hasFocus) {
@@ -89,18 +85,7 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
 
     @NonNull
     private Predicate<TextViewAfterTextChangeEvent> valueHasChanged() {
-        return textChangeEvent ->
-                viewModel != null && !textChangeEvent.editable().toString().equals(viewModel.value());
-    }
-
-    @NonNull
-    private Pair<String, String> pairUidAndValue(@NonNull TextViewAfterTextChangeEvent textChangeEvent) {
-        String value;
-        if (textChangeEvent.editable() == null) {
-            value = "";
-        } else {
-            value = textChangeEvent.editable().toString();
-        }
-        return Pair.create(viewModel.uid(), value);
+        return textChangeEvent -> viewModel != null &&
+                !viewModel.value().equals(textChangeEvent.editable().toString());
     }
 }
