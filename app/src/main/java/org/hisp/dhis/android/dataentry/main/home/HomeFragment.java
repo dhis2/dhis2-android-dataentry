@@ -23,8 +23,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import io.reactivex.functions.Consumer;
 
 public class HomeFragment extends BaseFragment implements HomeView {
@@ -40,7 +38,6 @@ public class HomeFragment extends BaseFragment implements HomeView {
 
     private HomeViewModelAdapter homeViewModelAdapter;
     private AlertDialog alertDialog;
-    private Unbinder unbinder;
 
     @Override
     public void onAttach(Context context) {
@@ -52,26 +49,15 @@ public class HomeFragment extends BaseFragment implements HomeView {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-        unbinder = ButterKnife.bind(this, view);
-        return view;
+        return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        setupAdapter();
+        bind(this, view);
+
+        setupRecyclerView();
         setupSwipeRefreshLayout();
-
-        recyclerView.setAdapter(homeViewModelAdapter);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-
-        recyclerView.setLayoutManager(layoutManager);
-
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new DividerDecoration(
-                ContextCompat.getDrawable(getActivity(), R.drawable.divider)));
     }
 
     @Override
@@ -86,19 +72,25 @@ public class HomeFragment extends BaseFragment implements HomeView {
         homePresenter.onAttach(this);
     }
 
-    private void setupSwipeRefreshLayout() {
-        swipeRefreshLayout.setColorSchemeResources(R.color.color_primary);
-    }
-
-    private void setupAdapter() {
+    private void setupRecyclerView() {
         homeViewModelAdapter = new HomeViewModelAdapter(getActivity());
         homeViewModelAdapter.setOnHomeItemClickListener(homeEntity -> {
-            /*if (homeEntity.getType() == HomeViewModel.Type.TRACKED_ENTITY) {
-                // todo go to TrackedEntity activity
-            } else {
-                // go to program activity
-            }*/
+            if (homeEntity.type() == HomeViewModel.Type.PROGRAM) {
+                // todo: start data-entry-fragment
+            }
         });
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(homeViewModelAdapter);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new DividerDecoration(
+                ContextCompat.getDrawable(getActivity(), R.drawable.divider)));
+    }
+
+    private void setupSwipeRefreshLayout() {
+        swipeRefreshLayout.setColorSchemeResources(R.color.color_primary);
     }
 
     @Override
@@ -116,11 +108,5 @@ public class HomeFragment extends BaseFragment implements HomeView {
         alertDialog.setTitle(getString(R.string.error_generic));
         alertDialog.setMessage(message);
         alertDialog.show();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
     }
 }
