@@ -3,21 +3,23 @@ package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.radiobutton;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxRadioGroup;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
+import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.RowAction;
 
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.FlowableProcessor;
+import rx.exceptions.OnErrorNotImplementedException;
 
 final class RadioButtonViewHolder extends RecyclerView.ViewHolder {
     private static final String EMPTY_FIELD = "";
@@ -39,28 +41,24 @@ final class RadioButtonViewHolder extends RecyclerView.ViewHolder {
 
     private RadioButtonViewModel viewModel;
 
-    private final CompositeDisposable valueChangeObservers;
-    private final Observable<Pair<String, String>> valueChangeObservable;
-
-    RadioButtonViewHolder(@NonNull View itemView) {
+    @SuppressWarnings("CheckReturnValue")
+    RadioButtonViewHolder(@NonNull ViewGroup parent, @NonNull View itemView,
+            @NonNull FlowableProcessor<RowAction> processor) {
         super(itemView);
 
         ButterKnife.bind(this, itemView);
-
-        valueChangeObservers = new CompositeDisposable();
-
-        valueChangeObservable = RxRadioGroup
-                .checkedChanges(radioGroup)
+        RxRadioGroup.checkedChanges(radioGroup)
                 .skipInitialValue()
+                .takeUntil(RxView.detaches(parent))
                 .debounce(500, TimeUnit.MILLISECONDS)
-                .map(this::pairUidAndValue);
+                .map(this::rowAction)
+                .subscribe(rowAction -> processor.onNext(rowAction), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                });
     }
 
-    void update(@NonNull RadioButtonViewModel viewModel) {
-        this.viewModel = viewModel;
-
-        valueChangeObservers.clear();
-
+    void update(@NonNull RadioButtonViewModel model) {
+        viewModel = model;
         label.setText(viewModel.label());
 
         if (viewModel.value() == null) {
@@ -73,17 +71,16 @@ final class RadioButtonViewHolder extends RecyclerView.ViewHolder {
             secondRadioButton.setChecked(true);
             firstRadioButton.setChecked(false);
         }
-
-        // valueChangeObservers.add(valueChangeObservable.share().subscribeWith(onValueChangeObserver));
     }
 
     @NonNull
-    private Pair<String, String> pairUidAndValue(Integer checkedId) {
+    private RowAction rowAction(@NonNull Integer checkedId) {
         if (checkedId == R.id.radiobutton_row_radiobutton_first) {
-            return Pair.create(viewModel.uid(), TRUE);
+            return RowAction.create(viewModel.uid(), TRUE);
         } else if (checkedId == R.id.radiobutton_row_radiobutton_second) {
-            return Pair.create(viewModel.uid(), FALSE);
+            return RowAction.create(viewModel.uid(), FALSE);
         }
-        return Pair.create(viewModel.uid(), EMPTY_FIELD);
+
+        return RowAction.create(viewModel.uid(), EMPTY_FIELD);
     }
 }
