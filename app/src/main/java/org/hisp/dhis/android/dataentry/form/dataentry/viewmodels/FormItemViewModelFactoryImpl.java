@@ -10,11 +10,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
 import org.hisp.dhis.android.dataentry.form.dataentry.EditTextHintCache;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.checkbox.CheckBoxViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.coordinate.CoordinateViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.date.DateViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.edittext.EditTextViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.optionset.OptionSetViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.radiobutton.RadioButtonViewModel;
 
 import java.util.ArrayList;
@@ -23,20 +19,20 @@ import java.util.Locale;
 
 import static android.text.InputType.TYPE_CLASS_TEXT;
 
-final public class FormItemViewModelFactoryImpl implements FormItemViewModelFactory {
-
+final class FormItemViewModelFactoryImpl implements FormItemViewModelFactory {
     private final static String EMPTY_STRING = "";
     private final static String TRUE = "TRUE";
 
     private final EditTextHintCache editTextHintCache;
 
-    public FormItemViewModelFactoryImpl(@NonNull EditTextHintCache editTextHintCache) {
+    FormItemViewModelFactoryImpl(@NonNull EditTextHintCache editTextHintCache) {
         this.editTextHintCache = editTextHintCache;
     }
 
     @Override
     public FormItemViewModel fromCursor(@NonNull Cursor cursor) {
-        return create(cursor.getString(0), cursor.getString(1), integerToBoolean(cursor.getInt(2)), cursor.getString(3),
+        return create(cursor.getString(0), cursor.getString(1),
+                integerToBoolean(cursor.getInt(2)), cursor.getString(3),
                 ValueType.valueOf(cursor.getString(4)), cursor.getString(5));
     }
 
@@ -47,53 +43,54 @@ final public class FormItemViewModelFactoryImpl implements FormItemViewModelFact
 
         Preconditions.isNull(valueType, "Unsupported ValueType: 'NULL' for: " + label + " - " + uid);
 
-        if (isOptionSet(optionSet)) {
-            return OptionSetViewModel.create(uid, label, mandatory, optionSet,
-                    editTextHintCache.hint(R.string.enter_option_set));
-        } else if (isEditTextType(valueType)) {
-            return createEditTextViewModel(uid, label, mandatory, value, valueType);
-        } else {
-            switch (valueType) {
-                case BOOLEAN:
-                    return createRadioButtonViewModel(uid, label, mandatory, value);
-                case TRUE_ONLY:
-                    return CheckBoxViewModel.create(uid, label, mandatory,
-                            value != null && TRUE.equals(value.toUpperCase(Locale.ENGLISH)));
-                case DATE:
-                    return DateViewModel.create(uid, label, mandatory, value == null ? EMPTY_STRING : value);
-                case COORDINATE:
-                    return createCoordinateViewModel(uid, label, mandatory, value);
-                default:
-                    throw new IllegalArgumentException("Unsupported ValueType: '" + valueType.name() +
-                            "' for: " + label + " - " + uid);
-            /* TODO: implement later
-            case LETTER:
-                break;
-            case EMAIL:
-                break;
-            case DATETIME:
-                break;
-            case TIME:
-                break;
-            case UNIT_INTERVAL:
-                break;
-            case PERCENTAGE:
-                break;
-            case TRACKER_ASSOCIATE:
-                break;
-            case USERNAME:
-                break;
-            case FILE_RESOURCE:
-                break;
-            case ORGANISATION_UNIT:
-                break;
-            case AGE:
-                break;
-            case URL:
-                break; */
-            }
-        }
+//        if (isOptionSet(optionSet)) {
+//            return OptionSetViewModel.create(uid, label, mandatory, optionSet,
+//                    editTextHintCache.hint(R.string.enter_option_set));
+//        } else if (isEditTextType(valueType)) {
+//            return createEditTextViewModel(uid, label, mandatory, value, valueType);
+//        } else {
+//            switch (valueType) {
+//                case BOOLEAN:
+//                    return createRadioButtonViewModel(uid, label, mandatory, value);
+//                case TRUE_ONLY:
+//                    return CheckBoxViewModel.create(uid, label, mandatory,
+//                            value != null && TRUE.equals(value.toUpperCase(Locale.ENGLISH)));
+//                case DATE:
+//                    return DateViewModel.create(uid, label, mandatory, value == null ? EMPTY_STRING : value);
+//                case COORDINATE:
+//                    return createCoordinateViewModel(uid, label, mandatory, value);
+//                default:
+//                    throw new IllegalArgumentException("Unsupported ValueType: '" + valueType.name() +
+//                            "' for: " + label + " - " + uid);
+//            /* TODO: implement later
+//            case LETTER:
+//                break;
+//            case EMAIL:
+//                break;
+//            case DATETIME:
+//                break;
+//            case TIME:
+//                break;
+//            case UNIT_INTERVAL:
+//                break;
+//            case PERCENTAGE:
+//                break;
+//            case TRACKER_ASSOCIATE:
+//                break;
+//            case USERNAME:
+//                break;
+//            case FILE_RESOURCE:
+//                break;
+//            case ORGANISATION_UNIT:
+//                break;
+//            case AGE:
+//                break;
+//            case URL:
+//                break; */
+//            }
+//        }
 
+        return null;
     }
 
     @NonNull
@@ -107,24 +104,24 @@ final public class FormItemViewModelFactoryImpl implements FormItemViewModelFact
         }
         return RadioButtonViewModel.create(uid, label, mandatory, boolValue);
     }
-
-    @NonNull
-    private FormItemViewModel createCoordinateViewModel(@NonNull String uid, @NonNull String label,
-            @NonNull Boolean mandatory, @Nullable String value) {
-        Double latitude;
-        Double longitude;
-
-        if (value != null && value.split(",").length == 2) {
-            String[] latLong = value.split(",");
-            // exception is thrown if lat or long is not a number
-            latitude = Double.parseDouble(latLong[0]);
-            longitude = Double.parseDouble(latLong[1]);
-        } else {
-            latitude = longitude = 0.0;
-        }
-
-        return CoordinateViewModel.create(uid, label, mandatory, latitude.toString(), longitude.toString());
-    }
+//
+//    @NonNull
+//    private FormItemViewModel createCoordinateViewModel(@NonNull String uid, @NonNull String label,
+//            @NonNull Boolean mandatory, @Nullable String value) {
+//        Double latitude;
+//        Double longitude;
+//
+//        if (value != null && value.split(",").length == 2) {
+//            String[] latLong = value.split(",");
+//            // exception is thrown if lat or long is not a number
+//            latitude = Double.parseDouble(latLong[0]);
+//            longitude = Double.parseDouble(latLong[1]);
+//        } else {
+//            latitude = longitude = 0.0;
+//        }
+//
+//        return CoordinateViewModel.create(uid, label, mandatory, latitude.toString(), longitude.toString());
+//    }
 
     private static boolean isOptionSet(String optionSet) {
         return optionSet != null;
