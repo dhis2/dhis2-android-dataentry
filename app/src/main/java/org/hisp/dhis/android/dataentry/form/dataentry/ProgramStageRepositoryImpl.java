@@ -15,7 +15,7 @@ import timber.log.Timber;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
-final class ProgramStageRepository implements DataEntryRepository {
+final class ProgramStageRepositoryImpl implements DataEntryRepository {
     private static final String QUERY = "SELECT\n" +
             "  ProgramStageDataElement.compulsory,\n" +
             "  DataElement.displayName,\n" +
@@ -34,7 +34,7 @@ final class ProgramStageRepository implements DataEntryRepository {
     @NonNull
     private final String event;
 
-    ProgramStageRepository(@NonNull BriteDatabase briteDatabase, @NonNull String event) {
+    ProgramStageRepositoryImpl(@NonNull BriteDatabase briteDatabase, @NonNull String event) {
         this.briteDatabase = briteDatabase;
         this.event = event;
     }
