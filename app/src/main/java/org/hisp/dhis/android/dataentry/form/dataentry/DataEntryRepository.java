@@ -11,5 +11,5 @@ import io.reactivex.Flowable;
 public interface DataEntryRepository {
 
     @NonNull
-    Flowable<List<FormItemViewModel>> formItems();
+    Flowable<List<FormItemViewModel>> fields();
 }
