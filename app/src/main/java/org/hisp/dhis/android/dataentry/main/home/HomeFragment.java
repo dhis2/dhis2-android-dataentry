@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
+import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryActivity;
 
 import java.util.List;
 
@@ -61,23 +62,23 @@ public class HomeFragment extends BaseFragment implements HomeView {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        homePresenter.onDetach();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         homePresenter.onAttach(this);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        homePresenter.onDetach();
+    }
+
     private void setupRecyclerView() {
         homeViewModelAdapter = new HomeViewModelAdapter(getActivity());
         homeViewModelAdapter.setOnHomeItemClickListener(homeEntity -> {
-//            if (homeEntity.type() == HomeViewModel.Type.PROGRAM) {
-//                // todo: start data-entry-fragment
-//            }
+            if (homeEntity.type() == HomeViewModel.Type.PROGRAM) {
+                startActivity(DataEntryActivity.create(getActivity()));
+            }
         });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());

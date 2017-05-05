@@ -38,15 +38,14 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        return null;
+    public View onCreateView(@NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_data_entry, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         bind(this, view);
-
         setUpRecyclerView();
     }
 
@@ -57,12 +56,12 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
     }
 
     private void setUpRecyclerView() {
-        dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()));
+        // dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()));
+        // recyclerView.setAdapter(dataEntryAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(dataEntryAdapter);
 
         DataEntryArguments args = Preconditions.isNull(getArguments()
                 .getParcelable(ARGUMENTS), "dataEntryArguments == null");
