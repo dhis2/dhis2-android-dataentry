@@ -74,7 +74,7 @@ public class SingleEventsRepositoryIntegrationTests {
     }
 
     @Test
-    public void reportsShouldPropagateCorrectResults() throws InterruptedException {
+    public void reportsShouldPropagateCorrectResults() {
         SQLiteDatabase db = databaseRule.database();
         db.insert(ProgramStageDataElementModel.TABLE, null,
                 programStageDataElement("ps_data_element_one", "ps_uid", "data_element_one_uid", true));
