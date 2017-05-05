@@ -35,7 +35,7 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
 
         ButterKnife.bind(this, itemView);
         RxCompoundButton.checkedChanges(checkBox)
-                // .skipInitialValue()
+                .skipInitialValue()
                 .takeUntil(RxView.detaches(parent))
                 .map(isChecked -> RowAction.create(viewModel.uid(), String.valueOf(isChecked)))
                 .subscribe(action -> processor.onNext(action), throwable -> {
