@@ -9,6 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.sqlbrite.BriteDatabase;
+
+import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
@@ -16,6 +19,8 @@ import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.RowAction;
 
 import butterknife.BindView;
 import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public final class DataEntryFragment extends BaseFragment implements DataEntryView {
     private static final String ARGUMENTS = "args";
@@ -47,6 +52,16 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         bind(this, view);
         setUpRecyclerView();
+
+        DataEntryArguments args = Preconditions.isNull(getArguments()
+                .getParcelable(ARGUMENTS), "dataEntryArguments == null");
+
+        BriteDatabase briteDatabase = ((DhisApp) getActivity().getApplication())
+                .appComponent().briteDatabase();
+        (new ProgramStageRepositoryImpl(briteDatabase, args.event())).fields()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
     }
 
     @NonNull
@@ -62,8 +77,5 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-
-        DataEntryArguments args = Preconditions.isNull(getArguments()
-                .getParcelable(ARGUMENTS), "dataEntryArguments == null");
     }
 }
