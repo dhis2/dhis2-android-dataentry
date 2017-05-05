@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.form.section;
+package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels;
 
 import android.support.test.InstrumentationRegistry;
 
