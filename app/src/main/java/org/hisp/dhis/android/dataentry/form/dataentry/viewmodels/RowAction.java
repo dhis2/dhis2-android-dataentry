@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.checkbox;
+package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels;
 
 import android.support.annotation.NonNull;
 

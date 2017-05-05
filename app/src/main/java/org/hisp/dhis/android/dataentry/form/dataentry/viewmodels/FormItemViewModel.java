@@ -9,5 +9,4 @@ public abstract class FormItemViewModel {
 
     @NonNull
     public abstract String label();
-
 }
