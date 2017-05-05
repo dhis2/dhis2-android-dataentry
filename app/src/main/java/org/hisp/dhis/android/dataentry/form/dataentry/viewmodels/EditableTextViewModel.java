@@ -6,5 +6,4 @@ public abstract class EditableTextViewModel extends EditableViewModel {
 
     @NonNull
     public abstract String value();
-
 }

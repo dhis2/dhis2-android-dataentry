@@ -6,5 +6,4 @@ public abstract class EditableViewModel extends FormItemViewModel {
 
     @NonNull
     public abstract Boolean mandatory();
-
 }
