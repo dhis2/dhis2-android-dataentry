@@ -12,14 +12,18 @@ import android.view.ViewGroup;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
+import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.RowAction;
 
 import butterknife.BindView;
+import io.reactivex.Flowable;
 
-public final class DataEntryFragment extends BaseFragment {
+public final class DataEntryFragment extends BaseFragment implements DataEntryView {
     private static final String ARGUMENTS = "args";
 
     @BindView(R.id.recyclerview_data_entry)
     RecyclerView recyclerView;
+
+    DataEntryAdapter dataEntryAdapter;
 
     @NonNull
     public static DataEntryFragment create(@NonNull DataEntryArguments arguments) {
@@ -46,10 +50,18 @@ public final class DataEntryFragment extends BaseFragment {
         setUpRecyclerView();
     }
 
+    @Override
+    public Flowable<RowAction> rowActions() {
+        return dataEntryAdapter.asFlowable();
+    }
+
     private void setUpRecyclerView() {
+        dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()));
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(dataEntryAdapter);
 
         DataEntryArguments args = Preconditions.isNull(getArguments()
                 .getParcelable(ARGUMENTS), "dataEntryArguments == null");
