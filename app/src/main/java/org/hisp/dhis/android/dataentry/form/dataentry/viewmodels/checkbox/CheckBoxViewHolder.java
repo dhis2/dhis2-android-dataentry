@@ -11,6 +11,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxCompoundButton;
 
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.RowAction;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,7 +35,7 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
 
         ButterKnife.bind(this, itemView);
         RxCompoundButton.checkedChanges(checkBox)
-                .skipInitialValue()
+                // .skipInitialValue()
                 .takeUntil(RxView.detaches(parent))
                 .map(isChecked -> RowAction.create(viewModel.uid(), String.valueOf(isChecked)))
                 .subscribe(action -> processor.onNext(action), throwable -> {
