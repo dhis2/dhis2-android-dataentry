@@ -1,0 +1,1 @@
+INSERT INTO AuthenticatedUser (user, credentials) VALUES ('DXyJmlo9rge', 'YW5kcm9pZDpBbmRyb2lkMTIz');
