@@ -34,7 +34,7 @@ public final class ReportsModule {
             case ReportsArguments.TYPE_TEIS:
                 return new TeisNavigatorImpl(activity, reportsArguments.entityName());
             case ReportsArguments.TYPE_EVENTS:
-                return new SingleEventsNavigatorImpl();
+                return new SingleEventsNavigatorImpl(activity, reportsArguments.entityName());
             case ReportsArguments.TYPE_ENROLLMENTS:
                 return new EnrollmentsNavigatorImpl();
             default:
