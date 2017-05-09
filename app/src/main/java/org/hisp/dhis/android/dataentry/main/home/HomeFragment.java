@@ -38,7 +38,6 @@ public class HomeFragment extends BaseFragment implements HomeView {
     RecyclerView recyclerView;
 
     private HomeViewModelAdapter homeViewModelAdapter;
-    private AlertDialog alertDialog;
 
     @Override
     public void onAttach(Context context) {
@@ -101,13 +100,10 @@ public class HomeFragment extends BaseFragment implements HomeView {
 
     @Override
     public void renderError(String message) {
-        if (alertDialog == null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setPositiveButton(R.string.option_confirm, null);
-            alertDialog = builder.create();
-        }
-        alertDialog.setTitle(getString(R.string.error_generic));
-        alertDialog.setMessage(message);
-        alertDialog.show();
+        new AlertDialog.Builder(getActivity())
+                .setPositiveButton(android.R.string.ok, null)
+                .setTitle(getString(R.string.error_generic))
+                .setMessage(message)
+                .show();
     }
 }
