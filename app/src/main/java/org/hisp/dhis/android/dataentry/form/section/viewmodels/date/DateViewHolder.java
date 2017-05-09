@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -59,7 +58,7 @@ final class DateViewHolder extends RecyclerView.ViewHolder {
     }
 
     void update(@NonNull DateViewModel viewModel,
-            @NonNull DisposableObserver<Pair<String, String>> onValueChangeObserver) {
+                @NonNull DisposableObserver<Pair<String, String>> onValueChangeObserver) {
         onValueChangeObservers.clear();
 
         this.viewModel = viewModel;
@@ -69,22 +68,10 @@ final class DateViewHolder extends RecyclerView.ViewHolder {
         onValueChangeObservers.add(onValueChangeObservable.share().subscribeWith(onValueChangeObserver));
     }
 
-    @SuppressWarnings("PMD.UnusedFormalParameter")
-    // datepicker parameter is unused because of method reference
-    private void setDate(DatePicker datePicker, int year, int month, int dayOfMonth) {
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month);
-        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
-        String newValue = simpleDateFormat.format(calendar.getTime());
-        editText.setText(newValue);
-    }
-
     @OnClick({R.id.row_date_picker_edit_text, R.id.row_date_picker_button_pick})
     void showDatePicker() {
         DatePickerDialogFragment datePicker = DatePickerDialogFragment.newInstance(false);
-        datePicker.setOnDateSetListener(this::setDate);
+        datePicker.setOnDateSetListener(editText::setText);
         datePicker.show(fragmentManager);
     }
 
@@ -96,8 +83,7 @@ final class DateViewHolder extends RecyclerView.ViewHolder {
     @OnClick(R.id.row_date_picker_button_today)
     void setTodaysDate() {
         calendar = Calendar.getInstance(); // refresh calendar in case day has shifted since instantiation
-        setDate(null, calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+        editText.setText(simpleDateFormat.format(calendar.getTime()));
     }
 }
