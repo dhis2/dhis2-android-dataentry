@@ -12,7 +12,7 @@ import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 
 import io.reactivex.processors.FlowableProcessor;
 
-final class RadioButtonRow implements Row {
+public final class RadioButtonRow implements Row {
 
     @NonNull
     private final LayoutInflater inflater;
@@ -20,7 +20,7 @@ final class RadioButtonRow implements Row {
     @NonNull
     private final FlowableProcessor<RowAction> processor;
 
-    RadioButtonRow(@NonNull LayoutInflater inflater,
+    public RadioButtonRow(@NonNull LayoutInflater inflater,
             @NonNull FlowableProcessor<RowAction> processor) {
         this.inflater = inflater;
         this.processor = processor;
