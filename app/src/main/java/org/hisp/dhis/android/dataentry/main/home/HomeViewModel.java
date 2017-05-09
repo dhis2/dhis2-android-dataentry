@@ -37,7 +37,6 @@ abstract class HomeViewModel {
 
     public static HomeViewModel fromCursor(Cursor cursor) {
         return AutoValue_HomeViewModel.createFromCursor(cursor);
-
     }
 
     public enum Type {

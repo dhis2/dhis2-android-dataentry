@@ -337,13 +337,13 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
         @Override
         public void startTransition(LayoutTransition transition,
-                ViewGroup container, View view, int type) {
+                                    ViewGroup container, View view, int type) {
             // stub implementation
         }
 
         @Override
         public void endTransition(LayoutTransition transition,
-                ViewGroup container, View view, int type) {
+                                  ViewGroup container, View view, int type) {
             if (LayoutTransition.CHANGE_APPEARING == type
                     || LayoutTransition.CHANGE_DISAPPEARING == type) {
                 onPostAnimation();

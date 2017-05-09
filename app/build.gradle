@@ -130,6 +130,12 @@ android {
             ext.enableCrashlytics = true
         }
     }
+
+    sourceSets {
+        androidTest {
+            assets.srcDirs = ['src/androidTest/assets/']
+        }
+    }
 }
 
 spoon {

@@ -46,9 +46,9 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .map(response -> SyncResult.success())
-                .onErrorReturn((throwable -> SyncResult.failure(throwable.getMessage())))
+                .onErrorReturn(throwable -> SyncResult.failure(throwable.getMessage()))
                 .startWith(SyncResult.progress())
-                .subscribe(render(), throwable -> {
+                .subscribe(update(), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
     }
@@ -56,6 +56,7 @@ final class SyncPresenterImpl implements SyncPresenter {
     @Override
     public void onDetach() {
         disposable.clear();
+        syncView = null;
     }
 
     @NonNull
@@ -64,10 +65,10 @@ final class SyncPresenterImpl implements SyncPresenter {
     }
 
     @NonNull
-    private Consumer<SyncResult> render() {
+    private Consumer<SyncResult> update() {
         return result -> {
             if (syncView != null) {
-                syncView.render().accept(result);
+                syncView.update().accept(result);
             }
         };
     }

@@ -1,0 +1,1 @@
+INSERT INTO SystemInfo (serverDate, dateFormat, version, contextPath) VALUES ('2017-05-03T14:07:10.846', 'yyyy-mm-dd', '2.27-SNAPSHOT', 'https://play.dhis2.org/dev');

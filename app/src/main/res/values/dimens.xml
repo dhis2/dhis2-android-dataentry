@@ -30,4 +30,6 @@
     <dimen name="single_line_list_text_size">16sp</dimen>
     <dimen name="single_line_list_vertical_padding">8dp</dimen>
 
+    <dimen name="collapsing_toolbar_height">196dp</dimen>
+
 </resources>
