@@ -14,7 +14,7 @@ import org.hisp.dhis.android.dataentry.form.dataentry.fields.text.TextViewModel;
 
 import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
-final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
+public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
     @NonNull
     private final String hintEnterText;
@@ -37,7 +37,7 @@ final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     @NonNull
     private final String hintEnterIntegerZeroOrPositive;
 
-    FieldViewModelFactoryImpl(@NonNull String hintEnterText, @NonNull String hintEnterLongText,
+    public FieldViewModelFactoryImpl(@NonNull String hintEnterText, @NonNull String hintEnterLongText,
             @NonNull String hintEnterNumber, @NonNull String hintEnterInteger,
             @NonNull String hintEnterIntegerPositive, @NonNull String hintEnterIntegerNegative,
             @NonNull String hintEnterIntegerZeroOrPositive) {
