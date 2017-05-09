@@ -5,13 +5,14 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
-import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.common.ValueType;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactory;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
-import timber.log.Timber;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
@@ -20,18 +21,18 @@ import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 })
 final class ProgramStageRepositoryImpl implements DataEntryRepository {
     private static final String QUERY = "SELECT\n" +
-            "  Value._id,\n" +
-            "  Field.type,\n" +
+            "  Field.id,\n" +
             "  Field.label,\n" +
-            "  Field.optionSet,\n" +
+            "  Field.type,\n" +
             "  Field.mandatory,\n" +
+            "  Field.optionSet,\n" +
             "  Value.value\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
             "        DataElement.displayName AS label,\n" +
             "        DataElement.valueType AS type,\n" +
-            "        DataElement.uid AS dataElementUid,\n" +
+            "        DataElement.uid AS id,\n" +
             "        DataElement.optionSet AS optionSet,\n" +
             "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
             "        ProgramStageDataElement.programStage AS stage,\n" +
@@ -40,7 +41,7 @@ final class ProgramStageRepositoryImpl implements DataEntryRepository {
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
             "    ) AS Field ON (Field.stage = Event.programStage)\n" +
             "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
-            "    Value.event = Event.uid AND Value.dataElement = Field.dataElementUid\n" +
+            "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
             "  )\n" +
             "WHERE Event.uid = ?\n" +
             "ORDER BY Field.formOrder ASC;";
@@ -49,36 +50,29 @@ final class ProgramStageRepositoryImpl implements DataEntryRepository {
     private final BriteDatabase briteDatabase;
 
     @NonNull
+    private final FieldViewModelFactory fieldFactory;
+
+    @NonNull
     private final String event;
 
-    ProgramStageRepositoryImpl(@NonNull BriteDatabase briteDatabase, @NonNull String event) {
+    ProgramStageRepositoryImpl(@NonNull BriteDatabase briteDatabase,
+            @NonNull FieldViewModelFactory fieldFactory, @NonNull String event) {
         this.briteDatabase = briteDatabase;
+        this.fieldFactory = fieldFactory;
         this.event = event;
     }
 
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> fields() {
-        return toV2Flowable(briteDatabase.createQuery(EventModel.TABLE, QUERY, event)
+        return toV2Flowable(briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, QUERY, event)
                 .mapToList(this::transform));
     }
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
-
-        Timber.d("DataElement = {%s}", cursor.getString(1));
-        return new FieldViewModel() {
-            @NonNull
-            @Override
-            public String uid() {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public String label() {
-                return null;
-            }
-        };
+        return fieldFactory.create(cursor.getString(0), cursor.getString(1),
+                ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
+                cursor.getString(4), cursor.getString(5));
     }
 }
