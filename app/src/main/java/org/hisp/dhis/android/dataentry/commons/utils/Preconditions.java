@@ -16,4 +16,16 @@ public final class Preconditions {
 
         return obj;
     }
+
+    public static boolean equals(@Nullable Object one, @Nullable Object two) {
+        if (one == two) {
+            return true;
+        }
+
+        if (one != null) {
+            return one.equals(two);
+        }
+
+        return two.equals(one);
+    }
 }
