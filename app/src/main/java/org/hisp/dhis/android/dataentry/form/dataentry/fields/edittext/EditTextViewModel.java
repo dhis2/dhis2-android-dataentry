@@ -1,37 +1,19 @@
 package org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext;
 
 import android.support.annotation.NonNull;
-import android.text.InputFilter;
+import android.support.annotation.Nullable;
+import android.text.InputType;
 
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableFieldViewModel;
-
-import java.util.List;
-
-import static org.hisp.dhis.android.core.utils.Utils.safeUnmodifiableList;
-
 @AutoValue
-public abstract class EditTextViewModel extends EditableFieldViewModel<String> {
+public abstract class EditTextViewModel extends EditTextModel<String> {
 
     @NonNull
-    public abstract Integer inputType();
-
-    @NonNull
-    public abstract Integer maxLines();
-
-    @NonNull
-    public abstract String hint();
-
-    @NonNull
-    public abstract List<InputFilter> inputFilters();
-
-    @NonNull
-    public static EditTextViewModel create(@NonNull String uid,
-            @NonNull String label, @NonNull Boolean mandatory, @NonNull String value,
-            @NonNull Integer inputType, @NonNull Integer maxLines, @NonNull String hint,
-            @NonNull List<InputFilter> inputFilters) {
-        return new AutoValue_EditTextViewModel(uid, label, mandatory, value, inputType, maxLines, hint,
-                safeUnmodifiableList(inputFilters));
+    public static EditTextViewModel create(@NonNull String uid, @NonNull String label,
+            @NonNull Boolean mandatory, @Nullable String value, @NonNull String hint,
+            @NonNull Integer lines) {
+        return new AutoValue_EditTextViewModel(uid, label, mandatory,
+                value, hint, lines, InputType.TYPE_CLASS_TEXT);
     }
 }
