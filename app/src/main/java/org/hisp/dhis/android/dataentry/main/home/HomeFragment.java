@@ -102,7 +102,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
     public void renderError(String message) {
         new AlertDialog.Builder(getActivity())
                 .setPositiveButton(android.R.string.ok, null)
-                .setTitle(getString(R.string.error_generic))
+                .setTitle(getString(R.string.error))
                 .setMessage(message)
                 .show();
     }
