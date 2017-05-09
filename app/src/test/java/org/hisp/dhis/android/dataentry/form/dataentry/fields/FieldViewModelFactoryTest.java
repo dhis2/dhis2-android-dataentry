@@ -75,6 +75,15 @@ public class FieldViewModelFactoryTest {
     }
 
     @Test
+    public void numberTypeMappingShouldNotThrowOnNull() throws Exception {
+        try {
+            fieldViewModelFactory.create(UID, LABEL, ValueType.NUMBER, true, null, null);
+        } catch (Exception exception) {
+            fail("Exception should not be thrown", exception);
+        }
+    }
+
+    @Test
     public void integerTypeIsMappedToCorrectEditTextViewModel() throws Exception {
         EditTextIntegerViewModel viewModel = (EditTextIntegerViewModel) fieldViewModelFactory.create(UID,
                 LABEL, ValueType.INTEGER, true, null, String.valueOf(13));
@@ -87,6 +96,15 @@ public class FieldViewModelFactoryTest {
         assertThat(viewModel.maxLines()).isEqualTo(1);
         assertThat(viewModel.inputType()).isEqualTo(InputType.TYPE_CLASS_NUMBER
                 | InputType.TYPE_NUMBER_FLAG_SIGNED);
+    }
+
+    @Test
+    public void integerTypeMappingShouldNotThrowOnNull() throws Exception {
+        try {
+            fieldViewModelFactory.create(UID, LABEL, ValueType.INTEGER, true, null, null);
+        } catch (Exception exception) {
+            fail("Exception should not be thrown", exception);
+        }
     }
 
     @Test
@@ -105,6 +123,15 @@ public class FieldViewModelFactoryTest {
     }
 
     @Test
+    public void integerNegativeTypeMappingShouldNotThrowOnNull() throws Exception {
+        try {
+            fieldViewModelFactory.create(UID, LABEL, ValueType.INTEGER_NEGATIVE, true, null, null);
+        } catch (Exception exception) {
+            fail("Exception should not be thrown", exception);
+        }
+    }
+
+    @Test
     public void integerZeroOrPositiveTypeIsMappedToCorrectEditTextViewModel() throws Exception {
         EditTextIntegerViewModel viewModel = (EditTextIntegerViewModel) fieldViewModelFactory.create(UID,
                 LABEL, ValueType.INTEGER_ZERO_OR_POSITIVE, true, null, String.valueOf(13));
@@ -116,6 +143,15 @@ public class FieldViewModelFactoryTest {
         assertThat(viewModel.hint()).isEqualTo("Enter positive integer or zero");
         assertThat(viewModel.maxLines()).isEqualTo(1);
         assertThat(viewModel.inputType()).isEqualTo(InputType.TYPE_CLASS_NUMBER);
+    }
+
+    @Test
+    public void integerZeroOrPositiveTypeMappingShouldNotThrowOnNull() throws Exception {
+        try {
+            fieldViewModelFactory.create(UID, LABEL, ValueType.INTEGER_ZERO_OR_POSITIVE, true, null, null);
+        } catch (Exception exception) {
+            fail("Exception should not be thrown", exception);
+        }
     }
 
     @Test
@@ -133,6 +169,15 @@ public class FieldViewModelFactoryTest {
     }
 
     @Test
+    public void integerPositiveMappingShouldNotThrowOnNull() throws Exception {
+        try {
+            fieldViewModelFactory.create(UID, LABEL, ValueType.INTEGER_POSITIVE, true, null, null);
+        } catch (Exception exception) {
+            fail("Exception should not be thrown", exception);
+        }
+    }
+
+    @Test
     public void booleanTypeIsMappedToRadioButtonViewModel() throws Exception {
         RadioButtonViewModel viewModel = (RadioButtonViewModel) fieldViewModelFactory.create(UID,
                 LABEL, ValueType.BOOLEAN, true, null, String.valueOf(false));
@@ -142,7 +187,6 @@ public class FieldViewModelFactoryTest {
         assertThat(viewModel.mandatory()).isEqualTo(true);
         assertThat(viewModel.value()).isEqualTo(RadioButtonViewModel.Value.NO);
     }
-
 
     @Test
     public void trueOnlyTypeIsMappedToCheckBoxViewModel() throws Exception {
