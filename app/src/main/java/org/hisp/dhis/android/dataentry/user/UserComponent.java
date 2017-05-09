@@ -3,6 +3,8 @@ package org.hisp.dhis.android.dataentry.user;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.dagger.PerUser;
+import org.hisp.dhis.android.dataentry.form.FormComponent;
+import org.hisp.dhis.android.dataentry.form.FormModule;
 import org.hisp.dhis.android.dataentry.main.MainComponent;
 import org.hisp.dhis.android.dataentry.main.MainModule;
 import org.hisp.dhis.android.dataentry.main.home.HomeComponent;
@@ -29,4 +31,7 @@ public interface UserComponent {
 
     @NonNull
     ServiceComponent plus(@NonNull ServiceModule serviceModule);
+
+    @NonNull
+    FormComponent plus(@NonNull FormModule formModule);
 }
