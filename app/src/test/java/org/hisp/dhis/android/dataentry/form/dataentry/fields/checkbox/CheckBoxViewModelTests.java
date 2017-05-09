@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox;
 
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -42,5 +43,10 @@ public class CheckBoxViewModelTests {
         } catch (IllegalArgumentException illegalArgumentException) {
             // noop
         }
+    }
+
+    @Test
+    public void fromRawValueShouldNotThrowOnNullValue() {
+        RadioButtonViewModel.fromRawValue(TEST_UID, TEST_LABEL, true, null);
     }
 }
