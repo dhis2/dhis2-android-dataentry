@@ -39,6 +39,9 @@
     <string name="enter_positive_integer_or_zero">Enter positive integer or zero</string>
     <string name="enter_positive_integer">Enter positive integer</string>
 
+    <!-- Buttons -->
+    <string name="none">None</string>
+
     <!-- Fonts  -->
     <string name="font_name_regular">Roboto-Regular.ttf</string>
     <string name="font_name_medium">Roboto-Medium.ttf</string>
