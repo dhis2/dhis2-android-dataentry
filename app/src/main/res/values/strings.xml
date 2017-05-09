@@ -39,7 +39,9 @@
     <string name="enter_positive_integer_or_zero">Enter positive integer or zero</string>
     <string name="enter_positive_integer">Enter positive integer</string>
 
-    <!-- Buttons -->
+    <!-- RadioButton prompts -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="none">None</string>
 
     <!-- Fonts  -->

@@ -21,14 +21,14 @@
             android:id="@+id/radiobutton_row_radiobutton_first"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@android:string/yes"
+            android:text="@string/yes"
             app:font="@string/font_name_regular"/>
 
         <org.hisp.dhis.android.dataentry.commons.ui.FontRadioButton
             android:id="@+id/radiobutton_row_radiobutton_second"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@android:string/no"
+            android:text="@string/no"
             app:font="@string/font_name_regular"/>
 
         <org.hisp.dhis.android.dataentry.commons.ui.FontRadioButton
