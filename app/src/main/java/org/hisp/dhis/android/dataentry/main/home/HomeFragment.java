@@ -17,7 +17,8 @@ import android.view.ViewGroup;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
-import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryActivity;
+import org.hisp.dhis.android.dataentry.reports.ReportsActivity;
+import org.hisp.dhis.android.dataentry.reports.ReportsArguments;
 
 import java.util.List;
 
@@ -76,7 +77,9 @@ public class HomeFragment extends BaseFragment implements HomeView {
         homeViewModelAdapter = new HomeViewModelAdapter(getActivity());
         homeViewModelAdapter.setOnHomeItemClickListener(homeEntity -> {
             if (homeEntity.type() == HomeViewModel.Type.PROGRAM) {
-                startActivity(DataEntryActivity.create(getActivity()));
+                ReportsArguments reportsArguments = ReportsArguments.createForEvents(
+                        homeEntity.id(), homeEntity.title());
+                startActivity(ReportsActivity.createIntent(getActivity(), reportsArguments));
             }
         });
 
