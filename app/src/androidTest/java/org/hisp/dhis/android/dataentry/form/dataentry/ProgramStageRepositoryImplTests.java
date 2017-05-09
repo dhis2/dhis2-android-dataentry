@@ -13,7 +13,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.FormItemViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
 import org.junit.Before;
@@ -78,17 +78,17 @@ public class ProgramStageRepositoryImplTests {
 
     @Test
     public void fieldsShouldPropagateCorrectResults() {
-        TestSubscriber<List<FormItemViewModel>> testObserver = programStageRepository.fields().test();
+        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.fields().test();
 
         // change radio button view model creation (value is not only true or false in this case)
-        FormItemViewModel fieldOne = RadioButtonViewModel.create("data_element_one_uid",
+        FieldViewModel fieldOne = RadioButtonViewModel.create("data_element_one_uid",
                 "data_element_one_name", true, false);
-        FormItemViewModel fieldTwo = RadioButtonViewModel.create("data_element_two_uid",
+        FieldViewModel fieldTwo = RadioButtonViewModel.create("data_element_two_uid",
                 "data_element_two_name", false, false);
-        FormItemViewModel fieldThree = RadioButtonViewModel.create("data_element_three_uid",
+        FieldViewModel fieldThree = RadioButtonViewModel.create("data_element_three_uid",
                 "data_element_three_name", true, false);
 
-        List<FormItemViewModel> fields = testObserver.values().get(0);
+        List<FieldViewModel> fields = testObserver.values().get(0);
 
         assertThat(testObserver.valueCount()).isEqualTo(1);
         assertThat(fields.get(0)).isEqualTo(null);

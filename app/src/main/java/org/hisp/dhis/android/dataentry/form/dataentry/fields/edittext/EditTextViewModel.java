@@ -5,14 +5,14 @@ import android.text.InputFilter;
 
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableTextViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableFieldViewModel;
 
 import java.util.List;
 
 import static org.hisp.dhis.android.core.utils.Utils.safeUnmodifiableList;
 
 @AutoValue
-public abstract class EditTextViewModel extends EditableTextViewModel {
+public abstract class EditTextViewModel extends EditableFieldViewModel<String> {
 
     @NonNull
     public abstract Integer inputType();

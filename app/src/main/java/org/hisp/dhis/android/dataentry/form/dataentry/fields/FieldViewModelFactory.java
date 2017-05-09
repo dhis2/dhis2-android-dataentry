@@ -6,10 +6,10 @@ import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.core.common.ValueType;
 
-public interface FormItemViewModelFactory {
+public interface FieldViewModelFactory {
 
-    FormItemViewModel fromCursor(Cursor cursor);
+    FieldViewModel fromCursor(Cursor cursor);
 
-    FormItemViewModel create(@NonNull String uid, @NonNull String label, @NonNull Boolean mandatory,
+    FieldViewModel create(@NonNull String uid, @NonNull String label, @NonNull Boolean mandatory,
             @NonNull String value, @NonNull ValueType valueType, @Nullable String optionSet);
 }

@@ -6,10 +6,7 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.form.dataentry.EditTextHintCache;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox.CheckBoxViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.coordinate.CoordinateViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.date.DateViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.optionset.OptionSetViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,13 +19,13 @@ import static android.text.InputType.TYPE_CLASS_TEXT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class FormItemViewModelFactoryTest {
+public class FieldViewModelFactoryTest {
 
     @Mock
     EditTextHintCache editTextHintCache;
 
     // The class we are testing
-    private FormItemViewModelFactory formItemViewModelFactory;
+    private FieldViewModelFactory fieldViewModelFactory;
 
     @Before
     public void setUp() {
@@ -46,7 +43,7 @@ public class FormItemViewModelFactoryTest {
         Mockito.when(editTextHintCache.hint(R.string.enter_coordinates)).thenReturn("Enter coordinates");
         Mockito.when(editTextHintCache.hint(R.string.enter_option_set)).thenReturn("Select or search from the list");
 
-        formItemViewModelFactory = new FormItemViewModelFactoryImpl(editTextHintCache);
+        fieldViewModelFactory = new FieldViewModelFactoryImpl(editTextHintCache);
     }
 
     @Test
@@ -137,7 +134,7 @@ public class FormItemViewModelFactoryTest {
         RadioButtonViewModel radioButtonViewModel =
                 RadioButtonViewModel.create("booleanUid", "booleanLabel", true, true);
 
-        FormItemViewModel viewModel = formItemViewModelFactory.create("booleanUid", "booleanLabel", true, "true",
+        FieldViewModel viewModel = fieldViewModelFactory.create("booleanUid", "booleanLabel", true, "true",
                 ValueType.BOOLEAN, null);
 
         assertThat(viewModel).isInstanceOf(RadioButtonViewModel.class);
@@ -150,63 +147,15 @@ public class FormItemViewModelFactoryTest {
         // the expected result of the mapping
         CheckBoxViewModel checkBoxViewModel = CheckBoxViewModel.create("trueOnlyUid", "trueOnlyLabel", true, false);
 
-        FormItemViewModel viewModel = formItemViewModelFactory.create("trueOnlyUid", "trueOnlyLabel", true, "false",
+        FieldViewModel viewModel = fieldViewModelFactory.create("trueOnlyUid", "trueOnlyLabel", true, "false",
                 ValueType.TRUE_ONLY, null);
 
         assertThat(viewModel).isInstanceOf(CheckBoxViewModel.class);
         assertThat(viewModel).isEqualTo(checkBoxViewModel);
     }
 
-    @Test
-    public void dateTypeIsMappedToDateViewModel() throws Exception {
-
-        // the expected result of the mapping
-        DateViewModel expectedDateViewModel = DateViewModel.create("dateUid", "dateLabel", true, "2016-12-11");
-
-        FormItemViewModel viewModel = formItemViewModelFactory.create("dateUid", "dateLabel", true, "2016-12-11",
-                ValueType.DATE, null);
-
-        assertThat(viewModel).isInstanceOf(DateViewModel.class);
-        assertThat(viewModel).isEqualTo(expectedDateViewModel);
-    }
-
-    @Test
-    public void coordinateTypeIsMappedToCoordinateViewModel() throws Exception {
-
-        // the expected result of the mapping
-        CoordinateViewModel coordinateViewModel = CoordinateViewModel.create("coordinateUid", "coordinateLabel", true,
-                "12.56734", "71.876576");
-
-        FormItemViewModel viewModel = formItemViewModelFactory.create("coordinateUid", "coordinateLabel", true,
-                "12.56734,71.876576", ValueType.COORDINATE, null);
-
-        assertThat(viewModel).isInstanceOf(CoordinateViewModel.class);
-        assertThat(viewModel).isEqualTo(coordinateViewModel);
-
-    }
-
-    @Test
-    public void mapToOptionSetIfOptionSetIsPresent() throws Exception {
-
-        // the expected result of the mapping
-        OptionSetViewModel optionSetViewModel = OptionSetViewModel.create("optionSetUid", "optionSetLabel", true,
-                "selectedOptionSetCode", "Select or search from the list");
-
-        // BOOLEAN type
-        FormItemViewModel viewModel = formItemViewModelFactory.create("optionSetUid", "optionSetLabel", true, "",
-                ValueType.BOOLEAN, "selectedOptionSetCode");
-        assertThat(viewModel).isInstanceOf(OptionSetViewModel.class);
-        assertThat(viewModel).isEqualTo(optionSetViewModel);
-
-        // TEXT type
-        viewModel = formItemViewModelFactory.create("optionSetUid", "optionSetLabel", true, "", ValueType.TEXT,
-                "selectedOptionSetCode");
-        assertThat(viewModel).isInstanceOf(OptionSetViewModel.class);
-        assertThat(viewModel).isEqualTo(optionSetViewModel);
-    }
-
     private EditTextViewModel mapToViewModelWithFactory(ValueType valueType) {
-        FormItemViewModel viewModel = formItemViewModelFactory.create("textUid", "textLabel", true, "textValue",
+        FieldViewModel viewModel = fieldViewModelFactory.create("textUid", "textLabel", true, "textValue",
                 valueType, null);
         assertThat(viewModel).isInstanceOf(EditTextViewModel.class);
         return (EditTextViewModel) viewModel;
@@ -215,14 +164,5 @@ public class FormItemViewModelFactoryTest {
     private EditTextViewModel getEditTextViewModel(Integer inputType, Integer maxLines, String hint) {
         return EditTextViewModel.create("textUid", "textLabel", true, "textValue",
                 inputType, maxLines, hint, new ArrayList<>());
-    }
-
-    @Test
-    public void createOptionSetViewModelCorrectly() throws Exception {
-        FormItemViewModel viewModel = formItemViewModelFactory.create("optionSetUid", "optionSetLabel", true,
-                "optionSetValue", ValueType.TEXT, "optionSetUid");
-
-        assertThat(viewModel).isInstanceOf(OptionSetViewModel.class);
-        assertThat(viewModel.uid()).isEqualTo("optionSetUid");
     }
 }

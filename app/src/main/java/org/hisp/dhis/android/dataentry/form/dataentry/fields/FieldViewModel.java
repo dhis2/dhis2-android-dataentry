@@ -2,8 +2,11 @@ package org.hisp.dhis.android.dataentry.form.dataentry.fields;
 
 import android.support.annotation.NonNull;
 
-public abstract class EditableViewModel extends FormItemViewModel {
+public abstract class FieldViewModel {
 
     @NonNull
-    public abstract Boolean mandatory();
+    public abstract String uid();
+
+    @NonNull
+    public abstract String label();
 }

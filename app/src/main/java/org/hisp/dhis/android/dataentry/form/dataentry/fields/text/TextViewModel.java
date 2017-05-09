@@ -4,10 +4,10 @@ import android.support.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.FormItemViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 
 @AutoValue
-public abstract class TextViewModel extends FormItemViewModel {
+public abstract class TextViewModel extends FieldViewModel {
 
     @NonNull
     public abstract String value();

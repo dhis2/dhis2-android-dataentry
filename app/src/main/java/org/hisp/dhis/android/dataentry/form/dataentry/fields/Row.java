@@ -9,5 +9,5 @@ public interface Row {
     @NonNull
     ViewHolder onCreate(@NonNull ViewGroup parent);
 
-    void onBind(@NonNull ViewHolder viewHolder, @NonNull FormItemViewModel viewModel);
+    void onBind(@NonNull ViewHolder viewHolder, @NonNull FieldViewModel viewModel);
 }

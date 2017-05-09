@@ -19,25 +19,25 @@ import java.util.Locale;
 
 import static android.text.InputType.TYPE_CLASS_TEXT;
 
-final class FormItemViewModelFactoryImpl implements FormItemViewModelFactory {
+final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     private final static String EMPTY_STRING = "";
     private final static String TRUE = "TRUE";
 
     private final EditTextHintCache editTextHintCache;
 
-    FormItemViewModelFactoryImpl(@NonNull EditTextHintCache editTextHintCache) {
+    FieldViewModelFactoryImpl(@NonNull EditTextHintCache editTextHintCache) {
         this.editTextHintCache = editTextHintCache;
     }
 
     @Override
-    public FormItemViewModel fromCursor(@NonNull Cursor cursor) {
+    public FieldViewModel fromCursor(@NonNull Cursor cursor) {
         return create(cursor.getString(0), cursor.getString(1),
                 integerToBoolean(cursor.getInt(2)), cursor.getString(3),
                 ValueType.valueOf(cursor.getString(4)), cursor.getString(5));
     }
 
     @Override
-    public FormItemViewModel create(@NonNull String uid, @NonNull String label, @NonNull Boolean mandatory,
+    public FieldViewModel create(@NonNull String uid, @NonNull String label, @NonNull Boolean mandatory,
             @Nullable String value, @NonNull ValueType valueType,
             @Nullable String optionSet) {
 
@@ -94,7 +94,7 @@ final class FormItemViewModelFactoryImpl implements FormItemViewModelFactory {
     }
 
     @NonNull
-    private FormItemViewModel createRadioButtonViewModel(@NonNull String uid, @NonNull String label,
+    private FieldViewModel createRadioButtonViewModel(@NonNull String uid, @NonNull String label,
             @NonNull Boolean mandatory, @Nullable String value) {
         Boolean boolValue;
         if (value == null || value.equals(EMPTY_STRING)) {
@@ -106,7 +106,7 @@ final class FormItemViewModelFactoryImpl implements FormItemViewModelFactory {
     }
 //
 //    @NonNull
-//    private FormItemViewModel createCoordinateViewModel(@NonNull String uid, @NonNull String label,
+//    private FieldViewModel createCoordinateViewModel(@NonNull String uid, @NonNull String label,
 //            @NonNull Boolean mandatory, @Nullable String value) {
 //        Double latitude;
 //        Double longitude;

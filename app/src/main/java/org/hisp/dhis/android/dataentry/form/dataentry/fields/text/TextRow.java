@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.FormItemViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.Row;
 
 public final class TextRow implements Row {
@@ -26,7 +26,7 @@ public final class TextRow implements Row {
     }
 
     @Override
-    public void onBind(@NonNull ViewHolder viewHolder, @NonNull FormItemViewModel viewModel) {
+    public void onBind(@NonNull ViewHolder viewHolder, @NonNull FieldViewModel viewModel) {
         ((TextViewHolder) viewHolder).update((TextViewModel) viewModel);
     }
 }

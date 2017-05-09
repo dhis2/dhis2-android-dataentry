@@ -5,13 +5,10 @@ import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableFieldViewModel;
 
 @AutoValue
-public abstract class RadioButtonViewModel extends EditableViewModel {
-
-    @Nullable
-    public abstract Boolean value();
+public abstract class RadioButtonViewModel extends EditableFieldViewModel<Boolean> {
 
     @NonNull
     public static RadioButtonViewModel create(@NonNull String uid, @NonNull String label,

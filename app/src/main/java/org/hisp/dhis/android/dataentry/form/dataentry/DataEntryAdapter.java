@@ -7,8 +7,8 @@ import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableTextViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.FormItemViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableTextFieldViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.Row;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox.CheckBoxRow;
@@ -28,7 +28,7 @@ final class DataEntryAdapter extends Adapter {
     private static final int ROW_TEXT = 3;
 
     @NonNull
-    private final List<FormItemViewModel> viewModels;
+    private final List<FieldViewModel> viewModels;
 
     @NonNull
     private final FlowableProcessor<RowAction> processor;
@@ -62,10 +62,10 @@ final class DataEntryAdapter extends Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        FormItemViewModel viewModel = viewModels.get(position);
+        FieldViewModel viewModel = viewModels.get(position);
         if (viewModel instanceof CheckBoxViewModel) {
             return ROW_CHECKBOX;
-        } else if (viewModel instanceof EditableTextViewModel) {
+        } else if (viewModel instanceof EditableTextFieldViewModel) {
             return ROW_EDITTEXT;
         } else {
             return 2;
@@ -77,7 +77,7 @@ final class DataEntryAdapter extends Adapter {
         return processor;
     }
 
-    void swap(@Nullable List<FormItemViewModel> viewModels) {
+    void swap(@Nullable List<FieldViewModel> viewModels) {
         this.viewModels.clear();
 
         if (viewModels != null) {

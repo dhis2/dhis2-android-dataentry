@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.FormItemViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 
 import java.util.List;
 
@@ -58,16 +58,16 @@ final class ProgramStageRepositoryImpl implements DataEntryRepository {
 
     @NonNull
     @Override
-    public Flowable<List<FormItemViewModel>> fields() {
+    public Flowable<List<FieldViewModel>> fields() {
         return toV2Flowable(briteDatabase.createQuery(EventModel.TABLE, QUERY, event)
                 .mapToList(this::transform));
     }
 
     @NonNull
-    private FormItemViewModel transform(@NonNull Cursor cursor) {
+    private FieldViewModel transform(@NonNull Cursor cursor) {
 
         Timber.d("DataElement = {%s}", cursor.getString(1));
-        return new FormItemViewModel() {
+        return new FieldViewModel() {
             @NonNull
             @Override
             public String uid() {
