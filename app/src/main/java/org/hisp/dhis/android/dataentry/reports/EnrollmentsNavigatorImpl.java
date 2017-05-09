@@ -10,4 +10,9 @@ final class EnrollmentsNavigatorImpl implements ReportsNavigator {
     public void navigateTo(@NonNull String enrollmentUid) {
         Timber.d("navigateTo(): %s", enrollmentUid);
     }
+
+    @Override
+    public void createFor(@NonNull String trackedEntityInstanceUid) {
+        Timber.d("createFor(): %s", trackedEntityInstanceUid);
+    }
 }

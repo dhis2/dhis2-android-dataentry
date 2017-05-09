@@ -10,4 +10,9 @@ final class SingleEventsNavigatorImpl implements ReportsNavigator {
     public void navigateTo(@NonNull String eventUid) {
         Timber.d("navigateTo(): %s", eventUid);
     }
+
+    @Override
+    public void createFor(@NonNull String uid) {
+
+    }
 }

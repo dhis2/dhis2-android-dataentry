@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 
+import timber.log.Timber;
+
 final class TeisNavigatorImpl implements ReportsNavigator {
 
     @NonNull
@@ -23,5 +25,10 @@ final class TeisNavigatorImpl implements ReportsNavigator {
         Intent intent = ReportsActivity.createIntent(currentActivity,
                 ReportsArguments.createForEnrollments(teiUid, teName));
         ActivityCompat.startActivity(currentActivity, intent, null);
+    }
+
+    @Override
+    public void createFor(@NonNull String trackedEntity) {
+        Timber.d("createFor(): %s", trackedEntity);
     }
 }
