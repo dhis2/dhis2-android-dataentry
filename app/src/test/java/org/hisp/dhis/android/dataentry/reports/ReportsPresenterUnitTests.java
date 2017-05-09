@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.subjects.PublishSubject;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.times;
@@ -36,19 +37,25 @@ public class ReportsPresenterUnitTests {
     @Captor
     private ArgumentCaptor<List<ReportViewModel>> reportViewModelsCaptor;
 
+    @Captor
+    private ArgumentCaptor<String> createReportCaptor;
+
     private ReportsPresenter reportsPresenter;
     private PublishProcessor<List<ReportViewModel>> reportsPublisher;
+    private PublishSubject<Object> createReportPublisher;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
         reportsPublisher = PublishProcessor.create();
+        createReportPublisher = PublishSubject.create();
         reportsPresenter = new ReportsPresenterImpl(reportsArguments,
                 new MockSchedulersProvider(), reportsRepository);
 
         when(reportsArguments.entityUid()).thenReturn("test_entity_uid");
         when(reportsRepository.reports("test_entity_uid")).thenReturn(reportsPublisher);
+        when(reportsView.createReportsActions()).thenReturn(createReportPublisher);
     }
 
     @Test
@@ -94,11 +101,26 @@ public class ReportsPresenterUnitTests {
     }
 
     @Test
+    public void createReportActionsShouldCallCreateReport() throws Exception {
+        when(reportsRepository.reports("test_program_uid")).thenReturn(reportsPublisher);
+        when(reportsArguments.entityUid()).thenReturn("test_program_uid");
+
+        // simulate click
+        reportsPresenter.onAttach(reportsView);
+        createReportPublisher.onNext(new Object());
+
+        verify(reportsView.createReport()).accept(createReportCaptor.capture());
+        assertThat(createReportCaptor.getValue()).isEqualTo("test_program_uid");
+    }
+
+    @Test
     public void onDetachShouldUnsubscribeFromRepository() {
         reportsPresenter.onAttach(reportsView);
         assertThat(reportsPublisher.hasSubscribers()).isTrue();
+        assertThat(createReportPublisher.hasObservers()).isTrue();
 
         reportsPresenter.onDetach();
         assertThat(reportsPublisher.hasSubscribers()).isFalse();
+        assertThat(createReportPublisher.hasObservers()).isFalse();
     }
 }
