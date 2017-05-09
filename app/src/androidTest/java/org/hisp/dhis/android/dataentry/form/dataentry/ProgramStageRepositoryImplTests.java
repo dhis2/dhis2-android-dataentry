@@ -83,6 +83,10 @@ public class ProgramStageRepositoryImplTests {
         // change radio button view model creation (value is not only true or false in this case)
         FormItemViewModel fieldOne = RadioButtonViewModel.create("data_element_one_uid",
                 "data_element_one_name", true, false);
+        FormItemViewModel fieldTwo = RadioButtonViewModel.create("data_element_two_uid",
+                "data_element_two_name", false, false);
+        FormItemViewModel fieldThree = RadioButtonViewModel.create("data_element_three_uid",
+                "data_element_three_name", true, false);
 
         List<FormItemViewModel> fields = testObserver.values().get(0);
 
@@ -95,13 +99,13 @@ public class ProgramStageRepositoryImplTests {
 
     private static ContentValues programStageDataElement(String uid, String programStage,
             String dataElement, Integer sortOrder, Boolean isCompulsory) {
-        ContentValues programStageDataElement = new ContentValues();
-        programStageDataElement.put(ProgramStageDataElementModel.Columns.UID, uid);
-        programStageDataElement.put(ProgramStageDataElementModel.Columns.PROGRAM_STAGE, programStage);
-        programStageDataElement.put(ProgramStageDataElementModel.Columns.DATA_ELEMENT, dataElement);
-        programStageDataElement.put(ProgramStageDataElementModel.Columns.SORT_ORDER, sortOrder);
-        programStageDataElement.put(ProgramStageDataElementModel.Columns.COMPULSORY, isCompulsory ? 1 : 0);
-        return programStageDataElement;
+        ContentValues psde = new ContentValues();
+        psde.put(ProgramStageDataElementModel.Columns.UID, uid);
+        psde.put(ProgramStageDataElementModel.Columns.PROGRAM_STAGE, programStage);
+        psde.put(ProgramStageDataElementModel.Columns.DATA_ELEMENT, dataElement);
+        psde.put(ProgramStageDataElementModel.Columns.SORT_ORDER, sortOrder);
+        psde.put(ProgramStageDataElementModel.Columns.COMPULSORY, isCompulsory ? 1 : 0);
+        return psde;
     }
 
 
