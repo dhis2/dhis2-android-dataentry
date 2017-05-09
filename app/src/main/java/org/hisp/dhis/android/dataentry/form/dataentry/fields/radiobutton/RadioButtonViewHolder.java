@@ -39,6 +39,9 @@ final class RadioButtonViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.radiobutton_row_radiobutton_second)
     RadioButton secondRadioButton;
 
+    @BindView(R.id.radiobutton_row_radiobutton_third)
+    RadioButton thirdRadioButton;
+
     private RadioButtonViewModel viewModel;
 
     @SuppressWarnings("CheckReturnValue")
@@ -62,14 +65,11 @@ final class RadioButtonViewHolder extends RecyclerView.ViewHolder {
         label.setText(viewModel.label());
 
         if (viewModel.value() == null) {
-            // value is null: no radio button should be checked
             radioGroup.clearCheck();
-        } else if (viewModel.value()) {
-            firstRadioButton.setChecked(true);
-            secondRadioButton.setChecked(false);
         } else {
-            secondRadioButton.setChecked(true);
-            firstRadioButton.setChecked(false);
+            firstRadioButton.setChecked(RadioButtonViewModel.Value.YES.equals(viewModel.value()));
+            secondRadioButton.setChecked(RadioButtonViewModel.Value.NO.equals(viewModel.value()));
+            thirdRadioButton.setChecked(RadioButtonViewModel.Value.NONE.equals(viewModel.value()));
         }
     }
 
