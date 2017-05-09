@@ -37,7 +37,7 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.edittext_row_edittext)
     EditText editText;
 
-    private EditTextViewModel viewModel;
+    private EditTextModel viewModel;
 
     @SuppressWarnings("CheckReturnValue")
     EditTextViewHolder(@NonNull ViewGroup parent, @NonNull View itemView,
@@ -59,7 +59,7 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
         editText.setOnFocusChangeListener((v, hasFocus) -> toggleHintVisibility(hasFocus));
     }
 
-    void update(@NonNull EditTextViewModel model) {
+    void update(@NonNull EditTextModel model) {
         viewModel = model;
 
         textViewLabel.setText(viewModel.label());
@@ -68,9 +68,8 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
         textInputLayout.setHint(viewModel.hint());
 
         // AutoValue does not support array of non-primitives so we need to transform immutable list to array
-        editText.setFilters(viewModel.inputFilters().toArray(new InputFilter[0]));
-
-        editText.setText(viewModel.value());
+        // editText.setFilters(viewModel.inputFilters().toArray(new InputFilter[0]));
+        // editText.setText(viewModel.value());
         editText.setInputType(viewModel.inputType());
         editText.setMaxLines(viewModel.maxLines());
     }

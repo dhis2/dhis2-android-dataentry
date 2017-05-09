@@ -35,6 +35,6 @@ public final class EditTextRow implements Row {
 
     @Override
     public void onBind(@NonNull ViewHolder viewHolder, @NonNull FieldViewModel viewModel) {
-        ((EditTextViewHolder) viewHolder).update((EditTextViewModel) viewModel);
+        ((EditTextViewHolder) viewHolder).update((EditTextModel) viewModel);
     }
 }
