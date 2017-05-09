@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dataentry.form.dataentry;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,21 +10,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.sqlbrite.BriteDatabase;
-
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
+
+import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.functions.Consumer;
 
 public final class DataEntryFragment extends BaseFragment implements DataEntryView {
     private static final String ARGUMENTS = "args";
+
+    @Inject
+    DataEntryPresenter dataEntryPresenter;
 
     @BindView(R.id.recyclerview_data_entry)
     RecyclerView recyclerView;
@@ -41,6 +47,15 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
         return dataEntryFragment;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        ((DhisApp) context.getApplicationContext()).userComponent()
+                .plus(new DataEntryModule(context))
+                .inject(this);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -55,13 +70,19 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
 
         DataEntryArguments args = Preconditions.isNull(getArguments()
                 .getParcelable(ARGUMENTS), "dataEntryArguments == null");
+        dataEntryPresenter.showFields(args.event());
+    }
 
-        BriteDatabase briteDatabase = ((DhisApp) getActivity().getApplication())
-                .appComponent().briteDatabase();
-        (new ProgramStageRepositoryImpl(briteDatabase, args.event())).fields()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
+    @Override
+    public void onPause() {
+        super.onPause();
+        dataEntryPresenter.onDetach();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        dataEntryPresenter.onAttach(this);
     }
 
     @NonNull
@@ -70,9 +91,15 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
         return dataEntryAdapter.asFlowable();
     }
 
+    @NonNull
+    @Override
+    public Consumer<List<FieldViewModel>> showFields() {
+        return fields -> dataEntryAdapter.swap(fields);
+    }
+
     private void setUpRecyclerView() {
-        // dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()));
-        // recyclerView.setAdapter(dataEntryAdapter);
+        dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()));
+        recyclerView.setAdapter(dataEntryAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
