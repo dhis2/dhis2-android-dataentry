@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.edittext;
+package org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
@@ -14,7 +14,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.jakewharton.rxbinding2.widget.TextViewAfterTextChangeEvent;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.RowAction;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 
 import java.util.concurrent.TimeUnit;
 

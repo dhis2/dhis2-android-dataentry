@@ -1,10 +1,10 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.checkbox;
+package org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox;
 
 import android.support.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.EditableViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableViewModel;
 
 
 @AutoValue

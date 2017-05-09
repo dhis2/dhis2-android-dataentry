@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.text;
+package org.hisp.dhis.android.dataentry.form.dataentry.fields.text;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;

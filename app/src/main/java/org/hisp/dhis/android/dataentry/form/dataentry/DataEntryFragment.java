@@ -15,7 +15,7 @@ import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.RowAction;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 
 import butterknife.BindView;
 import io.reactivex.Flowable;

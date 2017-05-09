@@ -1,11 +1,11 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.radiobutton;
+package org.hisp.dhis.android.dataentry.form.dataentry.fields.radiobutton;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.EditableViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableViewModel;
 
 @AutoValue
 public abstract class RadioButtonViewModel extends EditableViewModel {

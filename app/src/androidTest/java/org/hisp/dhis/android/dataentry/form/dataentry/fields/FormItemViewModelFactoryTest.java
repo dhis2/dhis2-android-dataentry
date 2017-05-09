@@ -1,16 +1,16 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels;
+package org.hisp.dhis.android.dataentry.form.dataentry.fields;
 
 import android.text.InputType;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.form.dataentry.EditTextHintCache;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.checkbox.CheckBoxViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.coordinate.CoordinateViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.date.DateViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.edittext.EditTextViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.optionset.OptionSetViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.radiobutton.RadioButtonViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox.CheckBoxViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.coordinate.CoordinateViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.date.DateViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.optionset.OptionSetViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

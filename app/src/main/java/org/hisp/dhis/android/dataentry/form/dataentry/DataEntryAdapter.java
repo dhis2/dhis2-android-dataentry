@@ -7,13 +7,13 @@ import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.EditableTextViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.FormItemViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.Row;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.RowAction;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.checkbox.CheckBoxRow;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.checkbox.CheckBoxViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.edittext.EditTextRow;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableTextViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.FormItemViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.Row;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox.CheckBoxRow;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox.CheckBoxViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextRow;
 
 import java.util.ArrayList;
 import java.util.List;

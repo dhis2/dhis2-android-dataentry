@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels;
+package org.hisp.dhis.android.dataentry.form.dataentry.fields;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -10,8 +10,8 @@ import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
 import org.hisp.dhis.android.dataentry.form.dataentry.EditTextHintCache;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.edittext.EditTextViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.radiobutton.RadioButtonViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.radiobutton.RadioButtonViewModel;
 
 import java.util.ArrayList;
 import java.util.List;

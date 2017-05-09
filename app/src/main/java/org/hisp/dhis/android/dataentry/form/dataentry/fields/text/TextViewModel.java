@@ -1,10 +1,10 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.text;
+package org.hisp.dhis.android.dataentry.form.dataentry.fields.text;
 
 import android.support.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.FormItemViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.FormItemViewModel;
 
 @AutoValue
 public abstract class TextViewModel extends FormItemViewModel {

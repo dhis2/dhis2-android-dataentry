@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.FormItemViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.FormItemViewModel;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ final class ProgramStageRepositoryImpl implements DataEntryRepository {
             "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
             "    Value.event = Event.uid AND Value.dataElement = Field.dataElementUid\n" +
             "  )\n" +
-            "WHERE Event.uid = \"event_uid\"\n" +
+            "WHERE Event.uid = ?\n" +
             "ORDER BY Field.formOrder ASC;";
 
     @NonNull

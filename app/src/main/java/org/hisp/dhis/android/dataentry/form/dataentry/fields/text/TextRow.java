@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.text;
+package org.hisp.dhis.android.dataentry.form.dataentry.fields.text;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView.ViewHolder;
@@ -6,8 +6,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.FormItemViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.Row;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.FormItemViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.Row;
 
 public final class TextRow implements Row {
 

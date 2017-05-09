@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.radiobutton;
+package org.hisp.dhis.android.dataentry.form.dataentry.fields.radiobutton;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +12,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxRadioGroup;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.RowAction;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 
 import java.util.concurrent.TimeUnit;
 

@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels;
+package org.hisp.dhis.android.dataentry.form.dataentry.fields;
 
 import android.support.annotation.NonNull;
 

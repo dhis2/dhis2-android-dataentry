@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.edittext;
+package org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView.ViewHolder;
@@ -6,13 +6,13 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.FormItemViewModel;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.Row;
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.RowAction;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.FormItemViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.Row;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 
 import io.reactivex.processors.FlowableProcessor;
 
-public final class EditTextRow implements Row {
+public class CheckBoxRow implements Row {
 
     @NonNull
     private final LayoutInflater inflater;
@@ -20,7 +20,7 @@ public final class EditTextRow implements Row {
     @NonNull
     private final FlowableProcessor<RowAction> processor;
 
-    public EditTextRow(@NonNull LayoutInflater inflater,
+    public CheckBoxRow(@NonNull LayoutInflater inflater,
             @NonNull FlowableProcessor<RowAction> processor) {
         this.inflater = inflater;
         this.processor = processor;
@@ -29,12 +29,12 @@ public final class EditTextRow implements Row {
     @NonNull
     @Override
     public ViewHolder onCreate(@NonNull ViewGroup parent) {
-        return new EditTextViewHolder(parent, inflater.inflate(
-                R.layout.recyclerview_row_edittext, parent, false), processor);
+        return new CheckBoxViewHolder(parent, inflater.inflate(
+                R.layout.recyclerview_row_checkbox, parent, false), processor);
     }
 
     @Override
     public void onBind(@NonNull ViewHolder viewHolder, @NonNull FormItemViewModel viewModel) {
-        ((EditTextViewHolder) viewHolder).update((EditTextViewModel) viewModel);
+        ((CheckBoxViewHolder) viewHolder).update((CheckBoxViewModel) viewModel);
     }
 }

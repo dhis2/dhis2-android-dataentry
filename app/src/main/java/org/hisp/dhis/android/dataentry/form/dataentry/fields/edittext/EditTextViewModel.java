@@ -1,11 +1,11 @@
-package org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.edittext;
+package org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext;
 
 import android.support.annotation.NonNull;
 import android.text.InputFilter;
 
 import com.google.auto.value.AutoValue;
 
-import org.hisp.dhis.android.dataentry.form.dataentry.viewmodels.EditableTextViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableTextViewModel;
 
 import java.util.List;
 
