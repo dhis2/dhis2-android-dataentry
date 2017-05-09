@@ -7,13 +7,17 @@ import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableTextFieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.Row;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox.CheckBoxRow;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox.CheckBoxViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextRow;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.radiobutton.RadioButtonRow;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.radiobutton.RadioButtonViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.text.TextRow;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.text.TextViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +47,8 @@ final class DataEntryAdapter extends Adapter {
 
         rows.add(ROW_CHECKBOX, new CheckBoxRow(layoutInflater, processor));
         rows.add(ROW_EDITTEXT, new EditTextRow(layoutInflater, processor));
+        rows.add(ROW_RADIO_BUTTONS, new RadioButtonRow(layoutInflater, processor));
+        rows.add(ROW_TEXT, new TextRow(layoutInflater));
     }
 
     @Override
@@ -65,10 +71,15 @@ final class DataEntryAdapter extends Adapter {
         FieldViewModel viewModel = viewModels.get(position);
         if (viewModel instanceof CheckBoxViewModel) {
             return ROW_CHECKBOX;
-        } else if (viewModel instanceof EditableTextFieldViewModel) {
+        } else if (viewModel instanceof EditTextModel) {
             return ROW_EDITTEXT;
+        } else if (viewModel instanceof RadioButtonViewModel) {
+            return ROW_RADIO_BUTTONS;
+        } else if (viewModel instanceof TextViewModel) {
+            return ROW_TEXT;
         } else {
-            return 2;
+            throw new IllegalStateException("Unsupported view model type: "
+                    + viewModel.getClass());
         }
     }
 
