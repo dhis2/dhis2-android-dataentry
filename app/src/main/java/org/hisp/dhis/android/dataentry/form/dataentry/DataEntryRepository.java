@@ -11,5 +11,5 @@ import io.reactivex.Flowable;
 public interface DataEntryRepository {
 
     @NonNull
-    Flowable<List<FieldViewModel>> fields();
+    Flowable<List<FieldViewModel>> list(@NonNull String uid);
 }
