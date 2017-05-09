@@ -52,20 +52,16 @@ final class ProgramStageRepositoryImpl implements DataEntryRepository {
     @NonNull
     private final FieldViewModelFactory fieldFactory;
 
-    @NonNull
-    private final String event;
-
     ProgramStageRepositoryImpl(@NonNull BriteDatabase briteDatabase,
-            @NonNull FieldViewModelFactory fieldFactory, @NonNull String event) {
+            @NonNull FieldViewModelFactory fieldFactory) {
         this.briteDatabase = briteDatabase;
         this.fieldFactory = fieldFactory;
-        this.event = event;
     }
 
     @NonNull
     @Override
-    public Flowable<List<FieldViewModel>> fields() {
-        return toV2Flowable(briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, QUERY, event)
+    public Flowable<List<FieldViewModel>> list(@NonNull String uid) {
+        return toV2Flowable(briteDatabase.createQuery(TrackedEntityDataValueModel.TABLE, QUERY, uid)
                 .mapToList(this::transform));
     }
 

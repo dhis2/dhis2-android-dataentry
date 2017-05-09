@@ -101,7 +101,7 @@ public class ProgramStageRepositoryIntegrationTests {
                 ENTER_POSITIVE_INTEGER, ENTER_NEGATIVE_INTEGER, ENTER_POSITIVE_INTEGER_OR_ZERO);
 
         programStageRepository = new ProgramStageRepositoryImpl(
-                databaseRule.briteDatabase(), fieldViewModelFactory, EVENT_UID);
+                databaseRule.briteDatabase(), fieldViewModelFactory);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class ProgramStageRepositoryIntegrationTests {
         db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID,
                 DATA_ELEMENT_THREE_UID, TEST_DATA_VALUE_THREE));
 
-        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.fields().test();
+        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.list(EVENT_UID).test();
 
         FieldViewModel fieldOne = RadioButtonViewModel.fromRawValue(DATA_ELEMENT_ONE_UID,
                 DATA_ELEMENT_ONE_NAME, true, TEST_DATA_VALUE_ONE);
@@ -148,7 +148,7 @@ public class ProgramStageRepositoryIntegrationTests {
         FieldViewModel fieldThree = EditTextViewModel.create(DATA_ELEMENT_THREE_UID,
                 DATA_ELEMENT_THREE_NAME, true, null, ENTER_TEXT, 1);
 
-        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.fields().test();
+        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.list(EVENT_UID).test();
         assertThat(testObserver.valueCount()).isEqualTo(1);
         assertThat(testObserver.values().get(0).get(0)).isEqualTo(fieldTwo);
         assertThat(testObserver.values().get(0).get(1)).isEqualTo(fieldThree);
@@ -176,7 +176,7 @@ public class ProgramStageRepositoryIntegrationTests {
         db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID,
                 DATA_ELEMENT_THREE_UID, null));
 
-        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.fields().test();
+        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.list(EVENT_UID).test();
 
         FieldViewModel fieldOne = RadioButtonViewModel.fromRawValue(DATA_ELEMENT_ONE_UID,
                 DATA_ELEMENT_ONE_NAME, true, null);
