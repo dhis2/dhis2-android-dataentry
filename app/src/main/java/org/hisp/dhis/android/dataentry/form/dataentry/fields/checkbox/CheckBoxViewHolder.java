@@ -46,6 +46,6 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
     void update(@NonNull CheckBoxViewModel model) {
         viewModel = model;
         textViewLabel.setText(viewModel.label());
-        checkBox.setChecked(viewModel.value());
+        checkBox.setChecked(CheckBoxViewModel.Value.CHECKED.equals(viewModel.value()));
     }
 }
