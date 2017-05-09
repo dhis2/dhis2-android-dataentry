@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableFieldViewModel;
 
-abstract class EditTextModel<T> extends EditableFieldViewModel<T> {
+public abstract class EditTextModel<T> extends EditableFieldViewModel<T> {
 
     @NonNull
     public abstract String hint();
