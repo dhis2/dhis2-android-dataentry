@@ -130,6 +130,10 @@ public class ProgramStageRepositoryIntegrationTests {
         assertThat(fields.get(0)).isEqualTo(fieldTwo);
         assertThat(fields.get(1)).isEqualTo(fieldThree);
         assertThat(fields.get(2)).isEqualTo(fieldOne);
+
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+        testObserver.assertNotTerminated();
     }
 
     @Test
@@ -154,6 +158,10 @@ public class ProgramStageRepositoryIntegrationTests {
         assertThat(testObserver.values().get(0).get(1)).isEqualTo(fieldThree);
         assertThat(testObserver.values().get(0).get(2)).isEqualTo(fieldOne);
 
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+        testObserver.assertNotTerminated();
+
         databaseRule.briteDatabase().insert(TrackedEntityDataValueModel.TABLE, dataValue(EVENT_UID,
                 DATA_ELEMENT_THREE_UID, TEST_DATA_VALUE_THREE));
 
@@ -163,6 +171,10 @@ public class ProgramStageRepositoryIntegrationTests {
         assertThat(testObserver.values().get(1).get(0)).isEqualTo(fieldTwo);
         assertThat(testObserver.values().get(1).get(1)).isEqualTo(fieldThreeUpdated);
         assertThat(testObserver.values().get(1).get(2)).isEqualTo(fieldOne);
+
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+        testObserver.assertNotTerminated();
     }
 
     @Test
@@ -191,6 +203,10 @@ public class ProgramStageRepositoryIntegrationTests {
         assertThat(fields.get(0)).isEqualTo(fieldTwo);
         assertThat(fields.get(1)).isEqualTo(fieldThree);
         assertThat(fields.get(2)).isEqualTo(fieldOne);
+
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+        testObserver.assertNotTerminated();
     }
 
     private static ContentValues programStageDataElement(String uid, String programStage,
