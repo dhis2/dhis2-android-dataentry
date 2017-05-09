@@ -62,29 +62,24 @@ final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case TRUE_ONLY:
                 return CheckBoxViewModel.fromRawValue(id, label, mandatory, value);
             case TEXT:
-                return EditTextViewModel.create(id, label, mandatory, value,
-                        hintEnterText, 1, InputType.TYPE_CLASS_TEXT);
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1);
             case LONG_TEXT:
-                return EditTextViewModel.create(id, label, mandatory, value,
-                        hintEnterLongText, 3, InputType.TYPE_CLASS_TEXT);
+                return EditTextViewModel.create(id, label, mandatory, value, hintEnterLongText, 3);
             case NUMBER:
-                return EditTextDoubleViewModel.create(id, label, mandatory, Double.valueOf(value),
-                        hintEnterNumber, 1, InputType.TYPE_CLASS_NUMBER |
-                                InputType.TYPE_NUMBER_FLAG_DECIMAL |
-                                InputType.TYPE_NUMBER_FLAG_SIGNED);
+                return EditTextDoubleViewModel.create(id, label, mandatory,
+                        Double.valueOf(value), hintEnterNumber);
             case INTEGER:
                 return EditTextIntegerViewModel.create(id, label, mandatory, Integer.valueOf(value),
-                        hintEnterInteger, 1, InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+                        hintEnterInteger, InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
             case INTEGER_POSITIVE:
                 return EditTextIntegerViewModel.create(id, label, mandatory, Integer.valueOf(value),
-                        hintEnterIntegerPositive, 1, InputType.TYPE_CLASS_NUMBER);
+                        hintEnterIntegerPositive, InputType.TYPE_CLASS_NUMBER);
             case INTEGER_NEGATIVE:
                 return EditTextIntegerViewModel.create(id, label, mandatory, Integer.valueOf(value),
-                        hintEnterIntegerNegative, 1, InputType.TYPE_CLASS_NUMBER
-                                | InputType.TYPE_NUMBER_FLAG_SIGNED);
+                        hintEnterIntegerNegative, InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
             case INTEGER_ZERO_OR_POSITIVE:
                 return EditTextIntegerViewModel.create(id, label, mandatory, Integer.valueOf(value),
-                        hintEnterIntegerZeroOrPositive, 1, InputType.TYPE_CLASS_NUMBER);
+                        hintEnterIntegerZeroOrPositive, InputType.TYPE_CLASS_NUMBER);
             default:
                 return TextViewModel.create(id, label, type.toString());
         }
