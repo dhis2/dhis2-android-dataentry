@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Theme colors -->
+    <color name="color_primary">#18981d</color>
+    <color name="color_primary_dark">#195d27</color>
+    <color name="color_primary_light">#25b345</color>
+
+    <color name="color_accent">#FFFF9800</color>
+    <color name="color_accent_dark">#FFF57C00</color>
+    <color name="color_accent_light">#FFFFE0B2</color>
+
+    <color name="color_material_red">#FFF44336</color>
+    <color name="color_material_red_dark">#FFD32F2F</color>
+    <color name="color_material_red_light">#FFFFCDD2</color>
+
+    <color name="color_divider">#FFB6B6B6</color>
+
+    <!-- Custom colors -->
+    <color name="color_white_transparent">#CCFFFFFF</color>
+    <color name="color_material_green">#FF8BC34A</color>
+
+    <color name="color_background_grey">#d7d7d7</color>
+
+</resources>

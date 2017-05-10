@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="org.hisp.dhis.android.dataentry">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:name=".DhisApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".login.LoginActivity"
+            android:theme="@style/AppTheme.PrimaryColorBackground"/>
+
+        <activity
+            android:name=".main.MainActivity"
+            android:theme="@style/AppTheme"/>
+        <activity android:name=".reports.ReportsActivity"/>
+
+        <!-- Splash screen -->
+        <activity
+            android:name=".SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".service.SyncService"
+            android:enabled="true"
+            android:exported="false"/>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="${fabricKey}"/>
+
+    </application>
+
+</manifest>

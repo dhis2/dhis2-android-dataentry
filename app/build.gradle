@@ -130,6 +130,12 @@ android {
             ext.enableCrashlytics = true
         }
     }
+
+    productFlavors {
+        mHealth4Africa {
+            applicationId "org.hisp.dhis.android.dataentry.mHeakth4Africa"
+        }
+    }
 }
 
 spoon {
