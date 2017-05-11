@@ -1,8 +1,8 @@
 package org.hisp.dhis.android.dataentry.main;
 
 import org.hisp.dhis.android.core.user.UserModel;
-import org.hisp.dhis.android.dataentry.user.UserRepository;
 import org.hisp.dhis.android.dataentry.commons.schedulers.MockSchedulersProvider;
+import org.hisp.dhis.android.dataentry.user.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,8 +13,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import io.reactivex.Observable;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.Flowable;
+import io.reactivex.processors.PublishProcessor;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.never;
@@ -42,13 +42,13 @@ public class MainPresenterUnitTests {
     @Captor
     private ArgumentCaptor<String> userInitialsCaptor;
 
-    private PublishSubject<UserModel> userSubject;
+    private PublishProcessor<UserModel> userSubject;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        userSubject = PublishSubject.create();
+        userSubject = PublishProcessor.create();
         when(userRepository.me()).thenReturn(userSubject);
 
         mainPresenter = new MainPresenterImpl(new MockSchedulersProvider(), userRepository);
@@ -122,7 +122,7 @@ public class MainPresenterUnitTests {
     public void onAttachShouldNotFailIfArgumentsAreEmpty() throws Exception {
         when(userModel.firstName()).thenReturn("");
         when(userModel.surname()).thenReturn("");
-        when(userRepository.me()).thenReturn(Observable.just(userModel));
+        when(userRepository.me()).thenReturn(Flowable.just(userModel));
 
         mainPresenter.onAttach(mainView);
         userSubject.onNext(userModel);
@@ -138,7 +138,7 @@ public class MainPresenterUnitTests {
     @Test
     public void onDetachShouldNotInteractWithView() {
         userSubject.onNext(userModel);
-        when(userRepository.me()).thenReturn(Observable.just(userModel));
+        when(userRepository.me()).thenReturn(Flowable.just(userModel));
 
         mainPresenter.onAttach(mainView);
 
@@ -153,9 +153,9 @@ public class MainPresenterUnitTests {
     @Test
     public void onDetachShouldUnsubscribeFromRepository() {
         mainPresenter.onAttach(mainView);
-        assertThat(userSubject.hasObservers()).isTrue();
+        assertThat(userSubject.hasSubscribers()).isTrue();
 
         mainPresenter.onDetach();
-        assertThat(userSubject.hasObservers()).isFalse();
+        assertThat(userSubject.hasSubscribers()).isFalse();
     }
 }
