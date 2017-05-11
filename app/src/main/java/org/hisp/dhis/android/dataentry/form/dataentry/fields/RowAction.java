@@ -1,6 +1,8 @@
 package org.hisp.dhis.android.dataentry.form.dataentry.fields;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.Editable;
 
 import com.google.auto.value.AutoValue;
 
@@ -10,11 +12,11 @@ public abstract class RowAction {
     @NonNull
     public abstract String id();
 
-    @NonNull
+    @Nullable
     public abstract String value();
 
     @NonNull
-    public static RowAction create(@NonNull String id, @NonNull String value) {
+    public static RowAction create(@NonNull String id, @Nullable String value) {
         return new AutoValue_RowAction(id, value);
     }
 }
