@@ -72,6 +72,7 @@ ext {
 
     libraries = [
             support          : "25.3.1",
+            multidex         : "1.0.1",
             crashlytics      : "2.6.5",
             paperwork        : "1.2.7",
             dagger           : "2.8",
