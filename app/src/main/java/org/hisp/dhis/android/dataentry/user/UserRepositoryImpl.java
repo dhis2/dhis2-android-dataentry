@@ -10,7 +10,7 @@ import org.hisp.dhis.android.core.user.UserModel;
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import io.reactivex.Flowable;
 
-class UserRepositoryImpl implements UserRepository {
+public class UserRepositoryImpl implements UserRepository {
     private static final String SELECT_USER = "SELECT * FROM " +
             UserModel.TABLE + " LIMIT 1";
     private static final String SELECT_USER_CREDENTIALS = "SELECT * FROM " +
@@ -18,7 +18,7 @@ class UserRepositoryImpl implements UserRepository {
 
     private final BriteDatabase briteDatabase;
 
-    UserRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
+    public UserRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
         this.briteDatabase = briteDatabase;
     }
 
