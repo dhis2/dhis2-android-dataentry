@@ -3,7 +3,6 @@ package org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputFilter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
-import com.jakewharton.rxbinding2.widget.TextViewAfterTextChangeEvent;
 
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
@@ -20,8 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.functions.Predicate;
 import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.subjects.PublishSubject;
 import rx.exceptions.OnErrorNotImplementedException;
 
 import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
@@ -37,54 +35,53 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.edittext_row_edittext)
     EditText editText;
 
-    private EditTextModel viewModel;
+    @NonNull
+    PublishSubject<EditTextModel> modelSubject;
 
     @SuppressWarnings("CheckReturnValue")
     EditTextViewHolder(@NonNull ViewGroup parent, @NonNull View itemView,
             @NonNull FlowableProcessor<RowAction> processor) {
         super(itemView);
 
+        // bind views
         ButterKnife.bind(this, itemView);
+
+        // source of data for this view
+        modelSubject = PublishSubject.create();
+        modelSubject.subscribe(model -> {
+            if (model.value() != null) {
+                editText.setText(String.valueOf(model.value()));
+            }
+
+            editText.setInputType(model.inputType());
+            editText.setMaxLines(model.maxLines());
+
+            textViewLabel.setText(model.label());
+            textInputLayout.setHint(model.hint());
+        });
+
+        // listen to changes in edit text, push them to
+        // observer only in case if they are distinct
         RxTextView.afterTextChangeEvents(editText)
-                .skipInitialValue()
                 .takeUntil(RxView.detaches(parent))
-                .filter(valueHasChanged())
-                .debounce(500, TimeUnit.MILLISECONDS)
-                .map(event -> RowAction.create(viewModel.uid(),
-                        event.editable() == null ? "" : event.editable().toString()))
-                .subscribe(action -> processor.onNext(action), throwable -> {
+                .filter(event -> event.editable() != null)
+                .debounce(512, TimeUnit.MILLISECONDS)
+                .withLatestFrom(modelSubject, (event, model) ->
+                        RowAction.create(model.uid(), event.editable().toString()))
+                .skip(1)
+                .distinctUntilChanged(RowAction::value)
+                .subscribe(processor::onNext, throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 });
 
-        editText.setOnFocusChangeListener((v, hasFocus) -> toggleHintVisibility(hasFocus));
+        // show and hide hint depending on focus state of the edittext.
+        RxView.focusChanges(editText)
+                .takeUntil(RxView.detaches(parent))
+                .subscribe(hasFocus -> textInputLayout.setHintEnabled(
+                        editText.hasFocus() || isEmpty(editText.getText())));
     }
 
     void update(@NonNull EditTextModel model) {
-        viewModel = model;
-
-        textViewLabel.setText(viewModel.label());
-
-        toggleHintVisibility(editText.hasFocus());
-        textInputLayout.setHint(viewModel.hint());
-
-        // AutoValue does not support array of non-primitives so we need to transform immutable list to array
-        // editText.setFilters(viewModel.inputFilters().toArray(new InputFilter[0]));
-        // editText.setText(viewModel.value());
-        editText.setInputType(viewModel.inputType());
-        editText.setMaxLines(viewModel.maxLines());
-    }
-
-    private void toggleHintVisibility(Boolean hasFocus) {
-        if (hasFocus || isEmpty(editText.getText())) {
-            textInputLayout.setHintEnabled(true);
-        } else {
-            textInputLayout.setHintEnabled(false);
-        }
-    }
-
-    @NonNull
-    private Predicate<TextViewAfterTextChangeEvent> valueHasChanged() {
-        return textChangeEvent -> viewModel != null &&
-                !viewModel.value().equals(textChangeEvent.editable().toString());
+        modelSubject.onNext(model);
     }
 }
