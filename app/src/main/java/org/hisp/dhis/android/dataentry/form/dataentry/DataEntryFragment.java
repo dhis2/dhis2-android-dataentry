@@ -51,8 +51,10 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
     public void onAttach(Context context) {
         super.onAttach(context);
 
+        DataEntryArguments args = Preconditions.isNull(getArguments()
+                .getParcelable(ARGUMENTS), "dataEntryArguments == null");
         ((DhisApp) context.getApplicationContext()).userComponent()
-                .plus(new DataEntryModule(context))
+                .plus(new DataEntryModule(context, args.event()))
                 .inject(this);
     }
 
@@ -67,10 +69,6 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         bind(this, view);
         setUpRecyclerView();
-
-        DataEntryArguments args = Preconditions.isNull(getArguments()
-                .getParcelable(ARGUMENTS), "dataEntryArguments == null");
-        dataEntryPresenter.showFields(args.event());
     }
 
     @Override
