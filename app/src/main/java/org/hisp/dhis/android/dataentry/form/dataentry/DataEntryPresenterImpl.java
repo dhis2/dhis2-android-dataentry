@@ -1,17 +1,13 @@
 package org.hisp.dhis.android.dataentry.form.dataentry;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
-
-import java.util.List;
 
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
 import rx.exceptions.OnErrorNotImplementedException;
+import timber.log.Timber;
 
 final class DataEntryPresenterImpl implements DataEntryPresenter {
 
@@ -24,9 +20,6 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     @NonNull
     private final CompositeDisposable disposable;
 
-    @Nullable
-    private DataEntryView dataEntryView;
-
     DataEntryPresenterImpl(@NonNull DataEntryRepository dataEntryRepository,
             @NonNull SchedulerProvider schedulerProvider) {
         this.dataEntryRepository = dataEntryRepository;
@@ -37,32 +30,25 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     @Override
     public void onAttach(@NonNull View view) {
         if (view instanceof DataEntryView) {
-            dataEntryView = (DataEntryView) view;
+            DataEntryView dataEntryView = (DataEntryView) view;
+            disposable.add(dataEntryRepository.list()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(dataEntryView.showFields(), throwable -> {
+                        throw new OnErrorNotImplementedException(throwable);
+                    }));
+            disposable.add(dataEntryView.rowActions()
+                    .subscribeOn(schedulerProvider.ui())
+                    .observeOn(schedulerProvider.io())
+                    .switchMap(action -> dataEntryRepository.save(action.id(), action.value()))
+                    .subscribe(action -> Timber.d(action.toString()), throwable -> {
+                        throw new OnErrorNotImplementedException(throwable);
+                    }));
         }
-    }
-
-    @Override
-    public void showFields(@NonNull String uid) {
-        disposable.add(dataEntryRepository.list(uid)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(showFields(), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
     }
 
     @Override
     public void onDetach() {
         disposable.clear();
-        dataEntryView = null;
-    }
-
-    @NonNull
-    private Consumer<List<FieldViewModel>> showFields() {
-        return fields -> {
-            if (dataEntryView != null) {
-                dataEntryView.showFields().accept(fields);
-            }
-        };
     }
 }
