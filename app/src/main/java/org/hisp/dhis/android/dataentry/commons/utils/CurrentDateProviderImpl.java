@@ -4,10 +4,7 @@ import android.support.annotation.NonNull;
 
 import java.util.Date;
 
-public final class CurrentDateProviderImpl implements CurrentDateProvider {
-    public CurrentDateProviderImpl() {
-        // explicit constructor
-    }
+final class CurrentDateProviderImpl implements CurrentDateProvider {
 
     @NonNull
     @Override

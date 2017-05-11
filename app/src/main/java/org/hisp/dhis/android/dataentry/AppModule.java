@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 import org.hisp.dhis.android.core.configuration.ConfigurationManager;
 import org.hisp.dhis.android.core.configuration.ConfigurationManagerFactory;
 import org.hisp.dhis.android.core.data.database.DatabaseAdapter;
-import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
-import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProviderImpl;
 import org.hisp.dhis.android.dataentry.server.ConfigurationRepository;
 import org.hisp.dhis.android.dataentry.server.ConfigurationRepositoryImpl;
 
@@ -41,12 +39,6 @@ final class AppModule {
     @Singleton
     Paperwork paperwork(Context context) {
         return new Paperwork(context);
-    }
-
-    @Provides
-    @Singleton
-    CurrentDateProvider currentDateProvider() {
-        return new CurrentDateProviderImpl();
     }
 
     @Provides
