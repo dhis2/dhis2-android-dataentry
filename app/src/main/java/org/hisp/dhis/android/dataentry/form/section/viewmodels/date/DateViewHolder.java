@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dataentry.form.section.viewmodels.date;
 
+import android.annotation.TargetApi;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -68,10 +69,11 @@ final class DateViewHolder extends RecyclerView.ViewHolder {
         onValueChangeObservers.add(onValueChangeObservable.share().subscribeWith(onValueChangeObserver));
     }
 
+    @TargetApi(19)
     @OnClick({R.id.row_date_picker_edit_text, R.id.row_date_picker_button_pick})
     void showDatePicker() {
         DatePickerDialogFragment datePicker = DatePickerDialogFragment.newInstance(false);
-        datePicker.setOnDateSetListener(editText::setText);
+        datePicker.setFormattedOnDateSetListener(editText::setText);
         datePicker.show(fragmentManager);
     }
 

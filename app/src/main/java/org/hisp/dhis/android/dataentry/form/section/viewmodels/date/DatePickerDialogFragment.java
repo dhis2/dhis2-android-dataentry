@@ -13,7 +13,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class DatePickerDialogFragment extends DialogFragment {
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String TAG = DatePickerDialogFragment.class.getSimpleName();
     private static final String ARG_ALLOW_DATES_IN_FUTURE = "arg:allowDatesInFuture";
 
@@ -38,7 +38,9 @@ public class DatePickerDialogFragment extends DialogFragment {
                 getContext(), (view, year, month, dayOfMonth) -> {
             Calendar chosenDate = Calendar.getInstance();
             chosenDate.set(year, month, dayOfMonth);
-            onDateSetListener.onDateSet(DATE_FORMAT.format(chosenDate.getTime()));
+            if (onDateSetListener != null) {
+                onDateSetListener.onDateSet(dateFormat().format(chosenDate.getTime()));
+            }
         }, calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH));
@@ -50,11 +52,16 @@ public class DatePickerDialogFragment extends DialogFragment {
         return datePickerDialog;
     }
 
+    @NonNull
+    private static SimpleDateFormat dateFormat() {
+        return new SimpleDateFormat(DATE_FORMAT, Locale.US);
+    }
+
     public void show(@NonNull FragmentManager fragmentManager) {
         show(fragmentManager, TAG);
     }
 
-    public void setOnDateSetListener(@Nullable FormattedOnDateSetListener listener) {
+    public void setFormattedOnDateSetListener(@Nullable FormattedOnDateSetListener listener) {
         this.onDateSetListener = listener;
     }
 
