@@ -18,7 +18,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.1'
+        classpath 'com.android.tools.build:gradle:2.3.2'
 
         // provides insight on how many method references
         // are present in dex file
