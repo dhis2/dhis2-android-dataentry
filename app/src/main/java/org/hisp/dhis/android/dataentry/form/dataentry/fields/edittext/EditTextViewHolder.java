@@ -12,6 +12,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 
 import java.util.concurrent.TimeUnit;
@@ -19,9 +20,10 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.BehaviorSubject;
 import rx.exceptions.OnErrorNotImplementedException;
 
+import static java.lang.String.valueOf;
 import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
 
 final class EditTextViewHolder extends RecyclerView.ViewHolder {
@@ -36,7 +38,7 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
     EditText editText;
 
     @NonNull
-    PublishSubject<EditTextModel> modelSubject;
+    BehaviorSubject<EditTextModel> model;
 
     @SuppressWarnings("CheckReturnValue")
     EditTextViewHolder(@NonNull ViewGroup parent, @NonNull View itemView,
@@ -47,29 +49,29 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
 
         // source of data for this view
-        modelSubject = PublishSubject.create();
-        modelSubject.subscribe(model -> {
-            if (model.value() != null) {
-                editText.setText(String.valueOf(model.value()));
-            }
+        model = BehaviorSubject.create();
+        model.subscribe(editTextModel -> {
+            editText.setText(editTextModel.value() == null ?
+                    null : valueOf(editTextModel.value()));
+            editText.setInputType(editTextModel.inputType());
+            editText.setMaxLines(editTextModel.maxLines());
+            editText.setSelection(editText.getText() == null ? 0 : editText.getText().length());
 
-            editText.setInputType(model.inputType());
-            editText.setMaxLines(model.maxLines());
-
-            textViewLabel.setText(model.label());
-            textInputLayout.setHint(model.hint());
+            textViewLabel.setText(editTextModel.label());
+            textInputLayout.setHint(editText.hasFocus() ||
+                    isEmpty(editText.getText()) ? editTextModel.hint() : "");
         });
 
         // listen to changes in edit text, push them to
         // observer only in case if they are distinct
         RxTextView.afterTextChangeEvents(editText)
                 .takeUntil(RxView.detaches(parent))
-                .filter(event -> event.editable() != null)
+                .filter(event -> model.hasValue())
+                .filter(event -> !Preconditions.equals(event.editable().toString(),
+                        model.getValue().value() == null ? "" : valueOf(model.getValue().value())))
+                .map(event -> RowAction.create(model.getValue().uid(),
+                        event.editable().toString()))
                 .debounce(512, TimeUnit.MILLISECONDS)
-                .withLatestFrom(modelSubject, (event, model) ->
-                        RowAction.create(model.uid(), event.editable().toString()))
-                .skip(1)
-                .distinctUntilChanged(RowAction::value)
                 .subscribe(processor::onNext, throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 });
@@ -77,11 +79,11 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
         // show and hide hint depending on focus state of the edittext.
         RxView.focusChanges(editText)
                 .takeUntil(RxView.detaches(parent))
-                .subscribe(hasFocus -> textInputLayout.setHintEnabled(
-                        editText.hasFocus() || isEmpty(editText.getText())));
+                .subscribe(hasFocus -> textInputLayout.setHint((hasFocus || isEmpty(editText.getText()))
+                        && model.hasValue() ? model.getValue().hint() : ""));
     }
 
-    void update(@NonNull EditTextModel model) {
-        modelSubject.onNext(model);
+    void update(@NonNull EditTextModel editTextModel) {
+        model.onNext(editTextModel);
     }
 }
