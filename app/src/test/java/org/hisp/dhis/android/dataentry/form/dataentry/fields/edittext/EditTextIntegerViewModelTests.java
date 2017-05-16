@@ -24,4 +24,18 @@ public class EditTextIntegerViewModelTests {
         assertThat(viewModel.value()).isEqualTo(5);
         assertThat(viewModel.inputType()).isEqualTo(InputType.TYPE_CLASS_NUMBER);
     }
+
+    @Test
+    public void fromShouldFallbackToNullIfEmptyString() {
+        EditTextIntegerViewModel viewModel = EditTextIntegerViewModel.from("test_uid",
+                "test_label", true, "", "test_hint", InputType.TYPE_CLASS_NUMBER);
+
+        assertThat(viewModel.uid()).isEqualTo("test_uid");
+        assertThat(viewModel.label()).isEqualTo("test_label");
+        assertThat(viewModel.mandatory()).isEqualTo(true);
+        assertThat(viewModel.hint()).isEqualTo("test_hint");
+        assertThat(viewModel.maxLines()).isEqualTo(1);
+        assertThat(viewModel.value()).isNull();
+        assertThat(viewModel.inputType()).isEqualTo(InputType.TYPE_CLASS_NUMBER);
+    }
 }
