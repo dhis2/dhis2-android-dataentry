@@ -9,19 +9,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
-import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 
-import java.util.concurrent.TimeUnit;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.exceptions.OnErrorNotImplementedException;
+import io.reactivex.observables.ConnectableObservable;
+import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.subjects.BehaviorSubject;
-import rx.exceptions.OnErrorNotImplementedException;
 
 import static java.lang.String.valueOf;
 import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
@@ -38,7 +37,7 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
     EditText editText;
 
     @NonNull
-    BehaviorSubject<EditTextModel> model;
+    BehaviorProcessor<EditTextModel> model;
 
     @SuppressWarnings("CheckReturnValue")
     EditTextViewHolder(@NonNull ViewGroup parent, @NonNull View itemView,
@@ -49,38 +48,44 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
 
         // source of data for this view
-        model = BehaviorSubject.create();
+        model = BehaviorProcessor.create();
         model.subscribe(editTextModel -> {
             editText.setText(editTextModel.value() == null ?
                     null : valueOf(editTextModel.value()));
             editText.setInputType(editTextModel.inputType());
             editText.setMaxLines(editTextModel.maxLines());
-            editText.setSelection(editText.getText() == null ? 0 : editText.getText().length());
+            editText.setSelection(editText.getText() == null ?
+                    0 : editText.getText().length());
 
             textViewLabel.setText(editTextModel.label());
-            textInputLayout.setHint(editText.hasFocus() ||
-                    isEmpty(editText.getText()) ? editTextModel.hint() : "");
+            textInputLayout.setHint(isEmpty(editText.getText()) ? editTextModel.hint() : "");
         });
 
-        // listen to changes in edit text, push them to
-        // observer only in case if they are distinct
-        RxTextView.afterTextChangeEvents(editText)
+        // show and hide hint
+        ConnectableObservable<Boolean> editTextObservable = RxView.focusChanges(editText)
                 .takeUntil(RxView.detaches(parent))
-                .filter(event -> model.hasValue())
-                .filter(event -> !Preconditions.equals(event.editable().toString(),
+                .publish();
+
+        editTextObservable
+                .map(hasFocus -> (hasFocus || isEmpty(editText.getText()))
+                        && model.hasValue() ? model.getValue().hint() : "")
+                .subscribe(hint -> textInputLayout.setHint(hint), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                });
+
+        // persist value on focus change
+        editTextObservable
+                .scan(Pair.create(false, false), (state, hasFocus) ->
+                        Pair.create((state.val1() && !hasFocus), hasFocus))
+                .filter(state -> state.val0() && model.hasValue())
+                .filter(state -> !Preconditions.equals(isEmpty(editText.getText()) ? "" : editText.getText().toString(),
                         model.getValue().value() == null ? "" : valueOf(model.getValue().value())))
-                .map(event -> RowAction.create(model.getValue().uid(),
-                        event.editable().toString()))
-                .debounce(512, TimeUnit.MILLISECONDS)
+                .map(event -> RowAction.create(model.getValue().uid(), editText.getText().toString()))
                 .subscribe(processor::onNext, throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 });
 
-        // show and hide hint depending on focus state of the edittext.
-        RxView.focusChanges(editText)
-                .takeUntil(RxView.detaches(parent))
-                .subscribe(hasFocus -> textInputLayout.setHint((hasFocus || isEmpty(editText.getText()))
-                        && model.hasValue() ? model.getValue().hint() : ""));
+        editTextObservable.connect();
     }
 
     void update(@NonNull EditTextModel editTextModel) {
