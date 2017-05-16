@@ -1,7 +1,7 @@
 package org.hisp.dhis.android.dataentry.form.dataentry;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
@@ -58,7 +58,8 @@ final class DataEntryAdapter extends Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        rows.get(holder.getItemViewType()).onBind(holder, viewModels.get(position));
+        rows.get(holder.getItemViewType()).onBind(holder,
+                viewModels.get(holder.getAdapterPosition()));
     }
 
     @Override
@@ -83,18 +84,23 @@ final class DataEntryAdapter extends Adapter {
         }
     }
 
+    @Override
+    public long getItemId(int position) {
+        return viewModels.get(position).uid().hashCode();
+    }
+
     @NonNull
     FlowableProcessor<RowAction> asFlowable() {
         return processor;
     }
 
-    void swap(@Nullable List<FieldViewModel> viewModels) {
-        this.viewModels.clear();
+    void swap(@NonNull List<FieldViewModel> updates) {
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
+                new DataEntryDiffCallback(viewModels, updates));
 
-        if (viewModels != null) {
-            this.viewModels.addAll(viewModels);
-        }
+        viewModels.clear();
+        viewModels.addAll(updates);
 
-        notifyDataSetChanged();
+        diffResult.dispatchUpdatesTo(this);
     }
 }
