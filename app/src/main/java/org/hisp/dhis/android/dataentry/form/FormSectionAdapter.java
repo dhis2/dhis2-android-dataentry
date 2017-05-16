@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dataentry.form;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -11,6 +12,7 @@ import java.util.List;
 
 class FormSectionAdapter extends FragmentStatePagerAdapter {
 
+    @NonNull
     private final List<FormSectionViewModel> formSectionViewModelList;
 
     FormSectionAdapter(FragmentManager fragmentManager) {
@@ -21,7 +23,7 @@ class FormSectionAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         return DummyFragment.newInstance(formSectionViewModelList.get(position).label());
-        //return DataEntryFragment.newInstance(formSectionViewModelList.get(position));
+        //return DataEntryFragment.newInstance(DataEntryViewArguments.fromFormSectionViewModel());
     }
 
     @Override

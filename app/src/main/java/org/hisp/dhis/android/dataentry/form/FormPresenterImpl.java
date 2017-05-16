@@ -67,7 +67,7 @@ class FormPresenterImpl implements FormPresenter {
                     .subscribe(
                             formRepository.storeReportDate(reportUid),
                             Timber::e));
-            
+
             compositeDisposable.add(formRepository.reportStatus(reportUid)
                     .subscribeOn(schedulerProvider.io())
                     .distinctUntilChanged()
@@ -95,7 +95,7 @@ class FormPresenterImpl implements FormPresenter {
     }
 
     @NonNull
-    private Predicate<EventStatus> handleEnrollmentFabClick(FormView formView) {
+    private Predicate<EventStatus> handleEnrollmentFabClick(@NonNull FormView formView) {
         return eventStatus -> {
             if (formView.formViewArguments().type() == FormViewArguments.Type.ENROLLMENT) {
                 // go to TEI dashboard screen

@@ -173,7 +173,7 @@ public class FormFragment extends BaseFragment implements FormView {
     }
 
     @Override
-    public void renderStatusChangeSnackBar(EventStatus eventStatus) {
+    public void renderStatusChangeSnackBar(@NonNull EventStatus eventStatus) {
         String snackBarMessage;
         if (eventStatus == EventStatus.COMPLETED) {
             snackBarMessage = getString(R.string.complete);

@@ -3,7 +3,6 @@ package org.hisp.dhis.android.dataentry.form;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -16,7 +15,7 @@ import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull
  */
 public class AutoHidingTabLayout extends TabLayout {
 
-    @Nullable
+    @NonNull
     private ViewPager viewPager;
 
     public AutoHidingTabLayout(Context context) {
@@ -32,7 +31,7 @@ public class AutoHidingTabLayout extends TabLayout {
     }
 
     @Override
-    public void setupWithViewPager(@Nullable ViewPager viewPager) {
+    public void setupWithViewPager(@NonNull ViewPager viewPager) {
 
         isNull(viewPager, "viewPager == null");
         isNull(viewPager.getAdapter(), "viewPager.getAdapter == null. You must set an adapter on the ViewPager before" +

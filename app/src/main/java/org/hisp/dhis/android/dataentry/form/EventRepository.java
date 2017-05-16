@@ -102,7 +102,7 @@ class EventRepository implements FormRepository {
     }
 
     @Override
-    public Consumer<String> storeReportDate(String uid) {
+    public Consumer<String> storeReportDate(@NonNull String uid) {
         return reportDate -> {
             ContentValues event = new ContentValues();
             event.put(EventModel.Columns.EVENT_DATE, reportDate);
@@ -111,7 +111,7 @@ class EventRepository implements FormRepository {
     }
 
     @Override
-    public Consumer<EventStatus> storeEventStatus(String uid) {
+    public Consumer<EventStatus> storeEventStatus(@NonNull String uid) {
         return eventStatus -> {
             ContentValues event = new ContentValues();
             event.put(EventModel.Columns.STATUS, eventStatus.name());

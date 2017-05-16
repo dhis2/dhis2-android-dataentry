@@ -80,7 +80,7 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Consumer<String> storeReportDate(String uid) {
+    public Consumer<String> storeReportDate(@NonNull String uid) {
         return reportDate -> {
             ContentValues enrollment = new ContentValues();
             enrollment.put(EnrollmentModel.Columns.DATE_OF_ENROLLMENT, reportDate);
