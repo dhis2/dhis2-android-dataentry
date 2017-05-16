@@ -14,12 +14,17 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageDataElementModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
+import org.hisp.dhis.android.core.user.UserCredentialsModel;
+import org.hisp.dhis.android.core.user.UserModel;
+import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactory;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactoryImpl;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
+import org.hisp.dhis.android.dataentry.user.UserRepository;
+import org.hisp.dhis.android.dataentry.user.UserRepositoryImpl;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,9 +37,19 @@ import io.reactivex.subscribers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.hisp.dhis.android.dataentry.commons.utils.CursorAssert.assertThatCursor;
 
 @RunWith(AndroidJUnit4.class)
 public class ProgramStageRepositoryIntegrationTests {
+    private static final String[] TEDV_PROJECTION = {
+            TrackedEntityDataValueModel.Columns.CREATED,
+            TrackedEntityDataValueModel.Columns.LAST_UPDATED,
+            TrackedEntityDataValueModel.Columns.DATA_ELEMENT,
+            TrackedEntityDataValueModel.Columns.EVENT,
+            TrackedEntityDataValueModel.Columns.VALUE,
+            TrackedEntityDataValueModel.Columns.STORED_BY
+    };
+
     private static final String ENTER_TEXT = "enter_text";
     private static final String ENTER_LONG_TEXT = "enter_long_text";
     private static final String ENTER_NUMBER = "enter_number";
@@ -55,15 +70,27 @@ public class ProgramStageRepositoryIntegrationTests {
     private static final String DATA_ELEMENT_ONE_NAME = "data_element_one_name";
     private static final String DATA_ELEMENT_TWO_NAME = "data_element_two_name";
     private static final String DATA_ELEMENT_THREE_NAME = "data_element_three_name";
+    private static final String TEST_USERNAME = "test_username";
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
 
     private DataEntryRepository programStageRepository;
+    private Date currentDate;
 
     @Before
     public void setUp() throws Exception {
         SQLiteDatabase db = databaseRule.database();
+
+        ContentValues user = new ContentValues();
+        user.put(UserModel.Columns.UID, "test_user_uid");
+        db.insert(UserModel.TABLE, null, user);
+
+        ContentValues userCredentials = new ContentValues();
+        userCredentials.put(UserCredentialsModel.Columns.UID, "test_user_credentials_uid");
+        userCredentials.put(UserCredentialsModel.Columns.USER, "test_user_uid");
+        userCredentials.put(UserCredentialsModel.Columns.USERNAME, TEST_USERNAME);
+        db.insert(UserCredentialsModel.TABLE, null, userCredentials);
 
         ContentValues orgUnit = new ContentValues();
         orgUnit.put(OrganisationUnitModel.Columns.UID, "organisation_unit_uid");
@@ -100,22 +127,30 @@ public class ProgramStageRepositoryIntegrationTests {
                 ENTER_TEXT, ENTER_LONG_TEXT, ENTER_NUMBER, ENTER_INTEGER,
                 ENTER_POSITIVE_INTEGER, ENTER_NEGATIVE_INTEGER, ENTER_POSITIVE_INTEGER_OR_ZERO);
 
-        programStageRepository = new ProgramStageRepositoryImpl(
-                databaseRule.briteDatabase(), fieldViewModelFactory);
+        // provider of time stamps for data values
+        currentDate = new Date();
+        CurrentDateProvider currentDateProvider = () -> currentDate;
+
+        // user repository used to retrieve user name
+        UserRepository userRepository = new UserRepositoryImpl(databaseRule.briteDatabase());
+
+        // class under tests
+        programStageRepository = new ProgramStageRepository(databaseRule.briteDatabase(),
+                userRepository, fieldViewModelFactory, currentDateProvider, EVENT_UID);
     }
 
     @Test
     public void fieldsShouldPropagateCorrectResults() {
         SQLiteDatabase db = databaseRule.database();
 
-        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID,
-                DATA_ELEMENT_ONE_UID, TEST_DATA_VALUE_ONE));
-        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID,
-                DATA_ELEMENT_TWO_UID, TEST_DATA_VALUE_TWO));
-        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID,
-                DATA_ELEMENT_THREE_UID, TEST_DATA_VALUE_THREE));
+        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, currentDate,
+                currentDate, DATA_ELEMENT_ONE_UID, TEST_DATA_VALUE_ONE, TEST_USERNAME));
+        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, currentDate,
+                currentDate, DATA_ELEMENT_TWO_UID, TEST_DATA_VALUE_TWO, TEST_USERNAME));
+        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, currentDate,
+                currentDate, DATA_ELEMENT_THREE_UID, TEST_DATA_VALUE_THREE, TEST_USERNAME));
 
-        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.list(EVENT_UID).test();
+        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.list().test();
 
         FieldViewModel fieldOne = RadioButtonViewModel.fromRawValue(DATA_ELEMENT_ONE_UID,
                 DATA_ELEMENT_ONE_NAME, true, TEST_DATA_VALUE_ONE);
@@ -140,10 +175,10 @@ public class ProgramStageRepositoryIntegrationTests {
     public void fieldsShouldObserveChangesInDatabase() {
         SQLiteDatabase db = databaseRule.database();
 
-        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID,
-                DATA_ELEMENT_ONE_UID, TEST_DATA_VALUE_ONE));
-        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID,
-                DATA_ELEMENT_TWO_UID, TEST_DATA_VALUE_TWO));
+        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, currentDate,
+                currentDate, DATA_ELEMENT_ONE_UID, TEST_DATA_VALUE_ONE, TEST_USERNAME));
+        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, currentDate,
+                currentDate, DATA_ELEMENT_TWO_UID, TEST_DATA_VALUE_TWO, TEST_USERNAME));
 
         FieldViewModel fieldOne = RadioButtonViewModel.fromRawValue(DATA_ELEMENT_ONE_UID,
                 DATA_ELEMENT_ONE_NAME, true, TEST_DATA_VALUE_ONE);
@@ -152,7 +187,7 @@ public class ProgramStageRepositoryIntegrationTests {
         FieldViewModel fieldThree = EditTextViewModel.create(DATA_ELEMENT_THREE_UID,
                 DATA_ELEMENT_THREE_NAME, true, null, ENTER_TEXT, 1);
 
-        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.list(EVENT_UID).test();
+        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.list().test();
         assertThat(testObserver.valueCount()).isEqualTo(1);
         assertThat(testObserver.values().get(0).get(0)).isEqualTo(fieldTwo);
         assertThat(testObserver.values().get(0).get(1)).isEqualTo(fieldThree);
@@ -163,7 +198,7 @@ public class ProgramStageRepositoryIntegrationTests {
         testObserver.assertNotTerminated();
 
         databaseRule.briteDatabase().insert(TrackedEntityDataValueModel.TABLE, dataValue(EVENT_UID,
-                DATA_ELEMENT_THREE_UID, TEST_DATA_VALUE_THREE));
+                currentDate, currentDate, DATA_ELEMENT_THREE_UID, TEST_DATA_VALUE_THREE, TEST_USERNAME));
 
         FieldViewModel fieldThreeUpdated = EditTextViewModel.create(DATA_ELEMENT_THREE_UID,
                 DATA_ELEMENT_THREE_NAME, true, TEST_DATA_VALUE_THREE, ENTER_TEXT, 1);
@@ -181,15 +216,14 @@ public class ProgramStageRepositoryIntegrationTests {
     public void fieldsWithoutDataValuesMustBePropagated() {
         SQLiteDatabase db = databaseRule.database();
 
-        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID,
-                DATA_ELEMENT_ONE_UID, null));
-        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID,
-                DATA_ELEMENT_TWO_UID, null));
-        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID,
-                DATA_ELEMENT_THREE_UID, null));
+        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, currentDate,
+                currentDate, DATA_ELEMENT_ONE_UID, null, TEST_USERNAME));
+        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, currentDate,
+                currentDate, DATA_ELEMENT_TWO_UID, null, TEST_USERNAME));
+        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, currentDate,
+                currentDate, DATA_ELEMENT_THREE_UID, null, TEST_USERNAME));
 
-        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.list(EVENT_UID).test();
-
+        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.list().test();
         FieldViewModel fieldOne = RadioButtonViewModel.fromRawValue(DATA_ELEMENT_ONE_UID,
                 DATA_ELEMENT_ONE_NAME, true, null);
         FieldViewModel fieldTwo = EditTextViewModel.create(DATA_ELEMENT_TWO_UID,
@@ -209,6 +243,127 @@ public class ProgramStageRepositoryIntegrationTests {
         testObserver.assertNotTerminated();
     }
 
+    @Test
+    public void saveShouldUpdateExistingDataValue() {
+        SQLiteDatabase db = databaseRule.database();
+
+        Date createdDate = new Date();
+        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, createdDate,
+                createdDate, DATA_ELEMENT_ONE_UID, "test_data_value", TEST_USERNAME));
+
+        TestSubscriber<Long> testSubscriber = programStageRepository.save(
+                DATA_ELEMENT_ONE_UID, "test_updated_datavalue").test();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertComplete();
+        testSubscriber.assertTerminated();
+
+        assertThat(testSubscriber.valueCount()).isEqualTo(1);
+        assertThat(testSubscriber.values().get(0)).isEqualTo(1);
+
+        assertThatCursor(db.query(TrackedEntityDataValueModel.TABLE, TEDV_PROJECTION,
+                TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ?", new String[]{
+                        DATA_ELEMENT_ONE_UID}, null, null, null)
+        ).hasRow(
+                BaseIdentifiableObject.DATE_FORMAT.format(createdDate),
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                DATA_ELEMENT_ONE_UID, EVENT_UID, "test_updated_datavalue", TEST_USERNAME
+        ).isExhausted();
+    }
+
+    @Test
+    public void saveShouldNullifyExistingDataValue() {
+        SQLiteDatabase db = databaseRule.database();
+
+        Date createdDate = new Date();
+        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, createdDate,
+                createdDate, DATA_ELEMENT_ONE_UID, "test_data_value", TEST_USERNAME));
+
+        TestSubscriber<Long> testSubscriber = programStageRepository.save(
+                DATA_ELEMENT_ONE_UID, null).test();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertComplete();
+        testSubscriber.assertTerminated();
+
+        assertThat(testSubscriber.valueCount()).isEqualTo(1);
+        assertThat(testSubscriber.values().get(0)).isEqualTo(1);
+
+        assertThatCursor(db.query(TrackedEntityDataValueModel.TABLE, TEDV_PROJECTION,
+                TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ?", new String[]{
+                        DATA_ELEMENT_ONE_UID}, null, null, null)
+        ).hasRow(
+                BaseIdentifiableObject.DATE_FORMAT.format(createdDate),
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                DATA_ELEMENT_ONE_UID, EVENT_UID, null, TEST_USERNAME
+        ).isExhausted();
+    }
+
+    @Test
+    public void saveShouldInsertNewDataValue() {
+        SQLiteDatabase db = databaseRule.database();
+
+        TestSubscriber<Long> testSubscriber = programStageRepository.save(
+                DATA_ELEMENT_ONE_UID, "test_datavalue").test();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertComplete();
+        testSubscriber.assertTerminated();
+
+        assertThat(testSubscriber.valueCount()).isEqualTo(1);
+        assertThat(testSubscriber.values().get(0)).isEqualTo(1);
+
+        assertThatCursor(db.query(TrackedEntityDataValueModel.TABLE, TEDV_PROJECTION,
+                TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ?", new String[]{
+                        DATA_ELEMENT_ONE_UID}, null, null, null)
+        ).hasRow(
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                DATA_ELEMENT_ONE_UID, EVENT_UID, "test_datavalue", TEST_USERNAME
+        ).isExhausted();
+    }
+
+    @Test
+    public void saveShouldTriggerNewQueryOnList() {
+        SQLiteDatabase db = databaseRule.database();
+
+        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, currentDate,
+                currentDate, DATA_ELEMENT_ONE_UID, TEST_DATA_VALUE_ONE, TEST_USERNAME));
+        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, currentDate,
+                currentDate, DATA_ELEMENT_TWO_UID, TEST_DATA_VALUE_TWO, TEST_USERNAME));
+
+        FieldViewModel fieldOne = RadioButtonViewModel.fromRawValue(DATA_ELEMENT_ONE_UID,
+                DATA_ELEMENT_ONE_NAME, true, TEST_DATA_VALUE_ONE);
+        FieldViewModel fieldTwo = EditTextViewModel.create(DATA_ELEMENT_TWO_UID,
+                DATA_ELEMENT_TWO_NAME, false, TEST_DATA_VALUE_TWO, ENTER_LONG_TEXT, 3);
+        FieldViewModel fieldThree = EditTextViewModel.create(DATA_ELEMENT_THREE_UID,
+                DATA_ELEMENT_THREE_NAME, true, null, ENTER_TEXT, 1);
+
+        TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.list().test();
+        assertThat(testObserver.valueCount()).isEqualTo(1);
+        assertThat(testObserver.values().get(0).get(0)).isEqualTo(fieldTwo);
+        assertThat(testObserver.values().get(0).get(1)).isEqualTo(fieldThree);
+        assertThat(testObserver.values().get(0).get(2)).isEqualTo(fieldOne);
+
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+        testObserver.assertNotTerminated();
+
+        TestSubscriber<Long> saveSubscriber = programStageRepository.save(
+                DATA_ELEMENT_THREE_UID, TEST_DATA_VALUE_THREE).test();
+        saveSubscriber.assertNoErrors();
+        saveSubscriber.assertComplete();
+        saveSubscriber.assertTerminated();
+
+        FieldViewModel fieldThreeUpdated = EditTextViewModel.create(DATA_ELEMENT_THREE_UID,
+                DATA_ELEMENT_THREE_NAME, true, TEST_DATA_VALUE_THREE, ENTER_TEXT, 1);
+        assertThat(testObserver.valueCount()).isEqualTo(2);
+        assertThat(testObserver.values().get(1).get(0)).isEqualTo(fieldTwo);
+        assertThat(testObserver.values().get(1).get(1)).isEqualTo(fieldThreeUpdated);
+        assertThat(testObserver.values().get(1).get(2)).isEqualTo(fieldOne);
+
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+        testObserver.assertNotTerminated();
+    }
+
     private static ContentValues programStageDataElement(String uid, String programStage,
             String dataElement, Integer sortOrder, Boolean isCompulsory) {
         ContentValues psde = new ContentValues();
@@ -219,7 +374,6 @@ public class ProgramStageRepositoryIntegrationTests {
         psde.put(ProgramStageDataElementModel.Columns.COMPULSORY, isCompulsory ? 1 : 0);
         return psde;
     }
-
 
     private static ContentValues dataElement(String uid, String displayName, String valueType) {
         ContentValues dataElementTwo = new ContentValues();
@@ -242,11 +396,17 @@ public class ProgramStageRepositoryIntegrationTests {
         return event;
     }
 
-    private static ContentValues dataValue(String event, String dataelement, String value) {
+    private static ContentValues dataValue(String event, Date created, Date lastUpdated,
+            String dataelement, String value, String storedBy) {
         ContentValues dataValue = new ContentValues();
         dataValue.put(TrackedEntityDataValueModel.Columns.EVENT, event);
+        dataValue.put(TrackedEntityDataValueModel.Columns.CREATED,
+                BaseIdentifiableObject.DATE_FORMAT.format(created));
+        dataValue.put(TrackedEntityDataValueModel.Columns.LAST_UPDATED,
+                BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
         dataValue.put(TrackedEntityDataValueModel.Columns.DATA_ELEMENT, dataelement);
         dataValue.put(TrackedEntityDataValueModel.Columns.VALUE, value);
+        dataValue.put(TrackedEntityDataValueModel.Columns.STORED_BY, storedBy);
         return dataValue;
     }
 }
