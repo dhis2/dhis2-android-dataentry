@@ -31,17 +31,23 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     public void onAttach(@NonNull View view) {
         if (view instanceof DataEntryView) {
             DataEntryView dataEntryView = (DataEntryView) view;
+
             disposable.add(dataEntryRepository.list()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(dataEntryView.showFields(), throwable -> {
                         throw new OnErrorNotImplementedException(throwable);
                     }));
+
             disposable.add(dataEntryView.rowActions()
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.io())
-                    .switchMap(action -> dataEntryRepository.save(action.id(), action.value()))
-                    .subscribe(action -> Timber.d(action.toString()), throwable -> {
+                    .switchMap(action -> {
+                        Timber.d("dataEntryRepository.save(uid=[%s], value=[%s])",
+                                action.id(), action.value());
+                        return dataEntryRepository.save(action.id(), action.value());
+                    })
+                    .subscribe(result -> Timber.d(result.toString()), throwable -> {
                         throw new OnErrorNotImplementedException(throwable);
                     }));
         }
