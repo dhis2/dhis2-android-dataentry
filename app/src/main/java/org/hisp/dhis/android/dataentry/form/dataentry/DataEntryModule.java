@@ -8,8 +8,10 @@ import com.squareup.sqlbrite.BriteDatabase;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.dagger.PerFragment;
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactory;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactoryImpl;
+import org.hisp.dhis.android.dataentry.user.UserRepository;
 
 import dagger.Module;
 import dagger.Provides;
@@ -21,7 +23,11 @@ public class DataEntryModule {
     @NonNull
     private final FieldViewModelFactory modelFactory;
 
-    public DataEntryModule(@NonNull Context context) {
+    @NonNull
+    private final String entityUid;
+
+    public DataEntryModule(@NonNull Context context, @NonNull String entityUid) {
+        this.entityUid = entityUid;
         this.modelFactory = new FieldViewModelFactoryImpl(
                 context.getString(R.string.enter_text),
                 context.getString(R.string.enter_long_text),
@@ -41,7 +47,9 @@ public class DataEntryModule {
 
     @Provides
     @PerFragment
-    DataEntryRepository dataEntryRepository(@NonNull BriteDatabase briteDatabase) {
-        return new ProgramStageRepositoryImpl(briteDatabase, modelFactory);
+    DataEntryRepository dataEntryRepository(@NonNull BriteDatabase briteDatabase,
+            @NonNull UserRepository userRepository, @NonNull CurrentDateProvider dateProvider) {
+        return new ProgramStageRepository(briteDatabase, userRepository,
+                modelFactory, dateProvider, entityUid);
     }
 }
