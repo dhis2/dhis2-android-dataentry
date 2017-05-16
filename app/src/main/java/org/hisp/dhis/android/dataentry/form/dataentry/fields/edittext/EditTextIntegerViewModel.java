@@ -11,7 +11,7 @@ import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
 public abstract class EditTextIntegerViewModel extends EditTextModel<Integer> {
 
     @NonNull
-    public static EditTextIntegerViewModel from(@NonNull String uid, @NonNull String label,
+    public static EditTextIntegerViewModel fromRawValue(@NonNull String uid, @NonNull String label,
             @NonNull Boolean mandatory, @Nullable String value, @NonNull String hint, @NonNull Integer type) {
         return create(uid, label, mandatory, isEmpty(value) ? null : Integer.valueOf(value), hint, type);
     }

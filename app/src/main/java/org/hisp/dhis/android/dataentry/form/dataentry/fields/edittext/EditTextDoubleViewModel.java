@@ -12,7 +12,7 @@ import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
 public abstract class EditTextDoubleViewModel extends EditTextModel<Double> {
 
     @NonNull
-    public static EditTextDoubleViewModel from(@NonNull String uid, @NonNull String label,
+    public static EditTextDoubleViewModel fromRawValue(@NonNull String uid, @NonNull String label,
             @NonNull Boolean mandatory, @Nullable String value, @NonNull String hint) {
         return create(uid, label, mandatory, isEmpty(value) ? null : Double.valueOf(value), hint);
     }

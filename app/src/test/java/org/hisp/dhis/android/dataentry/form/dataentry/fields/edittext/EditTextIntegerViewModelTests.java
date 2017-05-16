@@ -27,7 +27,7 @@ public class EditTextIntegerViewModelTests {
 
     @Test
     public void fromShouldFallbackToNullIfEmptyString() {
-        EditTextIntegerViewModel viewModel = EditTextIntegerViewModel.from("test_uid",
+        EditTextIntegerViewModel viewModel = EditTextIntegerViewModel.fromRawValue("test_uid",
                 "test_label", true, "", "test_hint", InputType.TYPE_CLASS_NUMBER);
 
         assertThat(viewModel.uid()).isEqualTo("test_uid");

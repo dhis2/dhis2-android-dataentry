@@ -66,18 +66,18 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case LONG_TEXT:
                 return EditTextViewModel.create(id, label, mandatory, value, hintEnterLongText, 3);
             case NUMBER:
-                return EditTextDoubleViewModel.from(id, label, mandatory, value, hintEnterNumber);
+                return EditTextDoubleViewModel.fromRawValue(id, label, mandatory, value, hintEnterNumber);
             case INTEGER:
-                return EditTextIntegerViewModel.from(id, label, mandatory, value, hintEnterInteger,
+                return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value, hintEnterInteger,
                         InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
             case INTEGER_POSITIVE:
-                return EditTextIntegerViewModel.from(id, label, mandatory, value,
+                return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value,
                         hintEnterIntegerPositive, InputType.TYPE_CLASS_NUMBER);
             case INTEGER_NEGATIVE:
-                return EditTextIntegerViewModel.from(id, label, mandatory, value, hintEnterIntegerNegative,
+                return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value, hintEnterIntegerNegative,
                         InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
             case INTEGER_ZERO_OR_POSITIVE:
-                return EditTextIntegerViewModel.from(id, label, mandatory, value,
+                return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value,
                         hintEnterIntegerZeroOrPositive, InputType.TYPE_CLASS_NUMBER);
             default:
                 return TextViewModel.create(id, label, type.toString());

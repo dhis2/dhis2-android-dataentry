@@ -29,7 +29,7 @@ public class EditTextDoubleViewModelTests {
 
     @Test
     public void fromShouldFallbackToNullValueIfEmptyString() {
-        EditTextDoubleViewModel viewModel = EditTextDoubleViewModel.from(
+        EditTextDoubleViewModel viewModel = EditTextDoubleViewModel.fromRawValue(
                 "test_uid", "test_label", true, "", "test_hint");
 
         assertThat(viewModel.uid()).isEqualTo("test_uid");
