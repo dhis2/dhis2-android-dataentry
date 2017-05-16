@@ -97,10 +97,11 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
 
     private void setUpRecyclerView() {
         dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()));
-        recyclerView.setAdapter(dataEntryAdapter);
+        dataEntryAdapter.setHasStableIds(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
+        recyclerView.setAdapter(dataEntryAdapter);
         recyclerView.setLayoutManager(layoutManager);
     }
 }
