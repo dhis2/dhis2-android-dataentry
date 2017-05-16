@@ -21,21 +21,21 @@ public abstract class FormSectionViewModel {
     @NonNull
     public abstract Type type();
 
-    public static FormSectionViewModel createForSection(@NonNull String eventUid, @NonNull String sectionUid,
-                                                        @NonNull String label) {
+    static FormSectionViewModel createForSection(@NonNull String eventUid, @NonNull String sectionUid,
+                                                 @NonNull String label) {
         return new AutoValue_FormSectionViewModel(eventUid, sectionUid, label, Type.SECTION);
     }
 
-    public static FormSectionViewModel createForProgramStage(@NonNull String eventUid,
-                                                             @NonNull String programStageUid) {
+    static FormSectionViewModel createForProgramStage(@NonNull String eventUid,
+                                                      @NonNull String programStageUid) {
         return new AutoValue_FormSectionViewModel(eventUid, programStageUid, null, Type.PROGRAM_STAGE);
     }
 
-    public static FormSectionViewModel createForEnrollment(@NonNull String enrollmentUid) {
+    static FormSectionViewModel createForEnrollment(@NonNull String enrollmentUid) {
         return new AutoValue_FormSectionViewModel(enrollmentUid, null, null, Type.ENROLLMENT);
     }
 
-    public enum Type {
+    enum Type {
         SECTION, PROGRAM_STAGE, ENROLLMENT
     }
 }

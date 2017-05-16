@@ -8,7 +8,7 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
-public interface FormView extends View {
+interface FormView extends View {
 
     Observable<EventStatus> eventStatusChanged();
 
