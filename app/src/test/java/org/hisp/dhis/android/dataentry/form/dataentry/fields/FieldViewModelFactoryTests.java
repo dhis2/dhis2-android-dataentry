@@ -17,7 +17,7 @@ import static android.text.InputType.TYPE_CLASS_TEXT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.fail;
 
-public class FieldViewModelFactoryTest {
+public class FieldViewModelFactoryTests {
     private static final String UID = "test_uid";
     private static final String LABEL = "test_label";
     private static final String TEST_OPTION_SET = "test_option_set";
@@ -84,6 +84,15 @@ public class FieldViewModelFactoryTest {
     }
 
     @Test
+    public void numberTypeMappingShouldNotThrowOnEmptyString() throws Exception {
+        try {
+            fieldViewModelFactory.create(UID, LABEL, ValueType.NUMBER, true, null, "");
+        } catch (Exception exception) {
+            fail("Exception should not be thrown", exception);
+        }
+    }
+
+    @Test
     public void integerTypeIsMappedToCorrectEditTextViewModel() throws Exception {
         EditTextIntegerViewModel viewModel = (EditTextIntegerViewModel) fieldViewModelFactory.create(UID,
                 LABEL, ValueType.INTEGER, true, null, String.valueOf(13));
@@ -102,6 +111,16 @@ public class FieldViewModelFactoryTest {
     public void integerTypeMappingShouldNotThrowOnNull() throws Exception {
         try {
             fieldViewModelFactory.create(UID, LABEL, ValueType.INTEGER, true, null, null);
+        } catch (Exception exception) {
+            fail("Exception should not be thrown", exception);
+        }
+    }
+
+
+    @Test
+    public void integerTypeMappingShouldNotThrowOnEmptyString() throws Exception {
+        try {
+            fieldViewModelFactory.create(UID, LABEL, ValueType.INTEGER, true, null, "");
         } catch (Exception exception) {
             fail("Exception should not be thrown", exception);
         }
@@ -132,6 +151,15 @@ public class FieldViewModelFactoryTest {
     }
 
     @Test
+    public void integerNegativeTypeMappingShouldNotThrowOnEmptyString() throws Exception {
+        try {
+            fieldViewModelFactory.create(UID, LABEL, ValueType.INTEGER_NEGATIVE, true, null, "");
+        } catch (Exception exception) {
+            fail("Exception should not be thrown", exception);
+        }
+    }
+
+    @Test
     public void integerZeroOrPositiveTypeIsMappedToCorrectEditTextViewModel() throws Exception {
         EditTextIntegerViewModel viewModel = (EditTextIntegerViewModel) fieldViewModelFactory.create(UID,
                 LABEL, ValueType.INTEGER_ZERO_OR_POSITIVE, true, null, String.valueOf(13));
@@ -155,6 +183,15 @@ public class FieldViewModelFactoryTest {
     }
 
     @Test
+    public void integerZeroOrPositiveTypeMappingShouldNotThrowOnEmptyString() throws Exception {
+        try {
+            fieldViewModelFactory.create(UID, LABEL, ValueType.INTEGER_ZERO_OR_POSITIVE, true, null, "");
+        } catch (Exception exception) {
+            fail("Exception should not be thrown", exception);
+        }
+    }
+
+    @Test
     public void integerPositiveTypeIsMappedToCorrectEditTextViewModel() throws Exception {
         EditTextIntegerViewModel viewModel = (EditTextIntegerViewModel) fieldViewModelFactory.create(UID,
                 LABEL, ValueType.INTEGER_POSITIVE, true, null, String.valueOf(13));
@@ -172,6 +209,15 @@ public class FieldViewModelFactoryTest {
     public void integerPositiveMappingShouldNotThrowOnNull() throws Exception {
         try {
             fieldViewModelFactory.create(UID, LABEL, ValueType.INTEGER_POSITIVE, true, null, null);
+        } catch (Exception exception) {
+            fail("Exception should not be thrown", exception);
+        }
+    }
+
+    @Test
+    public void integerPositiveMappingShouldNotThrowOnEmptyString() throws Exception {
+        try {
+            fieldViewModelFactory.create(UID, LABEL, ValueType.INTEGER_POSITIVE, true, null, "");
         } catch (Exception exception) {
             fail("Exception should not be thrown", exception);
         }
