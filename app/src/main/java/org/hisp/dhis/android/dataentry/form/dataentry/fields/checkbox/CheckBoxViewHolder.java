@@ -46,13 +46,12 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
         RxCompoundButton.checkedChanges(checkBox)
                 .takeUntil(RxView.detaches(parent))
-                .filter(isChecked -> model.hasValue())
                 .map(isChecked -> isChecked ? CheckBoxViewModel.Value.CHECKED :
                         CheckBoxViewModel.Value.UNCHECKED)
-                .filter(isChecked -> !Preconditions.equals(
-                        model.getValue().value(), isChecked))
-                .map(isChecked -> RowAction.create(model.getValue().uid(),
-                        isChecked.toString()))
+                .filter(value -> model.hasValue())
+                .filter(value -> !Preconditions.equals(
+                        model.getValue().value(), value))
+                .map(value -> RowAction.create(model.getValue().uid(), value.toString()))
                 .subscribe(action -> processor.onNext(action), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 });

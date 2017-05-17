@@ -12,21 +12,17 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxRadioGroup;
 
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
-
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
 import rx.exceptions.OnErrorNotImplementedException;
 
 final class RadioButtonViewHolder extends RecyclerView.ViewHolder {
-    private static final String EMPTY_FIELD = "";
-    private static final String TRUE = "true";
-    private static final String FALSE = "false";
 
-    // Views
     @BindView(R.id.textview_row_label)
     TextView label;
 
@@ -42,45 +38,54 @@ final class RadioButtonViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.radiobutton_row_radiobutton_third)
     RadioButton thirdRadioButton;
 
-    private RadioButtonViewModel viewModel;
+    @NonNull
+    BehaviorProcessor<RadioButtonViewModel> model;
 
     @SuppressWarnings("CheckReturnValue")
     RadioButtonViewHolder(@NonNull ViewGroup parent, @NonNull View itemView,
             @NonNull FlowableProcessor<RowAction> processor) {
         super(itemView);
 
+        model = BehaviorProcessor.create();
+        model.subscribe(radioButtonViewModel -> {
+            label.setText(radioButtonViewModel.label());
+
+            if (radioButtonViewModel.value() == null) {
+                radioGroup.clearCheck();
+            } else {
+                firstRadioButton.setChecked(RadioButtonViewModel.Value
+                        .YES.equals(radioButtonViewModel.value()));
+                secondRadioButton.setChecked(RadioButtonViewModel.Value
+                        .NO.equals(radioButtonViewModel.value()));
+                thirdRadioButton.setChecked(RadioButtonViewModel.Value
+                        .NONE.equals(radioButtonViewModel.value()));
+            }
+        });
+
         ButterKnife.bind(this, itemView);
         RxRadioGroup.checkedChanges(radioGroup)
-                .skipInitialValue()
                 .takeUntil(RxView.detaches(parent))
-                .debounce(500, TimeUnit.MILLISECONDS)
-                .map(this::rowAction)
+                .map(this::mapValue)
+                .filter(value -> model.hasValue())
+                .filter(value -> !Preconditions.equals(model.getValue().value(), value))
+                .map(value -> RowAction.create(model.getValue().uid(), value.toString()))
                 .subscribe(rowAction -> processor.onNext(rowAction), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 });
     }
 
-    void update(@NonNull RadioButtonViewModel model) {
-        viewModel = model;
-        label.setText(viewModel.label());
-
-        if (viewModel.value() == null) {
-            radioGroup.clearCheck();
-        } else {
-            firstRadioButton.setChecked(RadioButtonViewModel.Value.YES.equals(viewModel.value()));
-            secondRadioButton.setChecked(RadioButtonViewModel.Value.NO.equals(viewModel.value()));
-            thirdRadioButton.setChecked(RadioButtonViewModel.Value.NONE.equals(viewModel.value()));
-        }
+    void update(@NonNull RadioButtonViewModel radioButtonViewModel) {
+        model.onNext(radioButtonViewModel);
     }
 
     @NonNull
-    private RowAction rowAction(@NonNull Integer checkedId) {
+    private RadioButtonViewModel.Value mapValue(@NonNull Integer checkedId) {
         if (checkedId == R.id.radiobutton_row_radiobutton_first) {
-            return RowAction.create(viewModel.uid(), TRUE);
+            return RadioButtonViewModel.Value.YES;
         } else if (checkedId == R.id.radiobutton_row_radiobutton_second) {
-            return RowAction.create(viewModel.uid(), FALSE);
+            return RadioButtonViewModel.Value.NO;
+        } else {
+            return RadioButtonViewModel.Value.NONE;
         }
-
-        return RowAction.create(viewModel.uid(), EMPTY_FIELD);
     }
 }
