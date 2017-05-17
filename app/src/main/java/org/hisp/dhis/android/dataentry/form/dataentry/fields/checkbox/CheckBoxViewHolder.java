@@ -47,18 +47,15 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
         RxCompoundButton.checkedChanges(checkBox)
                 .takeUntil(RxView.detaches(parent))
                 .filter(isChecked -> model.hasValue())
+                .map(isChecked -> isChecked ? CheckBoxViewModel.Value.CHECKED :
+                        CheckBoxViewModel.Value.UNCHECKED)
                 .filter(isChecked -> !Preconditions.equals(
-                        model.getValue().value(), mapValue(isChecked)))
+                        model.getValue().value(), isChecked))
                 .map(isChecked -> RowAction.create(model.getValue().uid(),
-                        String.valueOf(mapValue(isChecked))))
+                        isChecked.toString()))
                 .subscribe(action -> processor.onNext(action), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 });
-    }
-
-    @NonNull
-    CheckBoxViewModel.Value mapValue(@NonNull Boolean isChecked) {
-        return isChecked ? CheckBoxViewModel.Value.CHECKED : CheckBoxViewModel.Value.UNCHECKED;
     }
 
     void update(@NonNull CheckBoxViewModel checkBoxViewModel) {
