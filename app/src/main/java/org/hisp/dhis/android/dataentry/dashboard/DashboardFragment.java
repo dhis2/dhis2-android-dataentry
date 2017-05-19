@@ -1,15 +1,16 @@
 package org.hisp.dhis.android.dataentry.dashboard;
 
 
+import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends BaseFragment implements DashboardView {
 
     private static final String ARG_TEI_UID = "teiUid";
 
@@ -41,4 +42,9 @@ public class DashboardFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_dashboard, container, false);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        getUserComponent().plus(new DashboardModule()).inject(this);
+    }
 }
