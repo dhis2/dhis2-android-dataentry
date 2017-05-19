@@ -11,6 +11,11 @@ import com.squareup.sqlbrite.SqlBrite;
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
 import org.junit.rules.ExternalResource;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import rx.Scheduler;
 
 public final class DatabaseRule extends ExternalResource {
@@ -65,5 +70,34 @@ public final class DatabaseRule extends ExternalResource {
         }
 
         return briteDatabase;
+    }
+
+    public void insertMetaData() throws IOException {
+        if (briteDatabase == null) {
+            throw new IllegalStateException("Database has not been created yet");
+        }
+
+        SQLiteDatabase db = briteDatabase.getWritableDatabase();
+        db.beginTransaction();
+
+        String[] files = InstrumentationRegistry.getContext().getAssets().list("db");
+        for (String file : files) {
+
+            if (file.endsWith(".sql")) {
+
+                InputStream inputStream = InstrumentationRegistry.getContext().getAssets().open("db/" + file);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String sqlInsert = reader.readLine();
+                while (sqlInsert != null) {
+                    db.execSQL(sqlInsert);
+                    sqlInsert = reader.readLine();
+                }
+            }
+        }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
     }
 }

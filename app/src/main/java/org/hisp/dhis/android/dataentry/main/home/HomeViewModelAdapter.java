@@ -51,7 +51,7 @@ class HomeViewModelAdapter extends RecyclerView.Adapter {
         return homeViewModels.size();
     }
 
-    public void swapData(@Nullable List<HomeViewModel> homeViewModels) {
+    void swapData(@Nullable List<HomeViewModel> homeViewModels) {
         this.homeViewModels.clear();
 
         if (homeViewModels != null) {
@@ -61,11 +61,11 @@ class HomeViewModelAdapter extends RecyclerView.Adapter {
         notifyDataSetChanged();
     }
 
-    public void setOnHomeItemClickListener(OnHomeItemClicked onHomeItemClicked) {
+    void setOnHomeItemClickListener(OnHomeItemClicked onHomeItemClicked) {
         this.onHomeItemClickListener = onHomeItemClicked;
     }
 
-    public interface OnHomeItemClicked {
+    interface OnHomeItemClicked {
         void onHomeItemClicked(HomeViewModel homeViewModel);
     }
 
@@ -100,7 +100,7 @@ class HomeViewModelAdapter extends RecyclerView.Adapter {
         }
 
         @OnClick(R.id.container)
-        public void onHomeViewModelClick() {
+        void onHomeViewModelClick() {
             if (onHomeItemClickListener != null) {
                 onHomeItemClickListener.onHomeItemClicked(homeViewModel);
             }

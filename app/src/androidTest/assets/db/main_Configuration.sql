@@ -1,0 +1,1 @@
+INSERT INTO Configuration (serverUrl) VALUES ('https://play.dhis2.org/dev/api/');

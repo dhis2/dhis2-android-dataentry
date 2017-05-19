@@ -1,0 +1,12 @@
+INSERT INTO userRoleProgramLink (userRole, program) VALUES ('Ufph3mGRmMo', 'uy2gU8kT1jF');
+INSERT INTO userRoleProgramLink (userRole, program) VALUES ('Ufph3mGRmMo', 'q04UBOqq3rp');
+INSERT INTO userRoleProgramLink (userRole, program) VALUES ('Ufph3mGRmMo', 'VBqh0ynB2wv');
+INSERT INTO userRoleProgramLink (userRole, program) VALUES ('Ufph3mGRmMo', 'eBAyeGv0exc');
+INSERT INTO userRoleProgramLink (userRole, program) VALUES ('Ufph3mGRmMo', 'kla3mAPgvCH');
+INSERT INTO userRoleProgramLink (userRole, program) VALUES ('Ufph3mGRmMo', 'lxAQ7Zs9VYR');
+INSERT INTO userRoleProgramLink (userRole, program) VALUES ('Ufph3mGRmMo', 'IpHINAT79UW');
+INSERT INTO userRoleProgramLink (userRole, program) VALUES ('Ufph3mGRmMo', 'WSGAb5XwJ3Y');
+INSERT INTO userRoleProgramLink (userRole, program) VALUES ('Ufph3mGRmMo', 'ur1Edk5Oe2n');
+INSERT INTO userRoleProgramLink (userRole, program) VALUES ('Ufph3mGRmMo', 'fDd25txQckK');
+INSERT INTO userRoleProgramLink (userRole, program) VALUES ('DRdaVRtwmG5', 'eBAyeGv0exc');
+INSERT INTO userRoleProgramLink (userRole, program) VALUES ('cUlTcejWree', 'ur1Edk5Oe2n');
