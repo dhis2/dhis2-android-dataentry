@@ -25,7 +25,8 @@ public class FormModule {
     @PerFragment
     FormPresenter formPresenter(@NonNull SchedulerProvider schedulerProvider,
                                 @NonNull FormRepository formRepository) {
-        return new FormPresenterImpl(schedulerProvider, formRepository);
+        return new FormPresenterImpl(formViewArguments,
+                schedulerProvider, formRepository);
     }
 
     @Provides
