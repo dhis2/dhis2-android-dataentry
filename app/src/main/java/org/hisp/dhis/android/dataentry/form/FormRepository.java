@@ -31,7 +31,9 @@ public interface FormRepository {
     @NonNull
     Flowable<List<FormSectionViewModel>> sections(@NonNull String uid);
 
+    @NonNull
     Consumer<String> storeReportDate(@NonNull String uid);
 
+    @NonNull
     Consumer<EventStatus> storeEventStatus(@NonNull String uid);
 }
