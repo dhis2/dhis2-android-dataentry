@@ -10,9 +10,6 @@ import com.squareup.sqlbrite.BriteDatabase;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel.Columns;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
-import org.hisp.dhis.android.core.user.UserCredentialsModel;
-import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactory;
 
@@ -57,12 +54,6 @@ final class EnrollmentRepository implements DataEntryRepository {
     private final FieldViewModelFactory fieldFactory;
 
     @NonNull
-    private final Flowable<UserCredentialsModel> userCredentials;
-
-    @NonNull
-    private final CurrentDateProvider currentDateProvider;
-
-    @NonNull
     private final String trackedEntityInstance;
 
     @NonNull
@@ -70,14 +61,10 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     EnrollmentRepository(@NonNull BriteDatabase briteDatabase,
             @NonNull FieldViewModelFactory fieldFactory,
-            @NonNull Flowable<UserCredentialsModel> userCredentials,
-            @NonNull CurrentDateProvider currentDateProvider,
             @NonNull String trackedEntityInstance,
             @NonNull String enrollment) {
         this.briteDatabase = briteDatabase;
         this.fieldFactory = fieldFactory;
-        this.userCredentials = userCredentials;
-        this.currentDateProvider = currentDateProvider;
         this.trackedEntityInstance = trackedEntityInstance;
         this.enrollment = enrollment;
     }
@@ -85,13 +72,13 @@ final class EnrollmentRepository implements DataEntryRepository {
     @NonNull
     @Override
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
-        return userCredentials.switchMap((userCredentials) -> {
+        return Flowable.defer(() -> {
             long updated = update(uid, value);
             if (updated > 0) {
                 return Flowable.just(updated);
             }
 
-            return Flowable.just(insert(uid, value, userCredentials.username()));
+            return Flowable.just(insert(uid, value));
         });
     }
 
@@ -99,7 +86,7 @@ final class EnrollmentRepository implements DataEntryRepository {
     @Override
     public Flowable<List<FieldViewModel>> list() {
         return toV2Flowable(briteDatabase
-                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, trackedEntityInstance)
+                .createQuery(TrackedEntityAttributeValueModel.TABLE, QUERY, enrollment)
                 .mapToList(this::transform));
     }
 
@@ -110,36 +97,30 @@ final class EnrollmentRepository implements DataEntryRepository {
                 cursor.getString(4), cursor.getString(5));
     }
 
+    // ToDo: do we need storedBy property in this model?
+    // ToDo: do we need create / lastUpdated in this model?
     private long update(@NonNull String uid, @Nullable String value) {
         ContentValues attributeValue = new ContentValues();
 
-        // update time stamp // ToDo: needs fixing in the SDK first
-//        attributeValue.put(TrackedEntityAttributeValueModel.Columns.LAST_UPDATED,
-//                BaseIdentifiableObject.DATE_FORMAT.format(currentDateProvider.currentDate()));
         if (value == null) {
-            attributeValue.putNull(TrackedEntityDataValueModel.Columns.VALUE);
+            attributeValue.putNull(TrackedEntityAttributeValueModel.Columns.VALUE);
         } else {
-            attributeValue.put(TrackedEntityDataValueModel.Columns.VALUE, value);
+            attributeValue.put(TrackedEntityAttributeValueModel.Columns.VALUE, value);
         }
 
         return (long) briteDatabase.update(TrackedEntityAttributeValueModel.TABLE, attributeValue,
                 Columns.TRACKED_ENTITY_ATTRIBUTE + " = ? AND " +
-                        Columns.TRACKED_ENTITY_INSTANCE + " = ?", uid, enrollment);
+                        Columns.TRACKED_ENTITY_INSTANCE + " = ?", uid, trackedEntityInstance);
     }
 
-    private long insert(@NonNull String uid, @Nullable String value, @NonNull String storedBy) {
-        // is stored by used by anything?
-        // Date created = currentDateProvider.currentDate();
+    private long insert(@NonNull String uid, @Nullable String value) {
         TrackedEntityAttributeValueModel attributeValueModel =
                 TrackedEntityAttributeValueModel.builder()
-                        // .created(created)
-                        // .lastUpdated(created)
                         .trackedEntityAttribute(uid)
                         .trackedEntityInstance(trackedEntityInstance)
                         .value(value)
-                        // .storedBy(storedBy)
                         .build();
-        return briteDatabase.insert(TrackedEntityDataValueModel.TABLE,
+        return briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE,
                 attributeValueModel.toContentValues());
     }
 }
