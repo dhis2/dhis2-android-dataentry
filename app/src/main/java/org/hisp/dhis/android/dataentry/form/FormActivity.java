@@ -11,31 +11,28 @@ import org.hisp.dhis.android.dataentry.R;
 import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
 public class FormActivity extends AppCompatActivity {
+    private static String ARGUMENTS = "formViewArguments";
 
-    private static String ARG_EVENT = "formViewArguments";
-
-    public static void startActivity(@NonNull Activity activity, @NonNull FormViewArguments formViewArguments) {
+    @NonNull
+    public static Intent create(@NonNull Activity activity,
+            @NonNull FormViewArguments formViewArguments) {
         isNull(activity, "activity must not be null");
         isNull(formViewArguments, "formViewArguments must not be null");
 
         Intent intent = new Intent(activity, FormActivity.class);
-        intent.putExtra(ARG_EVENT, formViewArguments);
-        activity.startActivity(intent);
-    }
-
-    public FormActivity() {
-        // required empty constructor
+        intent.putExtra(ARGUMENTS, formViewArguments);
+        return intent;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form);
-        FormViewArguments formViewArguments = getIntent().getParcelableExtra(ARG_EVENT);
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.content, FormFragment.newInstance(formViewArguments))
+                .replace(R.id.content, FormFragment.newInstance(
+                        getIntent().getParcelableExtra(ARGUMENTS)))
                 .commit();
 
     }
