@@ -67,7 +67,6 @@ public class FormPresenterUnitTests {
         reportDatePublisher = PublishProcessor.create();
         eventStatusPublisher = PublishProcessor.create();
 
-        when(formView.formViewArguments()).thenReturn(formViewArguments);
         when(formViewArguments.uid()).thenReturn("test_uid");
 
         when(formRepository.title("test_uid")).thenReturn(titlePublisher);
@@ -84,7 +83,8 @@ public class FormPresenterUnitTests {
         when(formView.eventStatusChanged()).thenReturn(eventStatusSubject);
         when(formView.reportDateChanged()).thenReturn(reportDateSubject);
 
-        formPresenter = new FormPresenterImpl(new MockSchedulersProvider(), formRepository);
+        formPresenter = new FormPresenterImpl(formViewArguments,
+                new MockSchedulersProvider(), formRepository);
 
         // TODO: test storing of report date and event status
     }
