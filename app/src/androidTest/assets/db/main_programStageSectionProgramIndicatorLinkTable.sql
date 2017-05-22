@@ -1,1 +1,0 @@
-INSERT INTO programStageSectionProgramIndicatorLinkTable (programStageSection, programIndicator) VALUES ('d7ZILSbPgYh', 'x7PaHGvgWY2');

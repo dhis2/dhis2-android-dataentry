@@ -1,1 +1,0 @@
-INSERT INTO TrackedEntityInstance (uid, created, lastUpdated, organisationUnit, trackedEntity, state) VALUES ('tei_uid', null, null, 'DiszpKrYNg8', 'nEenWmSyUEp', null);
