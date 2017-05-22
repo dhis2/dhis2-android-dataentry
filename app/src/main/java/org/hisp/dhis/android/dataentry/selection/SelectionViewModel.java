@@ -20,4 +20,8 @@ public abstract class SelectionViewModel {
 
         return new AutoValue_SelectionViewModel(uid, name);
     }
+
+    public static SelectionViewModel create(String uid, String name) {
+        return new AutoValue_SelectionViewModel(uid, name);
+    }
 }
