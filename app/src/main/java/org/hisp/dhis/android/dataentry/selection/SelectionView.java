@@ -9,5 +9,5 @@ import java.util.List;
 import io.reactivex.functions.Consumer;
 
 public interface SelectionView extends View {
-    public Consumer<List<SelectionViewModel>> update(@NonNull String title);
+    Consumer<List<SelectionViewModel>> update(@NonNull String title);
 }
