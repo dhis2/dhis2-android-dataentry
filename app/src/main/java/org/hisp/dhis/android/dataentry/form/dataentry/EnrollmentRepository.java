@@ -7,12 +7,15 @@ import android.support.annotation.Nullable;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel.Columns;
+import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactory;
 
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -34,17 +37,16 @@ final class EnrollmentRepository implements DataEntryRepository {
             "        TrackedEntityAttribute.displayName AS label,\n" +
             "        TrackedEntityAttribute.valueType AS type,\n" +
             "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
-            "        ProgramTrackedEntityAttribute.displayInList AS showInList,\n" +
             "        ProgramTrackedEntityAttribute.program AS program,\n" +
             "        ProgramTrackedEntityAttribute.sortOrder AS formOrder, \n" +
             "        ProgramTrackedEntityAttribute.mandatory AS mandatory\n" +
             "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
             "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
-            "    ) AS Field ON Field.program = Program.uid AND Field.showInList = 1\n" +
+            "    ) AS Field ON Field.program = Program.uid\n" +
             "  LEFT OUTER JOIN TrackedEntityAttributeValue AS Value ON (\n" +
-            "    TrackedEntityAttributeValue.trackedEntityAttribute = Field.id \n" +
-            "        AND TrackedEntityAttributeValue.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
-            "WHERE Enrollment.enrollment = ?\n" +
+            "    Value.trackedEntityAttribute = Field.id \n" +
+            "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
+            "WHERE Enrollment.uid = ?\n" +
             "ORDER BY Field.formOrder ASC;";
 
     @NonNull
@@ -54,6 +56,9 @@ final class EnrollmentRepository implements DataEntryRepository {
     private final FieldViewModelFactory fieldFactory;
 
     @NonNull
+    private final CurrentDateProvider currentDateProvider;
+
+    @NonNull
     private final String trackedEntityInstance;
 
     @NonNull
@@ -61,10 +66,12 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     EnrollmentRepository(@NonNull BriteDatabase briteDatabase,
             @NonNull FieldViewModelFactory fieldFactory,
+            @NonNull CurrentDateProvider currentDateProvider,
             @NonNull String trackedEntityInstance,
             @NonNull String enrollment) {
         this.briteDatabase = briteDatabase;
         this.fieldFactory = fieldFactory;
+        this.currentDateProvider = currentDateProvider;
         this.trackedEntityInstance = trackedEntityInstance;
         this.enrollment = enrollment;
     }
@@ -97,11 +104,12 @@ final class EnrollmentRepository implements DataEntryRepository {
                 cursor.getString(4), cursor.getString(5));
     }
 
-    // ToDo: do we need storedBy property in this model?
-    // ToDo: do we need create / lastUpdated in this model?
     private long update(@NonNull String uid, @Nullable String value) {
         ContentValues attributeValue = new ContentValues();
 
+        // update time stamp
+        attributeValue.put(TrackedEntityAttributeValueModel.Columns.LAST_UPDATED,
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDateProvider.currentDate()));
         if (value == null) {
             attributeValue.putNull(TrackedEntityAttributeValueModel.Columns.VALUE);
         } else {
@@ -114,8 +122,11 @@ final class EnrollmentRepository implements DataEntryRepository {
     }
 
     private long insert(@NonNull String uid, @Nullable String value) {
+        Date created = currentDateProvider.currentDate();
         TrackedEntityAttributeValueModel attributeValueModel =
                 TrackedEntityAttributeValueModel.builder()
+                        .created(created)
+                        .lastUpdated(created)
                         .trackedEntityAttribute(uid)
                         .trackedEntityInstance(trackedEntityInstance)
                         .value(value)
