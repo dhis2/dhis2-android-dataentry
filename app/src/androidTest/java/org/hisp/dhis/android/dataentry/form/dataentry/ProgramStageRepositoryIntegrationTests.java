@@ -214,15 +214,6 @@ public class ProgramStageRepositoryIntegrationTests {
 
     @Test
     public void fieldsWithoutDataValuesMustBePropagated() {
-        SQLiteDatabase db = databaseRule.database();
-
-        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, currentDate,
-                currentDate, DATA_ELEMENT_ONE_UID, null, TEST_USERNAME));
-        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, currentDate,
-                currentDate, DATA_ELEMENT_TWO_UID, null, TEST_USERNAME));
-        db.insert(TrackedEntityDataValueModel.TABLE, null, dataValue(EVENT_UID, currentDate,
-                currentDate, DATA_ELEMENT_THREE_UID, null, TEST_USERNAME));
-
         TestSubscriber<List<FieldViewModel>> testObserver = programStageRepository.list().test();
         FieldViewModel fieldOne = RadioButtonViewModel.fromRawValue(DATA_ELEMENT_ONE_UID,
                 DATA_ELEMENT_ONE_NAME, true, null);
