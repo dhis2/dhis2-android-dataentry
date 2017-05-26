@@ -75,7 +75,7 @@ class FormPresenterImpl implements FormPresenter {
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .skip(1)
-                    .subscribe(formView::renderStatusChangeSnackBar, throwable -> {
+                    .subscribe(status -> formView.renderStatusChangeSnackBar(status), throwable -> {
                         throw new OnErrorNotImplementedException(throwable);
                     }));
 
