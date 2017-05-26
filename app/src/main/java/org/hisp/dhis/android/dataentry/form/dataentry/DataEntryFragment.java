@@ -54,7 +54,7 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
         DataEntryArguments args = Preconditions.isNull(getArguments()
                 .getParcelable(ARGUMENTS), "dataEntryArguments == null");
         ((DhisApp) context.getApplicationContext()).userComponent()
-                .plus(new DataEntryModule(context, args.event()))
+                .plus(new DataEntryModule(context, args))
                 .inject(this);
     }
 

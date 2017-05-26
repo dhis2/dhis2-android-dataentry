@@ -16,6 +16,8 @@ import org.hisp.dhis.android.dataentry.user.UserRepository;
 import dagger.Module;
 import dagger.Provides;
 
+import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
+
 @Module
 @PerFragment
 public class DataEntryModule {
@@ -24,10 +26,10 @@ public class DataEntryModule {
     private final FieldViewModelFactory modelFactory;
 
     @NonNull
-    private final String entityUid;
+    private final DataEntryArguments arguments;
 
-    public DataEntryModule(@NonNull Context context, @NonNull String entityUid) {
-        this.entityUid = entityUid;
+    public DataEntryModule(@NonNull Context context, @NonNull DataEntryArguments arguments) {
+        this.arguments = arguments;
         this.modelFactory = new FieldViewModelFactoryImpl(
                 context.getString(R.string.enter_text),
                 context.getString(R.string.enter_long_text),
@@ -49,7 +51,14 @@ public class DataEntryModule {
     @PerFragment
     DataEntryRepository dataEntryRepository(@NonNull BriteDatabase briteDatabase,
             @NonNull UserRepository userRepository, @NonNull CurrentDateProvider dateProvider) {
-        return new ProgramStageRepository(briteDatabase, userRepository,
-                modelFactory, dateProvider, entityUid);
+        if (!isEmpty(arguments.event())) {
+            return new ProgramStageRepository(briteDatabase, userRepository,
+                    modelFactory, dateProvider, arguments.event());
+        } else if (!isEmpty(arguments.enrollment())) {
+            return new EnrollmentRepository(briteDatabase,
+                    modelFactory, dateProvider, arguments.enrollment());
+        } else {
+            throw new IllegalArgumentException("Unsupported entity type");
+        }
     }
 }
