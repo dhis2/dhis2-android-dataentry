@@ -1,1 +1,0 @@
-INSERT INTO UserOrganisationUnit (user, organisationUnit, organisationUnitScope) VALUES ('DXyJmlo9rge', 'DiszpKrYNg8', 'SCOPE_DATA_CAPTURE');

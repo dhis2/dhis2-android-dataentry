@@ -71,33 +71,4 @@ public final class DatabaseRule extends ExternalResource {
 
         return briteDatabase;
     }
-
-    public void insertMetaData() throws IOException {
-        if (briteDatabase == null) {
-            throw new IllegalStateException("Database has not been created yet");
-        }
-
-        SQLiteDatabase db = briteDatabase.getWritableDatabase();
-        db.beginTransaction();
-
-        String[] files = InstrumentationRegistry.getContext().getAssets().list("db");
-        for (String file : files) {
-
-            if (file.endsWith(".sql")) {
-
-                InputStream inputStream = InstrumentationRegistry.getContext().getAssets().open("db/" + file);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String sqlInsert = reader.readLine();
-                while (sqlInsert != null) {
-                    db.execSQL(sqlInsert);
-                    sqlInsert = reader.readLine();
-                }
-            }
-        }
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
-
-    }
 }

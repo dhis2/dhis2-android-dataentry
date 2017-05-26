@@ -27,20 +27,15 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 
-public class FormFragment extends BaseFragment implements FormView {
+import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
-    // Fragment arguments
+public class FormFragment extends BaseFragment implements FormView {
     private static final String FORM_VIEW_ARGUMENTS = "formViewArguments";
 
-    private FormViewArguments formViewArguments;
-
-    // Views
     @BindView(R.id.coordinatorlayout_form)
     CoordinatorLayout coordinatorLayout;
 
@@ -58,8 +53,6 @@ public class FormFragment extends BaseFragment implements FormView {
 
     @BindView(R.id.fab_complete_event)
     FloatingActionButton fab;
-
-    private Unbinder unbinder;
 
     @Inject
     FormPresenter formPresenter;
@@ -82,14 +75,14 @@ public class FormFragment extends BaseFragment implements FormView {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_form, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        unbinder = ButterKnife.bind(this, view);
+        bind(this, view);
 
         formSectionAdapter = new FormSectionAdapter(getFragmentManager());
         viewPager.setAdapter(formSectionAdapter);
@@ -98,20 +91,91 @@ public class FormFragment extends BaseFragment implements FormView {
         initReportDatePicker();
     }
 
+    @NonNull
     @Override
     public Observable<EventStatus> eventStatusChanged() {
         undoObservable = PublishSubject.create();
         return undoObservable.mergeWith(RxView.clicks(fab).map(o -> getEventStatusFromFab()));
     }
 
-    private EventStatus getEventStatusFromFab() {
-        return fab.isActivated() ? EventStatus.ACTIVE : EventStatus.COMPLETED;
-    }
-
+    @NonNull
     @Override
     public Observable<String> reportDateChanged() {
         onReportDateChanged = PublishSubject.create();
         return onReportDateChanged;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        FormViewArguments arguments = isNull(getArguments()
+                .getParcelable(FORM_VIEW_ARGUMENTS), "formViewArguments == null");
+        getUserComponent()
+                .plus(new FormModule(arguments))
+                .inject(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        formPresenter.onAttach(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        formPresenter.onDetach();
+    }
+
+    @NonNull
+    @Override
+    public Consumer<List<FormSectionViewModel>> renderSectionViewModels() {
+        return sectionViewModels -> formSectionAdapter.swapData(sectionViewModels);
+    }
+
+    @NonNull
+    @Override
+    public Consumer<String> renderReportDate() {
+        return date -> reportDate.setText(date);
+    }
+
+    @NonNull
+    @Override
+    public Consumer<String> renderTitle() {
+        return title -> toolbar.setTitle(title);
+    }
+
+    @NonNull
+    @Override
+    public Consumer<EventStatus> renderStatus() {
+        return eventStatus -> fab.setActivated(eventStatus == EventStatus.COMPLETED);
+    }
+
+    @Override
+    public void renderStatusChangeSnackBar(@NonNull EventStatus eventStatus) {
+        String snackBarMessage;
+        if (eventStatus == EventStatus.COMPLETED) {
+            snackBarMessage = getString(R.string.complete);
+        } else {
+            snackBarMessage = getString(R.string.active);
+        }
+
+        Snackbar.make(coordinatorLayout, snackBarMessage, Snackbar.LENGTH_LONG)
+                .setAction(getString(R.string.undo), v1 -> {
+                    if (undoObservable == null) {
+                        return;
+                    }
+                    if (eventStatus == EventStatus.COMPLETED) {
+                        undoObservable.onNext(EventStatus.ACTIVE);
+                    } else {
+                        undoObservable.onNext(EventStatus.COMPLETED);
+                    }
+                })
+                .show();
+    }
+
+    private EventStatus getEventStatusFromFab() {
+        return fab.isActivated() ? EventStatus.ACTIVE : EventStatus.COMPLETED;
     }
 
     private void initReportDatePicker() {
@@ -129,79 +193,5 @@ public class FormFragment extends BaseFragment implements FormView {
                 onReportDateChanged.onNext(date);
             }
         };
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (getArguments() != null) {
-            formViewArguments = getArguments().getParcelable(FORM_VIEW_ARGUMENTS);
-        }
-        getUserComponent().plus(new FormModule(formViewArguments)).inject(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        formPresenter.onAttach(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        formPresenter.onDetach();
-    }
-
-    @Override
-    public Consumer<List<FormSectionViewModel>> renderSectionViewModels() {
-        return sectionViewModels -> formSectionAdapter.swapData(sectionViewModels);
-    }
-
-    @Override
-    public Consumer<String> renderReportDate() {
-        return reportDate -> this.reportDate.setText(reportDate);
-    }
-
-    @Override
-    public Consumer<String> renderTitle() {
-        return title -> toolbar.setTitle(title);
-    }
-
-    @Override
-    public Consumer<EventStatus> renderStatus() {
-        return eventStatus -> fab.setActivated(eventStatus == EventStatus.COMPLETED);
-    }
-
-    @Override
-    public void renderStatusChangeSnackBar(@NonNull EventStatus eventStatus) {
-        String snackBarMessage;
-        if (eventStatus == EventStatus.COMPLETED) {
-            snackBarMessage = getString(R.string.complete);
-        } else {
-            snackBarMessage = getString(R.string.active);
-        }
-        Snackbar.make(coordinatorLayout, snackBarMessage, Snackbar.LENGTH_LONG)
-                .setAction(getString(R.string.undo), v1 -> {
-                    if (undoObservable == null) {
-                        return;
-                    }
-                    if (eventStatus == EventStatus.COMPLETED) {
-                        undoObservable.onNext(EventStatus.ACTIVE);
-                    } else {
-                        undoObservable.onNext(EventStatus.COMPLETED);
-                    }
-                })
-                .show();
-    }
-
-    @Override
-    public FormViewArguments formViewArguments() {
-        return formViewArguments;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
     }
 }

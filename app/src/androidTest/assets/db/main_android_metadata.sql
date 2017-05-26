@@ -1,1 +1,0 @@
-INSERT INTO android_metadata (locale) VALUES ('en_US');

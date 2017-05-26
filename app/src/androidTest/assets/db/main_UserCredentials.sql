@@ -1,1 +1,0 @@
-INSERT INTO UserCredentials (uid, code, name, displayName, created, lastUpdated, username, user) VALUES ('M0fCOxtkURr', 'android', 'John Traore', 'John Traore', '2015-03-31T13:31:09.206', '2017-05-03T14:07:11.007', 'android', 'DXyJmlo9rge');

@@ -23,7 +23,6 @@ class FormSectionAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         return DummyFragment.newInstance(formSectionViewModelList.get(position).label());
-        //return DataEntryFragment.newInstance(DataEntryViewArguments.fromFormSectionViewModel());
     }
 
     @Override
@@ -36,9 +35,9 @@ class FormSectionAdapter extends FragmentStatePagerAdapter {
         return formSectionViewModelList.get(position).label();
     }
 
-    void swapData(List<FormSectionViewModel> formSectionViewArguments) {
-        this.formSectionViewModelList.clear();
-        this.formSectionViewModelList.addAll(formSectionViewArguments);
+    void swapData(List<FormSectionViewModel> models) {
+        formSectionViewModelList.clear();
+        formSectionViewModelList.addAll(models);
         notifyDataSetChanged();
     }
 }

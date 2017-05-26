@@ -24,8 +24,8 @@ import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
         "PMD.AvoidDuplicateLiterals"
 })
 class EventRepository implements FormRepository {
-
-    private static final List<String> TITLE_TABLES = Arrays.asList(ProgramModel.TABLE, ProgramStageModel.TABLE);
+    private static final List<String> TITLE_TABLES = Arrays.asList(
+            ProgramModel.TABLE, ProgramStageModel.TABLE);
 
     private static final List<String> SECTION_TABLES = Arrays.asList(
             EventModel.TABLE, ProgramModel.TABLE, ProgramStageModel.TABLE, ProgramStageSectionModel.TABLE);
@@ -96,11 +96,13 @@ class EventRepository implements FormRepository {
     @NonNull
     @Override
     public Flowable<List<FormSectionViewModel>> sections(@NonNull String uid) {
-        return toV2Flowable(briteDatabase.createQuery(SECTION_TABLES, SELECT_SECTIONS, uid)
+        return toV2Flowable(briteDatabase
+                .createQuery(SECTION_TABLES, SELECT_SECTIONS, uid)
                 .mapToList(cursor -> mapToFormSectionViewModels(uid, cursor))
                 .distinctUntilChanged());
     }
 
+    @NonNull
     @Override
     public Consumer<String> storeReportDate(@NonNull String uid) {
         return reportDate -> {
@@ -110,6 +112,7 @@ class EventRepository implements FormRepository {
         };
     }
 
+    @NonNull
     @Override
     public Consumer<EventStatus> storeEventStatus(@NonNull String uid) {
         return eventStatus -> {
@@ -120,13 +123,16 @@ class EventRepository implements FormRepository {
     }
 
     @NonNull
-    private FormSectionViewModel mapToFormSectionViewModels(@NonNull String eventUid, @NonNull Cursor cursor) {
+    private FormSectionViewModel mapToFormSectionViewModels(
+            @NonNull String eventUid, @NonNull Cursor cursor) {
         if (cursor.getString(2) == null) {
             // This programstage has no sections
-            return FormSectionViewModel.createForProgramStage(eventUid, cursor.getString(1));
+            return FormSectionViewModel.createForProgramStage(
+                    eventUid, cursor.getString(1));
         } else {
             // This programstage has sections
-            return FormSectionViewModel.createForSection(eventUid, cursor.getString(2), cursor.getString(3));
+            return FormSectionViewModel.createForSection(
+                    eventUid, cursor.getString(2), cursor.getString(3));
         }
     }
 }

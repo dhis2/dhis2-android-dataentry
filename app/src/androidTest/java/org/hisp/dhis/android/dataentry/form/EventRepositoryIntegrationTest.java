@@ -28,14 +28,12 @@ public class EventRepositoryIntegrationTest {
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
-    private SQLiteDatabase db;
 
-    FormRepository formRepository;
+    private FormRepository formRepository;
 
     @Before
     public void setUp() throws Exception {
-        databaseRule.insertMetaData();
-        db = databaseRule.database();
+        SQLiteDatabase db = databaseRule.database();
         ContentValues orgUnit = new ContentValues();
         orgUnit.put(OrganisationUnitModel.Columns.UID, "org_unit_uid");
         db.insert(OrganisationUnitModel.TABLE, null, orgUnit);
@@ -56,8 +54,8 @@ public class EventRepositoryIntegrationTest {
 
     @Test
     public void titleShouldPropagateCorrectResults() throws Exception {
-        db.insert(EventModel.TABLE, null, event("event_uid", "2016-05-11", "org_unit_uid", "program_uid",
-                "ps_uid"));
+        databaseRule.database().insert(EventModel.TABLE, null, event(
+                "event_uid", "2016-05-11", "org_unit_uid", "program_uid", "ps_uid"));
 
         TestSubscriber<String> testObserver =
                 formRepository.title("event_uid").test();
@@ -88,8 +86,8 @@ public class EventRepositoryIntegrationTest {
 
     @Test
     public void reportDateShouldPropagateCorrectResults() throws Exception {
-        db.insert(EventModel.TABLE, null, event("event_uid", "2016-05-11", "org_unit_uid", "program_uid",
-                "ps_uid"));
+        databaseRule.database().insert(EventModel.TABLE, null, event(
+                "event_uid", "2016-05-11", "org_unit_uid", "program_uid", "ps_uid"));
 
         TestSubscriber<String> testObserver =
                 formRepository.reportDate("event_uid").test();
@@ -110,8 +108,8 @@ public class EventRepositoryIntegrationTest {
 
     @Test
     public void reportStatusShouldPropagateCorrectResults() throws Exception {
-        db.insert(EventModel.TABLE, null, event("event_uid", "2016-05-11", "org_unit_uid", "program_uid",
-                "ps_uid"));
+        databaseRule.database().insert(EventModel.TABLE, null, event(
+                "event_uid", "2016-05-11", "org_unit_uid", "program_uid", "ps_uid"));
 
         ContentValues activeEvent = new ContentValues();
         activeEvent.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
@@ -136,8 +134,8 @@ public class EventRepositoryIntegrationTest {
 
     @Test
     public void sectionsShouldPropagateCorrectResults() throws Exception {
-
-        db.insert(EventModel.TABLE, null, event("event_uid", "2016-05-11", "org_unit_uid", "program_uid", "ps_uid"));
+        databaseRule.database().insert(EventModel.TABLE, null, event(
+                "event_uid", "2016-05-11", "org_unit_uid", "program_uid", "ps_uid"));
 
         FormSectionViewModel formSectionViewModel =
                 FormSectionViewModel.createForProgramStage("event_uid", "ps_uid");
@@ -184,10 +182,12 @@ public class EventRepositoryIntegrationTest {
 
     @Test
     public void reportDateShouldBeStoredCorrectly() throws Exception {
-        db.insert(EventModel.TABLE, null, event("event_uid", "2016-05-11", "org_unit_uid", "program_uid", "ps_uid"));
+        databaseRule.database().insert(EventModel.TABLE, null, event(
+                "event_uid", "2016-05-11", "org_unit_uid", "program_uid", "ps_uid"));
         formRepository.storeReportDate("event_uid").accept("2019-09-09");
 
-        Cursor cursor = db.rawQuery("SELECT Event.eventDate FROM Event WHERE Event.uid = 'event_uid'", null);
+        Cursor cursor = databaseRule.database().rawQuery("SELECT Event.eventDate FROM " +
+                "Event WHERE Event.uid = 'event_uid'", null);
         cursor.moveToFirst();
         assertThat(cursor.getCount()).isEqualTo(1);
         assertThat(cursor.getString(0)).isEqualTo("2019-09-09");
@@ -196,18 +196,20 @@ public class EventRepositoryIntegrationTest {
 
     @Test
     public void eventStatusShouldBeStoredCorrectly() throws Exception {
-        db.insert(EventModel.TABLE, null, event("event_uid", "2016-05-11", "org_unit_uid", "program_uid", "ps_uid"));
+        databaseRule.database().insert(EventModel.TABLE, null, event(
+                "event_uid", "2016-05-11", "org_unit_uid", "program_uid", "ps_uid"));
         formRepository.storeEventStatus("event_uid").accept(EventStatus.COMPLETED);
 
-        Cursor cursor = db.rawQuery("SELECT Event.status FROM Event WHERE Event.uid = 'event_uid'", null);
+        Cursor cursor = databaseRule.database().rawQuery("SELECT Event.status FROM " +
+                "Event WHERE Event.uid = 'event_uid'", null);
         cursor.moveToFirst();
         assertThat(cursor.getCount()).isEqualTo(1);
         assertThat(cursor.getString(0)).isEqualTo(EventStatus.COMPLETED.name());
         cursor.close();
     }
 
-    private static ContentValues event(String uid, String eventDate, String orgUnit, String program,
-                                       String programStage) {
+    private static ContentValues event(String uid, String eventDate,
+            String orgUnit, String program, String programStage) {
         ContentValues event = new ContentValues();
         event.put(EventModel.Columns.UID, uid);
         event.put(EventModel.Columns.EVENT_DATE, eventDate);
@@ -216,5 +218,4 @@ public class EventRepositoryIntegrationTest {
         event.put(EventModel.Columns.PROGRAM_STAGE, programStage);
         return event;
     }
-
 }
