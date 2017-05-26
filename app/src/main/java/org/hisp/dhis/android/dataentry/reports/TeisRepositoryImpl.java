@@ -20,10 +20,11 @@ import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
         "PMD.AvoidDuplicateLiterals"
 })
 final class TeisRepositoryImpl implements ReportsRepository {
-    private static final String SELECT_TEIS = "SELECT" +
+    private static final String SELECT_TEIS = "SELECT DISTINCT" +
+            "  InstanceAttribute.tea," +
+            "  InstanceAttribute.label," +
             "  TrackedEntityInstance.uid," +
             "  TrackedEntityInstance.state," +
-            "  InstanceAttribute.label," +
             "  TrackedEntityAttributeValue.value " +
             "FROM (TrackedEntityInstance" +
             "  INNER JOIN Program ON Program.trackedEntity = TrackedEntityInstance.trackedEntity)" +
@@ -80,8 +81,8 @@ final class TeisRepositoryImpl implements ReportsRepository {
     }
 
     private Pair<Pair<String, String>, String> mapToPairs(@NonNull Cursor cursor) {
-        String trackedEntityAttribute = cursor.getString(2);
-        String trackedEntityAttributeValue = cursor.getString(3);
+        String trackedEntityAttribute = cursor.getString(1);
+        String trackedEntityAttributeValue = cursor.getString(4);
 
         if (trackedEntityAttributeValue == null) {
             trackedEntityAttributeValue = "-";
@@ -92,6 +93,6 @@ final class TeisRepositoryImpl implements ReportsRepository {
             label = String.format(Locale.US, "%s: %s", trackedEntityAttribute, trackedEntityAttributeValue);
         }
 
-        return Pair.create(Pair.create(cursor.getString(0), cursor.getString(1)), label);
+        return Pair.create(Pair.create(cursor.getString(2), cursor.getString(3)), label);
     }
 }
