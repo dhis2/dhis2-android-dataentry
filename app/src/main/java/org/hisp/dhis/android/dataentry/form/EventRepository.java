@@ -86,10 +86,10 @@ class EventRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Flowable<EventStatus> reportStatus(@NonNull String uid) {
+    public Flowable<ReportStatus> reportStatus(@NonNull String uid) {
         return toV2Flowable(briteDatabase
                 .createQuery(EventModel.TABLE, SELECT_EVENT_STATUS, uid)
-                .mapToOne(cursor -> EventStatus.valueOf(cursor.getString(0))))
+                .mapToOne(cursor -> ReportStatus.fromEventStatus(EventStatus.valueOf(cursor.getString(0)))))
                 .distinctUntilChanged();
     }
 
@@ -114,10 +114,10 @@ class EventRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Consumer<EventStatus> storeEventStatus(@NonNull String uid) {
-        return eventStatus -> {
+    public Consumer<ReportStatus> storeReportStatus(@NonNull String uid) {
+        return reportStatus -> {
             ContentValues event = new ContentValues();
-            event.put(EventModel.Columns.STATUS, eventStatus.name());
+            event.put(EventModel.Columns.STATUS, ReportStatus.toEventStatus(reportStatus).name());
             briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", uid);
         };
     }

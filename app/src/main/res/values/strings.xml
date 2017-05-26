@@ -38,8 +38,8 @@
     <string name="choose_report_date">Choose report date</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
-    <string name="complete">Event Complete</string>
-    <string name="active">Event Active</string>
+    <string name="complete">Complete</string>
+    <string name="active">Active</string>
 
     <!-- Input hints -->
     <string name="enter_text">Enter text</string>

@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.form.section.viewmodels.date.DatePickerDialogFragment;
@@ -58,7 +57,7 @@ public class FormFragment extends BaseFragment implements FormView {
     FormPresenter formPresenter;
 
     private FormSectionAdapter formSectionAdapter;
-    private PublishSubject<EventStatus> undoObservable;
+    private PublishSubject<ReportStatus> undoObservable;
     private PublishSubject<String> onReportDateChanged;
 
     public FormFragment() {
@@ -75,7 +74,7 @@ public class FormFragment extends BaseFragment implements FormView {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_form, container, false);
     }
 
@@ -93,9 +92,9 @@ public class FormFragment extends BaseFragment implements FormView {
 
     @NonNull
     @Override
-    public Observable<EventStatus> eventStatusChanged() {
+    public Observable<ReportStatus> eventStatusChanged() {
         undoObservable = PublishSubject.create();
-        return undoObservable.mergeWith(RxView.clicks(fab).map(o -> getEventStatusFromFab()));
+        return undoObservable.mergeWith(RxView.clicks(fab).map(o -> getReportStatusFromFab()));
     }
 
     @NonNull
@@ -147,14 +146,14 @@ public class FormFragment extends BaseFragment implements FormView {
 
     @NonNull
     @Override
-    public Consumer<EventStatus> renderStatus() {
-        return eventStatus -> fab.setActivated(eventStatus == EventStatus.COMPLETED);
+    public Consumer<ReportStatus> renderStatus() {
+        return eventStatus -> fab.setActivated(eventStatus == ReportStatus.COMPLETED);
     }
 
     @Override
-    public void renderStatusChangeSnackBar(@NonNull EventStatus eventStatus) {
+    public void renderStatusChangeSnackBar(@NonNull ReportStatus reportStatus) {
         String snackBarMessage;
-        if (eventStatus == EventStatus.COMPLETED) {
+        if (reportStatus == ReportStatus.COMPLETED) {
             snackBarMessage = getString(R.string.complete);
         } else {
             snackBarMessage = getString(R.string.active);
@@ -165,17 +164,17 @@ public class FormFragment extends BaseFragment implements FormView {
                     if (undoObservable == null) {
                         return;
                     }
-                    if (eventStatus == EventStatus.COMPLETED) {
-                        undoObservable.onNext(EventStatus.ACTIVE);
+                    if (reportStatus == ReportStatus.COMPLETED) {
+                        undoObservable.onNext(ReportStatus.ACTIVE);
                     } else {
-                        undoObservable.onNext(EventStatus.COMPLETED);
+                        undoObservable.onNext(ReportStatus.COMPLETED);
                     }
                 })
                 .show();
     }
 
-    private EventStatus getEventStatusFromFab() {
-        return fab.isActivated() ? EventStatus.ACTIVE : EventStatus.COMPLETED;
+    private ReportStatus getReportStatusFromFab() {
+        return fab.isActivated() ? ReportStatus.ACTIVE : ReportStatus.COMPLETED;
     }
 
     private void initReportDatePicker() {

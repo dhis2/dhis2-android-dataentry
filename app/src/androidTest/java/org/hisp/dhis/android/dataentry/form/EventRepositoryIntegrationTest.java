@@ -115,13 +115,13 @@ public class EventRepositoryIntegrationTest {
         activeEvent.put(EventModel.Columns.STATUS, EventStatus.ACTIVE.name());
         databaseRule.briteDatabase().update(EventModel.TABLE, activeEvent, "Event.uid = 'event_uid'", null);
 
-        TestSubscriber<EventStatus> testObserver =
+        TestSubscriber<ReportStatus> testObserver =
                 formRepository.reportStatus("event_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
         testObserver.assertNotComplete();
-        assertThat(testObserver.values().get(0)).isEqualTo(EventStatus.ACTIVE);
+        assertThat(testObserver.values().get(0)).isEqualTo(ReportStatus.ACTIVE);
 
         ContentValues completedEvent = new ContentValues();
         completedEvent.put(EventModel.Columns.STATUS, EventStatus.COMPLETED.name());
@@ -129,7 +129,7 @@ public class EventRepositoryIntegrationTest {
         testObserver.assertValueCount(2);
         testObserver.assertNoErrors();
         testObserver.assertNotComplete();
-        assertThat(testObserver.values().get(1)).isEqualTo(EventStatus.COMPLETED);
+        assertThat(testObserver.values().get(1)).isEqualTo(ReportStatus.COMPLETED);
     }
 
     @Test
@@ -198,7 +198,7 @@ public class EventRepositoryIntegrationTest {
     public void eventStatusShouldBeStoredCorrectly() throws Exception {
         databaseRule.database().insert(EventModel.TABLE, null, event(
                 "event_uid", "2016-05-11", "org_unit_uid", "program_uid", "ps_uid"));
-        formRepository.storeEventStatus("event_uid").accept(EventStatus.COMPLETED);
+        formRepository.storeReportStatus("event_uid").accept(ReportStatus.COMPLETED);
 
         Cursor cursor = databaseRule.database().rawQuery("SELECT Event.status FROM " +
                 "Event WHERE Event.uid = 'event_uid'", null);
@@ -209,7 +209,7 @@ public class EventRepositoryIntegrationTest {
     }
 
     private static ContentValues event(String uid, String eventDate,
-            String orgUnit, String program, String programStage) {
+                                       String orgUnit, String program, String programStage) {
         ContentValues event = new ContentValues();
         event.put(EventModel.Columns.UID, uid);
         event.put(EventModel.Columns.EVENT_DATE, eventDate);

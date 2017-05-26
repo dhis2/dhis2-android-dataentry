@@ -1,6 +1,5 @@
 package org.hisp.dhis.android.dataentry.form;
 
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.dataentry.commons.schedulers.MockSchedulersProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,21 +41,21 @@ public class FormPresenterUnitTests {
     private ArgumentCaptor<String> stringCaptor;
 
     @Captor
-    private ArgumentCaptor<EventStatus> eventStatusCaptor;
+    private ArgumentCaptor<ReportStatus> reportStatusCaptor;
 
     private PublishProcessor<List<FormSectionViewModel>> sectionPublisher;
     private PublishProcessor<String> titlePublisher;
     private PublishProcessor<String> reportDatePublisher;
-    private PublishProcessor<EventStatus> eventStatusPublisher;
+    private PublishProcessor<ReportStatus> reportStatusPublisher;
 
-    private PublishSubject<EventStatus> eventStatusSubject;
+    private PublishSubject<ReportStatus> reportStatusSubject;
     private PublishSubject<String> reportDateSubject;
 
     @Mock
     Consumer<String> reportDateConsumer;
 
     @Mock
-    Consumer<EventStatus> eventStatusConsumer;
+    Consumer<ReportStatus> reportStatusConsumer;
 
     @Before
     public void setUp() throws Exception {
@@ -65,28 +64,26 @@ public class FormPresenterUnitTests {
         sectionPublisher = PublishProcessor.create();
         titlePublisher = PublishProcessor.create();
         reportDatePublisher = PublishProcessor.create();
-        eventStatusPublisher = PublishProcessor.create();
+        reportStatusPublisher = PublishProcessor.create();
 
         when(formViewArguments.uid()).thenReturn("test_uid");
 
         when(formRepository.title("test_uid")).thenReturn(titlePublisher);
         when(formRepository.reportDate("test_uid")).thenReturn(reportDatePublisher);
-        when(formRepository.reportStatus("test_uid")).thenReturn(eventStatusPublisher);
+        when(formRepository.reportStatus("test_uid")).thenReturn(reportStatusPublisher);
         when(formRepository.sections("test_uid")).thenReturn(sectionPublisher);
 
         when(formRepository.storeReportDate("test_uid")).thenReturn(reportDateConsumer);
-        when(formRepository.storeEventStatus("test_uid")).thenReturn(eventStatusConsumer);
+        when(formRepository.storeReportStatus("test_uid")).thenReturn(reportStatusConsumer);
 
-        eventStatusSubject = PublishSubject.create();
+        reportStatusSubject = PublishSubject.create();
         reportDateSubject = PublishSubject.create();
 
-        when(formView.eventStatusChanged()).thenReturn(eventStatusSubject);
+        when(formView.eventStatusChanged()).thenReturn(reportStatusSubject);
         when(formView.reportDateChanged()).thenReturn(reportDateSubject);
 
         formPresenter = new FormPresenterImpl(formViewArguments,
                 new MockSchedulersProvider(), formRepository);
-
-        // TODO: test storing of report date and event status
     }
 
     @Test
@@ -139,56 +136,54 @@ public class FormPresenterUnitTests {
     }
 
     @Test
-    public void eventStatusIsRenderedOnAttach() throws Exception {
+    public void reportStatusIsRenderedOnAttach() throws Exception {
         when(formViewArguments.type()).thenReturn(FormViewArguments.Type.EVENT);
 
         formPresenter.onAttach(formView);
-        eventStatusPublisher.onNext(EventStatus.ACTIVE);
+        reportStatusPublisher.onNext(ReportStatus.ACTIVE);
 
-        verify(formView.renderStatus()).accept(eventStatusCaptor.capture());
+        verify(formView.renderStatus()).accept(reportStatusCaptor.capture());
         verify(formRepository).reportStatus("test_uid");
-        assertThat(eventStatusCaptor.getValue()).isEqualTo(EventStatus.ACTIVE);
+        assertThat(reportStatusCaptor.getValue()).isEqualTo(ReportStatus.ACTIVE);
     }
 
     @Test
-    public void eventStatusIsUpdatedAccordingToDatabase() throws Exception {
+    public void reportStatusIsUpdatedAccordingToDatabase() throws Exception {
         when(formViewArguments.type()).thenReturn(FormViewArguments.Type.EVENT);
 
         formPresenter.onAttach(formView);
-        eventStatusPublisher.onNext(EventStatus.ACTIVE);
+        reportStatusPublisher.onNext(ReportStatus.ACTIVE);
 
-        verify(formView.renderStatus()).accept(eventStatusCaptor.capture());
+        verify(formView.renderStatus()).accept(reportStatusCaptor.capture());
         verify(formRepository).reportStatus("test_uid");
-        assertThat(eventStatusCaptor.getValue()).isEqualTo(EventStatus.ACTIVE);
+        assertThat(reportStatusCaptor.getValue()).isEqualTo(ReportStatus.ACTIVE);
 
-        eventStatusPublisher.onNext(EventStatus.COMPLETED);
-        verify(formView.renderStatus(), times(2)).accept(eventStatusCaptor.capture());
-        assertThat(eventStatusCaptor.getValue()).isEqualTo(EventStatus.COMPLETED);
+        reportStatusPublisher.onNext(ReportStatus.COMPLETED);
+        verify(formView.renderStatus(), times(2)).accept(reportStatusCaptor.capture());
+        assertThat(reportStatusCaptor.getValue()).isEqualTo(ReportStatus.COMPLETED);
     }
 
     @Test
     public void statusChangeSnackBarIsRenderedOnStatusChanges() throws Exception {
-        when(formViewArguments.type()).thenReturn(FormViewArguments.Type.EVENT);
-
         formPresenter.onAttach(formView);
         verify(formRepository, times(1)).reportStatus("test_uid");
 
         // no snack bar is shown when page is first drawn
-        eventStatusPublisher.onNext(EventStatus.ACTIVE);
-        verify(formView, times(0)).renderStatusChangeSnackBar(EventStatus.ACTIVE);
+        reportStatusPublisher.onNext(ReportStatus.ACTIVE);
+        verify(formView, times(0)).renderStatusChangeSnackBar(ReportStatus.ACTIVE);
 
         // snack bar is shown on consequent status changes
-        eventStatusPublisher.onNext(EventStatus.COMPLETED);
-        verify(formView).renderStatusChangeSnackBar(EventStatus.COMPLETED);
+        reportStatusPublisher.onNext(ReportStatus.COMPLETED);
+        verify(formView).renderStatusChangeSnackBar(ReportStatus.COMPLETED);
 
         // dont show snackbar if status is the same
-        eventStatusPublisher.onNext(EventStatus.COMPLETED);
+        reportStatusPublisher.onNext(ReportStatus.COMPLETED);
         // still only one invocation
-        verify(formView, times(1)).renderStatusChangeSnackBar(EventStatus.COMPLETED);
+        verify(formView, times(1)).renderStatusChangeSnackBar(ReportStatus.COMPLETED);
 
         // snack bar is shown on consequent status changes
-        eventStatusPublisher.onNext(EventStatus.ACTIVE);
-        verify(formView).renderStatusChangeSnackBar(EventStatus.ACTIVE);
+        reportStatusPublisher.onNext(ReportStatus.ACTIVE);
+        verify(formView).renderStatusChangeSnackBar(ReportStatus.ACTIVE);
     }
 
     @Test
@@ -222,7 +217,6 @@ public class FormPresenterUnitTests {
         verify(formRepository).sections("test_uid");
         assertThat(sectionsCaptor.getValue()).isEqualTo(sections);
 
-
         FormSectionViewModel newFormSectionViewModel =
                 FormSectionViewModel.createForSection("new_event_uid", "new_section_uid", "new_label");
         FormSectionViewModel newFormSectionViewModel2 =
@@ -245,10 +239,10 @@ public class FormPresenterUnitTests {
     }
 
     @Test
-    public void eventStatusPropagatedToRepositoryForStoring() throws Exception {
+    public void reportStatusIsPropagatedToRepositoryForStoring() throws Exception {
         formPresenter.onAttach(formView);
-        eventStatusSubject.onNext(EventStatus.COMPLETED);
-        verify(eventStatusConsumer).accept(EventStatus.COMPLETED);
+        reportStatusSubject.onNext(ReportStatus.COMPLETED);
+        verify(reportStatusConsumer).accept(ReportStatus.COMPLETED);
     }
 
     @Test
@@ -257,16 +251,16 @@ public class FormPresenterUnitTests {
         assertThat(sectionPublisher.hasSubscribers()).isTrue();
         assertThat(titlePublisher.hasSubscribers()).isTrue();
         assertThat(reportDatePublisher.hasSubscribers()).isTrue();
-        assertThat(eventStatusPublisher.hasSubscribers()).isTrue();
-        assertThat(eventStatusSubject.hasObservers()).isTrue();
+        assertThat(reportStatusPublisher.hasSubscribers()).isTrue();
+        assertThat(reportStatusSubject.hasObservers()).isTrue();
         assertThat(reportDateSubject.hasObservers()).isTrue();
 
         formPresenter.onDetach();
         assertThat(sectionPublisher.hasSubscribers()).isFalse();
         assertThat(titlePublisher.hasSubscribers()).isFalse();
         assertThat(reportDatePublisher.hasSubscribers()).isFalse();
-        assertThat(eventStatusPublisher.hasSubscribers()).isFalse();
-        assertThat(eventStatusSubject.hasObservers()).isFalse();
+        assertThat(reportStatusPublisher.hasSubscribers()).isFalse();
+        assertThat(reportStatusSubject.hasObservers()).isFalse();
         assertThat(reportDateSubject.hasObservers()).isFalse();
     }
 

@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.Arrays;
@@ -30,6 +30,10 @@ class EnrollmentFormRepository implements FormRepository {
             "WHERE Enrollment.uid = ?";
 
     private static final String SELECT_ENROLLMENT_UID = "SELECT Enrollment.uid\n" +
+            "FROM Enrollment\n" +
+            "WHERE Enrollment.uid = ?";
+
+    private static final String SELECT_ENROLLMENT_STATUS = "SELECT Enrollment.status\n" +
             "FROM Enrollment\n" +
             "WHERE Enrollment.uid = ?";
 
@@ -62,11 +66,14 @@ class EnrollmentFormRepository implements FormRepository {
                 .distinctUntilChanged();
     }
 
-    // ToDo: is it a good idea to hardcode event status?
     @NonNull
     @Override
-    public Flowable<EventStatus> reportStatus(@NonNull String uid) {
-        return Flowable.just(EventStatus.ACTIVE);
+    public Flowable<ReportStatus> reportStatus(@NonNull String uid) {
+        return toV2Flowable(briteDatabase
+                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_STATUS, uid)
+                .mapToOne(cursor ->
+                        ReportStatus.fromEnrollmentStatus(EnrollmentStatus.valueOf(cursor.getString(0)))))
+                .distinctUntilChanged();
     }
 
     @NonNull
@@ -91,9 +98,12 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Consumer<EventStatus> storeEventStatus(@NonNull String uid) {
-        return eventStatus -> {
-            // no-op - status of Enrollment is not changeable in the form screen.
+    public Consumer<ReportStatus> storeReportStatus(@NonNull String uid) {
+        return reportStatus -> {
+            ContentValues enrollment = new ContentValues();
+            enrollment.put(EnrollmentModel.Columns.ENROLLMENT_STATUS,
+                    ReportStatus.toEnrollmentStatus(reportStatus).name());
+            briteDatabase.update(EnrollmentModel.TABLE, enrollment, EnrollmentModel.Columns.UID + " = ?", uid);
         };
     }
 }

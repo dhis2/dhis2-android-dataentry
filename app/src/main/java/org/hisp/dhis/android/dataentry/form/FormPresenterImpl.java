@@ -2,7 +2,6 @@ package org.hisp.dhis.android.dataentry.form;
 
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
 
@@ -28,8 +27,8 @@ class FormPresenterImpl implements FormPresenter {
     private final CompositeDisposable compositeDisposable;
 
     FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
-            @NonNull SchedulerProvider schedulerProvider,
-            @NonNull FormRepository formRepository) {
+                      @NonNull SchedulerProvider schedulerProvider,
+                      @NonNull FormRepository formRepository) {
         this.formViewArguments = formViewArguments;
         this.formRepository = formRepository;
         this.schedulerProvider = schedulerProvider;
@@ -65,10 +64,8 @@ class FormPresenterImpl implements FormPresenter {
                     .observeOn(schedulerProvider.io())
                     .subscribe(formRepository.storeReportDate(reportUid), Timber::e));
 
-            ConnectableFlowable<EventStatus> statusObservable = formRepository.reportStatus(reportUid)
+            ConnectableFlowable<ReportStatus> statusObservable = formRepository.reportStatus(reportUid)
                     .distinctUntilChanged()
-                    .filter(eventStatus -> formViewArguments.type()
-                            .equals(FormViewArguments.Type.EVENT))
                     .publish();
 
             compositeDisposable.add(statusObservable
@@ -92,7 +89,7 @@ class FormPresenterImpl implements FormPresenter {
                     .filter(eventStatus -> formViewArguments.type() != FormViewArguments.Type.ENROLLMENT)
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.io())
-                    .subscribe(formRepository.storeEventStatus(reportUid), Timber::e));
+                    .subscribe(formRepository.storeReportStatus(reportUid), Timber::e));
         }
     }
 
