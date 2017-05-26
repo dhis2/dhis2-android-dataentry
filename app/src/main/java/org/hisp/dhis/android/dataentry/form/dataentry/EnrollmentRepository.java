@@ -1,7 +1,7 @@
 package org.hisp.dhis.android.dataentry.form.dataentry;
 
-import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -10,17 +10,16 @@ import com.squareup.sqlbrite.BriteDatabase;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel.Columns;
 import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactory;
 
-import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
+import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
 final class EnrollmentRepository implements DataEntryRepository {
     private static final String QUERY = "SELECT\n" +
@@ -49,8 +48,26 @@ final class EnrollmentRepository implements DataEntryRepository {
             "WHERE Enrollment.uid = ?\n" +
             "ORDER BY Field.formOrder ASC;";
 
+    private static final String UPDATE = "UPDATE TrackedEntityAttributeValue\n" +
+            "SET lastUpdated = ?, value = ?\n" +
+            "WHERE trackedEntityInstance = (\n" +
+            "  SELECT trackedEntityInstance FROM Enrollment WHERE Enrollment.uid = ? LIMIT 1\n" +
+            ") AND trackedEntityAttribute = ?;";
+
+    private static final String INSERT = "INSERT INTO TrackedEntityAttributeValue ( " +
+            "created, lastUpdated, value, trackedEntityAttribute, trackedEntityInstance" +
+            ") VALUES (?, ?, ?, ?, (\n" +
+            "  SELECT trackedEntityInstance FROM Enrollment WHERE uid = ? LIMIT 1\n" +
+            "));";
+
     @NonNull
     private final BriteDatabase briteDatabase;
+
+    @NonNull
+    private final SQLiteStatement updateStatement;
+
+    @NonNull
+    private final SQLiteStatement insertStatement;
 
     @NonNull
     private final FieldViewModelFactory fieldFactory;
@@ -59,21 +76,21 @@ final class EnrollmentRepository implements DataEntryRepository {
     private final CurrentDateProvider currentDateProvider;
 
     @NonNull
-    private final String trackedEntityInstance;
-
-    @NonNull
     private final String enrollment;
 
     EnrollmentRepository(@NonNull BriteDatabase briteDatabase,
             @NonNull FieldViewModelFactory fieldFactory,
             @NonNull CurrentDateProvider currentDateProvider,
-            @NonNull String trackedEntityInstance,
             @NonNull String enrollment) {
         this.briteDatabase = briteDatabase;
         this.fieldFactory = fieldFactory;
         this.currentDateProvider = currentDateProvider;
-        this.trackedEntityInstance = trackedEntityInstance;
         this.enrollment = enrollment;
+
+        this.updateStatement = briteDatabase.getWritableDatabase()
+                .compileStatement(UPDATE);
+        this.insertStatement = briteDatabase.getWritableDatabase()
+                .compileStatement(INSERT);
     }
 
     @NonNull
@@ -104,34 +121,34 @@ final class EnrollmentRepository implements DataEntryRepository {
                 cursor.getString(4), cursor.getString(5));
     }
 
-    private long update(@NonNull String uid, @Nullable String value) {
-        ContentValues attributeValue = new ContentValues();
+    private long update(@NonNull String attribute, @Nullable String value) {
+        sqLiteBind(updateStatement, 1, BaseIdentifiableObject.DATE_FORMAT
+                .format(currentDateProvider.currentDate()));
+        sqLiteBind(updateStatement, 2, value);
+        sqLiteBind(updateStatement, 3, enrollment);
+        sqLiteBind(updateStatement, 4, attribute);
 
-        // update time stamp
-        attributeValue.put(TrackedEntityAttributeValueModel.Columns.LAST_UPDATED,
-                BaseIdentifiableObject.DATE_FORMAT.format(currentDateProvider.currentDate()));
-        if (value == null) {
-            attributeValue.putNull(TrackedEntityAttributeValueModel.Columns.VALUE);
-        } else {
-            attributeValue.put(TrackedEntityAttributeValueModel.Columns.VALUE, value);
-        }
+        long updated = briteDatabase.executeUpdateDelete(
+                TrackedEntityAttributeValueModel.TABLE, updateStatement);
+        updateStatement.clearBindings();
 
-        return (long) briteDatabase.update(TrackedEntityAttributeValueModel.TABLE, attributeValue,
-                Columns.TRACKED_ENTITY_ATTRIBUTE + " = ? AND " +
-                        Columns.TRACKED_ENTITY_INSTANCE + " = ?", uid, trackedEntityInstance);
+        return updated;
     }
 
-    private long insert(@NonNull String uid, @Nullable String value) {
-        Date created = currentDateProvider.currentDate();
-        TrackedEntityAttributeValueModel attributeValueModel =
-                TrackedEntityAttributeValueModel.builder()
-                        .created(created)
-                        .lastUpdated(created)
-                        .trackedEntityAttribute(uid)
-                        .trackedEntityInstance(trackedEntityInstance)
-                        .value(value)
-                        .build();
-        return briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE,
-                attributeValueModel.toContentValues());
+    private long insert(@NonNull String attribute, @NonNull String value) {
+        String created = BaseIdentifiableObject.DATE_FORMAT
+                .format(currentDateProvider.currentDate());
+
+        sqLiteBind(insertStatement, 1, created);
+        sqLiteBind(insertStatement, 2, created);
+        sqLiteBind(insertStatement, 3, value);
+        sqLiteBind(insertStatement, 4, attribute);
+        sqLiteBind(insertStatement, 5, enrollment);
+
+        long inserted = briteDatabase.executeInsert(
+                TrackedEntityAttributeValueModel.TABLE, insertStatement);
+        insertStatement.clearBindings();
+
+        return inserted;
     }
 }

@@ -123,7 +123,7 @@ public class EnrollmentRepositoryIntegrationTests {
 
         // class under tests
         enrollmentRepository = new EnrollmentRepository(databaseRule.briteDatabase(),
-                fieldViewModelFactory, currentDateProvider, TEI_UID, ENROLLMENT_UID);
+                fieldViewModelFactory, currentDateProvider, ENROLLMENT_UID);
     }
 
     @Test
