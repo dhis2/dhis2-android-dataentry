@@ -77,9 +77,11 @@ public class HomeFragment extends BaseFragment implements HomeView {
         homeViewModelAdapter = new HomeViewModelAdapter(getActivity());
         homeViewModelAdapter.setOnHomeItemClickListener(homeEntity -> {
             if (homeEntity.type() == HomeViewModel.Type.PROGRAM) {
-                ReportsArguments reportsArguments = ReportsArguments.createForEvents(
-                        homeEntity.id(), homeEntity.title());
-                startActivity(ReportsActivity.createIntent(getActivity(), reportsArguments));
+                startActivity(ReportsActivity.createIntent(getActivity(),
+                        ReportsArguments.createForEvents(homeEntity.id(), homeEntity.title())));
+            } else if (homeEntity.type() == HomeViewModel.Type.TRACKED_ENTITY) {
+                startActivity(ReportsActivity.createIntent(getActivity(),
+                        ReportsArguments.createForTeis(homeEntity.id(), homeEntity.title())));
             }
         });
 
