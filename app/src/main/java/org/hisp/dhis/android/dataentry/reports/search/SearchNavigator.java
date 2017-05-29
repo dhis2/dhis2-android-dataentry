@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.reports;
+package org.hisp.dhis.android.dataentry.reports.search;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,12 +11,15 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.dataentry.DhisApp;
+import org.hisp.dhis.android.dataentry.reports.ReportsActivity;
+import org.hisp.dhis.android.dataentry.reports.ReportsArguments;
+import org.hisp.dhis.android.dataentry.reports.ReportsNavigator;
 
 import java.util.UUID;
 
 import timber.log.Timber;
 
-final class TeisNavigatorImpl implements ReportsNavigator {
+final class SearchNavigator implements ReportsNavigator {
 
     @NonNull
     private final Activity currentActivity;
@@ -28,7 +31,7 @@ final class TeisNavigatorImpl implements ReportsNavigator {
     @NonNull
     private final BriteDatabase briteDatabase;
 
-    TeisNavigatorImpl(@NonNull Activity currentActivity, @NonNull String teName) {
+    SearchNavigator(@NonNull Activity currentActivity, @NonNull String teName) {
         this.currentActivity = currentActivity;
         this.teName = teName;
         this.briteDatabase = ((DhisApp) currentActivity.getApplication())

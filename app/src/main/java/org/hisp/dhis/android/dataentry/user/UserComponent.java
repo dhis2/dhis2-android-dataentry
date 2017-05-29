@@ -11,6 +11,8 @@ import org.hisp.dhis.android.dataentry.main.home.HomeComponent;
 import org.hisp.dhis.android.dataentry.main.home.HomeModule;
 import org.hisp.dhis.android.dataentry.reports.ReportsComponent;
 import org.hisp.dhis.android.dataentry.reports.ReportsModule;
+import org.hisp.dhis.android.dataentry.reports.search.SearchComponent;
+import org.hisp.dhis.android.dataentry.reports.search.SearchModule;
 import org.hisp.dhis.android.dataentry.service.ServiceComponent;
 import org.hisp.dhis.android.dataentry.service.ServiceModule;
 
@@ -25,6 +27,9 @@ public interface UserComponent {
 
     @NonNull
     HomeComponent plus(@NonNull HomeModule homeModule);
+
+    @NonNull
+    SearchComponent plus(@NonNull SearchModule searchModule);
 
     @NonNull
     ReportsComponent plus(@NonNull ReportsModule reportsModule);
