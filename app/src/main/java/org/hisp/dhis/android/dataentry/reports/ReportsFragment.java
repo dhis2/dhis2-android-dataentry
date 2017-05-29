@@ -5,13 +5,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
@@ -38,12 +36,6 @@ public final class ReportsFragment extends BaseFragment
 
     @BindView(R.id.fab_create)
     FloatingActionButton buttonCreateReport;
-
-    @BindView(R.id.cardview_search_box)
-    CardView searchReportsBox;
-
-    @BindView(R.id.edittext_search)
-    EditText searchReportsEditText;
 
     @Inject
     ReportsPresenter presenter;
