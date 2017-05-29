@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import org.hisp.dhis.android.dataentry.R;
 
@@ -39,9 +40,26 @@ public class ReportsActivity extends AppCompatActivity {
             throw new IllegalStateException("ReportsArguments must be supplied.");
         }
 
-        toolbar.setTitle(reportsArguments.entityName());
+        setTitle(reportsArguments.entityName());
+        setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, ReportsFragment.create(reportsArguments))
                 .commitNow();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
