@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.search;
+package org.hisp.dhis.android.dataentry.reports.search;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,19 +10,19 @@ import nl.jqno.equalsverifier.Warning;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(JUnit4.class)
-public class SearchArgumentsTests {
+public class SearchResultViewModelTests {
 
     @Test
     public void equalsAndHashcodeMethodsShouldConformToContract() {
-        EqualsVerifier.forClass(SearchArguments.create("test_te_uid", "test_te_name").getClass())
+        EqualsVerifier.forClass(SearchResultViewModel.create("test_te_uid", "test_te_name").getClass())
                 .suppress(Warning.NULL_FIELDS)
                 .verify();
     }
 
     @Test
     public void propertiesShouldBePropagated() {
-        SearchArguments searchArguments = SearchArguments.create("test_te_uid", "test_te_name");
-        assertThat(searchArguments.entityUid()).isEqualTo("test_te_uid");
-        assertThat(searchArguments.entityName()).isEqualTo("test_te_name");
+        SearchResultViewModel searchResultViewModel = SearchResultViewModel.create("test_te_uid", "test_te_name");
+        assertThat(searchResultViewModel.uid()).isEqualTo("test_te_uid");
+        assertThat(searchResultViewModel.label()).isEqualTo("test_te_name");
     }
 }

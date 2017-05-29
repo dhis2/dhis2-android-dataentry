@@ -27,7 +27,7 @@
             android:theme="@style/AppTheme"/>
 
         <activity android:name=".reports.ReportsActivity"/>
-        <activity android:name=".search.SearchActivity"/>
+        <activity android:name=".reports.search.SearchActivity"/>
         <activity android:name=".form.dataentry.DataEntryActivity"/>
 
         <service

@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.search;
+package org.hisp.dhis.android.dataentry.reports.search;
 
 import android.support.annotation.NonNull;
 
