@@ -1,11 +1,12 @@
 package org.hisp.dhis.android.dataentry.reports.search;
 
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 
 @AutoValue
-public abstract class SearchArguments {
+public abstract class SearchArguments implements Parcelable {
 
     @NonNull
     public abstract String entityUid();
