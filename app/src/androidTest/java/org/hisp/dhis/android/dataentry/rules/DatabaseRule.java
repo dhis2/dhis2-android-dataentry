@@ -11,6 +11,11 @@ import com.squareup.sqlbrite.SqlBrite;
 import org.hisp.dhis.android.core.data.database.DbOpenHelper;
 import org.junit.rules.ExternalResource;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import rx.Scheduler;
 
 public final class DatabaseRule extends ExternalResource {

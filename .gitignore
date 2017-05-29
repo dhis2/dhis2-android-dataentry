@@ -25,7 +25,7 @@ build
 fabric.properties
 
 # Windows
-*.db
+dhis.db
 
 # Android
 *.apk

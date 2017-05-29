@@ -8,14 +8,17 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class DatePickerDialogFragment extends DialogFragment {
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String TAG = DatePickerDialogFragment.class.getSimpleName();
     private static final String ARG_ALLOW_DATES_IN_FUTURE = "arg:allowDatesInFuture";
 
     @Nullable
-    private DatePickerDialog.OnDateSetListener onDateSetListener;
+    private FormattedOnDateSetListener onDateSetListener;
 
     public static DatePickerDialogFragment newInstance(boolean allowDatesInFuture) {
         Bundle arguments = new Bundle();
@@ -32,8 +35,13 @@ public class DatePickerDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@NonNull Bundle savedInstanceState) {
         Calendar calendar = Calendar.getInstance();
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-                getContext(), onDateSetListener,
-                calendar.get(Calendar.YEAR),
+                getContext(), (view, year, month, dayOfMonth) -> {
+            Calendar chosenDate = Calendar.getInstance();
+            chosenDate.set(year, month, dayOfMonth);
+            if (onDateSetListener != null) {
+                onDateSetListener.onDateSet(dateFormat().format(chosenDate.getTime()));
+            }
+        }, calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH));
 
@@ -44,15 +52,30 @@ public class DatePickerDialogFragment extends DialogFragment {
         return datePickerDialog;
     }
 
+    @NonNull
+    private static SimpleDateFormat dateFormat() {
+        return new SimpleDateFormat(DATE_FORMAT, Locale.US);
+    }
+
     public void show(@NonNull FragmentManager fragmentManager) {
         show(fragmentManager, TAG);
     }
 
-    public void setOnDateSetListener(@Nullable DatePickerDialog.OnDateSetListener listener) {
+    public void setFormattedOnDateSetListener(@Nullable FormattedOnDateSetListener listener) {
         this.onDateSetListener = listener;
     }
 
     private boolean isAllowDatesInFuture() {
         return getArguments().getBoolean(ARG_ALLOW_DATES_IN_FUTURE, false);
+    }
+
+    /**
+     * The listener used to indicate the user has finished selecting a date.
+     */
+    public interface FormattedOnDateSetListener {
+        /**
+         * @param date the date in the correct simple fate format
+         */
+        void onDateSet(String date);
     }
 }
