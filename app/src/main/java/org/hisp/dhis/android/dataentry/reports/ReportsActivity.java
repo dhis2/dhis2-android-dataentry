@@ -9,13 +9,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.reports.search.SearchArguments;
+import org.hisp.dhis.android.dataentry.reports.search.SearchFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ReportsActivity extends AppCompatActivity {
     static final String ARG_REPORTS_FRAGMENT = "tag:reportsFragment";
-    static final String ARG_ARGUMENTS = "arg:arguments";
+    static final String ARG_REPORTS_ARGUMENTS = "arg:reportsArguments";
+
+    static final String ARG_SEARCH_FRAGMENT = "tag:searchFragment";
+    static final String ARG_SEARCH_ARGUMENTS = "arg:searchArguments";
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -24,7 +29,15 @@ public class ReportsActivity extends AppCompatActivity {
     public static Intent createIntent(@NonNull Activity activity,
             @NonNull ReportsArguments reportsArguments) {
         Intent intent = new Intent(activity, ReportsActivity.class);
-        intent.putExtra(ARG_ARGUMENTS, reportsArguments);
+        intent.putExtra(ARG_REPORTS_ARGUMENTS, reportsArguments);
+        return intent;
+    }
+
+    @NonNull
+    public static Intent createIntent(@NonNull Activity activity,
+            @NonNull SearchArguments searchArguments) {
+        Intent intent = new Intent(activity, ReportsActivity.class);
+        intent.putExtra(ARG_SEARCH_ARGUMENTS, searchArguments);
         return intent;
     }
 
@@ -35,26 +48,40 @@ public class ReportsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         ReportsArguments reportsArguments = getIntent()
-                .getExtras().getParcelable(ARG_ARGUMENTS);
+                .getExtras().getParcelable(ARG_REPORTS_ARGUMENTS);
 
-        if (reportsArguments == null) {
-            throw new IllegalStateException("ReportsArguments must be supplied.");
+        SearchArguments searchArguments = getIntent()
+                .getExtras().getParcelable(ARG_SEARCH_ARGUMENTS);
+
+        if (reportsArguments == null && searchArguments == null) {
+            throw new IllegalStateException("ReportsArguments or SearchArguments must be supplied.");
         }
 
-        setTitle(reportsArguments.entityName());
+        String entityName = reportsArguments == null ?
+                searchArguments.entityName() : reportsArguments.entityName();
+
         setSupportActionBar(toolbar);
+        setTitle(entityName);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         }
 
-        // if fragment has been attached, we don't want to replace it
-        if (getSupportFragmentManager()
+        // if reports fragment has been attached, we don't want to replace it
+        if (reportsArguments != null && getSupportFragmentManager()
                 .findFragmentByTag(ARG_REPORTS_FRAGMENT) == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_frame, ReportsFragment
                             .create(reportsArguments), ARG_REPORTS_FRAGMENT)
+                    .commitNow();
+        }
+
+        // if search fragment has been attached, we don't want to replace it
+        if (searchArguments != null && getSupportFragmentManager()
+                .findFragmentByTag(ARG_SEARCH_FRAGMENT) == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content_frame, new SearchFragment(), ARG_REPORTS_FRAGMENT)
                     .commitNow();
         }
     }

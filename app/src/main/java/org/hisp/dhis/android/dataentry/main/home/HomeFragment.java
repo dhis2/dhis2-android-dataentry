@@ -19,6 +19,7 @@ import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
 import org.hisp.dhis.android.dataentry.reports.ReportsActivity;
 import org.hisp.dhis.android.dataentry.reports.ReportsArguments;
+import org.hisp.dhis.android.dataentry.reports.search.SearchArguments;
 
 import java.util.List;
 
@@ -81,7 +82,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
                         ReportsArguments.createForEvents(homeEntity.id(), homeEntity.title())));
             } else if (homeEntity.type() == HomeViewModel.Type.TRACKED_ENTITY) {
                 startActivity(ReportsActivity.createIntent(getActivity(),
-                        ReportsArguments.createForTeis(homeEntity.id(), homeEntity.title())));
+                        SearchArguments.create(homeEntity.id(), homeEntity.title())));
             }
         });
 
