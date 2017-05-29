@@ -31,6 +31,7 @@
     <string name="report_view_enrollment_date">Enrollment date</string>
 
     <!-- Input hints -->
+    <string name="search">Search</string>
     <string name="enter_text">Enter text</string>
     <string name="enter_long_text">Enter long text</string>
     <string name="enter_number">Enter number</string>
