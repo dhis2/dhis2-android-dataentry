@@ -83,8 +83,6 @@ public final class ReportsFragment extends BaseFragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         bind(this, view);
-
-        setUpSearchView();
         setUpRecyclerView();
     }
 
@@ -127,11 +125,6 @@ public final class ReportsFragment extends BaseFragment
     private ReportsArguments getReportsArguments() {
         return isNull(getArguments().getParcelable(ARG_ARGUMENTS),
                 "ReportsArguments must be supplied");
-    }
-
-    private void setUpSearchView() {
-        searchReportsBox.setVisibility(getReportsArguments().entityType()
-                .equals(ReportsArguments.TYPE_TEIS) ? View.VISIBLE : View.GONE);
     }
 
     private void setUpRecyclerView() {

@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.google.auto.value.AutoValue;
 
 @AutoValue
-abstract class ReportViewModel {
+public abstract class ReportViewModel {
 
     @NonNull
     public abstract Status status();
@@ -22,7 +22,7 @@ abstract class ReportViewModel {
         return new AutoValue_ReportViewModel(status, id, labels);
     }
 
-    enum Status {
+    public enum Status {
         SYNCED, TO_SYNC, FAILED
     }
 }
