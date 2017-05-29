@@ -150,6 +150,7 @@ dependencies {
 
     // Other
     compile "com.github.castorflex.smoothprogressbar:library-circular:${libraries.progressbar}"
+    provided "com.google.code.findbugs:annotations:${libraries.findbugs}"
 
     // dhis2 libraries
     compile "org.hisp.dhis:android-core:${libraries.dhis2sdk}"
