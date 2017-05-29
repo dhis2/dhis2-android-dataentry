@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
@@ -34,6 +35,9 @@ public final class ReportsFragment extends BaseFragment
 
     @BindView(R.id.fab_create)
     FloatingActionButton buttonCreateReport;
+
+    @BindView(R.id.edittext_search)
+    EditText searchReports;
 
     @Inject
     ReportsPresenter presenter;
@@ -70,8 +74,8 @@ public final class ReportsFragment extends BaseFragment
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_reports, container, false);
     }
 
