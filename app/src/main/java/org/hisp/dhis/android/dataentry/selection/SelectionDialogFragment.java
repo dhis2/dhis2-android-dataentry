@@ -14,12 +14,15 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView;
+
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -27,11 +30,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import rx.Observable;
 import timber.log.Timber;
 
 public class SelectionDialogFragment extends AppCompatDialogFragment
-        implements SelectionView, SearchView.OnQueryTextListener, View.OnClickListener{
+        implements SelectionView, View.OnClickListener{
 
     public static final String SELECTION_ARG = "arg:selection_arg";
     public static final String SELECTION_RESULT = "arg:selection_result";
@@ -50,6 +56,7 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
     RecyclerView selectionListView;
 
     private Unbinder unbinder;
+    private Disposable searchDisposable;
 
     @Inject
     public SelectionPresenter presenter;
@@ -85,7 +92,6 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         unbinder = ButterKnife.bind(this, view);
-        searchView.setOnQueryTextListener(this);
 
         selectionListView.setLayoutManager(new LinearLayoutManager(getActivity()));
         selectionListView.setAdapter(new SelectionDialogAdapter(this));
@@ -104,29 +110,23 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
     @Override
     public void onPause() {
         super.onPause();
+        searchDisposable.dispose();
         presenter.onDetach();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        presenter.onAttach(this);
-    }
+        searchDisposable = RxSearchView.queryTextChangeEvents(searchView)
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe( query -> {
+                    presenter.onDetach();
+                    presenter.onAttach(this, query.queryText().toString());
+//                    presenter.onAttach(this);
+//                    Timber.d("text changed !" + query); //TODO:
+                });
 
-    /**
-     * Called when the search query of searchView changes.
-     * @param newText
-     * @return
-     */
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        Timber.d("text changed !" + newText); //TODO: add changes ?
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
     }
 
     @OnClick(R.id.selection_dialog_cancel)
@@ -142,23 +142,17 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
     /**
      * Called by the RecyclerView.ViewHolder.TextView onClick.
      * The view is expected to contain the SelectionModelView as a tag.
-     * @param v
+     * @param view
      */
     @Override
-    public void onClick(View v) {
-        SelectionViewModel model  = (SelectionViewModel) v.getTag();
+    public void onClick(View view) {
+        SelectionViewModel model  = (SelectionViewModel) view.getTag();
         if(model != null) {
-            Timber.d("Tag: " + v.getTag());
+            Timber.d("Tag: " + view.getTag());
             Intent result = new Intent();
             result.putExtra(SELECTION_RESULT, model);
             getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_CODE, result);
             this.dismiss();
         }
     }
-
-/*    @Override
-    public Observable<CharSequence> onQueryChange() {
-        SearchView sv = new SearchView(getActivity());
-        return RxSearchView.queryTextChanges(sv);
-    }*/
 }

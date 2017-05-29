@@ -5,8 +5,11 @@ import android.support.annotation.NonNull;
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
 
+import java.util.List;
+
 import io.reactivex.disposables.CompositeDisposable;
 import rx.exceptions.OnErrorNotImplementedException;
+import timber.log.Timber;
 
 public final class SelectionPresenterImpl implements SelectionPresenter {
 
@@ -32,21 +35,22 @@ public final class SelectionPresenterImpl implements SelectionPresenter {
 
     @Override
     public void onAttach(@NonNull View view) {
+        this.onAttach(view, "");
+    }
+
+    @Override
+    public void onAttach(@NonNull View view, @NonNull String query) {
         if (view instanceof SelectionView) {
             SelectionView selectionView = (SelectionView) view;
             selectionView.setTitle(arg.name());
             disposable.add(repository.list(arg.uid())
+                    .map(list -> search(list, query))
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(((SelectionView) view).update(), err -> {
                         throw new OnErrorNotImplementedException(this.getClass().getName(), err);
                     })
             );
-
-          /*  disposable.add(selectionView.onQueryChange()
-            .subscribeOn(schedulerProvider.ui())
-            .observeOn(schedulerProvider.io())
-            .subscribe(repository.search()));*/
         }
     }
 
@@ -55,8 +59,8 @@ public final class SelectionPresenterImpl implements SelectionPresenter {
         disposable.clear();
     }
 
-   /* @Override
-    public void onSearch(View view) {
-
-    }*/
+    private List<SelectionViewModel> search(List<SelectionViewModel> list, @NonNull String query) {
+        Timber.d("text changed !" + query); //TODO:
+        return list;
+    }
 }
