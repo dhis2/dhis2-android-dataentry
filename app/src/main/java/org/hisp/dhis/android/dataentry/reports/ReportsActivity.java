@@ -81,7 +81,8 @@ public class ReportsActivity extends AppCompatActivity {
         if (searchArguments != null && getSupportFragmentManager()
                 .findFragmentByTag(ARG_SEARCH_FRAGMENT) == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_frame, new SearchFragment(), ARG_REPORTS_FRAGMENT)
+                    .add(R.id.content_frame, SearchFragment
+                            .create(searchArguments), ARG_SEARCH_FRAGMENT)
                     .commitNow();
         }
     }
