@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -25,14 +26,12 @@ public class EnrollmentFormRepositoryIntegrationTest {
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
-    private SQLiteDatabase db;
 
-    FormRepository formRepository;
+    private FormRepository formRepository;
 
     @Before
     public void setUp() throws Exception {
-        databaseRule.insertMetaData();
-        db = databaseRule.database();
+        SQLiteDatabase db = databaseRule.database();
         ContentValues orgUnit = new ContentValues();
         orgUnit.put(OrganisationUnitModel.Columns.UID, "org_unit_uid");
         db.insert(OrganisationUnitModel.TABLE, null, orgUnit);
@@ -65,7 +64,6 @@ public class EnrollmentFormRepositoryIntegrationTest {
 
     @Test
     public void titleShouldPropagateCorrectResults() throws Exception {
-
         TestSubscriber<String> testObserver =
                 formRepository.title("enrollment_uid").test();
 
@@ -82,12 +80,10 @@ public class EnrollmentFormRepositoryIntegrationTest {
         testObserver.assertNoErrors();
         testObserver.assertNotComplete();
         assertThat(testObserver.values().get(1)).isEqualTo("New Program Name");
-
     }
 
     @Test
     public void reportDateShouldPropagateCorrectResults() throws Exception {
-
         TestSubscriber<String> testObserver =
                 formRepository.reportDate("enrollment_uid").test();
 
@@ -98,8 +94,9 @@ public class EnrollmentFormRepositoryIntegrationTest {
 
         ContentValues enrollmentWithNewDate = new ContentValues();
         enrollmentWithNewDate.put(EnrollmentModel.Columns.DATE_OF_ENROLLMENT, "2099-05-01");
-        databaseRule.briteDatabase()
-                .update(EnrollmentModel.TABLE, enrollmentWithNewDate, "Enrollment.uid = 'enrollment_uid'", null);
+        databaseRule.briteDatabase().update(EnrollmentModel.TABLE,
+                enrollmentWithNewDate, "Enrollment.uid = 'enrollment_uid'", null);
+
         testObserver.assertValueCount(2);
         testObserver.assertNoErrors();
         testObserver.assertNotComplete();
@@ -107,8 +104,32 @@ public class EnrollmentFormRepositoryIntegrationTest {
     }
 
     @Test
-    public void sectionsShouldPropagateCorrectResults() throws Exception {
+    public void reportStatusShouldPropagateCorrectResults() throws Exception {
+        ContentValues activeEnrollment = new ContentValues();
+        activeEnrollment.put(EnrollmentModel.Columns.ENROLLMENT_STATUS, EnrollmentStatus.ACTIVE.name());
+        databaseRule.briteDatabase()
+                .update(EnrollmentModel.TABLE, activeEnrollment, "Enrollment.uid = 'enrollment_uid'", null);
 
+        TestSubscriber<ReportStatus> testObserver =
+                formRepository.reportStatus("enrollment_uid").test();
+
+        testObserver.assertValueCount(1);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+        assertThat(testObserver.values().get(0)).isEqualTo(ReportStatus.ACTIVE);
+
+        ContentValues completedEnrollment = new ContentValues();
+        completedEnrollment.put(EnrollmentModel.Columns.ENROLLMENT_STATUS, EnrollmentStatus.COMPLETED.name());
+        databaseRule.briteDatabase()
+                .update(EnrollmentModel.TABLE, completedEnrollment, "Enrollment.uid = 'enrollment_uid'", null);
+        testObserver.assertValueCount(2);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+        assertThat(testObserver.values().get(1)).isEqualTo(ReportStatus.COMPLETED);
+    }
+
+    @Test
+    public void sectionsShouldPropagateCorrectResults() throws Exception {
         FormSectionViewModel formSectionViewModel =
                 FormSectionViewModel.createForEnrollment("enrollment_uid");
 
@@ -123,15 +144,25 @@ public class EnrollmentFormRepositoryIntegrationTest {
 
     @Test
     public void reportDateShouldBeStoredCorrectly() throws Exception {
-
         formRepository.storeReportDate("enrollment_uid").accept("2019-09-09");
 
-        Cursor cursor = db.rawQuery(
-                "SELECT Enrollment.enrollmentDate FROM Enrollment WHERE Enrollment.uid = 'enrollment_uid'", null);
+        Cursor cursor = databaseRule.database().rawQuery("SELECT Enrollment.enrollmentDate FROM " +
+                "Enrollment WHERE Enrollment.uid = 'enrollment_uid'", null);
         cursor.moveToFirst();
         assertThat(cursor.getCount()).isEqualTo(1);
         assertThat(cursor.getString(0)).isEqualTo("2019-09-09");
         cursor.close();
     }
 
+    @Test
+    public void enrollmentStatusShouldBeStoredCorrectly() throws Exception {
+        formRepository.storeReportStatus("enrollment_uid").accept(ReportStatus.COMPLETED);
+
+        Cursor cursor = databaseRule.database().rawQuery("SELECT Enrollment.status FROM " +
+                "Enrollment WHERE Enrollment.uid = 'enrollment_uid'", null);
+        cursor.moveToFirst();
+        assertThat(cursor.getCount()).isEqualTo(1);
+        assertThat(cursor.getString(0)).isEqualTo(EnrollmentStatus.COMPLETED.name());
+        cursor.close();
+    }
 }

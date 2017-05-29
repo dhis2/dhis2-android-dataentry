@@ -2,19 +2,20 @@ package org.hisp.dhis.android.dataentry.form;
 
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
-import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
 
-import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Predicate;
+import io.reactivex.flowables.ConnectableFlowable;
+import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
 import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
 class FormPresenterImpl implements FormPresenter {
+
+    @NonNull
+    private final FormViewArguments formViewArguments;
 
     @NonNull
     private final SchedulerProvider schedulerProvider;
@@ -25,7 +26,10 @@ class FormPresenterImpl implements FormPresenter {
     @NonNull
     private final CompositeDisposable compositeDisposable;
 
-    FormPresenterImpl(@NonNull SchedulerProvider schedulerProvider, @NonNull FormRepository formRepository) {
+    FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
+                      @NonNull SchedulerProvider schedulerProvider,
+                      @NonNull FormRepository formRepository) {
+        this.formViewArguments = formViewArguments;
         this.formRepository = formRepository;
         this.schedulerProvider = schedulerProvider;
         this.compositeDisposable = new CompositeDisposable();
@@ -38,71 +42,55 @@ class FormPresenterImpl implements FormPresenter {
         if (view instanceof FormView) {
             FormView formView = (FormView) view;
 
-            String reportUid = formView.formViewArguments().uid();
+            String reportUid = formViewArguments.uid();
 
             compositeDisposable.add(formRepository.title(reportUid)
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                            formView.renderTitle(),
-                            Timber::e));
+                    .subscribe(formView.renderTitle(), Timber::e));
 
             compositeDisposable.add(formRepository.reportDate(reportUid)
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                            formView.renderReportDate(),
-                            Timber::e));
+                    .subscribe(formView.renderReportDate(), Timber::e));
 
             compositeDisposable.add(formRepository.sections(reportUid)
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                            formView.renderSectionViewModels(),
-                            Timber::e));
+                    .subscribe(formView.renderSectionViewModels(), Timber::e));
 
             compositeDisposable.add(formView.reportDateChanged()
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.io())
-                    .subscribe(
-                            formRepository.storeReportDate(reportUid),
-                            Timber::e));
+                    .subscribe(formRepository.storeReportDate(reportUid), Timber::e));
 
-            compositeDisposable.add(formRepository.reportStatus(reportUid)
-                    .subscribeOn(schedulerProvider.io())
+            ConnectableFlowable<ReportStatus> statusObservable = formRepository.reportStatus(reportUid)
                     .distinctUntilChanged()
-                    .filter(eventStatus -> formView.formViewArguments().type() == FormViewArguments.Type.EVENT)
-                    .zipWith(Flowable.range(0, Integer.MAX_VALUE),
-                            (eventStatus, integer) -> Pair.create(integer, eventStatus))
-                    .subscribeOn(schedulerProvider.ui())
-                    .map(pair -> {
-                        if (pair.val0() != 0) {
-                            formView.renderStatusChangeSnackBar(pair.val1());
-                        }
-                        return pair.val1();
-                    })
+                    .publish();
+
+            compositeDisposable.add(statusObservable
+                    .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(formView.renderStatus(), Timber::e));
+                    .skip(1)
+                    .subscribe(status -> formView.renderStatusChangeSnackBar(status), throwable -> {
+                        throw new OnErrorNotImplementedException(throwable);
+                    }));
+
+            compositeDisposable.add(statusObservable
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(formView.renderStatus(), throwable -> {
+                        throw new OnErrorNotImplementedException(throwable);
+                    }));
+
+            compositeDisposable.add(statusObservable.connect());
 
             compositeDisposable.add(formView.eventStatusChanged()
-                    .filter(handleEnrollmentFabClick(formView))
+                    .filter(eventStatus -> formViewArguments.type() != FormViewArguments.Type.ENROLLMENT)
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.io())
-                    .subscribe(
-                            formRepository.storeEventStatus(reportUid),
-                            Timber::e));
+                    .subscribe(formRepository.storeReportStatus(reportUid), Timber::e));
         }
-    }
-
-    @NonNull
-    private Predicate<EventStatus> handleEnrollmentFabClick(@NonNull FormView formView) {
-        return eventStatus -> {
-            if (formView.formViewArguments().type() == FormViewArguments.Type.ENROLLMENT) {
-                // go to TEI dashboard screen
-                return false;
-            }
-            return true;
-        };
     }
 
     @Override

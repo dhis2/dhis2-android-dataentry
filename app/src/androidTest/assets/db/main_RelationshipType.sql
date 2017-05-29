@@ -1,1 +1,0 @@
-INSERT INTO RelationshipType (uid, code, name, displayName, created, lastUpdated, bIsToA, AIsToB) VALUES ('V2kkHafqs8G', null, 'Mother-Child', 'Mother-Child', '2013-09-19T15:17:41.000', '2014-04-14T13:53:20.166', 'Child', 'Mother');

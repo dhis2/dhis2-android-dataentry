@@ -2,12 +2,11 @@ package org.hisp.dhis.android.dataentry.form;
 
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 
 import java.util.Arrays;
@@ -22,8 +21,8 @@ import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
         "PMD.AvoidDuplicateLiterals"
 })
 class EnrollmentFormRepository implements FormRepository {
-
-    private static final List<String> TITLE_TABLES = Arrays.asList(EnrollmentModel.TABLE, ProgramModel.TABLE);
+    private static final List<String> TITLE_TABLES = Arrays.asList(
+            EnrollmentModel.TABLE, ProgramModel.TABLE);
 
     private static final String SELECT_TITLE = "SELECT Program.displayName\n" +
             "FROM Enrollment\n" +
@@ -31,6 +30,10 @@ class EnrollmentFormRepository implements FormRepository {
             "WHERE Enrollment.uid = ?";
 
     private static final String SELECT_ENROLLMENT_UID = "SELECT Enrollment.uid\n" +
+            "FROM Enrollment\n" +
+            "WHERE Enrollment.uid = ?";
+
+    private static final String SELECT_ENROLLMENT_STATUS = "SELECT Enrollment.status\n" +
             "FROM Enrollment\n" +
             "WHERE Enrollment.uid = ?";
 
@@ -65,8 +68,12 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Flowable<EventStatus> reportStatus(@NonNull String uid) {
-        return Flowable.just(EventStatus.ACTIVE);
+    public Flowable<ReportStatus> reportStatus(@NonNull String uid) {
+        return toV2Flowable(briteDatabase
+                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_STATUS, uid)
+                .mapToOne(cursor ->
+                        ReportStatus.fromEnrollmentStatus(EnrollmentStatus.valueOf(cursor.getString(0)))))
+                .distinctUntilChanged();
     }
 
     @NonNull
@@ -84,15 +91,19 @@ class EnrollmentFormRepository implements FormRepository {
         return reportDate -> {
             ContentValues enrollment = new ContentValues();
             enrollment.put(EnrollmentModel.Columns.DATE_OF_ENROLLMENT, reportDate);
-            briteDatabase.update(EnrollmentModel.TABLE, enrollment, EnrollmentModel.Columns.UID + "=?", uid);
+            briteDatabase.update(EnrollmentModel.TABLE, enrollment,
+                    EnrollmentModel.Columns.UID + " = ?", uid);
         };
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public Consumer<EventStatus> storeEventStatus(@NonNull String uid) {
-        return eventStatus -> {
-            // no-op - status of Enrollment is not changeable in the form screen.
+    public Consumer<ReportStatus> storeReportStatus(@NonNull String uid) {
+        return reportStatus -> {
+            ContentValues enrollment = new ContentValues();
+            enrollment.put(EnrollmentModel.Columns.ENROLLMENT_STATUS,
+                    ReportStatus.toEnrollmentStatus(reportStatus).name());
+            briteDatabase.update(EnrollmentModel.TABLE, enrollment, EnrollmentModel.Columns.UID + " = ?", uid);
         };
     }
 }

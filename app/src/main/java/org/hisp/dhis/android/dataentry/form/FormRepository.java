@@ -2,8 +2,6 @@ package org.hisp.dhis.android.dataentry.form;
 
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.core.event.EventStatus;
-
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -22,7 +20,7 @@ public interface FormRepository {
     Flowable<String> reportDate(@NonNull String uid);
 
     @NonNull
-    Flowable<EventStatus> reportStatus(@NonNull String uid);
+    Flowable<ReportStatus> reportStatus(@NonNull String uid);
 
     /**
      * @param uid corresponds to an event or an enrollment depending on the Repository implementation
@@ -31,7 +29,9 @@ public interface FormRepository {
     @NonNull
     Flowable<List<FormSectionViewModel>> sections(@NonNull String uid);
 
+    @NonNull
     Consumer<String> storeReportDate(@NonNull String uid);
 
-    Consumer<EventStatus> storeEventStatus(@NonNull String uid);
+    @NonNull
+    Consumer<ReportStatus> storeReportStatus(@NonNull String uid);
 }

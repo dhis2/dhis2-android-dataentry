@@ -1,6 +1,7 @@
 package org.hisp.dhis.android.dataentry.form;
 
-import org.hisp.dhis.android.core.event.EventStatus;
+import android.support.annotation.NonNull;
+
 import org.hisp.dhis.android.dataentry.commons.ui.View;
 
 import java.util.List;
@@ -10,19 +11,23 @@ import io.reactivex.functions.Consumer;
 
 interface FormView extends View {
 
-    Observable<EventStatus> eventStatusChanged();
+    @NonNull
+    Observable<ReportStatus> eventStatusChanged();
 
+    @NonNull
     Observable<String> reportDateChanged();
 
+    @NonNull
     Consumer<List<FormSectionViewModel>> renderSectionViewModels();
 
+    @NonNull
     Consumer<String> renderReportDate();
 
+    @NonNull
     Consumer<String> renderTitle();
 
-    Consumer<EventStatus> renderStatus();
+    @NonNull
+    Consumer<ReportStatus> renderStatus();
 
-    void renderStatusChangeSnackBar(EventStatus eventStatus);
-
-    FormViewArguments formViewArguments();
+    void renderStatusChangeSnackBar(@NonNull ReportStatus eventStatus);
 }
