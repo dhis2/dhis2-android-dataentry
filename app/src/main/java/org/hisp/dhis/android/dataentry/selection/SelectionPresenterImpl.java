@@ -33,13 +33,20 @@ public final class SelectionPresenterImpl implements SelectionPresenter {
     @Override
     public void onAttach(@NonNull View view) {
         if (view instanceof SelectionView) {
+            SelectionView selectionView = (SelectionView) view;
+            selectionView.setTitle(arg.name());
             disposable.add(repository.list(arg.uid())
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(((SelectionView) view).update(arg.name()), err -> {
+                    .subscribe(((SelectionView) view).update(), err -> {
                         throw new OnErrorNotImplementedException(this.getClass().getName(), err);
                     })
             );
+
+          /*  disposable.add(selectionView.onQueryChange()
+            .subscribeOn(schedulerProvider.ui())
+            .observeOn(schedulerProvider.io())
+            .subscribe(repository.search()));*/
         }
     }
 
@@ -47,4 +54,9 @@ public final class SelectionPresenterImpl implements SelectionPresenter {
     public void onDetach() {
         disposable.clear();
     }
+
+   /* @Override
+    public void onSearch(View view) {
+
+    }*/
 }

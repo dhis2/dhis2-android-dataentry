@@ -85,4 +85,7 @@
 
     <!--<string name="fatal_sync_error_title">Fatal Sync Error</string>-->
     <!--<string name="fatal_sync_error_text">An error has occurred during synchronisation.</string>-->
+
+    <string name="selection_hint">Find option:</string>
+    <string name="cancel_description">Cancel</string>
 </resources>

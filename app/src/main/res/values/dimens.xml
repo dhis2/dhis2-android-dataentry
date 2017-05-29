@@ -32,4 +32,6 @@
 
     <dimen name="collapsing_toolbar_height">196dp</dimen>
 
+    <dimen name="title_bar_height">56dp</dimen>
+
 </resources>

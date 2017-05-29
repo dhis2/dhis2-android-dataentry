@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import io.reactivex.processors.PublishProcessor;
@@ -74,7 +73,7 @@ public class SelectionPresenterTests {
         publisher.onNext(values);
 
         assertThat(publisher.hasSubscribers()).isTrue();
-        verify(view.update(ARG_NAME)).accept(captor.capture());
+        verify(view.update()).accept(captor.capture());
         verify(repository).list(ARG_UID);
         assertThat(captor.getValue()).isEqualTo(values);
     }
@@ -85,7 +84,7 @@ public class SelectionPresenterTests {
         publisher.onNext(values);
 
         assertThat(publisher.hasSubscribers()).isTrue();
-        verify(view.update(ARG_NAME)).accept(captor.capture());
+        verify(view.update()).accept(captor.capture());
         verify(repository).list(ARG_UID);
         assertThat(captor.getValue()).isEqualTo(values);
 
@@ -93,7 +92,7 @@ public class SelectionPresenterTests {
         publisher.onNext(values);
 
         assertThat(publisher.hasSubscribers()).isTrue();
-        verify(view.update(ARG_NAME), times(2)).accept(captor.capture());
+        verify(view.update(), times(2)).accept(captor.capture());
         verify(repository).list(ARG_UID);
         assertThat(captor.getValue()).isEqualTo(values);
     }

@@ -1,12 +1,13 @@
 package org.hisp.dhis.android.dataentry.selection;
 
 import android.database.Cursor;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 
 @AutoValue
-public abstract class SelectionViewModel {
+public abstract class SelectionViewModel implements Parcelable{
 
     @NonNull
     public abstract String uid();
