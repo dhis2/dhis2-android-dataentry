@@ -61,12 +61,12 @@ public class ReportsPresenterUnitTests {
     @Test
     public void onAttachShouldRenderReportViewModels() throws Exception {
         List<ReportViewModel> reports = Arrays.asList(
-                ReportViewModel.create("test_report_id_one", ReportViewModel.Status.SYNCED,
-                        Arrays.asList("test_label_one", "test_label_two")),
-                ReportViewModel.create("test_report_id_two", ReportViewModel.Status.FAILED,
-                        Arrays.asList("test_label_one", "test_label_two")),
-                ReportViewModel.create("test_report_id_three", ReportViewModel.Status.TO_SYNC,
-                        Arrays.asList("test_label_one", "test_label_two")));
+                ReportViewModel.create(ReportViewModel.Status.SYNCED, "test_report_id_one",
+                        "test_label_one\ntest_label_two"),
+                ReportViewModel.create(ReportViewModel.Status.FAILED, "test_report_id_two",
+                        "test_label_one\ntest_label_two"),
+                ReportViewModel.create(ReportViewModel.Status.TO_SYNC, "test_report_id_three",
+                        "test_label_one\ntest_label_two"));
 
         reportsPresenter.onAttach(reportsView);
         reportsPublisher.onNext(reports);
@@ -78,8 +78,8 @@ public class ReportsPresenterUnitTests {
 
     @Test
     public void updatesShouldBePropagatedToView() throws Exception {
-        List<ReportViewModel> reportsOne = Arrays.asList(ReportViewModel.create("test_report_id_one",
-                ReportViewModel.Status.SYNCED, Arrays.asList("test_label_one", "test_label_two")));
+        List<ReportViewModel> reportsOne = Arrays.asList(ReportViewModel.create(ReportViewModel.Status.SYNCED,
+                "test_report_id_one", "test_label_one\ntest_label_two"));
 
         when(reportsRepository.reports("test_entity_uid")).thenReturn(reportsPublisher);
 
@@ -90,8 +90,8 @@ public class ReportsPresenterUnitTests {
         verify(reportsRepository).reports("test_entity_uid");
         assertThat(reportViewModelsCaptor.getValue()).isEqualTo(reportsOne);
 
-        List<ReportViewModel> reportsTwo = Arrays.asList(ReportViewModel.create("test_report_id_two",
-                ReportViewModel.Status.SYNCED, Arrays.asList("test_label_three", "test_label_four")));
+        List<ReportViewModel> reportsTwo = Arrays.asList(ReportViewModel.create(
+                ReportViewModel.Status.SYNCED, "test_report_id_two", "test_label_three\ntest_label_four"));
 
         reportsPublisher.onNext(reportsTwo);
 

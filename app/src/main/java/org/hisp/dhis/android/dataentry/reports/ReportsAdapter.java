@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
-import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +22,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.htmlify;
 
 class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
 
@@ -116,7 +113,7 @@ class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
         }
 
         void update(@NonNull ReportViewModel reportViewModel) {
-            textViewValues.setText(getLabels(reportViewModel));
+            textViewValues.setText(reportViewModel.labels());
             internalClickListener.update(reportViewModel);
 
             // update reference to callback
@@ -147,10 +144,10 @@ class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
                 }
             }
         }
-
-        private Spanned getLabels(@NonNull ReportViewModel report) {
-            return htmlify(report.labels());
-        }
+//
+//        private Spanned getLabels(@NonNull ReportViewModel report) {
+//            return htmlify(report.labels());
+//        }
     }
 
     private static class InternalClickListener implements View.OnClickListener {

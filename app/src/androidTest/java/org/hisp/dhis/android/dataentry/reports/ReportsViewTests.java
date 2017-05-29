@@ -31,7 +31,6 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -58,18 +57,14 @@ public class ReportsViewTests {
     public void setUp() throws Exception {
         reportsRobot = new ReportsRobot();
 
-        reportViewModelOne = ReportViewModel.create("event_one",
-                ReportViewModel.Status.SYNCED, Arrays.asList(
-                        String.format(Locale.US, "%s: %s", "data_element_one_uid", "data_value_one"),
-                        String.format(Locale.US, "%s: %s", "data_element_two_uid", "data_value_two"),
-                        String.format(Locale.US, "%s: %s", "data_element_three_uid", "data_value_three")
-                ));
-        reportViewModelTwo = ReportViewModel.create("event_two",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList(
-                        String.format(Locale.US, "%s: %s", "data_element_one_uid", "data_value_four"),
-                        String.format(Locale.US, "%s: %s", "data_element_two_uid", "data_value_five"),
-                        String.format(Locale.US, "%s: %s", "data_element_three_uid", "data_value_six")
-                ));
+        reportViewModelOne = ReportViewModel.create(ReportViewModel.Status.SYNCED, "event_one",
+                String.format(Locale.US, "%s: %s", "data_element_one_uid", "data_value_one") + "\n" +
+                        String.format(Locale.US, "%s: %s", "data_element_two_uid", "data_value_two") + "\n" +
+                        String.format(Locale.US, "%s: %s", "data_element_three_uid", "data_value_three"));
+        reportViewModelTwo = ReportViewModel.create(ReportViewModel.Status.TO_SYNC, "event_two",
+                String.format(Locale.US, "%s: %s", "data_element_one_uid", "data_value_four") + "\n" +
+                        String.format(Locale.US, "%s: %s", "data_element_two_uid", "data_value_five") + "\n" +
+                        String.format(Locale.US, "%s: %s", "data_element_three_uid", "data_value_six"));
 
         authenticateUser();
         persistFakeProgram();

@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -96,12 +95,12 @@ public class SingleEventsRepositoryIntegrationTests {
         db.insert(TrackedEntityDataValueModel.TABLE, null,
                 dataValue("event_two", "data_element_three_uid", "data_value_six"));
 
-        ReportViewModel reportViewModelOne = ReportViewModel.create("event_one",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList("data_element_one_name: data_value_one",
-                        "data_element_two_name: data_value_two"));
-        ReportViewModel reportViewModelTwo = ReportViewModel.create("event_two",
-                ReportViewModel.Status.SYNCED, Arrays.asList("data_element_one_name: data_value_four",
-                        "data_element_two_name: data_value_five"));
+        ReportViewModel reportViewModelOne = ReportViewModel.create(ReportViewModel.Status.TO_SYNC,
+                "event_one", "data_element_one_name: data_value_one\n" +
+                        "data_element_two_name: data_value_two");
+        ReportViewModel reportViewModelTwo = ReportViewModel.create(ReportViewModel.Status.SYNCED,
+                "event_two", "data_element_one_name: data_value_four\n" +
+                        "data_element_two_name: data_value_five");
 
         TestSubscriber<List<ReportViewModel>> testObserver
                 = reportsRepository.reports("program_uid").test();
@@ -140,9 +139,9 @@ public class SingleEventsRepositoryIntegrationTests {
         db.insert(TrackedEntityDataValueModel.TABLE, null,
                 dataValue("event_two", "data_element_three_uid", "data_value_six"));
 
-        ReportViewModel reportViewModelTwo = ReportViewModel.create("event_two",
-                ReportViewModel.Status.SYNCED, Arrays.asList("data_element_one_name: data_value_four",
-                        "data_element_two_name: data_value_five"));
+        ReportViewModel reportViewModelTwo = ReportViewModel.create(ReportViewModel.Status.SYNCED,
+                "event_two", "data_element_one_name: data_value_four\n" +
+                        "data_element_two_name: data_value_five");
 
         TestSubscriber<List<ReportViewModel>> testObserver =
                 reportsRepository.reports("program_uid").test();
@@ -151,9 +150,9 @@ public class SingleEventsRepositoryIntegrationTests {
         testObserver.assertNoErrors();
         testObserver.assertNotComplete();
 
-        ReportViewModel reportViewModelThree = ReportViewModel.create("event_three",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList("data_element_one_name: data_value_seven",
-                        "data_element_two_name: data_value_eight"));
+        ReportViewModel reportViewModelThree = ReportViewModel.create(ReportViewModel.Status.TO_SYNC,
+                "event_three", "data_element_one_name: data_value_seven\n" +
+                        "data_element_two_name: data_value_eight");
 
         // insert new item
         // open transaction in order to avoid notification bursting
@@ -217,11 +216,11 @@ public class SingleEventsRepositoryIntegrationTests {
         db.insert(TrackedEntityDataValueModel.TABLE, null,
                 dataValue("event_two", "data_element_three_uid", "data_value_six"));
 
-        ReportViewModel reportViewModelOne = ReportViewModel.create("event_one",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList(""));
+        ReportViewModel reportViewModelOne = ReportViewModel.create(
+                ReportViewModel.Status.TO_SYNC, "event_one", "");
 
-        ReportViewModel reportViewModelTwo = ReportViewModel.create("event_two",
-                ReportViewModel.Status.SYNCED, Arrays.asList(""));
+        ReportViewModel reportViewModelTwo = ReportViewModel.create(
+                ReportViewModel.Status.SYNCED, "event_two", "");
 
         TestSubscriber<List<ReportViewModel>> testObserver =
                 reportsRepository.reports("program_uid").test();
@@ -246,10 +245,10 @@ public class SingleEventsRepositoryIntegrationTests {
         db.insert(ProgramStageDataElementModel.TABLE, null,
                 programStageDataElement("ps_data_element_three", "ps_uid", "data_element_three_uid", false));
 
-        ReportViewModel reportViewModelOne = ReportViewModel.create("event_one",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList(""));
-        ReportViewModel reportViewModelTwo = ReportViewModel.create("event_two",
-                ReportViewModel.Status.SYNCED, Arrays.asList(""));
+        ReportViewModel reportViewModelOne = ReportViewModel.create(
+                ReportViewModel.Status.TO_SYNC, "event_one", "");
+        ReportViewModel reportViewModelTwo = ReportViewModel.create(
+                ReportViewModel.Status.SYNCED, "event_two", "");
 
         TestSubscriber<List<ReportViewModel>> testObserver =
                 reportsRepository.reports("program_uid").test();
@@ -274,12 +273,10 @@ public class SingleEventsRepositoryIntegrationTests {
         db.insert(ProgramStageDataElementModel.TABLE, null,
                 programStageDataElement("ps_data_element_three", "ps_uid", "data_element_three_uid", false));
 
-        ReportViewModel reportViewModelOne = ReportViewModel.create("event_one",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList(
-                        "data_element_one_name: -", "data_element_two_name: -"));
-        ReportViewModel reportViewModelTwo = ReportViewModel.create("event_two",
-                ReportViewModel.Status.SYNCED, Arrays.asList(
-                        "data_element_one_name: -", "data_element_two_name: -"));
+        ReportViewModel reportViewModelOne = ReportViewModel.create(ReportViewModel.Status.TO_SYNC,
+                "event_one", "data_element_one_name: -\n" + "data_element_two_name: -");
+        ReportViewModel reportViewModelTwo = ReportViewModel.create(ReportViewModel.Status.SYNCED,
+                "event_two", "data_element_one_name: -\n" + "data_element_two_name: -");
 
         TestSubscriber<List<ReportViewModel>> testObserver =
                 reportsRepository.reports("program_uid").test();

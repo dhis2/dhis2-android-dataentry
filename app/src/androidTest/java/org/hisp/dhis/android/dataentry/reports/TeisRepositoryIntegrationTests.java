@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -101,10 +100,10 @@ public class TeisRepositoryIntegrationTests {
         db.insert(TrackedEntityAttributeValueModel.TABLE, null, teav("tei_uid_three", "tea_uid_two", "teav_right"));
         db.insert(TrackedEntityAttributeValueModel.TABLE, null, teav("tei_uid_three", "tea_uid_three", "teav_nine"));
 
-        ReportViewModel reportViewModelTwo = ReportViewModel.create("tei_uid_two",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList("tea_two: teav_five", "tea_one: teav_four"));
-        ReportViewModel reportViewModelOne = ReportViewModel.create("tei_uid_one",
-                ReportViewModel.Status.SYNCED, Arrays.asList("tea_two: teav_two", "tea_one: teav_one"));
+        ReportViewModel reportViewModelTwo = ReportViewModel.create(ReportViewModel.Status.TO_SYNC,
+                "tei_uid_two", "tea_two: teav_five\n" + "tea_one: teav_four");
+        ReportViewModel reportViewModelOne = ReportViewModel.create(ReportViewModel.Status.SYNCED,
+                "tei_uid_one", "tea_two: teav_two\n" + "tea_one: teav_one");
 
         TestSubscriber<List<ReportViewModel>> testObserver =
                 reportsRepository.reports("tracked_entity_uid").test();
@@ -141,8 +140,8 @@ public class TeisRepositoryIntegrationTests {
         briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE, teav("tei_uid_one", "tea_uid_one", "teav_one"));
         briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE, teav("tei_uid_one", "tea_uid_two", "teav_two"));
         briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE, teav("tei_uid_one", "tea_uid_three", "teav_three"));
-        ReportViewModel reportViewModelOne = ReportViewModel.create("tei_uid_one",
-                ReportViewModel.Status.SYNCED, Arrays.asList("tea_two: teav_two", "tea_one: teav_one"));
+        ReportViewModel reportViewModelOne = ReportViewModel.create(ReportViewModel.Status.SYNCED,
+                "tei_uid_one", "tea_two: teav_two\n" + "tea_one: teav_one");
         transaction.markSuccessful();
         transaction.close();
 
@@ -164,8 +163,8 @@ public class TeisRepositoryIntegrationTests {
         briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE, teav("tei_uid_two", "tea_uid_one", "teav_four"));
         briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE, teav("tei_uid_two", "tea_uid_two", "teav_five"));
         briteDatabase.insert(TrackedEntityAttributeValueModel.TABLE, teav("tei_uid_two", "tea_uid_three", "teav_six"));
-        ReportViewModel reportViewModelTwo = ReportViewModel.create("tei_uid_two",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList("tea_two: teav_five", "tea_one: teav_four"));
+        ReportViewModel reportViewModelTwo = ReportViewModel.create(ReportViewModel.Status.TO_SYNC,
+                "tei_uid_two", "tea_two: teav_five\n" + "tea_one: teav_four");
         transaction.markSuccessful();
         transaction.close();
 
@@ -248,10 +247,10 @@ public class TeisRepositoryIntegrationTests {
         db.insert(TrackedEntityAttributeValueModel.TABLE, null, teav("tei_uid_three", "tea_uid_two", "teav_right"));
         db.insert(TrackedEntityAttributeValueModel.TABLE, null, teav("tei_uid_three", "tea_uid_three", "teav_nine"));
 
-        ReportViewModel reportViewModelTwo = ReportViewModel.create("tei_uid_two",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList(""));
-        ReportViewModel reportViewModelOne = ReportViewModel.create("tei_uid_one",
-                ReportViewModel.Status.SYNCED, Arrays.asList(""));
+        ReportViewModel reportViewModelTwo = ReportViewModel.create(
+                ReportViewModel.Status.TO_SYNC, "tei_uid_two", "");
+        ReportViewModel reportViewModelOne = ReportViewModel.create(
+                ReportViewModel.Status.SYNCED, "tei_uid_one", "");
 
         TestSubscriber<List<ReportViewModel>> testObserver =
                 reportsRepository.reports("tracked_entity_uid").test();
@@ -290,10 +289,10 @@ public class TeisRepositoryIntegrationTests {
                 tei("tei_uid_three", BaseIdentifiableObject.DATE_FORMAT.parse("2013-04-06T00:05:57.495"),
                         "organization_unit_uid", "tracked_entity_uid", State.TO_DELETE));
 
-        ReportViewModel reportViewModelTwo = ReportViewModel.create("tei_uid_two",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList("tea_two: -", "tea_one: -"));
-        ReportViewModel reportViewModelOne = ReportViewModel.create("tei_uid_one",
-                ReportViewModel.Status.SYNCED, Arrays.asList("tea_two: -", "tea_one: -"));
+        ReportViewModel reportViewModelTwo = ReportViewModel.create(
+                ReportViewModel.Status.TO_SYNC, "tei_uid_two", "tea_two: -\n" + "tea_one: -");
+        ReportViewModel reportViewModelOne = ReportViewModel.create(
+                ReportViewModel.Status.SYNCED, "tei_uid_one", "tea_two: -\n" + "tea_one: -");
 
         TestSubscriber<List<ReportViewModel>> testObserver =
                 reportsRepository.reports("tracked_entity_uid").test();
@@ -332,10 +331,10 @@ public class TeisRepositoryIntegrationTests {
                 tei("tei_uid_three", BaseIdentifiableObject.DATE_FORMAT.parse("2013-04-06T00:05:57.495"),
                         "organization_unit_uid", "tracked_entity_uid", State.TO_DELETE));
 
-        ReportViewModel reportViewModelTwo = ReportViewModel.create("tei_uid_two",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList(""));
-        ReportViewModel reportViewModelOne = ReportViewModel.create("tei_uid_one",
-                ReportViewModel.Status.SYNCED, Arrays.asList(""));
+        ReportViewModel reportViewModelTwo = ReportViewModel.create(
+                ReportViewModel.Status.TO_SYNC, "tei_uid_two", "");
+        ReportViewModel reportViewModelOne = ReportViewModel.create(
+                ReportViewModel.Status.SYNCED, "tei_uid_one", "");
 
         TestSubscriber<List<ReportViewModel>> testObserver =
                 reportsRepository.reports("tracked_entity_uid").test();

@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.tuples.Sextet;
+import org.hisp.dhis.android.dataentry.commons.utils.StringUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -87,8 +88,8 @@ final class EnrollmentsRepositoryImpl implements ReportsRepository {
 
                                     // enrollment status (last item)
                                     values.add(value(promptEnrollmentStatus, group.getKey().val5()));
-                                    return ReportViewModel.create(group.getKey().val2(),
-                                            fromState(group.getKey().val4()), values);
+                                    return ReportViewModel.create(fromState(group.getKey().val4()),
+                                            group.getKey().val2(), StringUtils.join(values));
                                 }))
                         .toList().toFlowable());
     }
