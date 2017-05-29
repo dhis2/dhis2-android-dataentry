@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ReportsActivity extends AppCompatActivity {
+    static final String ARG_REPORTS_FRAGMENT = "tag:reportsFragment";
     static final String ARG_ARGUMENTS = "arg:arguments";
 
     @BindView(R.id.toolbar)
@@ -48,9 +49,14 @@ public class ReportsActivity extends AppCompatActivity {
             getSupportActionBar().setHomeButtonEnabled(true);
         }
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, ReportsFragment.create(reportsArguments))
-                .commitNow();
+        // if fragment has been attached, we don't want to replace it
+        if (getSupportFragmentManager()
+                .findFragmentByTag(ARG_REPORTS_FRAGMENT) == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content_frame, ReportsFragment
+                            .create(reportsArguments), ARG_REPORTS_FRAGMENT)
+                    .commitNow();
+        }
     }
 
     @Override

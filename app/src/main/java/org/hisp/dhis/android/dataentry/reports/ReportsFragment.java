@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,6 +27,8 @@ import butterknife.BindView;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
+import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
+
 public final class ReportsFragment extends BaseFragment
         implements ReportsView, ReportsAdapter.OnReportViewModelClickListener {
     private static final String ARG_ARGUMENTS = "arg:arguments";
@@ -36,8 +39,11 @@ public final class ReportsFragment extends BaseFragment
     @BindView(R.id.fab_create)
     FloatingActionButton buttonCreateReport;
 
+    @BindView(R.id.cardview_search_box)
+    CardView searchReportsBox;
+
     @BindView(R.id.edittext_search)
-    EditText searchReports;
+    EditText searchReportsEditText;
 
     @Inject
     ReportsPresenter presenter;
@@ -62,13 +68,8 @@ public final class ReportsFragment extends BaseFragment
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        ReportsArguments reportsArguments = getArguments().getParcelable(ARG_ARGUMENTS);
-        if (reportsArguments == null) {
-            throw new IllegalStateException("ReportsArguments must be supplied");
-        }
-
         ((DhisApp) context.getApplicationContext()).userComponent()
-                .plus(new ReportsModule(getActivity(), reportsArguments))
+                .plus(new ReportsModule(getActivity(), getReportsArguments()))
                 .inject(this);
     }
 
@@ -82,6 +83,8 @@ public final class ReportsFragment extends BaseFragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         bind(this, view);
+
+        setUpSearchView();
         setUpRecyclerView();
     }
 
@@ -118,6 +121,17 @@ public final class ReportsFragment extends BaseFragment
     @Override
     public void onClick(@NonNull ReportViewModel reportViewModel) {
         reportsNavigator.navigateTo(reportViewModel.id());
+    }
+
+    @NonNull
+    private ReportsArguments getReportsArguments() {
+        return isNull(getArguments().getParcelable(ARG_ARGUMENTS),
+                "ReportsArguments must be supplied");
+    }
+
+    private void setUpSearchView() {
+        searchReportsBox.setVisibility(getReportsArguments().entityType()
+                .equals(ReportsArguments.TYPE_TEIS) ? View.VISIBLE : View.GONE);
     }
 
     private void setUpRecyclerView() {
