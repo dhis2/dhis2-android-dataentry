@@ -23,7 +23,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
+public class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
 
     @NonNull
     private final LayoutInflater layoutInflater;
@@ -34,9 +34,9 @@ class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
     @NonNull
     private final OnReportViewModelClickListener onClickListener;
 
-    ReportsAdapter(@NonNull Context context, @NonNull OnReportViewModelClickListener onClickListener) {
+    public ReportsAdapter(@NonNull Context context, @NonNull OnReportViewModelClickListener listener) {
         this.layoutInflater = LayoutInflater.from(context);
-        this.onClickListener = onClickListener;
+        this.onClickListener = listener;
         this.reportViewModels = new ArrayList<>();
     }
 
@@ -56,14 +56,14 @@ class ReportsAdapter extends Adapter<ReportsAdapter.ReportViewHolder> {
         return reportViewModels.size();
     }
 
-    void swapData(@NonNull List<ReportViewModel> reports) {
+    public void swapData(@NonNull List<ReportViewModel> reports) {
         reportViewModels.clear();
         reportViewModels.addAll(reports);
 
         notifyDataSetChanged();
     }
 
-    interface OnReportViewModelClickListener {
+    public interface OnReportViewModelClickListener {
         void onClick(@NonNull ReportViewModel reportViewModel);
     }
 
