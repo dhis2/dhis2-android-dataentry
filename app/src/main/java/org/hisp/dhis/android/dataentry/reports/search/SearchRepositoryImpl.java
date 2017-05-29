@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.reports;
+package org.hisp.dhis.android.dataentry.reports.search;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.utils.StringUtils;
+import org.hisp.dhis.android.dataentry.reports.ReportViewModel;
 
 import java.util.List;
 import java.util.Locale;
@@ -20,7 +21,7 @@ import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
 })
-final class TeisRepositoryImpl implements ReportsRepository {
+final class SearchRepositoryImpl implements SearchRepository {
     private static final String SELECT_TEIS = "SELECT DISTINCT" +
             "  InstanceAttribute.tea," +
             "  InstanceAttribute.label," +
@@ -42,7 +43,8 @@ final class TeisRepositoryImpl implements ReportsRepository {
             "  LEFT OUTER JOIN TrackedEntityAttributeValue" +
             "    ON (TrackedEntityAttributeValue.trackedEntityAttribute = InstanceAttribute.tea " +
             "    AND TrackedEntityAttributeValue.trackedEntityInstance = TrackedEntityInstance.uid) " +
-            "WHERE TrackedEntityInstance.trackedEntity = ? AND NOT TrackedEntityInstance.state = 'TO_DELETE' " +
+            "WHERE TrackedEntityInstance.trackedEntity = '%s' AND NOT TrackedEntityInstance.state = 'TO_DELETE'" +
+            "  AND TrackedEntityAttributeValue.value LIKE '%%%s%%' AND length('%s') != 0 " +
             "ORDER BY datetime(TrackedEntityInstance.created) DESC," +
             "  TrackedEntityInstance.uid ASC," +
             "  InstanceAttribute.formOrder ASC;";
@@ -50,14 +52,20 @@ final class TeisRepositoryImpl implements ReportsRepository {
     @NonNull
     private final BriteDatabase briteDatabase;
 
-    TeisRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
+    @NonNull
+    private final String trackedEntity;
+
+    SearchRepositoryImpl(@NonNull BriteDatabase briteDatabase, @NonNull String trackedEntity) {
         this.briteDatabase = briteDatabase;
+        this.trackedEntity = trackedEntity;
     }
 
     @NonNull
     @Override
-    public Flowable<List<ReportViewModel>> reports(@NonNull String uid) {
-        return toV2Flowable(briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEIS, uid)
+    public Flowable<List<ReportViewModel>> search(@NonNull String token) {
+        return toV2Flowable(briteDatabase
+                .createQuery(TrackedEntityInstanceModel.TABLE, String.format(Locale.US, SELECT_TEIS,
+                        trackedEntity, escapeSqlToken(token.trim()), escapeSqlToken(token.trim())))
                 .mapToList(this::mapToPairs))
                 .switchMap(rows -> Flowable.fromIterable(rows)
                         .groupBy(Pair::val0, Pair::val1)
@@ -65,6 +73,25 @@ final class TeisRepositoryImpl implements ReportsRepository {
                                 .map(values -> ReportViewModel.create(fromState(group.getKey().val1()),
                                         group.getKey().val0(), StringUtils.join(values))))
                         .toList().toFlowable());
+    }
+
+    @NonNull
+    private static String escapeSqlToken(@NonNull String sqlString) {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (sqlString.indexOf('\'') == -1) {
+            return stringBuilder.append(sqlString).toString();
+        }
+
+        int length = sqlString.length();
+        for (int i = 0; i < length; i++) {
+            char c = sqlString.charAt(i);
+            if (c == '\'') {
+                stringBuilder.append('\'');
+            }
+            stringBuilder.append(c);
+        }
+
+        return stringBuilder.toString();
     }
 
     private ReportViewModel.Status fromState(String state) {
