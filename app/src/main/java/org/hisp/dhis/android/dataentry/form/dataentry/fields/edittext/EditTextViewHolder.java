@@ -19,6 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
+import io.reactivex.functions.Predicate;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
@@ -43,7 +44,7 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
     @SuppressWarnings("CheckReturnValue")
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
     EditTextViewHolder(@NonNull ViewGroup parent, @NonNull View itemView,
-            @NonNull FlowableProcessor<RowAction> processor) {
+                       @NonNull FlowableProcessor<RowAction> processor) {
         super(itemView);
 
         // bind views
@@ -80,14 +81,19 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
                 .scan(Pair.create(false, false), (state, hasFocus) ->
                         Pair.create(state.val1() && !hasFocus, hasFocus))
                 .filter(state -> state.val0() && model.hasValue())
-                .filter(state -> !Preconditions.equals(isEmpty(editText.getText()) ? "" : editText.getText().toString(),
-                        model.getValue().value() == null ? "" : valueOf(model.getValue().value())))
+                .filter(valueHasChanged())
                 .map(event -> RowAction.create(model.getValue().uid(), editText.getText().toString()))
                 .subscribe(action -> processor.onNext(action), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 });
 
         editTextObservable.connect();
+    }
+
+    @NonNull
+    private Predicate<Pair<Boolean, Boolean>> valueHasChanged() {
+        return state -> !Preconditions.equals(isEmpty(editText.getText()) ? "" : editText.getText().toString(),
+                model.getValue().value() == null ? "" : valueOf(model.getValue().value()));
     }
 
     void update(@NonNull EditTextModel editTextModel) {
