@@ -3,6 +3,8 @@ package org.hisp.dhis.android.dataentry.user;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.dagger.PerUser;
+import org.hisp.dhis.android.dataentry.form.FormComponent;
+import org.hisp.dhis.android.dataentry.form.FormModule;
 import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryComponent;
 import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryModule;
 import org.hisp.dhis.android.dataentry.main.MainComponent;
@@ -40,4 +42,7 @@ public interface UserComponent {
     // ToDo: remove this!
     @NonNull
     DataEntryComponent plus(@NonNull DataEntryModule dataEntryModule);
+
+    @NonNull
+    FormComponent plus(@NonNull FormModule formModule);
 }

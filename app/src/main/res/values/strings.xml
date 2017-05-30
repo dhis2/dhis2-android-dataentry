@@ -30,6 +30,16 @@
     <string name="report_view_enrollment_status">Status</string>
     <string name="report_view_enrollment_date">Enrollment date</string>
 
+    <!-- Common dialogs -->
+    <string name="option_confirm">OK</string>
+
+    <!-- START SECTION: FORMS -->
+    <string name="choose_report_date">Choose report date</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="complete">Complete</string>
+    <string name="active">Active</string>
+
     <!-- Input hints -->
     <string name="search">Search</string>
     <string name="enter_text">Enter text</string>
@@ -60,5 +70,8 @@
     <string name="sync_complete_text">Sync complete</string>
 
     <string name="sync_error_title">Sync Error</string>
-    <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
+    <string name="sync_error_text">
+        An error has occurred during synchronisation. Please retry.
+    </string>
+    <string name="undo">Undo</string>
 </resources>

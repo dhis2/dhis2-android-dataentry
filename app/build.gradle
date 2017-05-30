@@ -118,7 +118,7 @@ android {
 
             // jacoco test coverage reports both for
             // androidTest and test source sets
-            testCoverageEnabled = true
+            testCoverageEnabled = false
 
             // Disable fabric build ID generation for debug builds
             ext.enableCrashlytics = false
@@ -129,6 +129,12 @@ android {
         release {
             // enabling crashlytics for debug builds
             ext.enableCrashlytics = true
+        }
+    }
+
+    sourceSets {
+        androidTest {
+            assets.srcDirs = ['src/androidTest/assets/']
         }
     }
 }

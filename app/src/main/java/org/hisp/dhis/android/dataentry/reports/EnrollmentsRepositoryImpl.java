@@ -63,8 +63,8 @@ final class EnrollmentsRepositoryImpl implements ReportsRepository {
     private final String promptEnrollmentDateLabel;
 
     EnrollmentsRepositoryImpl(@NonNull BriteDatabase briteDatabase,
-            @NonNull String promptProgram, @NonNull String promptEnrollmentStatus,
-            @NonNull String promptEnrollmentDateLabel) {
+                              @NonNull String promptProgram, @NonNull String promptEnrollmentStatus,
+                              @NonNull String promptEnrollmentDateLabel) {
         this.briteDatabase = briteDatabase;
         this.promptProgram = promptProgram;
         this.promptEnrollmentStatus = promptEnrollmentStatus;
