@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
@@ -54,7 +53,8 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
 
         DataEntryArguments args = Preconditions.isNull(getArguments()
                 .getParcelable(ARGUMENTS), "dataEntryArguments == null");
-        ((DhisApp) context.getApplicationContext()).userComponent()
+
+        getUserComponent()
                 .plus(new DataEntryModule(context, args))
                 .inject(this);
     }
@@ -62,7 +62,7 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_data_entry, container, false);
     }
 
