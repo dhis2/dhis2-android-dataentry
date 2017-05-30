@@ -57,8 +57,7 @@ final class SearchPresenterImpl implements SearchPresenter {
                     .observeOn(schedulerProvider.ui())
                     .subscribe(searchView.renderSearchResults(), throwable -> {
                         throw new OnErrorNotImplementedException(throwable);
-                    })
-            );
+                    }));
         }
     }
 
