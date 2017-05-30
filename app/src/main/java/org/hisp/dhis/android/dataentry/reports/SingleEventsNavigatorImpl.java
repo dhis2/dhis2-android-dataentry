@@ -21,16 +21,12 @@ final class SingleEventsNavigatorImpl implements ReportsNavigator {
     @NonNull
     private final Activity currentActivity;
 
-    @NonNull
-    private final String programName;
-
     // ToDo: remove
     @NonNull
     private final BriteDatabase briteDatabase;
 
-    SingleEventsNavigatorImpl(@NonNull Activity currentActivity, @NonNull String programName) {
+    SingleEventsNavigatorImpl(@NonNull Activity currentActivity) {
         this.currentActivity = currentActivity;
-        this.programName = programName;
         this.briteDatabase = ((DhisApp) currentActivity.getApplication())
                 .appComponent().briteDatabase();
     }

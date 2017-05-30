@@ -32,9 +32,9 @@ public final class ReportsModule {
     ReportsNavigator navigator() {
         switch (reportsArguments.entityType()) {
             case ReportsArguments.TYPE_EVENTS:
-                return new SingleEventsNavigatorImpl(activity, reportsArguments.entityName());
+                return new SingleEventsNavigatorImpl(activity);
             case ReportsArguments.TYPE_ENROLLMENTS:
-                return new EnrollmentsNavigatorImpl(activity, reportsArguments.entityName());
+                return new EnrollmentsNavigatorImpl(activity);
             default:
                 throw new IllegalArgumentException("Unsupported entity type: "
                         + reportsArguments.entityType());

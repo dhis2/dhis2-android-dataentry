@@ -18,14 +18,6 @@ public final class Preconditions {
     }
 
     public static boolean equals(@Nullable Object one, @Nullable Object two) {
-        if (one == two) {
-            return true;
-        }
-
-        if (one != null) {
-            return one.equals(two);
-        }
-
-        return two.equals(one);
+        return one == two || one != null && one.equals(two); // NOPMD
     }
 }

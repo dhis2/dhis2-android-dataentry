@@ -7,6 +7,8 @@ import com.google.auto.value.AutoValue;
 
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableFieldViewModel;
 
+import java.util.Locale;
+
 @AutoValue
 public abstract class CheckBoxViewModel extends EditableFieldViewModel<CheckBoxViewModel.Value> {
     public enum Value {
@@ -30,9 +32,9 @@ public abstract class CheckBoxViewModel extends EditableFieldViewModel<CheckBoxV
             @NonNull Boolean mandatory, @Nullable String value) {
         if (value == null) {
             return new AutoValue_CheckBoxViewModel(id, label, mandatory, null);
-        } else if (value.toLowerCase().equals(Value.CHECKED.toString())) {
+        } else if (value.toLowerCase(Locale.US).equals(Value.CHECKED.toString())) {
             return new AutoValue_CheckBoxViewModel(id, label, mandatory, Value.CHECKED);
-        } else if (value.toLowerCase().equals(Value.UNCHECKED.toString())) {
+        } else if (value.toLowerCase(Locale.US).equals(Value.UNCHECKED.toString())) {
             return new AutoValue_CheckBoxViewModel(id, label, mandatory, Value.UNCHECKED);
         } else {
             throw new IllegalArgumentException("Unsupported value: " + value);

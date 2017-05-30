@@ -16,6 +16,7 @@ import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.processors.BehaviorProcessor;
 import io.reactivex.processors.FlowableProcessor;
 import rx.exceptions.OnErrorNotImplementedException;
@@ -32,6 +33,7 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
     BehaviorProcessor<CheckBoxViewModel> model;
 
     @SuppressWarnings("CheckReturnValue")
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
     CheckBoxViewHolder(@NonNull ViewGroup parent, @NonNull View itemView,
             @NonNull FlowableProcessor<RowAction> processor) {
         super(itemView);

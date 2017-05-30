@@ -53,7 +53,7 @@ final class SearchPresenterImpl implements SearchPresenter {
                     .map(event -> event.editable().toString())
                     .toFlowable(BackpressureStrategy.LATEST)
                     .observeOn(schedulerProvider.io())
-                    .switchMap(searchRepository::search)
+                    .switchMap(token -> searchRepository.search(token))
                     .observeOn(schedulerProvider.ui())
                     .subscribe(searchView.renderSearchResults(), throwable -> {
                         throw new OnErrorNotImplementedException(throwable);

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -57,17 +58,26 @@ public class ReportsActivity extends AppCompatActivity {
             throw new IllegalStateException("ReportsArguments or SearchArguments must be supplied.");
         }
 
+        setupToolbar(toolbar, searchArguments, reportsArguments);
+        setupSearchFragment(searchArguments);
+        setupReportsFragment(reportsArguments);
+    }
+
+    private void setupToolbar(@NonNull Toolbar toolbar,
+            @Nullable SearchArguments searchArguments,
+            @Nullable ReportsArguments reportsArguments) {
         String entityName = reportsArguments == null ?
                 searchArguments.entityName() : reportsArguments.entityName();
 
         setSupportActionBar(toolbar);
-        setTitle(entityName);
-
         if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(entityName);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         }
+    }
 
+    private void setupReportsFragment(@Nullable ReportsArguments reportsArguments) {
         // if reports fragment has been attached, we don't want to replace it
         if (reportsArguments != null && getSupportFragmentManager()
                 .findFragmentByTag(ARG_REPORTS_FRAGMENT) == null) {
@@ -76,7 +86,9 @@ public class ReportsActivity extends AppCompatActivity {
                             .create(reportsArguments), ARG_REPORTS_FRAGMENT)
                     .commitNow();
         }
+    }
 
+    private void setupSearchFragment(@Nullable SearchArguments searchArguments) {
         // if search fragment has been attached, we don't want to replace it
         if (searchArguments != null && getSupportFragmentManager()
                 .findFragmentByTag(ARG_SEARCH_FRAGMENT) == null) {

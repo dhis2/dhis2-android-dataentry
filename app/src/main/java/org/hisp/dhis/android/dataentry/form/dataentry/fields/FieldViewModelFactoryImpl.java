@@ -52,6 +52,10 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
 
     @NonNull
     @Override
+    @SuppressWarnings({
+            "PMD.CyclomaticComplexity",
+            "PMD.StdCyclomaticComplexity"
+    })
     public FieldViewModel create(@NonNull String id, @NonNull String label, @NonNull ValueType type,
             @NonNull Boolean mandatory, @Nullable String optionSet, @Nullable String value) {
         isNull(type, "type must be supplied");
@@ -62,25 +66,67 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
             case TRUE_ONLY:
                 return CheckBoxViewModel.fromRawValue(id, label, mandatory, value);
             case TEXT:
-                return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1);
+                return createText(id, label, mandatory, value);
             case LONG_TEXT:
-                return EditTextViewModel.create(id, label, mandatory, value, hintEnterLongText, 3);
+                return createLongText(id, label, mandatory, value);
             case NUMBER:
-                return EditTextDoubleViewModel.fromRawValue(id, label, mandatory, value, hintEnterNumber);
+                return createNumber(id, label, mandatory, value);
             case INTEGER:
-                return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value, hintEnterInteger,
-                        InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+                return createInteger(id, label, mandatory, value);
             case INTEGER_POSITIVE:
-                return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value,
-                        hintEnterIntegerPositive, InputType.TYPE_CLASS_NUMBER);
+                return createIntegerPositive(id, label, mandatory, value);
             case INTEGER_NEGATIVE:
-                return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value, hintEnterIntegerNegative,
-                        InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+                return createIntegerNegative(id, label, mandatory, value);
             case INTEGER_ZERO_OR_POSITIVE:
-                return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value,
-                        hintEnterIntegerZeroOrPositive, InputType.TYPE_CLASS_NUMBER);
+                return createIntegerZeroOrPositive(id, label, mandatory, value);
             default:
                 return TextViewModel.create(id, label, type.toString());
         }
+    }
+
+    @NonNull
+    private EditTextViewModel createText(@NonNull String id, @NonNull String label,
+            @NonNull Boolean mandatory, @Nullable String value) {
+        return EditTextViewModel.create(id, label, mandatory, value, hintEnterText, 1);
+    }
+
+    @NonNull
+    private EditTextViewModel createLongText(@NonNull String id, @NonNull String label,
+            @NonNull Boolean mandatory, @Nullable String value) {
+        return EditTextViewModel.create(id, label, mandatory, value, hintEnterLongText, 3);
+    }
+
+    @NonNull
+    private EditTextDoubleViewModel createNumber(@NonNull String id, @NonNull String label,
+            @NonNull Boolean mandatory, @Nullable String value) {
+        return EditTextDoubleViewModel.fromRawValue(id, label, mandatory, value, hintEnterNumber);
+    }
+
+    @NonNull
+    private EditTextIntegerViewModel createInteger(@NonNull String id, @NonNull String label,
+            @NonNull Boolean mandatory, @Nullable String value) {
+        return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value, hintEnterInteger,
+                InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+    }
+
+    @NonNull
+    private EditTextIntegerViewModel createIntegerPositive(@NonNull String id, @NonNull String label,
+            @NonNull Boolean mandatory, @Nullable String value) {
+        return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value,
+                hintEnterIntegerPositive, InputType.TYPE_CLASS_NUMBER);
+    }
+
+    @NonNull
+    private EditTextIntegerViewModel createIntegerNegative(@NonNull String id, @NonNull String label,
+            @NonNull Boolean mandatory, @Nullable String value) {
+        return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value, hintEnterIntegerNegative,
+                InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+    }
+
+    @NonNull
+    private EditTextIntegerViewModel createIntegerZeroOrPositive(@NonNull String id, @NonNull String label,
+            @NonNull Boolean mandatory, @Nullable String value) {
+        return EditTextIntegerViewModel.fromRawValue(id, label, mandatory, value,
+                hintEnterIntegerZeroOrPositive, InputType.TYPE_CLASS_NUMBER);
     }
 }

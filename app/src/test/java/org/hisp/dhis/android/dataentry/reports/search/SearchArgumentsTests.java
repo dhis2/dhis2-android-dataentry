@@ -13,13 +13,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 public class SearchArgumentsTests {
 
     @Test
-    public void equalsAndHashcodeMethodsShouldConformToContract() {
-        EqualsVerifier.forClass(SearchArguments.create("test_te_uid", "test_te_name").getClass())
-                .suppress(Warning.NULL_FIELDS)
-                .verify();
-    }
-
-    @Test
     public void propertiesShouldBePropagated() {
         SearchArguments searchArguments = SearchArguments.create("test_te_uid", "test_te_name");
         assertThat(searchArguments.entityUid()).isEqualTo("test_te_uid");

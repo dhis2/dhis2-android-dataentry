@@ -6,7 +6,6 @@ import org.hisp.dhis.android.core.user.UserCredentialsModel;
 import org.hisp.dhis.android.core.user.UserModel;
 
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 
 public interface UserRepository {
 

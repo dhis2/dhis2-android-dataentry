@@ -9,6 +9,8 @@ import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.Row;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public final class TextRow implements Row {
 
     @NonNull
@@ -26,6 +28,7 @@ public final class TextRow implements Row {
     }
 
     @Override
+    @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
     public void onBind(@NonNull ViewHolder viewHolder, @NonNull FieldViewModel viewModel) {
         ((TextViewHolder) viewHolder).update((TextViewModel) viewModel);
     }

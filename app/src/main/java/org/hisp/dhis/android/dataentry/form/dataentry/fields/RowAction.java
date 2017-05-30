@@ -2,7 +2,6 @@ package org.hisp.dhis.android.dataentry.form.dataentry.fields;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Editable;
 
 import com.google.auto.value.AutoValue;
 

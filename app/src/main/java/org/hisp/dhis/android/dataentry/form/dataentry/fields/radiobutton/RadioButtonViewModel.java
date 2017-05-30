@@ -7,6 +7,8 @@ import com.google.auto.value.AutoValue;
 
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableFieldViewModel;
 
+import java.util.Locale;
+
 @AutoValue
 public abstract class RadioButtonViewModel extends EditableFieldViewModel<RadioButtonViewModel.Value> {
     public enum Value {
@@ -30,9 +32,9 @@ public abstract class RadioButtonViewModel extends EditableFieldViewModel<RadioB
             @NonNull Boolean mandatory, @Nullable String value) {
         if (value == null) {
             return new AutoValue_RadioButtonViewModel(uid, label, mandatory, null);
-        } else if (value.toLowerCase().equals(Value.YES.toString())) {
+        } else if (value.toLowerCase(Locale.US).equals(Value.YES.toString())) {
             return new AutoValue_RadioButtonViewModel(uid, label, mandatory, Value.YES);
-        } else if (value.toLowerCase().equals(Value.NO.toString())) {
+        } else if (value.toLowerCase(Locale.US).equals(Value.NO.toString())) {
             return new AutoValue_RadioButtonViewModel(uid, label, mandatory, Value.NO);
         } else if (value.isEmpty()) {
             return new AutoValue_RadioButtonViewModel(uid, label, mandatory, Value.NONE);
