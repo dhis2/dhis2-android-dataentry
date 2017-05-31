@@ -27,6 +27,7 @@ public interface UserComponent {
     @NonNull
     MainComponent plus(@NonNull MainModule mainModule);
 
+    // Todo: remove this
     @NonNull
     HomeComponent plus(@NonNull HomeModule homeModule);
 
