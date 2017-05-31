@@ -75,21 +75,18 @@ public class SyncService extends Service implements SyncView {
                         .setProgress(0, 0, true)
                         .setOngoing(true)
                         .build();
-
             } else if (result.isSuccess()) {
                 notification = new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_sync_black)
                         .setContentTitle(getString(R.string.sync_complete_title))
                         .setContentText(getString(R.string.sync_complete_text))
                         .build();
-
             } else if (!result.isSuccess()) { // NOPMD
                 notification = new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_sync_error_black)
                         .setContentTitle(getString(R.string.sync_error_title))
                         .setContentText(getString(R.string.sync_error_text))
                         .build();
-
             } else {
                 throw new IllegalStateException();
             }

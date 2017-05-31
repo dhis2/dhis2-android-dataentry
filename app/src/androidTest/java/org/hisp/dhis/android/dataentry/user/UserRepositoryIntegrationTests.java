@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.user.UserCredentialsModel;
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
 import org.junit.Before;
@@ -14,7 +15,7 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.Date;
 
-import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -24,6 +25,7 @@ public class UserRepositoryIntegrationTests {
     private Date created;
     private Date lastUpdated;
     private ContentValues user;
+    private ContentValues userCredentials;
     private UserRepository userRepository;
 
     @Rule
@@ -56,6 +58,17 @@ public class UserRepositoryIntegrationTests {
         user.put(UserModel.Columns.PHONE_NUMBER, "test_phone_number");
         user.put(UserModel.Columns.NATIONALITY, "test_nationality");
 
+        userCredentials = new ContentValues();
+        userCredentials.put(UserCredentialsModel.Columns.ID, 11L);
+        userCredentials.put(UserCredentialsModel.Columns.UID, "test_user_credentials_uid");
+        userCredentials.put(UserCredentialsModel.Columns.CODE, "test_user_credentials_code");
+        userCredentials.put(UserCredentialsModel.Columns.NAME, "test_user_credentials_name");
+        userCredentials.put(UserCredentialsModel.Columns.DISPLAY_NAME, "test_user_credentials_display_name");
+        userCredentials.put(UserCredentialsModel.Columns.CREATED, BaseIdentifiableObject.DATE_FORMAT.format(created));
+        userCredentials.put(UserCredentialsModel.Columns.LAST_UPDATED, BaseIdentifiableObject.DATE_FORMAT.format(lastUpdated));
+        userCredentials.put(UserCredentialsModel.Columns.USERNAME, "test_username");
+        userCredentials.put(UserCredentialsModel.Columns.USER, "test_user_uid");
+
         userRepository = new UserRepositoryImpl(databaseRule.briteDatabase());
     }
 
@@ -63,8 +76,8 @@ public class UserRepositoryIntegrationTests {
     public void meShouldReturnUserAndObserveChanges() {
         databaseRule.database().insert(UserModel.TABLE, null, user);
 
-        TestObserver<UserModel> testObserver = userRepository.me().test();
-        assertThat(testObserver.values().size()).isEqualTo(1);
+        TestSubscriber<UserModel> testObserver = userRepository.me().test();
+        assertThat(testObserver.valueCount()).isEqualTo(1);
 
         UserModel userModel = testObserver.values().get(0);
         assertThat(userModel.id()).isEqualTo(55L);
@@ -125,5 +138,29 @@ public class UserRepositoryIntegrationTests {
 
         testObserver.assertNoErrors();
         testObserver.dispose();
+    }
+
+    @Test
+    public void credentialsShouldReturnUserCredentialsAndNotObserveChanges() {
+        databaseRule.database().insert(UserModel.TABLE, null, user);
+        databaseRule.database().insert(UserCredentialsModel.TABLE, null, userCredentials);
+
+        TestSubscriber<UserCredentialsModel> testObserver = userRepository.credentials().test();
+        testObserver.assertNoErrors();
+        testObserver.assertComplete();
+        testObserver.assertTerminated();
+
+        assertThat(testObserver.valueCount()).isEqualTo(1);
+
+        UserCredentialsModel credentials = testObserver.values().get(0);
+        assertThat(credentials.id()).isEqualTo(11L);
+        assertThat(credentials.uid()).isEqualTo("test_user_credentials_uid");
+        assertThat(credentials.code()).isEqualTo("test_user_credentials_code");
+        assertThat(credentials.name()).isEqualTo("test_user_credentials_name");
+        assertThat(credentials.displayName()).isEqualTo("test_user_credentials_display_name");
+        assertThat(credentials.created()).isEqualTo(created);
+        assertThat(credentials.lastUpdated()).isEqualTo(lastUpdated);
+        assertThat(credentials.username()).isEqualTo("test_username");
+        assertThat(credentials.user()).isEqualTo("test_user_uid");
     }
 }

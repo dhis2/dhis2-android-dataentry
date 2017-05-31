@@ -10,7 +10,7 @@
     <string name="two">2</string>
 
     <!-- Warnings and error messages -->
-    <string name="error_generic">Error</string>
+    <string name="error">Error</string>
     <string name="error_wrong_server_url">Wrong server url</string>
     <string name="error_wrong_credentials">Wrong credentials</string>
     <string name="error_unexpected_error">Unexpected error</string>
@@ -34,7 +34,6 @@
     <string name="option_confirm">OK</string>
 
     <!-- START SECTION: FORMS -->
-
     <string name="choose_report_date">Choose report date</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
@@ -42,6 +41,7 @@
     <string name="active">Active</string>
 
     <!-- Input hints -->
+    <string name="search">Search</string>
     <string name="enter_text">Enter text</string>
     <string name="enter_long_text">Enter long text</string>
     <string name="enter_number">Enter number</string>
@@ -49,30 +49,17 @@
     <string name="enter_negative_integer">Enter negative integer</string>
     <string name="enter_positive_integer_or_zero">Enter positive integer or zero</string>
     <string name="enter_positive_integer">Enter positive integer</string>
-    <string name="enter_date">Enter date</string>
-    <string name="enter_coordinates">Enter coordinates</string>
-    <string name="enter_option_set">Select or search from the list</string>
 
-    <!-- Buttons -->
-    <string name="today_date">Today\'s date</string>
-    <string name="pick_date">Pick date</string>
-    <string name="cancel_button_description">Cancel button</string>
-    <!-- END SECTION: FORMS -->
-
-    <!-- SyncDateWrapper strings: -->
-    <string name="date_format">dd/MM/yy HH:mm</string>
-    <string name="never">never</string>
-    <string name="min_ago">m ago</string>
-    <string name="hours">h</string>
-    <string name="now">now</string>
+    <!-- RadioButton prompts -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="none">None</string>
 
     <!-- Fonts  -->
     <string name="font_name_regular">Roboto-Regular.ttf</string>
     <string name="font_name_medium">Roboto-Medium.ttf</string>
     <string name="font_name_condensed">Roboto-Condensed.ttf</string>
     <string name="font_name_light">Roboto-Light.ttf</string>
-
-    <string name="icon_description">Icon</string>
 
     <!-- SyncService strings: -->
     <string name="sync_now">Synchronise now</string>
@@ -83,9 +70,8 @@
     <string name="sync_complete_text">Sync complete</string>
 
     <string name="sync_error_title">Sync Error</string>
-    <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
+    <string name="sync_error_text">
+        An error has occurred during synchronisation. Please retry.
+    </string>
     <string name="undo">Undo</string>
-
-    <!--<string name="fatal_sync_error_title">Fatal Sync Error</string>-->
-    <!--<string name="fatal_sync_error_text">An error has occurred during synchronisation.</string>-->
 </resources>

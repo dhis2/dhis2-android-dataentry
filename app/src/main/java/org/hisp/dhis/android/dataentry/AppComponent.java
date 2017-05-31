@@ -3,6 +3,7 @@ package org.hisp.dhis.android.dataentry;
 import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.dataentry.commons.database.DbModule;
+import org.hisp.dhis.android.dataentry.commons.utils.UtilsModule;
 import org.hisp.dhis.android.dataentry.launcher.LauncherComponent;
 import org.hisp.dhis.android.dataentry.launcher.LauncherModule;
 import org.hisp.dhis.android.dataentry.login.LoginComponent;
@@ -17,7 +18,7 @@ import dagger.Component;
 
 @Singleton
 @Component(modules = {
-        AppModule.class, DbModule.class, SchedulerModule.class,
+        AppModule.class, DbModule.class, SchedulerModule.class, UtilsModule.class
 })
 public interface AppComponent {
     // exposing objects for testing

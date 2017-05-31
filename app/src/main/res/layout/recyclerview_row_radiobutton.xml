@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              android:padding="@dimen/keyline_default">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/keyline_default">
 
     <include layout="@layout/recyclerview_row_label"/>
 
@@ -21,12 +21,21 @@
             android:id="@+id/radiobutton_row_radiobutton_first"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/yes"
             app:font="@string/font_name_regular"/>
 
         <org.hisp.dhis.android.dataentry.commons.ui.FontRadioButton
             android:id="@+id/radiobutton_row_radiobutton_second"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/no"
+            app:font="@string/font_name_regular"/>
+
+        <org.hisp.dhis.android.dataentry.commons.ui.FontRadioButton
+            android:id="@+id/radiobutton_row_radiobutton_third"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/none"
             app:font="@string/font_name_regular"/>
     </RadioGroup>
 

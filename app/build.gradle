@@ -57,6 +57,7 @@ android {
         targetSdkVersion versions.sdk
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        multiDexEnabled true
 
         // jUnit test runner for android
         testInstrumentationRunner "org.hisp.dhis.android.dataentry.DhisInstrumentationTestsRunner"
@@ -144,7 +145,6 @@ spoon {
 }
 
 dependencies {
-
     compile "hu.supercluster:paperwork:${libraries.paperwork}"
 
     // Support libraries
@@ -152,9 +152,11 @@ dependencies {
     compile "com.android.support:support-annotations:${libraries.support}"
     compile "com.android.support:cardview-v7:${libraries.support}"
     compile "com.android.support:design:${libraries.support}"
+    compile "com.android.support:multidex:${libraries.multidex}"
 
     // Other
     compile "com.github.castorflex.smoothprogressbar:library-circular:${libraries.progressbar}"
+    provided "com.google.code.findbugs:annotations:${libraries.findbugs}"
 
     // dhis2 libraries
     compile "org.hisp.dhis:android-core:${libraries.dhis2sdk}"

@@ -8,6 +8,7 @@ import com.squareup.sqlbrite.BriteDatabase;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
+import org.hisp.dhis.android.dataentry.commons.utils.StringUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -59,8 +60,8 @@ final class SingleEventsRepositoryImpl implements ReportsRepository {
                 .switchMap(rows -> Flowable.fromIterable(rows)
                         .groupBy(Pair::val0, Pair::val1)
                         .concatMap(group -> group.toList().toFlowable()
-                                .map(values -> ReportViewModel.create(group.getKey().val0(),
-                                        fromState(group.getKey().val1()), values)))
+                                .map(values -> ReportViewModel.create(fromState(group.getKey().val1()),
+                                        group.getKey().val0(), StringUtils.join(values))))
                         .toList().toFlowable());
     }
 

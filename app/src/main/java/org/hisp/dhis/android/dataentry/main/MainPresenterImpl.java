@@ -3,14 +3,14 @@ package org.hisp.dhis.android.dataentry.main;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.core.user.UserModel;
+import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
 import org.hisp.dhis.android.dataentry.user.UserRepository;
-import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 
 import java.util.Locale;
 
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.observables.ConnectableObservable;
+import io.reactivex.flowables.ConnectableFlowable;
 import timber.log.Timber;
 
 import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
@@ -22,7 +22,7 @@ class MainPresenterImpl implements MainPresenter {
     private final CompositeDisposable compositeDisposable;
 
     MainPresenterImpl(@NonNull SchedulerProvider schedulerProvider,
-                      @NonNull UserRepository userRepository) {
+            @NonNull UserRepository userRepository) {
         this.schedulerProvider = schedulerProvider;
         this.userRepository = userRepository;
         this.compositeDisposable = new CompositeDisposable();
@@ -35,7 +35,7 @@ class MainPresenterImpl implements MainPresenter {
         if (view instanceof MainView) {
             MainView mainView = (MainView) view;
 
-            ConnectableObservable<UserModel> userObservable = userRepository.me()
+            ConnectableFlowable<UserModel> userObservable = userRepository.me()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .publish();
