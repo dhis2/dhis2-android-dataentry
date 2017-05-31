@@ -10,6 +10,9 @@ import org.hisp.dhis.android.core.event.EventStatus;
 abstract class EventViewModel {
 
     @NonNull
+    abstract String uid();
+
+    @NonNull
     abstract String title();
 
     @NonNull
@@ -19,7 +22,8 @@ abstract class EventViewModel {
     abstract EventStatus eventStatus();
 
     @NonNull
-    static EventViewModel create(@NonNull String title, @NonNull String date, @NonNull EventStatus status) {
-        return new AutoValue_EventViewModel(title, date, status);
+    static EventViewModel create(@NonNull String uid, @NonNull String title, @NonNull String date,
+                                 @NonNull EventStatus status) {
+        return new AutoValue_EventViewModel(uid, title, date, status);
     }
 }

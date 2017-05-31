@@ -3,6 +3,8 @@ package org.hisp.dhis.android.dataentry.dashboard;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.squareup.sqlbrite.BriteDatabase;
+
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
@@ -16,9 +18,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.List;
+
+import io.reactivex.subscribers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-class DashboardRepositoryIntegrationTest {
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class DashboardRepositoryIntegrationTest {
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
@@ -94,8 +101,41 @@ class DashboardRepositoryIntegrationTest {
     }
 
     @Test
-    public void events() throws Exception {
-        dashboardRepository.events("enrollment_uid");
-    }
+    public void eventsShouldPropagateCorrectResults() throws Exception {
+        EventViewModel firstEvent =
+                EventViewModel.create("event_uid", "Program Stage 1", "1999-12-31", EventStatus.ACTIVE);
+        EventViewModel secondEvent =
+                EventViewModel.create("event_uid_2", "Program Stage 2", "2001-12-31", EventStatus.SKIPPED);
 
+        TestSubscriber<List<EventViewModel>> testObserver = dashboardRepository.events("enrollment_uid").test();
+
+        testObserver.assertValueCount(1);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+        assertThat(testObserver.values().get(0).size()).isEqualTo(2);
+        assertThat(testObserver.values().get(0).get(0)).isEqualTo(firstEvent);
+        assertThat(testObserver.values().get(0).get(1)).isEqualTo(secondEvent);
+
+        BriteDatabase briteDb = databaseRule.briteDatabase();
+        BriteDatabase.Transaction transaction = briteDb.newTransaction();
+
+        ContentValues firstEventValues = new ContentValues();
+        firstEventValues.put(EventModel.Columns.EVENT_DATE, "2099-02-01");
+        databaseRule.briteDatabase().update(EventModel.TABLE, firstEventValues, EventModel.Columns.UID + " = 'event_uid'");
+
+        ContentValues secondEventValues = new ContentValues();
+        secondEventValues.put(EventModel.Columns.EVENT_DATE, "2199-02-01");
+        databaseRule.briteDatabase().update(EventModel.TABLE, secondEventValues, EventModel.Columns.UID + " = 'event_uid_2'");
+
+        transaction.markSuccessful();
+        transaction.end();
+
+        testObserver.assertValueCount(2);
+        testObserver.assertNoErrors();
+        testObserver.assertNotComplete();
+
+        assertThat(testObserver.values().get(1).size()).isEqualTo(2);
+        assertThat(testObserver.values().get(1).get(0).date()).isEqualTo("2099-02-01");
+        assertThat(testObserver.values().get(1).get(1).date()).isEqualTo("2199-02-01");
+    }
 }
