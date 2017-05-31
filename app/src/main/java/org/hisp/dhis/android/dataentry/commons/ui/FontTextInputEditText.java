@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputEditText;
 import android.util.AttributeSet;
@@ -15,21 +17,21 @@ import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull
 
 public class FontTextInputEditText extends TextInputEditText {
 
-    public FontTextInputEditText(Context context) {
+    public FontTextInputEditText(@NonNull Context context) {
         super(context);
     }
 
-    public FontTextInputEditText(Context context, AttributeSet attrs) {
+    public FontTextInputEditText(@NonNull Context context, @NonNull AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public FontTextInputEditText(Context context, AttributeSet attrs, int defStyle) {
+    public FontTextInputEditText(@NonNull Context context, @NonNull AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context, attrs);
     }
 
-    private void init(Context context, AttributeSet attributeSet) {
+    private void init(@NonNull Context context, @NonNull AttributeSet attributeSet) {
         if (!isInEditMode()) {
             TypedArray attrs = context.obtainStyledAttributes(attributeSet, R.styleable.ViewFont);
             setFont(attrs.getString(R.styleable.ViewFont_font));
@@ -42,7 +44,7 @@ public class FontTextInputEditText extends TextInputEditText {
         setFont(name);
     }
 
-    private void setFont(final String fontName) {
+    private void setFont(@Nullable final String fontName) {
         isNull(fontName, "fontName must not be null");
 
         if (getContext() != null && getContext().getAssets() != null) {
