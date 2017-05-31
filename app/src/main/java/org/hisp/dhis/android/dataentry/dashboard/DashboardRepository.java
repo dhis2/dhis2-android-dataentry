@@ -9,5 +9,8 @@ import io.reactivex.Flowable;
 interface DashboardRepository {
 
     @NonNull
+    Flowable<List<String>> attributes(@NonNull String enrollmentUid);
+
+    @NonNull
     Flowable<List<EventViewModel>> events(@NonNull String enrollmentUid);
 }
