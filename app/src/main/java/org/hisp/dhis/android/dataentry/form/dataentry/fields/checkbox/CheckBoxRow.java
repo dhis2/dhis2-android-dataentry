@@ -1,19 +1,16 @@
 package org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox;
 
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.Row;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.processors.FlowableProcessor;
 
-public class CheckBoxRow implements Row {
+public class CheckBoxRow implements Row<CheckBoxViewHolder, CheckBoxViewModel> {
 
     @NonNull
     private final LayoutInflater inflater;
@@ -22,21 +19,20 @@ public class CheckBoxRow implements Row {
     private final FlowableProcessor<RowAction> processor;
 
     public CheckBoxRow(@NonNull LayoutInflater inflater,
-            @NonNull FlowableProcessor<RowAction> processor) {
+                       @NonNull FlowableProcessor<RowAction> processor) {
         this.inflater = inflater;
         this.processor = processor;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreate(@NonNull ViewGroup parent) {
+    public CheckBoxViewHolder onCreate(@NonNull ViewGroup parent) {
         return new CheckBoxViewHolder(parent, inflater.inflate(
                 R.layout.recyclerview_row_checkbox, parent, false), processor);
     }
 
     @Override
-    @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-    public void onBind(@NonNull ViewHolder viewHolder, @NonNull FieldViewModel viewModel) {
-        ((CheckBoxViewHolder) viewHolder).update((CheckBoxViewModel) viewModel);
+    public void onBind(@NonNull CheckBoxViewHolder viewHolder, @NonNull CheckBoxViewModel viewModel) {
+        viewHolder.update(viewModel);
     }
 }

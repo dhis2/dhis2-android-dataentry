@@ -1,19 +1,16 @@
 package org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext;
 
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.Row;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.processors.FlowableProcessor;
 
-public final class EditTextRow implements Row {
+public final class EditTextRow implements Row<EditTextViewHolder, EditTextModel> {
 
     @NonNull
     private final LayoutInflater inflater;
@@ -22,21 +19,20 @@ public final class EditTextRow implements Row {
     private final FlowableProcessor<RowAction> processor;
 
     public EditTextRow(@NonNull LayoutInflater inflater,
-            @NonNull FlowableProcessor<RowAction> processor) {
+                       @NonNull FlowableProcessor<RowAction> processor) {
         this.inflater = inflater;
         this.processor = processor;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreate(@NonNull ViewGroup parent) {
+    public EditTextViewHolder onCreate(@NonNull ViewGroup parent) {
         return new EditTextViewHolder(parent, inflater.inflate(
                 R.layout.recyclerview_row_edittext, parent, false), processor);
     }
 
     @Override
-    @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-    public void onBind(@NonNull ViewHolder viewHolder, @NonNull FieldViewModel viewModel) {
-        ((EditTextViewHolder) viewHolder).update((EditTextModel) viewModel);
+    public void onBind(@NonNull EditTextViewHolder viewHolder, @NonNull EditTextModel viewModel) {
+        viewHolder.update(viewModel);
     }
 }

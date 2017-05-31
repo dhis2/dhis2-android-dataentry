@@ -1,19 +1,16 @@
 package org.hisp.dhis.android.dataentry.form.dataentry.fields.radiobutton;
 
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.Row;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.processors.FlowableProcessor;
 
-public final class RadioButtonRow implements Row {
+public final class RadioButtonRow implements Row<RadioButtonViewHolder, RadioButtonViewModel> {
 
     @NonNull
     private final LayoutInflater inflater;
@@ -22,21 +19,20 @@ public final class RadioButtonRow implements Row {
     private final FlowableProcessor<RowAction> processor;
 
     public RadioButtonRow(@NonNull LayoutInflater inflater,
-            @NonNull FlowableProcessor<RowAction> processor) {
+                          @NonNull FlowableProcessor<RowAction> processor) {
         this.inflater = inflater;
         this.processor = processor;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreate(@NonNull ViewGroup parent) {
+    public RadioButtonViewHolder onCreate(@NonNull ViewGroup parent) {
         return new RadioButtonViewHolder(parent, inflater.inflate(
                 R.layout.recyclerview_row_radiobutton, parent, false), processor);
     }
 
     @Override
-    @SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-    public void onBind(@NonNull ViewHolder viewHolder, @NonNull FieldViewModel viewModel) {
-        ((RadioButtonViewHolder) viewHolder).update((RadioButtonViewModel) viewModel);
+    public void onBind(@NonNull RadioButtonViewHolder viewHolder, @NonNull RadioButtonViewModel viewModel) {
+        viewHolder.update(viewModel);
     }
 }
