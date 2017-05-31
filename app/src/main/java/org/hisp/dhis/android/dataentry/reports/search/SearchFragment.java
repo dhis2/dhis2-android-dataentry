@@ -16,7 +16,6 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.jakewharton.rxbinding2.widget.TextViewAfterTextChangeEvent;
 
-import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.reports.ReportViewModel;
@@ -69,7 +68,7 @@ public final class SearchFragment extends BaseFragment
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        ((DhisApp) context.getApplicationContext()).userComponent()
+        getUserComponent()
                 .plus(new SearchModule(getActivity(), getSearchArguments()))
                 .inject(this);
     }
@@ -77,7 +76,7 @@ public final class SearchFragment extends BaseFragment
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
