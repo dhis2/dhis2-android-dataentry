@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView;
@@ -30,7 +29,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.functions.Consumer;
-import timber.log.Timber;
 
 /**
  * A recommended way for use:
@@ -39,6 +37,8 @@ import timber.log.Timber;
  *  SelectionArgument arg = SelectionArgument.create("eUZ79clX7y1", "Diagnosis ICD10");
  * SelectionDialogFragment dialog = SelectionDialogFragment.create(arg);
  * dialog.setTargetFragment(this, 1);
+ * dialog.show(getFragmentManager(), "selectionDialogFragment");
+ * (where  1 is the request code)
  *
  * The fragment should implement onActivity like:
  *     @Override
@@ -59,9 +59,6 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
 
     @BindView(R.id.selection_dialog_title)
     TextView titleView;
-
-    @BindView(R.id.selection_dialog_cancel)
-    ImageButton cancelButton;
 
     @BindView(R.id.selection_dialog_searchview)
     SearchView searchView;
@@ -85,7 +82,8 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
 
     @Override
     public Consumer<List<SelectionViewModel>> update() {
-        return ((SelectionDialogAdapter) this.selectionListView.getAdapter())::update;
+        return selectionList -> ((SelectionDialogAdapter) selectionListView.getAdapter()).update(selectionList);
+//        return ((SelectionDialogAdapter) this.selectionListView.getAdapter())::update;
     }
 
     @Nullable
@@ -157,7 +155,6 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
     public void onClick(View view) {
         SelectionViewModel model  = (SelectionViewModel) view.getTag();
         if(model != null) {
-            Timber.d("Tag: " + view.getTag());
             Intent result = new Intent();
             result.putExtra(SELECTION_RESULT, model);
             getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_CODE, result);

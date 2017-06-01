@@ -11,10 +11,10 @@ import org.hisp.dhis.android.dataentry.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectionDialogAdapter extends RecyclerView.Adapter<SelectionDialogAdapter.SelectionViewHolder>{
+public class SelectionDialogAdapter extends RecyclerView.Adapter<SelectionDialogAdapter.SelectionViewHolder> {
     private final List<SelectionViewModel> selectionList;
 
-    private View.OnClickListener listener;
+    private final View.OnClickListener listener;
 
     public SelectionDialogAdapter(View.OnClickListener onClickListener) {
         this.selectionList = new ArrayList<>();
@@ -53,7 +53,9 @@ public class SelectionDialogAdapter extends RecyclerView.Adapter<SelectionDialog
 
         public SelectionViewHolder(View itemView) {
             super(itemView);
-            textView = (TextView) itemView;
+            if (itemView instanceof TextView) {
+                textView = (TextView) itemView;
+            }
         }
     }
 }
