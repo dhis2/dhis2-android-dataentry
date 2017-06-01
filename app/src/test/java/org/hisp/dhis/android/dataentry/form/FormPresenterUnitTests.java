@@ -23,7 +23,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FormPresenterUnitTests {
 
-    private FormPresenterImpl formPresenter;
+    private FormPresenter formPresenter;
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private FormView formView;
