@@ -32,6 +32,24 @@ import butterknife.Unbinder;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
+/**
+ * A recommended way for use:
+ *
+ * When calling:
+ *  SelectionArgument arg = SelectionArgument.create("eUZ79clX7y1", "Diagnosis ICD10");
+ * SelectionDialogFragment dialog = SelectionDialogFragment.create(arg);
+ * dialog.setTargetFragment(this, 1);
+ *
+ * The fragment should implement onActivity like:
+ *     @Override
+ * public void onActivityResult(int requestCode, int resultCode, Intent data) {
+ * super.onActivityResult(requestCode, resultCode, data);
+ * if (requestCode == 1 && resultCode == SelectionDialogFragment.RESULT_CODE) {
+ * SelectionViewModel model = data.getParcelableExtra(SelectionDialogFragment.SELECTION_RESULT);
+ * Timber.d("chosen : " + model);
+ * }
+ * }
+ */
 public class SelectionDialogFragment extends AppCompatDialogFragment
         implements SelectionView, View.OnClickListener{
 
