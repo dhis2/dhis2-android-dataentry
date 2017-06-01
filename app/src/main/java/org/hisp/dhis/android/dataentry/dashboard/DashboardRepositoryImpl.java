@@ -10,15 +10,12 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
-import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 
 import java.util.Arrays;
 import java.util.List;
 
 import io.reactivex.Flowable;
-import rx.functions.Func1;
 
-import static android.view.View.Z;
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
 class DashboardRepositoryImpl implements DashboardRepository {
