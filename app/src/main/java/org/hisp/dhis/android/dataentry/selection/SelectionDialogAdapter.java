@@ -22,6 +22,7 @@ public class SelectionDialogAdapter extends RecyclerView.Adapter<SelectionDialog
     }
 
     public void update(List<SelectionViewModel> selectionList) {
+        this.selectionList.clear();
         this.selectionList.addAll(selectionList);
         this.notifyDataSetChanged();
     }

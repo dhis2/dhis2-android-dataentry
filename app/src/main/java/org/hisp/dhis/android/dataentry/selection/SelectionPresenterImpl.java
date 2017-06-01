@@ -5,14 +5,16 @@ import android.support.annotation.NonNull;
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
 
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import rx.exceptions.OnErrorNotImplementedException;
-import timber.log.Timber;
 
 public final class SelectionPresenterImpl implements SelectionPresenter {
 
+    public static final int DEBOUNCE_TIME = 300;
     @NonNull
     private final SelectionArgument arg;
 
@@ -20,7 +22,7 @@ public final class SelectionPresenterImpl implements SelectionPresenter {
     private final SelectionRepository repository;
 
     @NonNull
-    private final CompositeDisposable disposable;
+    private final CompositeDisposable compositeDisposable;
 
     @NonNull
     private final SchedulerProvider schedulerProvider;
@@ -30,37 +32,38 @@ public final class SelectionPresenterImpl implements SelectionPresenter {
         this.arg = arg;
         this.repository = repository;
         this.schedulerProvider = schedulerProvider;
-        disposable = new CompositeDisposable();
+        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void onAttach(@NonNull View view) {
-        this.onAttach(view, "");
-    }
-
-    @Override
-    public void onAttach(@NonNull View view, @NonNull String query) {
         if (view instanceof SelectionView) {
             SelectionView selectionView = (SelectionView) view;
             selectionView.setTitle(arg.name());
-            disposable.add(repository.list(arg.uid())
-                    .map(list -> search(list, query))
-                    .subscribeOn(schedulerProvider.io())
+
+            compositeDisposable.add(selectionView.subscribeToSearchView()
+                    .toFlowable(BackpressureStrategy.LATEST)
+                    .subscribeOn(schedulerProvider.ui())
+                    .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
+                    .observeOn(schedulerProvider.io())
+                    .switchMap(query -> repository.list(arg.uid())
+                            .take(1)
+                            .flatMap(list -> Flowable.fromIterable(list))
+                            .filter(item -> item.label().contains(query.queryText().toString()))
+                            .toList()
+                            .toFlowable()
+                    )
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(((SelectionView) view).update(), err -> {
-                        throw new OnErrorNotImplementedException(this.getClass().getName(), err);
-                    })
+                    .subscribe(selectionView.update(), throwable -> {
+                                throw new OnErrorNotImplementedException(throwable);
+                            }
+                    )
             );
         }
     }
 
     @Override
     public void onDetach() {
-        disposable.clear();
-    }
-
-    private List<SelectionViewModel> search(List<SelectionViewModel> list, @NonNull String query) {
-        Timber.d("text changed !" + query); //TODO:
-        return list;
+        compositeDisposable.clear();
     }
 }

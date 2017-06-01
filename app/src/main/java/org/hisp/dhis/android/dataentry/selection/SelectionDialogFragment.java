@@ -11,18 +11,17 @@ import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView;
+import com.jakewharton.rxbinding2.support.v7.widget.SearchViewQueryTextEvent;
 
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -30,10 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import rx.Observable;
 import timber.log.Timber;
 
 public class SelectionDialogFragment extends AppCompatDialogFragment
@@ -56,7 +52,6 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
     RecyclerView selectionListView;
 
     private Unbinder unbinder;
-    private Disposable searchDisposable;
 
     @Inject
     public SelectionPresenter presenter;
@@ -91,6 +86,7 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         unbinder = ButterKnife.bind(this, view);
 
         selectionListView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -110,23 +106,13 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
     @Override
     public void onPause() {
         super.onPause();
-        searchDisposable.dispose();
         presenter.onDetach();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        searchDisposable = RxSearchView.queryTextChangeEvents(searchView)
-                .debounce(300, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe( query -> {
-                    presenter.onDetach();
-                    presenter.onAttach(this, query.queryText().toString());
-//                    presenter.onAttach(this);
-//                    Timber.d("text changed !" + query); //TODO:
-                });
-
+        presenter.onAttach(this);
     }
 
     @OnClick(R.id.selection_dialog_cancel)
@@ -137,6 +123,11 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
     @Override
     public void setTitle(String title) {
         titleView.setText(title);
+    }
+
+    @Override
+    public io.reactivex.Observable<SearchViewQueryTextEvent> subscribeToSearchView() {
+        return RxSearchView.queryTextChangeEvents(searchView);
     }
 
     /**
