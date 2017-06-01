@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.tuples.Sextet;
+import org.hisp.dhis.android.dataentry.commons.utils.StringUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -25,7 +26,7 @@ final class EnrollmentsRepositoryImpl implements ReportsRepository {
     private static final String SELECT_ENROLLMENTS = "SELECT" +
             "  Program.displayName," +
             "  Program.enrollmentDateLabel," +
-            "  Enrollment.enrollment," +
+            "  Enrollment.uid," +
             "  Enrollment.enrollmentDate," +
             "  Enrollment.state," +
             "  Enrollment.status," +
@@ -47,7 +48,7 @@ final class EnrollmentsRepositoryImpl implements ReportsRepository {
             "        AND TrackedEntityAttributeValue.trackedEntityInstance = Enrollment.trackedEntityInstance) " +
             "WHERE Enrollment.trackedEntityInstance = ? AND NOT Enrollment.state = 'TO_DELETE' " +
             "ORDER BY datetime(Enrollment.created) DESC, " +
-            "Enrollment.enrollment ASC, InstanceAttribute.formOrder ASC;";
+            "Enrollment.uid ASC, InstanceAttribute.formOrder ASC;";
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -62,8 +63,8 @@ final class EnrollmentsRepositoryImpl implements ReportsRepository {
     private final String promptEnrollmentDateLabel;
 
     EnrollmentsRepositoryImpl(@NonNull BriteDatabase briteDatabase,
-            @NonNull String promptProgram, @NonNull String promptEnrollmentStatus,
-            @NonNull String promptEnrollmentDateLabel) {
+                              @NonNull String promptProgram, @NonNull String promptEnrollmentStatus,
+                              @NonNull String promptEnrollmentDateLabel) {
         this.briteDatabase = briteDatabase;
         this.promptProgram = promptProgram;
         this.promptEnrollmentStatus = promptEnrollmentStatus;
@@ -87,8 +88,8 @@ final class EnrollmentsRepositoryImpl implements ReportsRepository {
 
                                     // enrollment status (last item)
                                     values.add(value(promptEnrollmentStatus, group.getKey().val5()));
-                                    return ReportViewModel.create(group.getKey().val2(),
-                                            fromState(group.getKey().val4()), values);
+                                    return ReportViewModel.create(fromState(group.getKey().val4()),
+                                            group.getKey().val2(), StringUtils.join(values));
                                 }))
                         .toList().toFlowable());
     }

@@ -15,8 +15,6 @@ public class ReportsArgumentsTests {
                 "test_program_uid", "test_program_name");
         ReportsArguments enrollmentReports = ReportsArguments.createForEnrollments(
                 "test_tei_uid", "test_tei_name");
-        ReportsArguments teiReports = ReportsArguments.createForTeis(
-                "test_te_uid", "test_te_name");
 
         assertThat(eventReports.entityUid()).isEqualTo("test_program_uid");
         assertThat(eventReports.entityName()).isEqualTo("test_program_name");
@@ -25,9 +23,5 @@ public class ReportsArgumentsTests {
         assertThat(enrollmentReports.entityUid()).isEqualTo("test_tei_uid");
         assertThat(enrollmentReports.entityName()).isEqualTo("test_tei_name");
         assertThat(enrollmentReports.entityType()).isEqualTo(ReportsArguments.TYPE_ENROLLMENTS);
-
-        assertThat(teiReports.entityUid()).isEqualTo("test_te_uid");
-        assertThat(teiReports.entityName()).isEqualTo("test_te_name");
-        assertThat(teiReports.entityType()).isEqualTo(ReportsArguments.TYPE_TEIS);
     }
 }

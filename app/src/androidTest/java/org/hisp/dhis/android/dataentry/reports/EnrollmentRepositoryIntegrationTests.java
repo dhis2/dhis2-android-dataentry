@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -119,13 +118,16 @@ public class EnrollmentRepositoryIntegrationTests {
                 State.TO_DELETE, EnrollmentStatus.CANCELLED));
 
         // ReportView models
-        ReportViewModel reportViewModelTwo = ReportViewModel.create("enrollment_uid_two",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList("program: program_display_name_two",
-                        "program_enrollment_date_label_two: 2016-10-01", "tea_two: teav_two",
-                        "tea_one: teav_one", "enrollment_status: COMPLETED"));
-        ReportViewModel reportViewModelOne = ReportViewModel.create("enrollment_uid_one",
-                ReportViewModel.Status.SYNCED, Arrays.asList("program: -",
-                        "enrollment_date_label: 2014-05-01", "", "enrollment_status: ACTIVE"));
+        ReportViewModel reportViewModelTwo = ReportViewModel.create(ReportViewModel.Status.TO_SYNC,
+                "enrollment_uid_two", "program: program_display_name_two\n" +
+                        "program_enrollment_date_label_two: 2016-10-01\n" +
+                        "tea_two: teav_two\n" +
+                        "tea_one: teav_one\n" +
+                        "enrollment_status: COMPLETED");
+
+        ReportViewModel reportViewModelOne = ReportViewModel.create(ReportViewModel.Status.SYNCED,
+                "enrollment_uid_one", "program: -\n" + "enrollment_date_label: 2014-05-01\n\n" +
+                        "enrollment_status: ACTIVE");
 
         TestSubscriber<List<ReportViewModel>> testObserver =
                 reportsRepository.reports("tei_uid").test();
@@ -147,13 +149,12 @@ public class EnrollmentRepositoryIntegrationTests {
         BriteDatabase briteDatabase = databaseRule.briteDatabase();
 
         // Enrollments
-        db.insert(EnrollmentModel.TABLE, null, enrollment("enrollment_uid_one",
-                "program_uid_one", "organization_unit_uid", "tei_uid",
-                BaseIdentifiableObject.DATE_FORMAT.parse("2014-04-06T00:05:57.495"), "2014-05-01",
-                State.SYNCED, EnrollmentStatus.ACTIVE));
-        ReportViewModel reportViewModelOne = ReportViewModel.create("enrollment_uid_one",
-                ReportViewModel.Status.SYNCED, Arrays.asList("program: -",
-                        "enrollment_date_label: 2014-05-01", "", "enrollment_status: ACTIVE"));
+        db.insert(EnrollmentModel.TABLE, null, enrollment("enrollment_uid_one", "program_uid_one",
+                "organization_unit_uid", "tei_uid", BaseIdentifiableObject.DATE_FORMAT.parse(
+                        "2014-04-06T00:05:57.495"), "2014-05-01", State.SYNCED, EnrollmentStatus.ACTIVE));
+        ReportViewModel reportViewModelOne = ReportViewModel.create(ReportViewModel.Status.SYNCED,
+                "enrollment_uid_one", "program: -\n" + "enrollment_date_label: 2014-05-01\n\n" +
+                        "enrollment_status: ACTIVE");
 
         TestSubscriber<List<ReportViewModel>> testObserver =
                 reportsRepository.reports("tei_uid").test();
@@ -170,10 +171,12 @@ public class EnrollmentRepositoryIntegrationTests {
                 "program_uid_two", "organization_unit_uid", "tei_uid",
                 BaseIdentifiableObject.DATE_FORMAT.parse("2016-06-06T00:05:57.495"), "2016-10-01",
                 State.TO_UPDATE, EnrollmentStatus.COMPLETED));
-        ReportViewModel reportViewModelTwo = ReportViewModel.create("enrollment_uid_two",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList("program: program_display_name_two",
-                        "program_enrollment_date_label_two: 2016-10-01", "tea_two: teav_two",
-                        "tea_one: teav_one", "enrollment_status: COMPLETED"));
+        ReportViewModel reportViewModelTwo = ReportViewModel.create(ReportViewModel.Status.TO_SYNC,
+                "enrollment_uid_two", "program: program_display_name_two\n" +
+                        "program_enrollment_date_label_two: 2016-10-01\n" +
+                        "tea_two: teav_two\n" +
+                        "tea_one: teav_one\n" +
+                        "enrollment_status: COMPLETED");
 
         testObserver.assertValueCount(2);
         testObserver.assertNoErrors();
@@ -206,9 +209,9 @@ public class EnrollmentRepositoryIntegrationTests {
                 "program_uid_one", "organization_unit_uid", "tei_uid",
                 BaseIdentifiableObject.DATE_FORMAT.parse("2014-04-06T00:05:57.495"), "2014-05-01",
                 State.SYNCED, EnrollmentStatus.ACTIVE));
-        ReportViewModel reportViewModelOne = ReportViewModel.create("enrollment_uid_one",
-                ReportViewModel.Status.SYNCED, Arrays.asList("program: -",
-                        "enrollment_date_label: 2014-05-01", "", "enrollment_status: ACTIVE"));
+        ReportViewModel reportViewModelOne = ReportViewModel.create(ReportViewModel.Status.SYNCED,
+                "enrollment_uid_one", "program: -\n" + "enrollment_date_label: 2014-05-01\n\n" +
+                        "enrollment_status: ACTIVE");
 
         TestSubscriber<List<ReportViewModel>> testObserver =
                 reportsRepository.reports("tei_uid").test();
@@ -234,10 +237,10 @@ public class EnrollmentRepositoryIntegrationTests {
                 "program_uid_two", "organization_unit_uid", "tei_uid",
                 BaseIdentifiableObject.DATE_FORMAT.parse("2016-06-06T00:05:57.495"), "2016-10-01",
                 State.TO_UPDATE, EnrollmentStatus.COMPLETED));
-        ReportViewModel reportViewModelTwo = ReportViewModel.create("enrollment_uid_two",
-                ReportViewModel.Status.TO_SYNC, Arrays.asList("program: program_display_name_two",
-                        "program_enrollment_date_label_two: 2016-10-01", "tea_two: -",
-                        "tea_one: -", "enrollment_status: COMPLETED"));
+        ReportViewModel reportViewModelTwo = ReportViewModel.create(ReportViewModel.Status.TO_SYNC,
+                "enrollment_uid_two", "program: program_display_name_two\n" +
+                        "program_enrollment_date_label_two: 2016-10-01\n" + "tea_two: -\n" +
+                        "tea_one: -\n" + "enrollment_status: COMPLETED");
 
         // insert enrollment which doesn't have any visible PTEAs
         TestSubscriber<List<ReportViewModel>> testObserver
@@ -264,9 +267,9 @@ public class EnrollmentRepositoryIntegrationTests {
                 "program_uid_one", "organization_unit_uid", "tei_uid",
                 BaseIdentifiableObject.DATE_FORMAT.parse("2014-04-06T00:05:57.495"), "2014-05-01",
                 State.SYNCED, EnrollmentStatus.ACTIVE));
-        ReportViewModel reportViewModelOne = ReportViewModel.create("enrollment_uid_one",
-                ReportViewModel.Status.SYNCED, Arrays.asList("program: -",
-                        "enrollment_date_label: 2014-05-01", "", "enrollment_status: ACTIVE"));
+        ReportViewModel reportViewModelOne = ReportViewModel.create(ReportViewModel.Status.SYNCED,
+                "enrollment_uid_one", "program: -\n" + "enrollment_date_label: 2014-05-01\n\n" +
+                        "enrollment_status: ACTIVE");
 
         // insert enrollment which doesn't have any visible PTEAs
         TestSubscriber<List<ReportViewModel>> testObserver =

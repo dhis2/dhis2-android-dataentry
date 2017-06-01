@@ -2,11 +2,16 @@ package org.hisp.dhis.android.dataentry.user;
 
 import android.support.annotation.NonNull;
 
+import org.hisp.dhis.android.core.user.UserCredentialsModel;
 import org.hisp.dhis.android.core.user.UserModel;
 
-import io.reactivex.Observable;
+import io.reactivex.Flowable;
 
 public interface UserRepository {
+
     @NonNull
-    Observable<UserModel> me();
+    Flowable<UserCredentialsModel> credentials();
+
+    @NonNull
+    Flowable<UserModel> me();
 }

@@ -158,7 +158,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
         navigationView.setCheckedItem(menuItem.getItemId());
         getSupportActionBar().setTitle(menuItem.getTitle());
 
@@ -193,6 +192,22 @@ public class MainActivity extends AppCompatActivity implements MainView,
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Pass any configuration change to the drawer toggles
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
     protected void attachFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
@@ -211,21 +226,5 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
         return super.onOptionsItemSelected(item);
 
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        drawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        // Pass any configuration change to the drawer toggles
-        drawerToggle.onConfigurationChanged(newConfig);
     }
 }
