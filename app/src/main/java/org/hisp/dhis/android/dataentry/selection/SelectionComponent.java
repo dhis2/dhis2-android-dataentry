@@ -1,10 +1,10 @@
 package org.hisp.dhis.android.dataentry.selection;
 
-import org.hisp.dhis.android.dataentry.commons.dagger.PerActivity;
+import org.hisp.dhis.android.dataentry.commons.dagger.PerFragment;
 
 import dagger.Subcomponent;
 
-@PerActivity
+@PerFragment
 @Subcomponent(modules = SelectionModule.class)
 public interface SelectionComponent {
 

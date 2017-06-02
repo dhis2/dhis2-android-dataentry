@@ -4,13 +4,13 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
-import org.hisp.dhis.android.dataentry.commons.dagger.PerActivity;
+import org.hisp.dhis.android.dataentry.commons.dagger.PerFragment;
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 
 import dagger.Module;
 import dagger.Provides;
 
-@PerActivity
+@PerFragment
 @Module
 public final class SelectionModule {
 
@@ -21,13 +21,13 @@ public final class SelectionModule {
         this.argument = argument;
     }
 
-    @PerActivity
+    @PerFragment
     @Provides
     SelectionRepository selectionRepository(BriteDatabase database) {
         return new OptionSetRepositoryImpl(database);
     }
 
-    @PerActivity
+    @PerFragment
     @Provides
     SelectionPresenter selectionPresenter(SelectionRepository repository, SchedulerProvider schedulerProvider) {
         return new SelectionPresenterImpl(argument, repository, schedulerProvider);

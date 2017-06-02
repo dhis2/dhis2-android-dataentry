@@ -122,6 +122,7 @@ public class SelectionPresenterTests {
     @Test
     public void onDetach() {
         presenter.onAttach(view);
+        assertThat(viewPublisher.hasObservers()).isTrue();
         presenter.onDetach();
         assertThat(repositoryPublisher.hasSubscribers()).isFalse();
         assertThat(viewPublisher.hasObservers()).isFalse();
