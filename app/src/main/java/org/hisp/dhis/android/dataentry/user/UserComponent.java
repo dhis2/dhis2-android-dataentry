@@ -15,6 +15,8 @@ import org.hisp.dhis.android.dataentry.reports.ReportsComponent;
 import org.hisp.dhis.android.dataentry.reports.ReportsModule;
 import org.hisp.dhis.android.dataentry.reports.search.SearchComponent;
 import org.hisp.dhis.android.dataentry.reports.search.SearchModule;
+import org.hisp.dhis.android.dataentry.selection.SelectionComponent;
+import org.hisp.dhis.android.dataentry.selection.SelectionModule;
 import org.hisp.dhis.android.dataentry.service.ServiceComponent;
 import org.hisp.dhis.android.dataentry.service.ServiceModule;
 
@@ -39,6 +41,9 @@ public interface UserComponent {
 
     @NonNull
     ServiceComponent plus(@NonNull ServiceModule serviceModule);
+
+    @NonNull
+    SelectionComponent plus(@NonNull SelectionModule selectionModule);
 
     // ToDo: remove this!
     @NonNull
