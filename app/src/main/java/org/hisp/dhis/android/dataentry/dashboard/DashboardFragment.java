@@ -4,18 +4,26 @@ package org.hisp.dhis.android.dataentry.dashboard;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
+import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
+import org.hisp.dhis.android.dataentry.commons.ui.FontTextView;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
 import io.reactivex.functions.Consumer;
 
 import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
@@ -26,6 +34,17 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
 
     @Inject
     DashboardPresenter dashboardPresenter;
+
+    @BindView(R.id.first_attribute)
+    FontTextView firstAttribute;
+
+    @BindView(R.id.second_attribute)
+    FontTextView secondAttribute;
+
+    @BindView(R.id.event_list)
+    RecyclerView recyclerView;
+
+    private DashboardAdapter dashboardAdapter;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -46,6 +65,24 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        bind(this, view);
+        setupRecyclerView();
+    }
+
+    private void setupRecyclerView() {
+        dashboardAdapter = new DashboardAdapter();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(dashboardAdapter);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new DividerDecoration(
+                ContextCompat.getDrawable(getActivity(), R.drawable.divider)));
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
@@ -56,19 +93,30 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
                 .inject(this);
     }
 
-    @NonNull
     @Override
-    public Consumer<List<EventViewModel>> renderEvents() {
-        return events -> Log.d("Events", "Size: " + events.size());
+    public void onResume() {
+        super.onResume();
+        dashboardPresenter.onAttach(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        dashboardPresenter.onDetach();
     }
 
     @NonNull
     @Override
-    public Consumer<List<String>> renderAttributes() {
+    public Consumer<List<EventViewModel>> renderEvents() {
+        return events -> dashboardAdapter.swap(events);
+    }
+
+    @NonNull
+    @Override
+    public Consumer<Pair<String, String>> renderAttributes() {
         return attributes -> {
-            for (String attribute : attributes) {
-                Log.d("Attribute", attribute);
-            }
+            firstAttribute.setText(attributes.val0());
+            secondAttribute.setText(attributes.val1());
         };
     }
 }
