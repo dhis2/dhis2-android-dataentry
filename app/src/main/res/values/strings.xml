@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">dhis2-android-dataentry</string>
+    <string name="app_name">DHIS2 Android</string>
 
     <!-- LoginActivity  -->
     <string name="server_url">Server URL</string>
