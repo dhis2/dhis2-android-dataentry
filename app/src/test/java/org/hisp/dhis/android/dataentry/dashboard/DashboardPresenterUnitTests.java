@@ -2,6 +2,7 @@ package org.hisp.dhis.android.dataentry.dashboard;
 
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.dataentry.commons.schedulers.MockSchedulersProvider;
+import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
@@ -33,7 +34,7 @@ public class DashboardPresenterUnitTests {
     private DashboardRepository dashboardRepository;
 
     @Captor
-    private ArgumentCaptor<List<String>> attributesCaptor;
+    private ArgumentCaptor<Pair<String, String>> attributesCaptor;
 
     @Captor
     private ArgumentCaptor<List<EventViewModel>> eventsCaptor;
@@ -62,8 +63,8 @@ public class DashboardPresenterUnitTests {
 
         verify(dashboardView.renderAttributes()).accept(attributesCaptor.capture());
         verify(dashboardRepository).attributes(enrollmentUid);
-        assertThat(attributesCaptor.getValue().get(0)).isEqualTo("Attribute 1");
-        assertThat(attributesCaptor.getValue().get(1)).isEqualTo("Attribute 2");
+        assertThat(attributesCaptor.getValue().val0()).isEqualTo("Attribute 1");
+        assertThat(attributesCaptor.getValue().val1()).isEqualTo("Attribute 2");
     }
 
     @Test
@@ -73,13 +74,13 @@ public class DashboardPresenterUnitTests {
 
         verify(dashboardView.renderAttributes()).accept(attributesCaptor.capture());
         verify(dashboardRepository).attributes(enrollmentUid);
-        assertThat(attributesCaptor.getValue().get(0)).isEqualTo("Attribute 1");
-        assertThat(attributesCaptor.getValue().get(1)).isEqualTo("Attribute 2");
+        assertThat(attributesCaptor.getValue().val0()).isEqualTo("Attribute 1");
+        assertThat(attributesCaptor.getValue().val1()).isEqualTo("Attribute 2");
 
         attributesPublisher.onNext(Arrays.asList("Second Attribute 1", "Second Attribute 2"));
         verify(dashboardView.renderAttributes(), times(2)).accept(attributesCaptor.capture());
-        assertThat(attributesCaptor.getValue().get(0)).isEqualTo("Second Attribute 1");
-        assertThat(attributesCaptor.getValue().get(1)).isEqualTo("Second Attribute 2");
+        assertThat(attributesCaptor.getValue().val0()).isEqualTo("Second Attribute 1");
+        assertThat(attributesCaptor.getValue().val1()).isEqualTo("Second Attribute 2");
     }
 
     @Test

@@ -3,6 +3,7 @@ package org.hisp.dhis.android.dataentry.dashboard;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
@@ -29,6 +30,11 @@ class DashboardPresenterImpl implements DashboardPresenter {
                 .attributes(enrollmentUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
+                .map(strings -> {
+                    String firstAttribute = strings.size() > 0 ? strings.get(0) : "";
+                    String secondAttribute = strings.size() > 1 ? strings.get(1) : "";
+                    return Pair.create(firstAttribute, secondAttribute);
+                })
                 .subscribe(view.renderAttributes(), Timber::e));
 
         compositeDisposable.add(dashboardRepository
