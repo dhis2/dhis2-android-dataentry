@@ -74,4 +74,5 @@
         An error has occurred during synchronisation. Please retry.
     </string>
     <string name="undo">Undo</string>
+    <string name="status_icon_description">Event status</string>
 </resources>

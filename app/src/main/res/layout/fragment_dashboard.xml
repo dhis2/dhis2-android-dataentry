@@ -1,11 +1,88 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="org.hisp.dhis.android.dataentry.dashboard.DashboardFragment">
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                 xmlns:tools="http://schemas.android.com/tools"
+                                                 android:id="@+id/coordinatorlayout"
+                                                 android:layout_width="match_parent"
+                                                 android:layout_height="match_parent">
 
-    <TextView
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-</FrameLayout>
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsingtoolbarlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+            app:titleEnabled="false">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:titleTextColor="@android:color/white"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/keyline_default"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="?attr/actionBarSize"
+                android:orientation="vertical">
+
+                <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
+                    android:id="@+id/first_attribute"
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    android:clickable="false"
+                    android:gravity="center_vertical"
+                    android:padding="8dp"
+                    android:textSize="@dimen/text_size_medium"
+                    app:font="@string/font_name_light"
+                    tools:text="First name: Lucky"/>
+
+                <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
+                    android:id="@+id/second_attribute"
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    android:layout_marginBottom="8dp"
+                    android:clickable="false"
+                    android:gravity="center_vertical"
+                    android:padding="8dp"
+                    android:textSize="@dimen/text_size_medium"
+                    app:font="@string/font_name_light"
+                    tools:text="Last name: Tommy"/>
+            </LinearLayout>
+
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/event_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_tei_dashboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/keyline_default"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/color_accent"
+        app:elevation="8dp"
+        app:layout_anchor="@id/event_list"
+        app:layout_anchorGravity="bottom|right|end"
+        app:pressedTranslationZ="8dp"/>
+
+</android.support.design.widget.CoordinatorLayout>
