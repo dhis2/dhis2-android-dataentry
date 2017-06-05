@@ -29,13 +29,16 @@ public class OptionSetRepositoryImpl implements SelectionRepository {
             " WHERE " + OptionModel.Columns.OPTION_SET + " = ?;";
 
     private final BriteDatabase database;
+    private final String uid;
 
-    public OptionSetRepositoryImpl(@NonNull BriteDatabase database) {
+    public OptionSetRepositoryImpl(@NonNull BriteDatabase database, @NonNull String uid) {
         this.database = database;
+        this.uid = uid;
     }
 
+    @NonNull
     @Override
-    public Flowable<List<SelectionViewModel>> list(@NonNull String uid) {
+    public Flowable<List<SelectionViewModel>> list() {
         return toV2Flowable(database.createQuery(OPTIONS_TABLES, SELECT_OPTIONS, uid)
                 .mapToList(cursor -> SelectionViewModel.from(cursor, OptionModel.Columns.UID,
                         OptionModel.Columns.DISPLAY_NAME)

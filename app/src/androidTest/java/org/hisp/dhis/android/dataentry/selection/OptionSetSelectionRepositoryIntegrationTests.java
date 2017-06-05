@@ -8,6 +8,7 @@ import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.option.OptionSetModel;
 import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +22,7 @@ import rx.schedulers.Schedulers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(AndroidJUnit4.class)
-public class OptionSelectionRepositoryIntegrationTests {
+public class OptionSetSelectionRepositoryIntegrationTests {
 
     public static final String OPTIONSET_CODE = "option_set_code";
     public static final String OPTIONSET_DISPLAY_NAME = "option_set_dislayName";
@@ -41,31 +42,34 @@ public class OptionSelectionRepositoryIntegrationTests {
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
 
-    private static Date date;
-    private static String dateString;
+    private Date date;
+    private String dateString;
 
     private SelectionRepository repository;
-    TestSubscriber<List<SelectionViewModel>> subscriber;
+    private TestSubscriber<List<SelectionViewModel>> subscriber;
 
-    public OptionSelectionRepositoryIntegrationTests() {
-        date = new Date();
-        dateString = date.toString();
-    }
+   /* @BeforeClass
+    public void classSetup() {
+
+    }*/
 
     @Before
     public void setup() {
+        date = new Date();
+        dateString = date.toString();
+
         SQLiteDatabase database = databaseRule.database();
-        repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase());
+        repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase(), OPTIONSET_UID);
 
         database.insert(OptionSetModel.TABLE, null, optionSet(OPTIONSET_UID, OPTIONSET_DISPLAY_NAME));
         database.insert(OptionModel.TABLE, null, option(OPTION_UID, OPTION_DISPLAY_NAME, OPTIONSET_UID));
         database.insert(OptionModel.TABLE, null, option(OPTION_2_UID, OPTION_2_DISPLAY_NAME, OPTIONSET_UID));
 
-        subscriber = repository.list(OPTIONSET_UID).test();
+        subscriber = repository.list().test();
     }
 
     @Test
-    public void retrieveData() {
+    public void retrieve() {
         // happy path test: verify that one OptionSet with two options is in there.
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -79,46 +83,9 @@ public class OptionSelectionRepositoryIntegrationTests {
         assertThat(result.get(1).label()).isEqualTo(OPTION_2_DISPLAY_NAME);
     }
 
-    @Test
-    public void optionSetEmpty() {
-        // try to retrieve option set that has no options.
-        databaseRule.database().insert(OptionSetModel.TABLE, null, optionSet("empty", OPTIONSET_DISPLAY_NAME));
-
-        TestSubscriber<List<SelectionViewModel>> subscriber = repository.list("empty").test();
-
-        subscriber.assertValueCount(1);
-        subscriber.assertNoErrors();
-        subscriber.assertNotComplete();
-
-        List<SelectionViewModel> result = subscriber.values().get(0);
-        assertThat(result.size()).isEqualTo(0);
-    }
 
     @Test
-    public void optionSetNull() {
-        // try to retrieve optionSet that is not in db
-        TestSubscriber<List<SelectionViewModel>> subscriber = repository.list(null).test();
-
-        subscriber.assertValueCount(0);
-        subscriber.assertError(IllegalArgumentException.class);
-        subscriber.assertNotComplete();
-    }
-
-    @Test
-    public void optionSetWrong() {
-        // try to retrieve optionSet that is not in db
-        TestSubscriber<List<SelectionViewModel>> subscriber = repository.list("wrong").test();
-
-        subscriber.assertValueCount(1);
-        subscriber.assertNoErrors();
-        subscriber.assertNotComplete();
-
-        List<SelectionViewModel> result = subscriber.values().get(0);
-        assertThat(result.size()).isEqualTo(0);
-    }
-
-    @Test
-    public void optionModification() {
+    public void modification() {
         // change name of option & verify that it happens.
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -140,7 +107,7 @@ public class OptionSelectionRepositoryIntegrationTests {
     }
 
     @Test
-    public void optionAddition() {
+    public void addition() {
         // add an option & verify that it happens.
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -164,7 +131,7 @@ public class OptionSelectionRepositoryIntegrationTests {
     }
 
     @Test
-    public void optionDeletion() {
+    public void deletion() {
         // delete the option & verify that it is observed.
 
         subscriber.assertValueCount(1);
@@ -184,7 +151,7 @@ public class OptionSelectionRepositoryIntegrationTests {
     }
 
     @Test
-    public void optionSetDeletion() {
+    public void parentDeletion() {
         // delete an opitonSet and verify that fk constrainted Options are updated and the client is updated...
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -200,9 +167,51 @@ public class OptionSelectionRepositoryIntegrationTests {
         assertThat(result.size()).isEqualTo(0);
     }
 
+    @Test
+    public void emptyParent() {
+        repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase(), "empty");
+        // try to retrieve option set that has no options.
+        databaseRule.database().insert(OptionSetModel.TABLE, null, optionSet("empty", OPTIONSET_DISPLAY_NAME));
+
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.list().test();
+
+        subscriber.assertValueCount(1);
+        subscriber.assertNoErrors();
+        subscriber.assertNotComplete();
+
+        List<SelectionViewModel> result = subscriber.values().get(0);
+        assertThat(result.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void parentNull() {
+        repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase(), null);
+        // try to retrieve optionSet that is not in db
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.list().test();
+
+        subscriber.assertValueCount(0);
+        subscriber.assertError(IllegalArgumentException.class);
+        subscriber.assertNotComplete();
+    }
+
+    @Test
+    public void parentWrong() {
+        repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase(), "wrong");
+        // try to retrieve optionSet that is not in db
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.list().test();
+
+        subscriber.assertValueCount(1);
+        subscriber.assertNoErrors();
+        subscriber.assertNotComplete();
+
+        List<SelectionViewModel> result = subscriber.values().get(0);
+        assertThat(result.size()).isEqualTo(0);
+    }
+
+
     ///Helper methods:
     ///
-    private static ContentValues optionSet(String uid, String displayName) {
+    private ContentValues optionSet(String uid, String displayName) {
         ContentValues values = new ContentValues();
         values.put(OptionSetModel.Columns.UID, uid);
         values.put(OptionSetModel.Columns.CODE, OPTIONSET_CODE);
@@ -215,7 +224,7 @@ public class OptionSelectionRepositoryIntegrationTests {
         return values;
     }
 
-    private static ContentValues option(String uid, String displayName, String optionSetUid) {
+    private ContentValues option(String uid, String displayName, String optionSetUid) {
         ContentValues values = new ContentValues();
         values.put(OptionModel.Columns.UID, uid);
         values.put(OptionModel.Columns.CODE, OPTION_CODE);

@@ -46,7 +46,7 @@ public final class SelectionPresenterImpl implements SelectionPresenter {
                     .subscribeOn(schedulerProvider.ui())
                     .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .observeOn(schedulerProvider.io())
-                    .switchMap(query -> repository.list(arg.uid())
+                    .switchMap(query -> repository.list()
                             .take(1)
                             .flatMap(list -> Flowable.fromIterable(list))
                             .filter(item -> item.label().contains(query.queryText().toString()))
