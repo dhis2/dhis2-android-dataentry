@@ -10,9 +10,16 @@ import timber.log.Timber;
 
 class DashboardPresenterImpl implements DashboardPresenter {
 
+    @NonNull
     private final String enrollmentUid;
+
+    @NonNull
     private final SchedulerProvider schedulerProvider;
+
+    @NonNull
     private final DashboardRepository dashboardRepository;
+
+    @NonNull
     private final CompositeDisposable compositeDisposable;
 
     public DashboardPresenterImpl(@NonNull String enrollmentUid,

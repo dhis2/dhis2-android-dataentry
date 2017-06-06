@@ -2,6 +2,7 @@ package org.hisp.dhis.android.dataentry.dashboard;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -32,7 +33,10 @@ class DashboardViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.status_icon)
     ImageView statusIcon;
 
+    @NonNull
     private final Map<EventStatus, Drawable> statusIcons;
+
+    @NonNull
     private final Map<EventStatus, Integer> statusColors;
 
     DashboardViewHolder(View itemView) {
