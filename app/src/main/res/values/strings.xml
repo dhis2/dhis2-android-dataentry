@@ -73,6 +73,12 @@
     <string name="sync_error_text">
         An error has occurred during synchronisation. Please retry.
     </string>
+
+    <!-- Form screen -->
     <string name="undo">Undo</string>
+
+    <!-- Dashboard screen -->
     <string name="status_icon_description">Event status</string>
+    <string name="edit">EDIT</string>
+    
 </resources>

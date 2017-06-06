@@ -9,9 +9,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
@@ -24,6 +26,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import io.reactivex.functions.Consumer;
 
 import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
@@ -43,6 +46,9 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
 
     @BindView(R.id.event_list)
     RecyclerView recyclerView;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     private DashboardAdapter dashboardAdapter;
 
@@ -97,6 +103,17 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
     public void onResume() {
         super.onResume();
         dashboardPresenter.onAttach(this);
+    }
+
+    @OnClick(R.id.fab)
+    void createEvent() {
+        Toast.makeText(getActivity(), "TODO: Show Create Items screen", Toast.LENGTH_SHORT).show();
+    }
+
+
+    @OnClick({R.id.appbar_layout, R.id.edit_profile_button})
+    void showProfile() {
+        Toast.makeText(getActivity(), "TODO: Show Data Entry screen", Toast.LENGTH_SHORT).show();
     }
 
     @Override
