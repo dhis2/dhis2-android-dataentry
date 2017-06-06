@@ -2,6 +2,7 @@ package org.hisp.dhis.android.dataentry.selection;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel.Columns;
@@ -10,7 +11,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import java.util.Date;
 import java.util.List;
@@ -20,15 +20,11 @@ import rx.schedulers.Schedulers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(JUnit4.class)
+@RunWith(AndroidJUnit4.class)
 public class OrganisationUnitSelectionRepositoryIntegrationTests {
 
     public static final String ORGUNIT_DISPLAY_NAME = "orgunit_display_name";
-    public static final String ORGUNIT_CODE = "orgunit_code";
-    public static final String ORGUNITSET_UID = "orgunitset_uid";
-    public static final String ORGUNITSET_NAME = "orgunit_set_name";
     public static final String ORGUNIT_UID = "orgunit_uid";
-    public static final String ORGUNIT_NAME = "orgunit_name";
     public static final String ORGUNIT_2_UID = "orgunit2_uid";
     public static final String ORGUNIT_2_DISPLAY_NAME = "opton_2_name";
     public static final String ORGUNIT_3_UID = "orgunit_3_uid";
@@ -66,12 +62,31 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
 
         List<SelectionViewModel> result = subscriber.values().get(0);
         assertThat(result.size()).isEqualTo(2);
-        assertThat(result.get(0).uid()).isEqualTo(ORGUNIT_UID);
-        assertThat(result.get(0).label()).isEqualTo(ORGUNIT_DISPLAY_NAME);
-        assertThat(result.get(1).uid()).isEqualTo(ORGUNIT_2_UID);
-        assertThat(result.get(1).label()).isEqualTo(ORGUNIT_2_DISPLAY_NAME);
+        assertThat(result.contains(SelectionViewModel.create(ORGUNIT_UID, ORGUNIT_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(ORGUNIT_2_UID, ORGUNIT_2_DISPLAY_NAME))).isTrue();
     }
 
+
+    @Test
+    public void modification() {
+        // change name of orgunit & verify that it happens.
+        subscriber.assertValueCount(1);
+        subscriber.assertNoErrors();
+        subscriber.assertNotComplete();
+
+        databaseRule.briteDatabase().update(OrganisationUnitModel.TABLE, orgUnit(ORGUNIT_2_UID, "updated_orgUnit2"),
+                OrganisationUnitModel.Columns.UID + "=?", ORGUNIT_2_UID);
+
+        subscriber.assertValueCount(2);
+        subscriber.assertNoErrors();
+        subscriber.assertNotComplete();
+
+        List<SelectionViewModel> result = subscriber.values().get(1);
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.contains(SelectionViewModel.create(ORGUNIT_UID, ORGUNIT_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(ORGUNIT_2_UID, "updated_orgUnit2"))).isTrue();
+    }
+    
     @Test
     public void addition() {
         // add an option & verify that it happens.
@@ -88,12 +103,9 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
 
         List<SelectionViewModel> result = subscriber.values().get(1);
         assertThat(result.size()).isEqualTo(3);
-        assertThat(result.get(0).uid()).isEqualTo(ORGUNIT_UID);
-        assertThat(result.get(0).label()).isEqualTo(ORGUNIT_DISPLAY_NAME);
-        assertThat(result.get(1).uid()).isEqualTo(ORGUNIT_2_UID);
-        assertThat(result.get(1).label()).isEqualTo(ORGUNIT_2_DISPLAY_NAME);
-        assertThat(result.get(2).uid()).isEqualTo(ORGUNIT_3_UID);
-        assertThat(result.get(2).label()).isEqualTo(ORGUNIT_3_DISPLAY_NAME);
+        assertThat(result.contains(SelectionViewModel.create(ORGUNIT_UID, ORGUNIT_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(ORGUNIT_2_UID, ORGUNIT_2_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(ORGUNIT_3_UID, ORGUNIT_3_DISPLAY_NAME))).isTrue();
     }
 
     @Test

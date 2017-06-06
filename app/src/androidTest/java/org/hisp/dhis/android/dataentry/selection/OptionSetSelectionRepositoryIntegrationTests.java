@@ -8,7 +8,6 @@ import org.hisp.dhis.android.core.option.OptionModel;
 import org.hisp.dhis.android.core.option.OptionSetModel;
 import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,11 +47,6 @@ public class OptionSetSelectionRepositoryIntegrationTests {
     private SelectionRepository repository;
     private TestSubscriber<List<SelectionViewModel>> subscriber;
 
-   /* @BeforeClass
-    public void classSetup() {
-
-    }*/
-
     @Before
     public void setup() {
         date = new Date();
@@ -77,10 +71,8 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
         List<SelectionViewModel> result = subscriber.values().get(0);
         assertThat(result.size()).isEqualTo(2);
-        assertThat(result.get(0).uid()).isEqualTo(OPTION_UID);
-        assertThat(result.get(0).label()).isEqualTo(OPTION_DISPLAY_NAME);
-        assertThat(result.get(1).uid()).isEqualTo(OPTION_2_UID);
-        assertThat(result.get(1).label()).isEqualTo(OPTION_2_DISPLAY_NAME);
+        assertThat(result.contains(SelectionViewModel.create(OPTION_UID, OPTION_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(OPTION_2_UID, OPTION_2_DISPLAY_NAME))).isTrue();
     }
 
 
@@ -100,10 +92,8 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
         List<SelectionViewModel> result = subscriber.values().get(1);
         assertThat(result.size()).isEqualTo(2);
-        assertThat(result.get(0).uid()).isEqualTo(OPTION_UID);
-        assertThat(result.get(0).label()).isEqualTo(OPTION_DISPLAY_NAME);
-        assertThat(result.get(1).uid()).isEqualTo(OPTION_2_UID);
-        assertThat(result.get(1).label()).isEqualTo("updated_option2");
+        assertThat(result.contains(SelectionViewModel.create(OPTION_UID, OPTION_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(OPTION_2_UID, "updated_option2"))).isTrue();
     }
 
     @Test
@@ -122,12 +112,9 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
         List<SelectionViewModel> result = subscriber.values().get(1);
         assertThat(result.size()).isEqualTo(3);
-        assertThat(result.get(0).uid()).isEqualTo(OPTION_UID);
-        assertThat(result.get(0).label()).isEqualTo(OPTION_DISPLAY_NAME);
-        assertThat(result.get(1).uid()).isEqualTo(OPTION_2_UID);
-        assertThat(result.get(1).label()).isEqualTo(OPTION_2_DISPLAY_NAME);
-        assertThat(result.get(2).uid()).isEqualTo(OPTION_3_UID);
-        assertThat(result.get(2).label()).isEqualTo(OPTION_3_DISPLAY_NAME);
+        assertThat(result.contains(SelectionViewModel.create(OPTION_UID, OPTION_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(OPTION_2_UID, OPTION_2_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(OPTION_3_UID, OPTION_3_DISPLAY_NAME))).isTrue();
     }
 
     @Test
