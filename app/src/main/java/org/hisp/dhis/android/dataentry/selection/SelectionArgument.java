@@ -7,6 +7,7 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class SelectionArgument implements Parcelable {
+    public enum Type {PROGRAM, ORGANISATION, OPTION}
 
     @NonNull
     public abstract String uid();
@@ -15,7 +16,11 @@ public abstract class SelectionArgument implements Parcelable {
     public abstract String name();
 
     @NonNull
-    public static SelectionArgument create(@NonNull String uid, @NonNull String name) {
-        return new AutoValue_SelectionArgument(uid, name);
+    public abstract Type type();
+
+    @NonNull
+    public static SelectionArgument create(@NonNull String uid, @NonNull String name, @NonNull Type type) {
+        return new AutoValue_SelectionArgument(uid, name, type);
     }
+
 }

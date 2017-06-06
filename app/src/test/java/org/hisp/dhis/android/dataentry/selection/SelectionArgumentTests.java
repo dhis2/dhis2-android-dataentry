@@ -14,18 +14,25 @@ public class SelectionArgumentTests {
 
     @Test
     public void create() {
-        SelectionArgument arg = SelectionArgument.create(UID, NAME);
+        SelectionArgument arg = SelectionArgument.create(UID, NAME, SelectionArgument.Type.OPTION);
         assertThat(arg.uid()).isEqualTo(UID);
         assertThat(arg.name()).isEqualTo(NAME);
+        assertThat(arg.type()).isEqualTo(SelectionArgument.Type.OPTION);
     }
 
     @Test (expected = NullPointerException.class)
     public void create_nullName() {
-        SelectionArgument arg = SelectionArgument.create(UID, null);
+        SelectionArgument.create(UID, null, SelectionArgument.Type.OPTION);
     }
 
     @Test (expected = NullPointerException.class)
     public void create_nullUid() {
-        SelectionArgument arg = SelectionArgument.create(null, NAME);
+        SelectionArgument.create(null, NAME, SelectionArgument.Type.OPTION);
     }
+
+    @Test(expected = NullPointerException.class)
+    public void create_nullType() {
+        SelectionArgument.create(UID, NAME, null);
+    }
+
 }
