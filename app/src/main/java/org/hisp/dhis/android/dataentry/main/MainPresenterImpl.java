@@ -2,6 +2,7 @@ package org.hisp.dhis.android.dataentry.main;
 
 import android.support.annotation.NonNull;
 
+import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
@@ -20,9 +21,12 @@ class MainPresenterImpl implements MainPresenter {
     private final SchedulerProvider schedulerProvider;
     private final UserRepository userRepository;
     private final CompositeDisposable compositeDisposable;
+    private final D2 d2;
 
-    MainPresenterImpl(@NonNull SchedulerProvider schedulerProvider,
-            @NonNull UserRepository userRepository) {
+    MainPresenterImpl(@NonNull D2 d2,
+                      @NonNull SchedulerProvider schedulerProvider,
+                      @NonNull UserRepository userRepository) {
+        this.d2 = d2;
         this.schedulerProvider = schedulerProvider;
         this.userRepository = userRepository;
         this.compositeDisposable = new CompositeDisposable();
@@ -86,5 +90,10 @@ class MainPresenterImpl implements MainPresenter {
             initials += String.valueOf(user.surname().charAt(0));
         }
         return initials.toUpperCase(Locale.US);
+    }
+
+    @Override
+    public void logOut() throws Exception {
+        d2.logOut().call();
     }
 }

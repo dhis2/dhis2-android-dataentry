@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><menu xmlns:android="http://schemas.android.com/apk/res/android">
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group
         android:id="@+id/drawer_group_main"
         android:checkableBehavior="single">
@@ -23,9 +24,9 @@
                 android:id="@+id/drawer_group_other"
                 android:checkableBehavior="single">
                 <item
-                    android:id="@+id/drawer_item_settings"
-                    android:icon="@drawable/ic_settings"
-                    android:title="@string/drawer_item_settings"/>
+                    android:id="@+id/drawer_item_log_out"
+                    android:icon="@drawable/ic_logout"
+                    android:title="@string/drawer_item_log_out"/>
             </group>
         </menu>
     </item>
