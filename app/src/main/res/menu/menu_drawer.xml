@@ -8,26 +8,10 @@
             android:icon="@drawable/ic_home"
             android:orderInCategory="100"
             android:title="@string/drawer_item_home"/>
-
         <item
-            android:id="@+id/drawer_item_profile"
-            android:icon="@drawable/ic_profile"
-            android:orderInCategory="110"
-            android:title="@string/drawer_item_profile"/>
+            android:id="@+id/drawer_item_log_out"
+            android:icon="@drawable/ic_logout"
+            android:orderInCategory="200"
+            android:title="@string/drawer_item_log_out"/>
     </group>
-    <item
-        android:id="@+id/drawer_item_other"
-        android:orderInCategory="300"
-        android:title="@string/drawer_item_other">
-        <menu>
-            <group
-                android:id="@+id/drawer_group_other"
-                android:checkableBehavior="single">
-                <item
-                    android:id="@+id/drawer_item_log_out"
-                    android:icon="@drawable/ic_logout"
-                    android:title="@string/drawer_item_log_out"/>
-            </group>
-        </menu>
-    </item>
 </menu>
