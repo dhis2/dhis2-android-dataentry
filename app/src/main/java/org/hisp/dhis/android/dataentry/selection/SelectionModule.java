@@ -24,7 +24,13 @@ public final class SelectionModule {
     @PerFragment
     @Provides
     SelectionRepository selectionRepository(BriteDatabase database) {
-        return new OptionSetRepositoryImpl(database);
+        if (argument.type() == SelectionArgument.Type.ORGANISATION) {
+            return new OrganisationUnitRepositoryImpl(database);
+        } else if (argument.type() == SelectionArgument.Type.PROGRAM) {
+            return new ProgramRepositoryImpl(database, argument.uid());
+        } else { //if (argument.type() == SelectionArgument.Type.OPTION) {
+            return new OptionSetRepositoryImpl(database, argument.name());
+        }
     }
 
     @PerFragment

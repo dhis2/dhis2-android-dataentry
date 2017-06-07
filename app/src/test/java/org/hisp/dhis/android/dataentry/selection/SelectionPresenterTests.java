@@ -74,7 +74,7 @@ public class SelectionPresenterTests {
         when(argument.uid()).thenReturn(ARG_UID);
         when(argument.name()).thenReturn(ARG_NAME);
 
-        when(repository.list(ARG_UID)).thenReturn(repositoryPublisher);
+        when(repository.list()).thenReturn(repositoryPublisher);
         when(view.subscribeToSearchView()).thenReturn(viewPublisher);
 
 
@@ -88,7 +88,7 @@ public class SelectionPresenterTests {
 
         assertThat(viewPublisher.hasObservers()).isTrue();
         verify(view.update()).accept(viewCaptor.capture());
-        verify(repository).list(ARG_UID);
+        verify(repository).list();
         assertThat(viewCaptor.getValue()).isEqualTo(values);
     }
 
@@ -105,7 +105,7 @@ public class SelectionPresenterTests {
 
         assertThat(viewPublisher.hasObservers()).isTrue();
         verify(view.update()).accept(viewCaptor.capture());
-        verify(repository).list(ARG_UID);
+        verify(repository).list();
         assertThat(viewCaptor.getValue()).isEqualTo(values);
 
         values.add( SelectionViewModel.create(UID_3, NAME_3));
@@ -114,7 +114,7 @@ public class SelectionPresenterTests {
 
         assertThat(viewPublisher.hasObservers()).isTrue();
         verify(view.update(), times(2)).accept(viewCaptor.capture());
-        verify(repository, times(2)).list(ARG_UID);
+        verify(repository, times(2)).list();
         assertThat(viewCaptor.getValue().size()).isEqualTo(1);
         assertThat(viewCaptor.getValue().get(0)).isEqualTo(SelectionViewModel.create(UID_3, NAME_3));
     }

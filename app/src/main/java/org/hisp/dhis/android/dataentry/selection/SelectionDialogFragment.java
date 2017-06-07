@@ -34,7 +34,7 @@ import io.reactivex.functions.Consumer;
  * A recommended way for use:
  *
  * When calling:
- *  SelectionArgument arg = SelectionArgument.create("eUZ79clX7y1", "Diagnosis ICD10");
+ *  SelectionArgument arg = SelectionArgument.create("eUZ79clX7y1", "Diagnosis ICD10", SelectionArgument.Type.OPTION);
  * SelectionDialogFragment dialog = SelectionDialogFragment.create(arg);
  * dialog.setTargetFragment(this, 1);
  * dialog.show(getFragmentManager(), "selectionDialogFragment");
@@ -83,7 +83,6 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
     @Override
     public Consumer<List<SelectionViewModel>> update() {
         return selectionList -> ((SelectionDialogAdapter) selectionListView.getAdapter()).update(selectionList);
-//        return ((SelectionDialogAdapter) this.selectionListView.getAdapter())::update;
     }
 
     @Nullable
@@ -102,6 +101,7 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //This lets Android know that the Dialog should be resized when the soft keyboard is shown:
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         unbinder = ButterKnife.bind(this, view);
 
@@ -153,12 +153,14 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
      */
     @Override
     public void onClick(View view) {
-        SelectionViewModel model  = (SelectionViewModel) view.getTag();
-        if(model != null) {
-            Intent result = new Intent();
-            result.putExtra(SELECTION_RESULT, model);
-            getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_CODE, result);
-            this.dismiss();
+        if(view instanceof SelectionView){
+            SelectionViewModel model = (SelectionViewModel) view.getTag();
+            if (model != null) {
+                Intent result = new Intent();
+                result.putExtra(SELECTION_RESULT, model);
+                getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_CODE, result);
+                this.dismiss();
+            }
         }
     }
 }

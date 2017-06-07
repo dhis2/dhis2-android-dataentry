@@ -9,6 +9,6 @@ import io.reactivex.Flowable;
 public interface SelectionRepository {
 
     @NonNull
-    Flowable<List<SelectionViewModel>> list(@NonNull String uid);
+    Flowable<List<SelectionViewModel>> list();
 
 }
