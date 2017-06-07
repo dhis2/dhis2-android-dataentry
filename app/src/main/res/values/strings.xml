@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">dhis2-android-dataentry</string>
+    <string name="app_name">DHIS2 Android</string>
 
     <!-- LoginActivity  -->
     <string name="server_url">Server URL</string>
@@ -70,13 +70,19 @@
     <string name="sync_complete_text">Sync complete</string>
 
     <string name="sync_error_title">Sync Error</string>
+    <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
 
-
+    <!--<string name="fatal_sync_error_title">Fatal Sync Error</string>-->
+    <!--<string name="fatal_sync_error_text">An error has occurred during synchronisation.</string>-->
 
     <string name="selection_hint">Find option:</string>
     <string name="cancel_description">Cancel</string>
-    <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
-    <!--<string name="fatal_sync_error_title">Fatal Sync Error</string>-->
-    <!--<string name="fatal_sync_error_text">An error has occurred during synchronisation.</string>-->
+    
+    <!-- Form screen -->
     <string name="undo">Undo</string>
+
+    <!-- Dashboard screen -->
+    <string name="status_icon_description">Event status</string>
+    <string name="edit">EDIT</string>
+
 </resources>
