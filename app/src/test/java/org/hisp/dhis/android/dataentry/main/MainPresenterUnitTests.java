@@ -1,6 +1,5 @@
 package org.hisp.dhis.android.dataentry.main;
 
-import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.user.UserModel;
 import org.hisp.dhis.android.dataentry.commons.schedulers.MockSchedulersProvider;
 import org.hisp.dhis.android.dataentry.user.UserRepository;
@@ -33,9 +32,6 @@ public class MainPresenterUnitTests {
     private UserRepository userRepository;
 
     @Mock
-    private D2 d2;
-
-    @Mock
     private UserModel userModel;
 
     private MainPresenter mainPresenter;
@@ -55,7 +51,7 @@ public class MainPresenterUnitTests {
         userSubject = PublishProcessor.create();
         when(userRepository.me()).thenReturn(userSubject);
 
-        mainPresenter = new MainPresenterImpl(d2, new MockSchedulersProvider(), userRepository);
+        mainPresenter = new MainPresenterImpl(null, new MockSchedulersProvider(), userRepository);
     }
 
     @Test
