@@ -31,7 +31,6 @@ import org.hisp.dhis.android.dataentry.service.SyncService;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements MainView,
         NavigationView.OnNavigationItemSelectedListener, DrawerLayout.DrawerListener {
@@ -184,14 +183,10 @@ public class MainActivity extends AppCompatActivity implements MainView,
     }
 
     private void logOut() {
-        try {
-            ProgressDialog dialog = ProgressDialog.show(this, "Logging out", "Deleting all data");
-            mainPresenter.logOut();
-            dialog.dismiss();
-            finish();
-        } catch (Exception e) {
-            Timber.e(e);
-        }
+        ProgressDialog dialog = ProgressDialog.show(this, "Logging out", "Deleting all data");
+        mainPresenter.logOut();
+        dialog.dismiss();
+        finish();
     }
 
     @NonNull

@@ -93,7 +93,11 @@ class MainPresenterImpl implements MainPresenter {
     }
 
     @Override
-    public void logOut() throws Exception {
-        d2.logOut().call();
+    public void logOut() {
+        try {
+            d2.logOut().call();
+        } catch (Exception e) {
+            Timber.e(e);
+        }
     }
 }

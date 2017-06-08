@@ -4,5 +4,5 @@ import org.hisp.dhis.android.dataentry.commons.ui.Presenter;
 
 interface MainPresenter extends Presenter {
 
-    void logOut() throws Exception;
+    void logOut();
 }
