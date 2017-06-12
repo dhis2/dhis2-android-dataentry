@@ -28,7 +28,8 @@
         <activity android:name=".reports.ReportsActivity"/>
         <activity android:name=".form.dataentry.DataEntryActivity"/>
         <activity android:name=".form.FormActivity"/>
-
+        <activity android:name=".create.CreateItemsActivity"/>
+        (
         <service
             android:name=".service.SyncService"
             android:enabled="true"
