@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.dashboard.DashboardActivity;
+import org.hisp.dhis.android.dataentry.form.FormActivity;
+import org.hisp.dhis.android.dataentry.form.FormViewArguments;
+import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryActivity;
+import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryArguments;
 
 import timber.log.Timber;
 
@@ -19,8 +23,8 @@ final class EnrollmentsNavigatorImpl implements ReportsNavigator {
     @Override
     public void navigateTo(@NonNull String enrollmentUid) {
         Timber.d("navigateTo(): %s", enrollmentUid);
-        currentActivity.startActivity(DashboardActivity.create(currentActivity,
-                enrollmentUid));
+        currentActivity.startActivity(DashboardActivity
+                .create(currentActivity, enrollmentUid));
     }
 
     @Override
