@@ -53,7 +53,7 @@ public class DataEntryModule {
             @NonNull UserRepository userRepository, @NonNull CurrentDateProvider dateProvider) {
         if (!isEmpty(arguments.event())) { // NOPMD
             return new ProgramStageRepository(briteDatabase, userRepository,
-                    modelFactory, dateProvider, arguments.event());
+                    modelFactory, dateProvider, arguments.event(), arguments.section());
         } else if (!isEmpty(arguments.enrollment())) { //NOPMD
             return new EnrollmentRepository(briteDatabase,
                     modelFactory, dateProvider, arguments.enrollment());
