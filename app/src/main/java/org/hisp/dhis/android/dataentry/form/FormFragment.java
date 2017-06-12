@@ -74,7 +74,7 @@ public class FormFragment extends BaseFragment implements FormView {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_form, container, false);
     }
 
@@ -152,12 +152,8 @@ public class FormFragment extends BaseFragment implements FormView {
 
     @Override
     public void renderStatusChangeSnackBar(@NonNull ReportStatus reportStatus) {
-        String snackBarMessage;
-        if (reportStatus == ReportStatus.COMPLETED) {
-            snackBarMessage = getString(R.string.complete);
-        } else {
-            snackBarMessage = getString(R.string.active);
-        }
+        String snackBarMessage = reportStatus == ReportStatus.COMPLETED ?
+                getString(R.string.complete) : getString(R.string.active);
 
         Snackbar.make(coordinatorLayout, snackBarMessage, Snackbar.LENGTH_LONG)
                 .setAction(getString(R.string.undo), v1 -> {

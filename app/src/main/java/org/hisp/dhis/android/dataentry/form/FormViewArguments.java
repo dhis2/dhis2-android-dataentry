@@ -9,7 +9,7 @@ import static org.hisp.dhis.android.dataentry.form.FormViewArguments.Type.ENROLL
 import static org.hisp.dhis.android.dataentry.form.FormViewArguments.Type.EVENT;
 
 @AutoValue
-abstract class FormViewArguments implements Parcelable {
+public abstract class FormViewArguments implements Parcelable {
 
     // this is the uid for an enrollment or an event
     @NonNull
@@ -19,17 +19,16 @@ abstract class FormViewArguments implements Parcelable {
     abstract Type type();
 
     @NonNull
-    static FormViewArguments createForEnrollment(@NonNull String enrollmentUid) {
+    public static FormViewArguments createForEnrollment(@NonNull String enrollmentUid) {
         return new AutoValue_FormViewArguments(enrollmentUid, ENROLLMENT);
     }
 
     @NonNull
-    static FormViewArguments createForEvent(@NonNull String eventUid) {
+    public static FormViewArguments createForEvent(@NonNull String eventUid) {
         return new AutoValue_FormViewArguments(eventUid, EVENT);
     }
 
     enum Type {
         ENROLLMENT, EVENT
     }
-
 }
