@@ -19,6 +19,8 @@ import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
 import org.hisp.dhis.android.dataentry.commons.ui.FontTextView;
+import org.hisp.dhis.android.dataentry.form.FormActivity;
+import org.hisp.dhis.android.dataentry.form.FormViewArguments;
 
 import java.util.List;
 
@@ -62,7 +64,7 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_dashboard, container, false);
     }
 
@@ -109,7 +111,8 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
 
     @OnClick({R.id.appbar_layout, R.id.edit_profile_button})
     void showProfile() {
-        Toast.makeText(getActivity(), "TODO: Show Data Entry screen", Toast.LENGTH_SHORT).show();
+        startActivity(FormActivity.create(getActivity(), FormViewArguments
+                .createForEnrollment(getArguments().getString(ARG_ENROLLMENT_UID))));
     }
 
     @Override
