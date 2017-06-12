@@ -14,6 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.squareup.sqlbrite.BriteDatabase;
+
+import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
@@ -22,7 +27,9 @@ import org.hisp.dhis.android.dataentry.commons.ui.FontTextView;
 import org.hisp.dhis.android.dataentry.form.FormActivity;
 import org.hisp.dhis.android.dataentry.form.FormViewArguments;
 
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -38,6 +45,9 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
 
     @Inject
     DashboardPresenter dashboardPresenter;
+
+    @Inject // ToDo: remove
+    BriteDatabase briteDatabase;
 
     @BindView(R.id.first_attribute)
     FontTextView firstAttribute;
@@ -105,7 +115,18 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
 
     @OnClick(R.id.fab)
     void createEvent() {
-        Toast.makeText(getActivity(), "TODO: Show Create Items screen", Toast.LENGTH_SHORT).show();
+        EventModel event = EventModel.builder()
+                .uid(UUID.randomUUID().toString())
+                .eventDate(new Date())
+                .enrollmentUid(getArguments().getString(ARG_ENROLLMENT_UID))
+                .program("IpHINAT79UW")
+                .programStage("PFDfvmGpsR3")
+                .organisationUnit("DiszpKrYNg8")
+                .state(State.TO_POST)
+                .status(EventStatus.ACTIVE)
+                .build();
+
+        briteDatabase.insert(EventModel.TABLE, event.toContentValues());
     }
 
 
