@@ -24,7 +24,7 @@ public class CreateItemsModule {
 
     @PerFragment
     @Provides
-    CreateItemsRepository creationFragment(BriteDatabase database) {
+    CreateItemsRepository creationRepository(BriteDatabase database) {
         if (argument.type() == Type.TEI) {
             return new TeiCreationRepositoryImpl(database);
         } else if (argument.type() == Type.ENROLLMENT) {

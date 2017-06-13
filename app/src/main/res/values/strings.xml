@@ -81,4 +81,5 @@
     <string name="undo">Undo</string>
     <string name="organisation">Organisation Unit</string>
     <string name="program">Program</string>
+    <string name="program_stage">Program Stage</string>
 </resources>
