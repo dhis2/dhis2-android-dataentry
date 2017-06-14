@@ -30,10 +30,11 @@ import static org.hisp.dhis.android.dataentry.commons.utils.CursorAssert.assertT
 @RunWith(AndroidJUnit4.class)
 public class SingleEventRepositoryIntegrationTests {
     private static final String CURRENT_DATE = "2016-04-06T00:05:57.495";
-    private static final String EVENT_PROJECTION[] = {
+    private static final String[] EVENT_PROJECTION = {
             EventModel.Columns.UID,
             EventModel.Columns.CREATED,
             EventModel.Columns.LAST_UPDATED,
+            EventModel.Columns.EVENT_DATE,
             EventModel.Columns.PROGRAM,
             EventModel.Columns.PROGRAM_STAGE,
             EventModel.Columns.ORGANISATION_UNIT,
@@ -85,8 +86,9 @@ public class SingleEventRepositoryIntegrationTests {
 
         assertThatCursor(databaseRule.database()
                 .query(EventModel.TABLE, EVENT_PROJECTION, null, null, null, null, null))
-                .hasRow("test_code", CURRENT_DATE, CURRENT_DATE, "program_uid", "ps_uid",
-                        "organisation_unit_uid", EventStatus.ACTIVE.name(), State.TO_POST.name())
+                .hasRow("test_code", CURRENT_DATE, CURRENT_DATE, CURRENT_DATE,
+                        "program_uid", "ps_uid", "organisation_unit_uid",
+                        EventStatus.ACTIVE.name(), State.TO_POST.name())
                 .isExhausted();
     }
 }

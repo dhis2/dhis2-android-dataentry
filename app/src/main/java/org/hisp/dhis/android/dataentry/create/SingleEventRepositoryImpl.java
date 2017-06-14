@@ -48,6 +48,7 @@ final class SingleEventRepositoryImpl implements CreateItemsRepository {
                         .uid(codeGenerator.generate())
                         .created(currentDateProvider.currentDate())
                         .lastUpdated(currentDateProvider.currentDate())
+                        .eventDate(currentDateProvider.currentDate())
                         .program(program)
                         .programStage(stage.val0())
                         .organisationUnit(organisationUnit)
