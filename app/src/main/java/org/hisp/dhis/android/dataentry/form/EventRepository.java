@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -108,6 +109,8 @@ class EventRepository implements FormRepository {
         return reportDate -> {
             ContentValues event = new ContentValues();
             event.put(EventModel.Columns.EVENT_DATE, reportDate);
+            event.put(EventModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            // TODO: and if so, keep the TO_POST state
             briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", uid);
         };
     }
@@ -118,6 +121,8 @@ class EventRepository implements FormRepository {
         return reportStatus -> {
             ContentValues event = new ContentValues();
             event.put(EventModel.Columns.STATUS, ReportStatus.toEventStatus(reportStatus).name());
+            event.put(EventModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            // TODO: and if so, keep the TO_POST state
             briteDatabase.update(EventModel.TABLE, event, EventModel.Columns.UID + " = ?", uid);
         };
     }
