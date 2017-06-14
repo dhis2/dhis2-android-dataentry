@@ -20,16 +20,20 @@ import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
 class DashboardRepositoryImpl implements DashboardRepository {
 
-    private static final String ATTRIBUTES_QUERY = "SELECT DISTINCT\n" +
+    private static final String ATTRIBUTES_QUERY = "SELECT\n" +
             "  TrackedEntityAttribute.displayName,\n" +
             "  TrackedEntityAttributeValue.value\n" +
-            "FROM TrackedEntityAttribute\n" +
-            "  LEFT JOIN Enrollment ON Enrollment.uid = ?\n" +
+            "FROM Enrollment\n" +
+            "  INNER JOIN ProgramTrackedEntityAttribute ON Enrollment.program = " +
+            " ProgramTrackedEntityAttribute.program\n" +
+            "  INNER JOIN TrackedEntityAttribute ON ProgramTrackedEntityAttribute.trackedEntityAttribute = " +
+            "TrackedEntityAttribute.uid\n" +
+            "                                       AND ProgramTrackedEntityAttribute.displayInList = 1\n" +
             "  LEFT JOIN TrackedEntityAttributeValue\n" +
-            "    ON Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance\n" +
-            "  AND TrackedEntityAttributeValue.trackedEntityAttribute = TrackedEntityAttribute.uid\n" +
-            "WHERE TrackedEntityAttribute.displayInListNoProgram = 1\n" +
-            "ORDER BY TrackedEntityAttribute.sortOrderInListNoProgram\n" +
+            "    ON TrackedEntityAttribute.uid = TrackedEntityAttributeValue.trackedEntityAttribute\n" +
+            "       AND Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance\n" +
+            "WHERE Enrollment.uid = ?\n" +
+            "ORDER BY ProgramTrackedEntityAttribute.sortOrder\n" +
             "LIMIT 2";
 
     private static final List<String> ATTRIBUTE_TABLES = Arrays.asList(
