@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dataentry.dashboard;
 
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite.BriteDatabase;
@@ -10,11 +11,15 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.dataentry.commons.utils.DateUtils;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.Flowable;
+import timber.log.Timber;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
@@ -63,8 +68,13 @@ class DashboardRepositoryImpl implements DashboardRepository {
     public Flowable<List<String>> attributes(@NonNull String enrollmentUid) {
         return toV2Flowable(briteDataBase
                 .createQuery(ATTRIBUTE_TABLES, ATTRIBUTES_QUERY, enrollmentUid)
-                .mapToList(cursor -> cursor.getString(0) + ": " + cursor.getString(1))
+                .mapToList(this::mapToAttributes)
                 .distinctUntilChanged());
+    }
+
+    private String mapToAttributes(Cursor cursor) {
+        String value = cursor.getString(1) == null ? "-" : cursor.getString(1);
+        return String.format(Locale.US, "%s: %s", cursor.getString(0), value);
     }
 
     @NonNull
@@ -73,7 +83,17 @@ class DashboardRepositoryImpl implements DashboardRepository {
         return toV2Flowable(briteDataBase
                 .createQuery(EVENT_TABLES, EVENTS_QUERY, enrollmentUid)
                 .mapToList(cursor -> EventViewModel
-                        .create(cursor.getString(0), cursor.getString(1), cursor.getString(2),
+                        .create(cursor.getString(0), cursor.getString(1), formatDate(cursor.getString(2)),
                                 EventStatus.valueOf(cursor.getString(3)))));
+    }
+
+    private String formatDate(String date) {
+        try {
+            return DateUtils.uiDateFormat().format(DateUtils.databaseDateFormat().parse(date));
+        } catch (ParseException e) {
+            Timber.e("DashboardRepository", "Unable to parse date. Expected format: " +
+                    DateUtils.databaseDateFormat() + ". Input: " + date, e);
+            return date;
+        }
     }
 }
