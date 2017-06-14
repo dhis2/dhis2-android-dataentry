@@ -64,7 +64,7 @@ final class SearchNavigator implements ReportsNavigator {
                 .uid(UUID.randomUUID().toString())
                 .trackedEntityInstance(tei.uid())
                 .organisationUnit("DiszpKrYNg8")
-                .program("IpHINAT79UW")
+                .program("ur1Edk5Oe2n")
                 .state(State.TO_POST)
                 .build();
 
