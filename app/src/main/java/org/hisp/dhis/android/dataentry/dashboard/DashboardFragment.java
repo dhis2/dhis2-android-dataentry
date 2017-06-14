@@ -1,7 +1,7 @@
 package org.hisp.dhis.android.dataentry.dashboard;
 
-
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,13 +14,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.squareup.sqlbrite.BriteDatabase;
+
+import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
 import org.hisp.dhis.android.dataentry.commons.ui.FontTextView;
+import org.hisp.dhis.android.dataentry.form.FormActivity;
+import org.hisp.dhis.android.dataentry.form.FormViewArguments;
 
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -36,6 +45,9 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
 
     @Inject
     DashboardPresenter dashboardPresenter;
+
+    @Inject // ToDo: remove
+            BriteDatabase briteDatabase;
 
     @BindView(R.id.first_attribute)
     FontTextView firstAttribute;
@@ -74,7 +86,11 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
     }
 
     private void setupRecyclerView() {
-        dashboardAdapter = new DashboardAdapter();
+        dashboardAdapter = new DashboardAdapter(eventViewModel -> {
+            Intent intent = FormActivity.create(getActivity(), FormViewArguments.createForEvent(eventViewModel.uid()));
+            startActivity(intent);
+        });
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);
@@ -103,7 +119,18 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
 
     @OnClick(R.id.fab)
     void createEvent() {
-        Toast.makeText(getActivity(), "TODO: Show Create Items screen", Toast.LENGTH_SHORT).show();
+        EventModel event = EventModel.builder()
+                .uid(UUID.randomUUID().toString())
+                .eventDate(new Date())
+                .enrollmentUid(getArguments().getString(ARG_ENROLLMENT_UID))
+                .program("ur1Edk5Oe2n")
+                .programStage("ZkbAXlQUYJG")
+                .organisationUnit("DiszpKrYNg8")
+                .state(State.TO_POST)
+                .status(EventStatus.ACTIVE)
+                .build();
+
+        briteDatabase.insert(EventModel.TABLE, event.toContentValues());
     }
 
 
