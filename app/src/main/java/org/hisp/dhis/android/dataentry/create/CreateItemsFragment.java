@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
@@ -26,23 +27,20 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.BindViews;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 public class CreateItemsFragment extends BaseFragment implements CreateItemsView {
 
     private static final String ARG_CREATE = "arg:create";
+    public static final int FIRST_CARDVIEW = 0;
+    public static final int SECOND_CARDVIEW = 1;
+    public static final int CREATE = 2;
 
+    @BindViews({R.id.text_picker1, R.id.text_picker2})
+    List<FontTextView> textViews;
 
-    @BindView(R.id.text_picker1)
-    FontTextView firstText;
-
-    @BindView(R.id.imagebutton_cancel1)
-    ImageButton firstCancel;
-
-    @BindView(R.id.text_picker2)
-    FontTextView secondText;
-
-    @BindView(R.id.imagebutton_cancel2)
-    ImageButton secondCancel;
+    @BindViews({R.id.imagebutton_cancel1, R.id.imagebutton_cancel2})
+    List<ImageButton> cancelButtons;
 
     @BindView(R.id.fab_create)
     FloatingActionButton create;
@@ -98,6 +96,50 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     }
 
     @Override
+    public void showDialog(int id) {
+        //TODO: show the dialog fragment on isClick.
+        Timber.d("Show dialog for " + id);
+    }
+
+    @Override
+    public void createItem() {
+        Timber.d("Create item clicked!");
+    }
+
+    @NonNull
+    @Override
+    public Observable<Object> cardViewClickEvent(int id) {
+        return RxView.clicks(textViews.get(id));
+    }
+
+    @NonNull
+    @Override
+    public Observable<Object> cardViewClearEvent(int id) {
+        return RxView.clicks(cancelButtons.get(id));
+    }
+
+    @NonNull
+    @Override
+    public Observable<Object> createButtonEvent() {
+        return RxView.clicks(create);
+    }
+
+    @Override
+    public void setCardViewText(int id, @NonNull String text) {
+        TextView t = textViews.get(id);
+        if (t != null) {
+            Timber.d("Set text of cardView " + id + " to " + text);
+            t.setText(text);
+        }
+    }
+
+    @Override
+    public void setCardViewsHintsEnrollment() {
+        textViews.get(FIRST_CARDVIEW).setHint(R.string.program);
+        textViews.get(SECOND_CARDVIEW).setHint(R.string.program_stage);
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         presenter.onDetach();
@@ -107,32 +149,5 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     public void onResume() {
         super.onResume();
         presenter.onAttach(this);
-    }
-
-    @NonNull
-    @Override
-    public Observable<CardViewActionModel> cardViewOneEvent() {
-        return cardViewEvent(firstText, firstCancel);
-    }
-
-    @NonNull
-    @Override
-    public Observable<CardViewActionModel> cardViewTwoEvent() {
-        return cardViewEvent(secondText, secondCancel);
-    }
-
-    @Override
-    public void setCardViewsHintsEnrollment() {
-        firstText.setHint(R.string.program);
-        secondText.setHint(R.string.program_stage);
-    }
-
-    private Observable<CardViewActionModel> cardViewEvent(@NonNull FontTextView text, @NonNull ImageButton cancel) {
-        return RxView.clicks(text)
-                .map(item -> CardViewActionModel.createClick())
-                .mergeWith(
-                        RxView.clicks(cancel)
-                                .map(clear -> CardViewActionModel.createClear())
-                );
     }
 }
