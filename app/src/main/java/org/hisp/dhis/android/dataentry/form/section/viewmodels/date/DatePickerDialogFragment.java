@@ -8,12 +8,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
+
+import static org.hisp.dhis.android.dataentry.commons.utils.DateUtils.databaseDateFormat;
 
 public class DatePickerDialogFragment extends DialogFragment {
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
+
     private static final String TAG = DatePickerDialogFragment.class.getSimpleName();
     private static final String ARG_ALLOW_DATES_IN_FUTURE = "arg:allowDatesInFuture";
 
@@ -39,7 +39,7 @@ public class DatePickerDialogFragment extends DialogFragment {
             Calendar chosenDate = Calendar.getInstance();
             chosenDate.set(year, month, dayOfMonth);
             if (onDateSetListener != null) {
-                onDateSetListener.onDateSet(dateFormat().format(chosenDate.getTime()));
+                onDateSetListener.onDateSet(databaseDateFormat().format(chosenDate.getTime()));
             }
         }, calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -50,11 +50,6 @@ public class DatePickerDialogFragment extends DialogFragment {
         }
 
         return datePickerDialog;
-    }
-
-    @NonNull
-    private static SimpleDateFormat dateFormat() {
-        return new SimpleDateFormat(DATE_FORMAT, Locale.US);
     }
 
     public void show(@NonNull FragmentManager fragmentManager) {
