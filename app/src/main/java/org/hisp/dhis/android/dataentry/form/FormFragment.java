@@ -150,6 +150,14 @@ public class FormFragment extends BaseFragment implements FormView {
         return eventStatus -> fab.setActivated(eventStatus == ReportStatus.COMPLETED);
     }
 
+    @NonNull
+    @Override
+    public Consumer<String> finishEnrollment() {
+        return enrollmentUid -> {
+            getActivity().finish();
+        };
+    }
+
     @Override
     public void renderStatusChangeSnackBar(@NonNull ReportStatus reportStatus) {
         String snackBarMessage;

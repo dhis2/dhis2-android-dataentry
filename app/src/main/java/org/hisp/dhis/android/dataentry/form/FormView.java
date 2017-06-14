@@ -29,5 +29,8 @@ interface FormView extends View {
     @NonNull
     Consumer<ReportStatus> renderStatus();
 
+    @NonNull
+    Consumer<String> finishEnrollment();
+
     void renderStatusChangeSnackBar(@NonNull ReportStatus eventStatus);
 }

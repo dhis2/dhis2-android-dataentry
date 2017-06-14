@@ -3,9 +3,14 @@ package org.hisp.dhis.android.dataentry.form;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.utils.DateUtils;
+
+import java.text.ParseException;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.flowables.ConnectableFlowable;
+import io.reactivex.functions.Function;
+import io.reactivex.observables.ConnectableObservable;
 import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
@@ -48,6 +53,18 @@ class FormPresenterImpl implements FormPresenter {
         compositeDisposable.add(formRepository.reportDate(reportUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
+                .map(new Function<String, String>() {
+                    @Override
+                    public String apply(@io.reactivex.annotations.NonNull String date) throws Exception {
+                        try {
+                            return DateUtils.uiDateFormat().format(DateUtils.databaseDateFormat().parse(date));
+                        } catch (ParseException e) {
+                            Timber.e("DashboardRepository", "Unable to parse date. Expected format: " +
+                                    DateUtils.databaseDateFormat() + ". Input: " + date, e);
+                            return date;
+                        }
+                    }
+                })
                 .subscribe(view.renderReportDate(), Timber::e));
 
         compositeDisposable.add(formRepository.sections(reportUid)
@@ -81,11 +98,28 @@ class FormPresenterImpl implements FormPresenter {
 
         compositeDisposable.add(statusObservable.connect());
 
-        compositeDisposable.add(view.eventStatusChanged()
+        ConnectableObservable<ReportStatus> statusChangeObservable = view.eventStatusChanged()
+                .distinctUntilChanged()
+                .publish();
+
+        compositeDisposable.add(statusChangeObservable
                 .filter(eventStatus -> formViewArguments.type() != FormViewArguments.Type.ENROLLMENT)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
-                .subscribe(formRepository.storeReportStatus(reportUid), Timber::e));
+                .subscribe(formRepository.storeReportStatus(reportUid), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+
+        compositeDisposable.add(statusChangeObservable
+                .filter(eventStatus -> formViewArguments.type() == FormViewArguments.Type.ENROLLMENT)
+                .map(reportStatus -> formViewArguments.uid())
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.io())
+                .subscribe(view.finishEnrollment(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+
+        compositeDisposable.add(statusChangeObservable.connect());
     }
 
     @Override
