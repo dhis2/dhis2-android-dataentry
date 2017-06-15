@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
@@ -136,7 +135,8 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
 
     @OnClick({R.id.appbar_layout, R.id.edit_profile_button})
     void showProfile() {
-        Toast.makeText(getActivity(), "TODO: Show Data Entry screen", Toast.LENGTH_SHORT).show();
+        startActivity(FormActivity.create(getActivity(), FormViewArguments
+                .createForEnrollment(getArguments().getString(ARG_ENROLLMENT_UID))));
     }
 
     @Override
