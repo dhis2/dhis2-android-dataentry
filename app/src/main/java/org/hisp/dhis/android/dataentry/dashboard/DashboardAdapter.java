@@ -41,5 +41,6 @@ class DashboardAdapter extends RecyclerView.Adapter<DashboardViewHolder> {
     void swap(@NonNull List<EventViewModel> events) {
         this.events.clear();
         this.events.addAll(events);
+        notifyDataSetChanged();
     }
 }

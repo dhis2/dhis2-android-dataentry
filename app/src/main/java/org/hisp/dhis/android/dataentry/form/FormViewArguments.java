@@ -31,5 +31,4 @@ public abstract class FormViewArguments implements Parcelable {
     enum Type {
         ENROLLMENT, EVENT
     }
-
 }

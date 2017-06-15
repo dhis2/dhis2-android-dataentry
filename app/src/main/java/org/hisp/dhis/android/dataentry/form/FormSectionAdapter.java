@@ -5,7 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import org.hisp.dhis.android.dataentry.commons.ui.DummyFragment;
+import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryArguments;
+import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,20 @@ class FormSectionAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return DummyFragment.newInstance(formSectionViewModelList.get(position).label());
+        FormSectionViewModel viewModel = formSectionViewModelList.get(position);
+
+        if (viewModel.type().equals(FormSectionViewModel.Type.ENROLLMENT)) {
+            return DataEntryFragment.create(DataEntryArguments
+                    .forEnrollment(viewModel.uid()));
+        } else if (viewModel.type().equals(FormSectionViewModel.Type.PROGRAM_STAGE)) {
+            return DataEntryFragment.create(DataEntryArguments
+                    .forEvent(viewModel.uid()));
+        } else if (viewModel.type().equals(FormSectionViewModel.Type.SECTION)) {
+            return DataEntryFragment.create(DataEntryArguments
+                    .forEventSection(viewModel.uid(), viewModel.sectionUid()));
+        } else {
+            throw new IllegalArgumentException("Unsupported page type");
+        }
     }
 
     @Override

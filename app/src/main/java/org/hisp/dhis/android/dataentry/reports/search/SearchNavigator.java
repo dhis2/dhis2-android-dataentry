@@ -9,6 +9,7 @@ import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.reports.ReportsActivity;
@@ -66,7 +67,10 @@ final class SearchNavigator implements ReportsNavigator {
                 .organisationUnit("DiszpKrYNg8")
                 .program("ur1Edk5Oe2n")
                 .state(State.TO_POST)
+                .enrollmentStatus(EnrollmentStatus.ACTIVE)
                 .build();
+
+        navigateTo(tei.uid());
 
         // insert dummy enrollment
         Timber.d("Insert enrollment=[%d]", briteDatabase.insert(EnrollmentModel.TABLE,
