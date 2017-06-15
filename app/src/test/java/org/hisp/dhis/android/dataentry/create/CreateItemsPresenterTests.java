@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class CreateItemsPresenterTests {
-
+/*
     public static final String ARG_NAME = "Name";
     public static final String ARG_UID = "arg_uid";
     public static final int FIRST_CARDVIEW = 0;
@@ -65,13 +65,13 @@ public class CreateItemsPresenterTests {
         viewCreatePublisher = PublishSubject.create();
 
         //Setup the view publishers:
-        when(view.cardViewClickEvent(FIRST_CARDVIEW)).thenReturn(viewClick1Publisher);
-        when(view.cardViewClickEvent(SECOND_CARDVIEW)).thenReturn(viewClick2Publisher);
+        when(view.selectionClickEvents(FIRST_CARDVIEW)).thenReturn(viewClick1Publisher);
+        when(view.selectionClickEvents(SECOND_CARDVIEW)).thenReturn(viewClick2Publisher);
 
-        when(view.cardViewClearEvent(FIRST_CARDVIEW)).thenReturn(viewClear1Publisher);
-        when(view.cardViewClearEvent(SECOND_CARDVIEW)).thenReturn(viewClear2Publisher);
+        when(view.selectionClearEvent(FIRST_CARDVIEW)).thenReturn(viewClear1Publisher);
+        when(view.selectionClearEvent(SECOND_CARDVIEW)).thenReturn(viewClear2Publisher);
 
-        when(view.createButtonEvent()).thenReturn(viewCreatePublisher);
+        when(view.createButtonClick()).thenReturn(viewCreatePublisher);
 
         presenter = new CreateItemsPresenterImpl(argument, repository, new MockSchedulersProvider());
     }
@@ -82,7 +82,7 @@ public class CreateItemsPresenterTests {
 
         presenter.onAttach(view);
 
-        verify(view, times(1)).setCardViewsHintsEnrollment();
+        verify(view, times(1)).setSelectionHintsEnrollment();
     }
 
     @Test
@@ -91,12 +91,12 @@ public class CreateItemsPresenterTests {
 
         viewClear1Publisher.onNext(new Object());
 
-        verify(view, times(1)).setCardViewText(eq(FIRST_CARDVIEW), eq(""));
-        verify(view, times(1)).setCardViewText(eq(SECOND_CARDVIEW), eq(""));
-        verify(view, never()).createItem();
-        verify(view, never()).setCardViewsHintsEnrollment();
+        verify(view, times(1)).setSelection(eq(FIRST_CARDVIEW), eq(""));
+        verify(view, times(1)).setSelection(eq(SECOND_CARDVIEW), eq(""));
+        verify(view, never()).navigateNext();
+        verify(view, never()).setSelectionHintsEnrollment();
         verify(view, never()).showDialog(anyInt());
-        verify(view, never()).createItem();
+        verify(view, never()).navigateNext();
     }
 
     @Test
@@ -105,11 +105,11 @@ public class CreateItemsPresenterTests {
 
         viewClear2Publisher.onNext(new Object());
 
-        verify(view, times(1)).setCardViewText(eq(SECOND_CARDVIEW), eq(""));
-        verify(view, never()).setCardViewText(eq(FIRST_CARDVIEW), anyString());
-        verify(view, never()).setCardViewsHintsEnrollment();
+        verify(view, times(1)).setSelection(eq(SECOND_CARDVIEW), eq(""));
+        verify(view, never()).setSelection(eq(FIRST_CARDVIEW), anyString());
+        verify(view, never()).setSelectionHintsEnrollment();
         verify(view, never()).showDialog(anyInt());
-        verify(view, never()).createItem();
+        verify(view, never()).navigateNext();
     }
 
     @Test
@@ -121,9 +121,9 @@ public class CreateItemsPresenterTests {
         verify(view, times(1)).showDialog(eq(FIRST_CARDVIEW));
         verify(view, times(1)).showDialog(eq(FIRST_CARDVIEW));
         verify(view, never()).showDialog(eq(SECOND_CARDVIEW));
-        verify(view, never()).setCardViewText(anyInt(), anyString());
-        verify(view, never()).setCardViewsHintsEnrollment();
-        verify(view, never()).createItem();
+        verify(view, never()).setSelection(anyInt(), anyString());
+        verify(view, never()).setSelectionHintsEnrollment();
+        verify(view, never()).navigateNext();
     }
 
     @Test
@@ -135,9 +135,9 @@ public class CreateItemsPresenterTests {
         verify(view, times(1)).showDialog(eq(SECOND_CARDVIEW));
         verify(view, times(1)).showDialog(eq(SECOND_CARDVIEW));
         verify(view, never()).showDialog(eq(FIRST_CARDVIEW));
-        verify(view, never()).setCardViewText(anyInt(), anyString());
-        verify(view, never()).setCardViewsHintsEnrollment();
-        verify(view, never()).createItem();
+        verify(view, never()).setSelection(anyInt(), anyString());
+        verify(view, never()).setSelectionHintsEnrollment();
+        verify(view, never()).navigateNext();
     }
 
     @Test
@@ -146,20 +146,11 @@ public class CreateItemsPresenterTests {
 
         viewCreatePublisher.onNext(new Object());
 
-        verify(view, times(1)).createItem();
+        verify(view, times(1)).navigateNext();
         verify(view, never()).showDialog(anyInt());
         verify(view, never()).showDialog(eq(FIRST_CARDVIEW));
-        verify(view, never()).setCardViewText(anyInt(), anyString());
-        verify(view, never()).setCardViewsHintsEnrollment();
-    }
-
-        /*  @Test
-      public void onAttach() {
-          presenter.onAttach(view);
-
-          viewClick1Publisher.onNext(new Object());
-  //        view.
-  //        assertThat(view.)
-      }*/
+        verify(view, never()).setSelection(anyInt(), anyString());
+        verify(view, never()).setSelectionHintsEnrollment();
+    }*/
 
 }

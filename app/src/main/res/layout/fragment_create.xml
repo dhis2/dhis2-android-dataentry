@@ -13,7 +13,7 @@
         app:cardElevation="3dp">
 
         <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
-            android:id="@+id/text_picker1"
+            android:id="@+id/text_selection1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -52,7 +52,7 @@
         >
 
         <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
-            android:id="@+id/text_picker2"
+            android:id="@+id/text_selection2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

@@ -22,6 +22,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.PublishSubject;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -87,7 +88,7 @@ public class SelectionPresenterTests {
         repositoryPublisher.onNext(values);
 
         assertThat(viewPublisher.hasObservers()).isTrue();
-        verify(view.update()).accept(viewCaptor.capture());
+        verify(view, times(1)).updateList(eq(values));
         verify(repository).list();
         assertThat(viewCaptor.getValue()).isEqualTo(values);
     }
@@ -95,8 +96,7 @@ public class SelectionPresenterTests {
     /* Updates from database will not be propagated to the view, by design.
     Since the complexity of writing an rx call that does that was quite high vs the benefits (how often does the data
      in the database change when the dialog is up ?)
-     */
-
+*/
     @Test
     public void searchViewUpdates() throws Exception {
         presenter.onAttach(view);
@@ -104,7 +104,7 @@ public class SelectionPresenterTests {
         repositoryPublisher.onNext(values);
 
         assertThat(viewPublisher.hasObservers()).isTrue();
-        verify(view.update()).accept(viewCaptor.capture());
+        verify(view, times(1)).updateList(eq(values));
         verify(repository).list();
         assertThat(viewCaptor.getValue()).isEqualTo(values);
 
@@ -113,7 +113,7 @@ public class SelectionPresenterTests {
         repositoryPublisher.onNext(values);
 
         assertThat(viewPublisher.hasObservers()).isTrue();
-        verify(view.update(), times(2)).accept(viewCaptor.capture());
+        verify(view, times(2)).updateList(eq(values));
         verify(repository, times(2)).list();
         assertThat(viewCaptor.getValue().size()).isEqualTo(1);
         assertThat(viewCaptor.getValue().get(0)).isEqualTo(SelectionViewModel.create(UID_3, NAME_3));

@@ -13,7 +13,7 @@ public abstract class SelectionViewModel implements Parcelable{
     public abstract String uid();
 
     @NonNull
-    public abstract String label();
+    public abstract String name();
 
     public static SelectionViewModel from(Cursor cursor, String uidColumn, String nameColumn) {
         String uid = cursor.getString(cursor.getColumnIndex(uidColumn));

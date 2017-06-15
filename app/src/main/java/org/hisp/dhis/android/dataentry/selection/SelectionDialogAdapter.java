@@ -11,6 +11,8 @@ import org.hisp.dhis.android.dataentry.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class SelectionDialogAdapter extends RecyclerView.Adapter<SelectionDialogAdapter.SelectionViewHolder> {
     private final List<SelectionViewModel> selectionList;
 
@@ -39,7 +41,7 @@ public class SelectionDialogAdapter extends RecyclerView.Adapter<SelectionDialog
     @Override
     public void onBindViewHolder(SelectionViewHolder holder, int position) {
         SelectionViewModel model = selectionList.get(position);
-        holder.textView.setText(model.label());
+        holder.textView.setText(model.name());
         holder.textView.setTag(model);
     }
 

@@ -134,7 +134,7 @@ public class OptionSetSelectionRepositoryIntegrationTests {
         List<SelectionViewModel> result = subscriber.values().get(1);
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).uid()).isEqualTo(OPTION_UID);
-        assertThat(result.get(0).label()).isEqualTo(OPTION_DISPLAY_NAME);
+        assertThat(result.get(0).name()).isEqualTo(OPTION_DISPLAY_NAME);
     }
 
     @Test

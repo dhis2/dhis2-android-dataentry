@@ -10,15 +10,17 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
 
-import static org.hisp.dhis.android.dataentry.create.CreateItemsFragment.FIRST_CARDVIEW;
-import static org.hisp.dhis.android.dataentry.create.CreateItemsFragment.SECOND_CARDVIEW;
-
 class CreateItemsPresenterImpl implements CreateItemsPresenter {
+    private final int SELECTIONS = 2; // number of CardViews in the view.
     private final int DEBOUNCE = 153;
+    public static final int FIRST_SELECTION = 0;
+    public static final int SECOND_SELECTION = 1;
     private final CreateItemsArgument argument;
     private final CreateItemsRepository repository;
     private final SchedulerProvider schedulerProvider;
     private final CompositeDisposable disposable;
+
+    private final String[] selectedUids;
 
     public CreateItemsPresenterImpl(@NonNull CreateItemsArgument argument,
                                     @NonNull CreateItemsRepository repository,
@@ -27,51 +29,60 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
         this.repository = repository;
         this.schedulerProvider = schedulerProvider;
         this.disposable = new CompositeDisposable();
+        this.selectedUids = new String[SELECTIONS];
     }
 
     @Override
     public void onAttach(@NonNull View view) {
         if (view instanceof CreateItemsView) {
             CreateItemsView createItemsView = (CreateItemsView) view;
-            if(argument.type() == CreateItemsArgument.Type.ENROLMENT_EVENT) {
-                createItemsView.setCardViewsHintsEnrollment();
-            }
-            disposable.add(createItemsView.cardViewClearEvent(FIRST_CARDVIEW)
+
+            disposable.add(createItemsView.selection1ClearEvent()
                     .debounce(DEBOUNCE, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(event -> {
-                        createItemsView.setCardViewText(FIRST_CARDVIEW, "");
-                        createItemsView.setCardViewText(SECOND_CARDVIEW, "");
+                        createItemsView.setSelection(FIRST_SELECTION, "", "");
+                        createItemsView.setSelection(SECOND_SELECTION, "", "");
                     }, err -> {
                                 throw new OnErrorNotImplementedException(err);
                     }));
-            disposable.add(createItemsView.cardViewClearEvent(SECOND_CARDVIEW)
+            disposable.add(createItemsView.selectionChanges(FIRST_SELECTION)
                     .debounce(DEBOUNCE, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(event -> createItemsView.setCardViewText(SECOND_CARDVIEW, ""), err -> {
+                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""), err -> {
                         throw new OnErrorNotImplementedException(err);
                     }));
-            disposable.add(createItemsView.cardViewClickEvent(FIRST_CARDVIEW)
+            disposable.add(createItemsView.selection2ClearEvent()
                     .debounce(DEBOUNCE, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(event -> createItemsView.showDialog(FIRST_CARDVIEW), err -> {
+                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""), err -> {
                         throw new OnErrorNotImplementedException(err);
                     }));
-            disposable.add(createItemsView.cardViewClickEvent(SECOND_CARDVIEW)
+            disposable.add(createItemsView.selection1ClickEvents()
                     .debounce(DEBOUNCE, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(event -> createItemsView.showDialog(SECOND_CARDVIEW), err -> {
+                    .subscribe(event ->
+                            createItemsView.showDialog1(), err -> {
                         throw new OnErrorNotImplementedException(err);
                     }));
-            disposable.add(createItemsView.createButtonEvent()
+            disposable.add(createItemsView.selection2ClickEvents()
+                    .debounce(DEBOUNCE, TimeUnit.MILLISECONDS, schedulerProvider.computation())
+                    .subscribeOn(schedulerProvider.ui())
+                    .observeOn(schedulerProvider.ui())
+                    .filter(event -> !createItemsView.getSelectionState(FIRST_SELECTION).uid().isEmpty())
+                    .subscribe(event ->
+                            createItemsView.showDialog2(), err -> {
+                        throw new OnErrorNotImplementedException(err);
+                    }));
+            disposable.add(createItemsView.createButtonClick()
                     .debounce(DEBOUNCE, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .observeOn(schedulerProvider.ui())
                     .subscribeOn(schedulerProvider.ui())
-                    .subscribe(event -> createItemsView.createItem(), err -> {
+                    .subscribe(event -> createItemsView.navigateNext(), err -> {
                         throw new OnErrorNotImplementedException(err);
                     }));
         }
