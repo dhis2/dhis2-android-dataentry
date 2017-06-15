@@ -28,8 +28,10 @@ public final class SelectionModule {
             return new OrganisationUnitRepositoryImpl(database);
         } else if (argument.type() == SelectionArgument.Type.PROGRAM) {
             return new ProgramRepositoryImpl(database, argument.uid());
-        } else { //if (argument.type() == SelectionArgument.Type.OPTION) {
-            return new OptionSetRepositoryImpl(database, argument.name());
+        } else if (argument.type() == SelectionArgument.Type.OPTION) {
+            return new OptionSetRepositoryImpl(database, argument.uid());
+        } else {
+            throw new IllegalStateException("Type does not correspond to a Repository implementation.");
         }
     }
 
