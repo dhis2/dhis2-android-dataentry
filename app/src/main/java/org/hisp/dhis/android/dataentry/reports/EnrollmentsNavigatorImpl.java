@@ -3,8 +3,7 @@ package org.hisp.dhis.android.dataentry.reports;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryActivity;
-import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryArguments;
+import org.hisp.dhis.android.dataentry.dashboard.DashboardActivity;
 
 import timber.log.Timber;
 
@@ -20,8 +19,8 @@ final class EnrollmentsNavigatorImpl implements ReportsNavigator {
     @Override
     public void navigateTo(@NonNull String enrollmentUid) {
         Timber.d("navigateTo(): %s", enrollmentUid);
-        currentActivity.startActivity(DataEntryActivity.create(currentActivity,
-                DataEntryArguments.forEnrollment(enrollmentUid)));
+        currentActivity.startActivity(DashboardActivity.create(currentActivity,
+                enrollmentUid));
     }
 
     @Override
