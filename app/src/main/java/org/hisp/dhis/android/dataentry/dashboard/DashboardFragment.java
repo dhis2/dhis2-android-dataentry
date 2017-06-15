@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +50,9 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
     @Inject // ToDo: remove
             BriteDatabase briteDatabase;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
     @BindView(R.id.first_attribute)
     FontTextView firstAttribute;
 
@@ -82,6 +87,18 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
         super.onViewCreated(view, savedInstanceState);
         bind(this, view);
         setupRecyclerView();
+        setupActionBar();
+    }
+
+    private void setupActionBar() {
+        AppCompatActivity activity = ((AppCompatActivity) getActivity());
+        if (activity != null) {
+            activity.setSupportActionBar(toolbar);
+            if (activity.getSupportActionBar() != null) {
+                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                activity.getSupportActionBar().setHomeButtonEnabled(true);
+            }
+        }
     }
 
     private void setupRecyclerView() {
