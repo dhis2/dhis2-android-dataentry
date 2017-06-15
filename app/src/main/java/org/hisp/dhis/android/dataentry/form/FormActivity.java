@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import org.hisp.dhis.android.dataentry.R;
 
@@ -15,7 +16,7 @@ public class FormActivity extends AppCompatActivity {
 
     @NonNull
     public static Intent create(@NonNull Activity activity,
-            @NonNull FormViewArguments formViewArguments) {
+                                @NonNull FormViewArguments formViewArguments) {
         isNull(activity, "activity must not be null");
         isNull(formViewArguments, "formViewArguments must not be null");
 
@@ -35,5 +36,15 @@ public class FormActivity extends AppCompatActivity {
                         getIntent().getParcelableExtra(ARGUMENTS)))
                 .commit();
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
