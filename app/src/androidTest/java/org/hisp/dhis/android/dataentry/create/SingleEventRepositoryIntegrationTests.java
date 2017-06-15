@@ -1,6 +1,7 @@
 package org.hisp.dhis.android.dataentry.create;
 
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -42,6 +43,10 @@ public class SingleEventRepositoryIntegrationTests {
             EventModel.Columns.STATE
     };
 
+    private static final String PROGRAM_UID = "program_uid";
+    private static final String ORGANISATION_UNIT_UID = "organisation_unit_uid";
+    private static final String PS_UID = "ps_uid";
+    private static final String TEST_CODE = "test_code";
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
@@ -53,21 +58,21 @@ public class SingleEventRepositoryIntegrationTests {
         SQLiteDatabase db = databaseRule.database();
 
         ContentValues orgUnit = new ContentValues();
-        orgUnit.put(OrganisationUnitModel.Columns.UID, "organisation_unit_uid");
+        orgUnit.put(OrganisationUnitModel.Columns.UID, ORGANISATION_UNIT_UID);
         db.insert(OrganisationUnitModel.TABLE, null, orgUnit);
 
         ContentValues program = new ContentValues();
-        program.put(ProgramModel.Columns.UID, "program_uid");
+        program.put(ProgramModel.Columns.UID, PROGRAM_UID);
         db.insert(ProgramModel.TABLE, null, program);
 
         ContentValues programStage = new ContentValues();
-        programStage.put(ProgramStageModel.Columns.UID, "ps_uid");
-        programStage.put(ProgramStageModel.Columns.PROGRAM, "program_uid");
+        programStage.put(ProgramStageModel.Columns.UID, PS_UID);
+        programStage.put(ProgramStageModel.Columns.PROGRAM, PROGRAM_UID);
         db.insert(ProgramStageModel.TABLE, null, programStage);
 
         Date currentDate = BaseIdentifiableObject.DATE_FORMAT.parse(CURRENT_DATE);
 
-        CodeGenerator codeGenerator = () -> "test_code";
+        CodeGenerator codeGenerator = () -> TEST_CODE;
         CurrentDateProvider currentDateProvider = () -> currentDate;
         createItemsRepository = new SingleEventRepositoryImpl(databaseRule.briteDatabase(),
                 codeGenerator, currentDateProvider);
@@ -76,19 +81,30 @@ public class SingleEventRepositoryIntegrationTests {
     @Test
     public void saveMustPersistEventWithCorrectProperties() {
         TestObserver<String> testObserver = createItemsRepository.save(
-                "organisation_unit_uid", "program_uid").test();
+                ORGANISATION_UNIT_UID, PROGRAM_UID).test();
 
         testObserver.assertNoErrors();
         testObserver.assertComplete();
         testObserver.assertValueCount(1);
 
-        assertThat(testObserver.values().get(0)).isEqualTo("test_code");
+        assertThat(testObserver.values().get(0)).isEqualTo(TEST_CODE);
 
         assertThatCursor(databaseRule.database()
                 .query(EventModel.TABLE, EVENT_PROJECTION, null, null, null, null, null))
-                .hasRow("test_code", CURRENT_DATE, CURRENT_DATE, CURRENT_DATE,
-                        "program_uid", "ps_uid", "organisation_unit_uid",
+                .hasRow(TEST_CODE, CURRENT_DATE, CURRENT_DATE, CURRENT_DATE,
+                        PROGRAM_UID, PS_UID, ORGANISATION_UNIT_UID,
                         EventStatus.ACTIVE.name(), State.TO_POST.name())
                 .isExhausted();
+    }
+
+
+    @Test
+    public void errorsMustBePropagatedToConsumer() {
+        TestObserver<String> testObserver = createItemsRepository.save(
+                "non_existing_organisation_unit", PROGRAM_UID).test();
+
+        assertThat(testObserver.errors().get(0))
+                .isInstanceOf(SQLiteConstraintException.class);
+        testObserver.assertValueCount(0);
     }
 }

@@ -1,6 +1,7 @@
 package org.hisp.dhis.android.dataentry.create;
 
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -37,6 +38,10 @@ public class TeiRepositoryIntegrationTests {
             TrackedEntityInstanceModel.Columns.STATE,
     };
 
+    private static final String TRACKED_ENTITY_UID = "tracked_entity_uid";
+    private static final String ORGANIZATION_UNIT_UID = "organization_unit_uid";
+    private static final String TEST_CODE = "test_code";
+
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
 
@@ -47,16 +52,16 @@ public class TeiRepositoryIntegrationTests {
         SQLiteDatabase db = databaseRule.database();
 
         ContentValues orgUnit = new ContentValues();
-        orgUnit.put(OrganisationUnitModel.Columns.UID, "organization_unit_uid");
+        orgUnit.put(OrganisationUnitModel.Columns.UID, ORGANIZATION_UNIT_UID);
         db.insert(OrganisationUnitModel.TABLE, null, orgUnit);
 
         ContentValues trackedEntity = new ContentValues();
-        trackedEntity.put(TrackedEntityModel.Columns.UID, "tracked_entity_uid");
+        trackedEntity.put(TrackedEntityModel.Columns.UID, TRACKED_ENTITY_UID);
         db.insert(TrackedEntityModel.TABLE, null, trackedEntity);
 
         Date currentDate = BaseIdentifiableObject.DATE_FORMAT.parse(CURRENT_DATE);
 
-        CodeGenerator codeGenerator = () -> "test_code";
+        CodeGenerator codeGenerator = () -> TEST_CODE;
         CurrentDateProvider currentDateProvider = () -> currentDate;
         createItemsRepository = new TeiRepositoryImpl(databaseRule.briteDatabase(),
                 codeGenerator, currentDateProvider);
@@ -65,18 +70,28 @@ public class TeiRepositoryIntegrationTests {
     @Test
     public void saveMustPersistTeiWithCorrectProperties() {
         TestObserver<String> testObserver = createItemsRepository.save(
-                "organization_unit_uid", "tracked_entity_uid").test();
+                ORGANIZATION_UNIT_UID, TRACKED_ENTITY_UID).test();
 
         testObserver.assertNoErrors();
         testObserver.assertComplete();
         testObserver.assertValueCount(1);
 
-        assertThat(testObserver.values().get(0)).isEqualTo("test_code");
+        assertThat(testObserver.values().get(0)).isEqualTo(TEST_CODE);
 
         assertThatCursor(databaseRule.database()
                 .query(TrackedEntityInstanceModel.TABLE, PROJECTION, null, null, null, null, null))
-                .hasRow("test_code", CURRENT_DATE, CURRENT_DATE, "organization_unit_uid",
-                        "tracked_entity_uid", State.TO_POST.name())
+                .hasRow(TEST_CODE, CURRENT_DATE, CURRENT_DATE, ORGANIZATION_UNIT_UID,
+                        TRACKED_ENTITY_UID, State.TO_POST.name())
                 .isExhausted();
+    }
+
+    @Test
+    public void errorsMustBePropagatedToConsumer() {
+        TestObserver<String> testObserver = createItemsRepository.save(
+                "non_existing_organisation_unit", TRACKED_ENTITY_UID).test();
+
+        assertThat(testObserver.errors().get(0))
+                .isInstanceOf(SQLiteConstraintException.class);
+        testObserver.assertValueCount(0);
     }
 }

@@ -1,6 +1,7 @@
 package org.hisp.dhis.android.dataentry.create;
 
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -118,5 +119,15 @@ public class EnrollmentEventRepositoryIntegrationTests {
                         ENROLLMENT_UID, PROGRAM_UID, PS_UID, ORGANISATION_UNIT_UID,
                         EventStatus.ACTIVE.name(), State.TO_POST.name())
                 .isExhausted();
+    }
+
+    @Test
+    public void errorsMustBePropagatedToConsumer() {
+        TestObserver<String> testObserver = createItemsRepository.save(
+                "non_existing_organisation_unit", PS_UID).test();
+
+        assertThat(testObserver.errors().get(0))
+                .isInstanceOf(SQLiteConstraintException.class);
+        testObserver.assertValueCount(0);
     }
 }
