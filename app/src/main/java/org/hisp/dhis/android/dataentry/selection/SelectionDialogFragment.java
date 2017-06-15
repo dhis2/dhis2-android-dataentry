@@ -29,6 +29,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.functions.Consumer;
+import timber.log.Timber;
 
 /**
  * A recommended way for use:
@@ -80,9 +81,8 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
         return dialogFragment;
     }
 
-    @Override
-    public Consumer<List<SelectionViewModel>> update() {
-        return selectionList -> ((SelectionDialogAdapter) selectionListView.getAdapter()).update(selectionList);
+    public void updateList(List<SelectionViewModel> selectionList) {
+        ((SelectionDialogAdapter) selectionListView.getAdapter()).update(selectionList);
     }
 
     @Nullable

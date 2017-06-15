@@ -48,13 +48,14 @@ public final class SelectionPresenterImpl implements SelectionPresenter {
                     .observeOn(schedulerProvider.io())
                     .switchMap(query -> repository.list()
                             .take(1)
-                            .flatMap(list -> Flowable.fromIterable(list))
-                            .filter(item -> item.label().contains(query.queryText().toString()))
+                            .flatMap(Flowable::fromIterable)
+                            .filter(item -> item.name().contains(query.queryText().toString()))
                             .toList()
                             .toFlowable()
                     )
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(selectionView.update(), throwable -> {
+                    .subscribe(selectionView::updateList,
+                            throwable -> {
                                 throw new OnErrorNotImplementedException(throwable);
                             }
                     )

@@ -24,9 +24,9 @@ public final class SelectionModule {
     @PerFragment
     @Provides
     SelectionRepository selectionRepository(BriteDatabase database) {
-        if (argument.type() == SelectionArgument.Type.ORGANISATION) {
+        if (argument.type().equals(SelectionArgument.Type.ORGANISATION)) {
             return new OrganisationUnitRepositoryImpl(database);
-        } else if (argument.type() == SelectionArgument.Type.PROGRAM) {
+        } else if (argument.type().equals(SelectionArgument.Type.PROGRAM)) {
             return new ProgramRepositoryImpl(database, argument.uid());
         } else if (argument.type() == SelectionArgument.Type.OPTION) {
             return new OptionSetRepositoryImpl(database, argument.uid());
