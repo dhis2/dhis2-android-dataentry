@@ -28,8 +28,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import io.reactivex.functions.Consumer;
-import timber.log.Timber;
 
 /**
  * A recommended way for use:
@@ -153,7 +151,6 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
      */
     @Override
     public void onClick(View view) {
-        if(view instanceof SelectionView){
             SelectionViewModel model = (SelectionViewModel) view.getTag();
             if (model != null) {
                 Intent result = new Intent();
@@ -162,5 +159,4 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
                 this.dismiss();
             }
         }
-    }
 }
