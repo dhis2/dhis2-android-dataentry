@@ -38,6 +38,7 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
         if (view instanceof CreateItemsView) {
             CreateItemsView createItemsView = (CreateItemsView) view;
 
+
             disposable.add(createItemsView.selection1ClearEvent()
                     .debounce(DEBOUNCE, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
@@ -76,8 +77,17 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                     .observeOn(schedulerProvider.ui())
                     //TODO: test for this in the tests:
                     .filter(event -> !createItemsView.getSelectionState(FIRST_SELECTION).uid().isEmpty())
-                    .subscribe(event -> createItemsView.showDialog2(
-                            createItemsView.getSelectionState(FIRST_SELECTION).uid()),
+                    .subscribe(event -> {
+                                if (argument.type() == CreateItemsArgument.Type.EVENT ||
+                                        argument.type() == CreateItemsArgument.Type.ENROLMENT_EVENT) {
+                                    createItemsView.showDialog2(argument.uid());
+                                } else if (argument.type() == CreateItemsArgument.Type.TEI ||
+                                        argument.type() == CreateItemsArgument.Type.ENROLLMENT) {
+                                    createItemsView.showDialog2(
+                                            createItemsView.getSelectionState(FIRST_SELECTION).uid());
+
+                                }
+                            },
                             err -> {
                                 throw new OnErrorNotImplementedException(err);
                             }));
