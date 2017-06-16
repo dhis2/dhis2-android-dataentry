@@ -85,7 +85,6 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                                         argument.type() == CreateItemsArgument.Type.ENROLLMENT) {
                                     createItemsView.showDialog2(
                                             createItemsView.getSelectionState(FIRST_SELECTION).uid());
-
                                 }
                             },
                             err -> {

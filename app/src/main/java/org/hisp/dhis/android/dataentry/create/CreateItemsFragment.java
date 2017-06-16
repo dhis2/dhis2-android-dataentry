@@ -65,6 +65,9 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     @Inject
     CreateItemsPresenter presenter;
 
+    @Inject
+    CreateItemsNavigator navigator;
+
     SelectionStateModel state1;
     SelectionStateModel state2;
 
@@ -85,7 +88,8 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
         isNull(getArguments().<CreateItemsArgument>getParcelable(ARG_CREATE), "CreteArgument must be supplied");
 
         ((DhisApp) context.getApplicationContext()).userComponent()
-                .plus(new CreateItemsModule(getArguments().getParcelable(ARG_CREATE)))
+                .plus(new CreateItemsModule(getArguments().getParcelable(ARG_CREATE),
+                        (CreateItemsActivity) getActivity()))
                 .inject(this);
     }
 

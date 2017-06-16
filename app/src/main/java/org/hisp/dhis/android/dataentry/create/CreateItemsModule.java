@@ -20,10 +20,16 @@ public class CreateItemsModule {
     @NonNull
     private final CreateItemsArgument argument;
 
-    CreateItemsModule(@NonNull CreateItemsArgument argument) {
+    @NonNull
+    private final CreateItemsActivity activity;
+
+    CreateItemsModule(@NonNull CreateItemsArgument argument, @NonNull CreateItemsActivity activity) {
         this.argument = argument;
+        this.activity = activity;
     }
 
+    @PerFragment
+    @Provides
     CreateItemsRepository createItemsRepository(@NonNull BriteDatabase database,
                                                 @NonNull CodeGenerator codeGenerator,
                                                 @NonNull CurrentDateProvider currentDateProvider) {
@@ -46,5 +52,21 @@ public class CreateItemsModule {
     @Provides
     CreateItemsPresenter createItemsPresenter(CreateItemsRepository repository, SchedulerProvider schedulerProvider) {
         return new CreateItemsPresenterImpl(argument, repository, schedulerProvider);
+    }
+
+    @PerFragment
+    @Provides
+    CreateItemsNavigator crateItemsNavigator() {
+        if (argument.type() == Type.TEI) {
+            return new TeiNavigator(activity, "");
+        } else if (argument.type() == Type.ENROLLMENT) {
+            return new EnrollmentsNavigator(activity);
+        } else if (argument.type() == Type.ENROLMENT_EVENT) {
+            return new EnrollmentsNavigator(activity);
+        } else if (argument.type() == Type.EVENT) {
+            return new SingleEventsNavigator(activity);
+        } else {
+            throw new IllegalArgumentException("Unsupported type: " + argument.type());
+        }
     }
 }
