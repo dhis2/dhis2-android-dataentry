@@ -29,31 +29,31 @@ import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
         "PMD.AvoidDuplicateLiterals"
 })
 final class ProgramStageRepository implements DataEntryRepository {
-    private static final String QUERY = "SELECT\n" +
-            "  Field.id,\n" +
-            "  Field.label,\n" +
-            "  Field.type,\n" +
-            "  Field.mandatory,\n" +
-            "  Field.optionSet,\n" +
-            "  Value.value\n" +
-            "FROM Event\n" +
-            "  LEFT OUTER JOIN (\n" +
-            "      SELECT\n" +
-            "        DataElement.displayName AS label,\n" +
-            "        DataElement.valueType AS type,\n" +
-            "        DataElement.uid AS id,\n" +
-            "        DataElement.optionSet AS optionSet,\n" +
-            "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
-            "        ProgramStageDataElement.programStage AS stage,\n" +
-            "        ProgramStageDataElement.compulsory AS mandatory,\n" +
-            "        ProgramStageDataElement.programStageSection AS section\n" +
-            "      FROM ProgramStageDataElement\n" +
-            "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
-            "    ) AS Field ON (Field.stage = Event.programStage)\n" +
-            "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
-            "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
-            "  )\n" +
-            " %s \n" +
+    private static final String QUERY = "SELECT " +
+            "  Field.id, " +
+            "  Field.label, " +
+            "  Field.type, " +
+            "  Field.mandatory, " +
+            "  Field.optionSet, " +
+            "  Value.value " +
+            "FROM Event " +
+            "  LEFT OUTER JOIN ( " +
+            "      SELECT " +
+            "        DataElement.displayName AS label, " +
+            "        DataElement.valueType AS type, " +
+            "        DataElement.uid AS id, " +
+            "        DataElement.optionSet AS optionSet, " +
+            "        ProgramStageDataElement.sortOrder AS formOrder, " +
+            "        ProgramStageDataElement.programStage AS stage, " +
+            "        ProgramStageDataElement.compulsory AS mandatory, " +
+            "        ProgramStageDataElement.programStageSection AS section " +
+            "      FROM ProgramStageDataElement " +
+            "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement " +
+            "    ) AS Field ON (Field.stage = Event.programStage) " +
+            "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON ( " +
+            "    Value.event = Event.uid AND Value.dataElement = Field.id " +
+            "  ) " +
+            " %s  " +
             "ORDER BY Field.formOrder ASC;";
 
     @NonNull
