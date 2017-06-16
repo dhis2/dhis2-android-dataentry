@@ -1,9 +1,11 @@
 package org.hisp.dhis.android.dataentry.create;
 
+import android.support.annotation.NonNull;
+
 import io.reactivex.Observable;
 
 interface CreateItemsRepository {
 
-    Observable<String> save(String entityOne, String entityTwo);
-
+    @NonNull
+    Observable<String> save(@NonNull String entityOne, @NonNull String entityTwo);
 }
