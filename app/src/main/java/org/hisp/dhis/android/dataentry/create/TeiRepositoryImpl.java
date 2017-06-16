@@ -36,7 +36,7 @@ class TeiRepositoryImpl implements CreateItemsRepository {
 
     @NonNull
     @Override
-    public Observable<String> save(@NonNull String orgUnit, @NonNull String trackedEntity) {
+    public Observable<String> save(@NonNull String orgUnit, @NonNull String programUid) {
         return Observable.defer(() -> {
             TrackedEntityInstanceModel trackedEntityInstanceModel =
                     TrackedEntityInstanceModel.builder()
@@ -44,13 +44,13 @@ class TeiRepositoryImpl implements CreateItemsRepository {
                             .created(currentDateProvider.currentDate())
                             .lastUpdated(currentDateProvider.currentDate())
                             .organisationUnit(orgUnit)
-                            .trackedEntity(trackedEntity)
+                            .trackedEntity(programUid)
                             .state(State.TO_POST)
                             .build();
             if (briteDatabase.insert(TrackedEntityInstanceModel.TABLE,
                     trackedEntityInstanceModel.toContentValues()) < 0) {
                 String message = String.format(Locale.US, "Failed to insert new tracked entity " +
-                        "instance for organisationUnit=[%s] and trackedEntity=[%s]", orgUnit, trackedEntity);
+                        "instance for organisationUnit=[%s] and trackedEntity=[%s]", orgUnit, programUid);
                 return Observable.error(new SQLiteConstraintException(message));
             }
 

@@ -48,6 +48,6 @@ public interface CreateItemsView extends View {
     Observable<Pair<String, String>> createButtonClick();
 
     @UiThread
-    void navigateNext();
+    void navigateNext(@NonNull String uid);
 
 }

@@ -172,8 +172,9 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     }
 
     @Override
-    public void navigateNext() {
-        Timber.d("Create item clicked!");
+    public void navigateNext(@NonNull String uid) {
+        Timber.d("Navigating to next: " + uid);
+        navigator.navigateTo(uid);
     }
 
     @NonNull

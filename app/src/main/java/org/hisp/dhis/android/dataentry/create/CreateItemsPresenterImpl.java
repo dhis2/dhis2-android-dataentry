@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
+import timber.log.Timber;
 
 class CreateItemsPresenterImpl implements CreateItemsPresenter {
     private final int SELECTIONS = 2; // number of CardViews in the view.
@@ -67,8 +68,7 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                     .debounce(DEBOUNCE, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(event ->
-                            createItemsView.showDialog1(argument.uid()), err -> {
+                    .subscribe(event -> createItemsView.showDialog1(argument.uid()), err -> {
                         throw new OnErrorNotImplementedException(err);
                     }));
             disposable.add(createItemsView.selection2ClickEvents()
@@ -92,11 +92,26 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                             }));
             disposable.add(createItemsView.createButtonClick()
                     .debounce(DEBOUNCE, TimeUnit.MILLISECONDS, schedulerProvider.computation())
-                    .observeOn(schedulerProvider.ui())
                     .subscribeOn(schedulerProvider.ui())
                     //TODO: test for this in the tests:
                     .filter(event -> (!event.val0().isEmpty()) && (!event.val1().isEmpty()))
-                    .subscribe(event -> createItemsView.navigateNext(), err -> {
+                    .observeOn(schedulerProvider.io())
+                    .switchMap(event -> {
+                        Timber.d("Event = " + event.toString());
+                      /*  if (argument.type() == CreateItemsArgument.Type.EVENT ||
+                                argument.type() == CreateItemsArgument.Type.ENROLMENT_EVENT) {
+                            return repository.save(event.val0(), event.val1());
+                        }  else if (argument.type() == CreateItemsArgument.Type.TEI ||
+                                argument.type() == CreateItemsArgument.Type.ENROLLMENT) {
+                        }*/
+                        return repository.save(event.val0(), event.val1());
+                            }
+                    )
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(uid -> {
+                        Timber.d("Uid = " + uid);
+                        createItemsView.navigateNext(uid);
+                    }, err -> {
                         throw new OnErrorNotImplementedException(err);
                     }));
         }
@@ -104,7 +119,6 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
 
     @Override
     public void onDetach() {
-        //TODO: save state?
         disposable.clear();
     }
 }

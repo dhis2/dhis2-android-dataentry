@@ -39,7 +39,7 @@ public class CreateItemsModule {
             return new EnrollmentRepositoryImpl(database, codeGenerator,
                     currentDateProvider, argument.uid());
         } else if (argument.type() == Type.ENROLMENT_EVENT) {
-            return new EnrollmentRepositoryImpl(database, codeGenerator,
+            return new EnrollmentEventRepositoryImpl(database, codeGenerator,
                     currentDateProvider, argument.uid()); //TODO: add argument as argument ? type?
         } else if (argument.type() == Type.EVENT) {
             return new SingleEventRepositoryImpl(database, codeGenerator, currentDateProvider);
