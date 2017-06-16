@@ -58,7 +58,7 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
                 .filter(value -> !Preconditions.equals(
                         model.getValue().value(), value))
                 .map(value -> RowAction.create(model.getValue().uid(), value.toString()))
-                .subscribe(processor::onNext, throwable -> {
+                .subscribe(t -> processor.onNext(t), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 });
     }
