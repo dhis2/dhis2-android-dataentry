@@ -35,7 +35,7 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
     @SuppressWarnings("CheckReturnValue")
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
     CheckBoxViewHolder(@NonNull ViewGroup parent, @NonNull View itemView,
-            @NonNull FlowableProcessor<RowAction> processor) {
+                       @NonNull FlowableProcessor<RowAction> processor) {
         super(itemView);
 
         model = BehaviorProcessor.create();
@@ -46,6 +46,10 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
         });
 
         ButterKnife.bind(this, itemView);
+
+        RxView.clicks(itemView)
+                .subscribe(o -> checkBox.setChecked(!checkBox.isChecked()));
+
         RxCompoundButton.checkedChanges(checkBox)
                 .takeUntil(RxView.detaches(parent))
                 .map(isChecked -> isChecked ? CheckBoxViewModel.Value.CHECKED :
@@ -54,7 +58,7 @@ final class CheckBoxViewHolder extends RecyclerView.ViewHolder {
                 .filter(value -> !Preconditions.equals(
                         model.getValue().value(), value))
                 .map(value -> RowAction.create(model.getValue().uid(), value.toString()))
-                .subscribe(action -> processor.onNext(action), throwable -> {
+                .subscribe(processor::onNext, throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 });
     }
