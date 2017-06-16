@@ -34,6 +34,7 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
 
     @Override
     public void onAttach(@NonNull View view) {
+        //TODO: resume state?
         if (view instanceof CreateItemsView) {
             CreateItemsView createItemsView = (CreateItemsView) view;
 
@@ -66,22 +67,26 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(event ->
-                            createItemsView.showDialog1(), err -> {
+                            createItemsView.showDialog1(argument.uid()), err -> {
                         throw new OnErrorNotImplementedException(err);
                     }));
             disposable.add(createItemsView.selection2ClickEvents()
                     .debounce(DEBOUNCE, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
+                    //TODO: test for this in the tests:
                     .filter(event -> !createItemsView.getSelectionState(FIRST_SELECTION).uid().isEmpty())
-                    .subscribe(event ->
-                            createItemsView.showDialog2(), err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
+                    .subscribe(event -> createItemsView.showDialog2(
+                            createItemsView.getSelectionState(FIRST_SELECTION).uid()),
+                            err -> {
+                                throw new OnErrorNotImplementedException(err);
+                            }));
             disposable.add(createItemsView.createButtonClick()
                     .debounce(DEBOUNCE, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .observeOn(schedulerProvider.ui())
                     .subscribeOn(schedulerProvider.ui())
+                    //TODO: test for this in the tests:
+                    .filter(event -> (!event.val0().isEmpty()) && (!event.val1().isEmpty()))
                     .subscribe(event -> createItemsView.navigateNext(), err -> {
                         throw new OnErrorNotImplementedException(err);
                     }));
@@ -90,6 +95,7 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
 
     @Override
     public void onDetach() {
+        //TODO: save state?
         disposable.clear();
     }
 }

@@ -41,6 +41,7 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     public static final int FIRST_SELECTION = 0;
     public static final int SECOND_SELECTION = 1;
     private static final int[] REQUEST_CODES = {FIRST_SELECTION, SECOND_SELECTION}; //request codes for the
+    public static final String TAG_SELECTION_DIALOG_FRAGMENT = "tag:selectionDialogFragment";
     // DialogFragment. index should match the card view index.
 
     @BindView(R.id.text_selection1)
@@ -172,18 +173,6 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
 
     @NonNull
     @Override
-    public Observable<Object> selection1ClickEvents() {
-        return RxView.clicks(selectionTextView1);
-    }
-
-    @NonNull
-    @Override
-    public Observable<Object> selection2ClickEvents() {
-        return RxView.clicks(selectionTextView2);
-    }
-
-    @NonNull
-    @Override
     public Observable<SelectionStateModel> selectionChanges(int id) {
         if (id == FIRST_SELECTION) {
             return RxTextView.afterTextChangeEvents(selectionTextView1).map(event -> selectionState1);
@@ -206,6 +195,66 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
         }
     }
 
+    @Override
+    public void setSelection(int id, @NonNull String uid, @NonNull String name) {
+        if (id == FIRST_SELECTION) {
+            Timber.d("Set text of cardView " + id + " to " + name);
+            selectionTextView1.setText(name);
+            selectionState1 = SelectionStateModel.createModifiedSelection(uid, name, selectionState1);
+            Timber.d("State : " + selectionState1.toString());
+        } else {
+            Timber.d("Set text of cardView " + id + " to " + name);
+            selectionTextView2.setText(name);
+            selectionState2 = SelectionStateModel.createModifiedSelection(uid, name, selectionState2);
+            Timber.d("State : " + selectionState2.toString());
+        }
+    }
+
+    private void showDialog(int id, @NonNull String parentUid) {//, @NonNull String uid, @NonNull String name) {
+
+        //TODO: remove this :
+        Timber.d("Show dialog for " + id);
+        SelectionStateModel model;
+        if (id == FIRST_SELECTION) {
+            model = selectionState1;
+        } else if (id == SECOND_SELECTION) {
+            model = selectionState2;
+        } else {
+            throw new IllegalStateException("Called with non existing id.");
+        }
+        SelectionArgument arg = SelectionArgument.create(parentUid, getString(model.labelId()), model.type());
+        SelectionDialogFragment dialog = SelectionDialogFragment.create(arg);
+        dialog.setTargetFragment(this, REQUEST_CODES[id]);
+        dialog.show(getFragmentManager(), TAG_SELECTION_DIALOG_FRAGMENT);
+/*        SelectionArgument arg = SelectionArgument.create("DiszpKrYNg8", "Program_test", SelectionArgument.Type
+.PROGRAM);
+        SelectionDialogFragment dialog = SelectionDialogFragment.create(arg);
+        dialog.setTargetFragment(this, REQUEST_CODES[id]);
+        dialog.show(getFragmentManager(), TAG_SELECTION_DIALOG_FRAGMENT);*/
+    }
+
+    @Override
+    public void showDialog1(@NonNull String parentUid) {
+        this.showDialog(FIRST_SELECTION, parentUid);
+    }
+
+    @Override
+    public void showDialog2(@NonNull String parentUid) {
+        this.showDialog(SECOND_SELECTION, parentUid);
+    }
+
+    @NonNull
+    @Override
+    public Observable<Object> selection1ClickEvents() {
+        return RxView.clicks(selectionTextView1);
+    }
+
+    @NonNull
+    @Override
+    public Observable<Object> selection2ClickEvents() {
+        return RxView.clicks(selectionTextView2);
+    }
+
     @NonNull
     @Override
     public Observable<Object> selection1ClearEvent() {
@@ -222,43 +271,6 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     @Override
     public Observable<Pair<String, String>> createButtonClick() {
         return RxView.clicks(create).map(event -> Pair.create(selectionState1.uid(), selectionState2.uid()));
-    }
-
-    @Override
-    public void setSelection(int id, @NonNull String uid, @NonNull String name) {
-        if (id == FIRST_SELECTION) {
-            Timber.d("Set text of cardView " + id + " to " + name);
-            selectionTextView1.setText(name);
-            selectionState1 = SelectionStateModel.createModifiedSelection(uid, name, selectionState1);
-            Timber.d("State : " + selectionState1.toString());
-        } else {
-            Timber.d("Set text of cardView " + id + " to " + name);
-            selectionTextView2.setText(name);
-            selectionState2 = SelectionStateModel.createModifiedSelection(uid, name, selectionState2);
-            Timber.d("State : " + selectionState2.toString());
-        }
-    }
-
-    @Override
-    public void showDialog1() {
-        this.showDialog(FIRST_SELECTION);
-    }
-
-    @Override
-    public void showDialog2() {
-        this.showDialog(SECOND_SELECTION);
-    }
-
-    private void showDialog(int id) {//, @NonNull String uid, @NonNull String name) {
-        Timber.d("Show dialog for " + id);
-        SelectionArgument selectionArgument;
-        SelectionArgument.Type type = argument.selectorTypes().get(id);
-
-   /*     SelectionArgument arg = SelectionArgument.create("eUZ79clX7y1", "Diagnosis ICD10",
-                SelectionArgument.Type.OPTION);
-        SelectionDialogFragment dialog = SelectionDialogFragment.create(arg);
-        dialog.setTargetFragment(this, REQUEST_CODES[id]);
-        dialog.show(getFragmentManager(), "selectionDialogFragment");*/
     }
 
     @Override

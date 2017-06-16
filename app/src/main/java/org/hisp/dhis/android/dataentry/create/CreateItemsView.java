@@ -39,10 +39,10 @@ public interface CreateItemsView extends View {
     void setSelection(int id, @NonNull String uid, @NonNull String name);
 
     @UiThread
-    void showDialog1();
+    void showDialog1(@NonNull String parentUid);
 
     @UiThread
-    void showDialog2();
+    void showDialog2(@NonNull String parentUid);
 
     @NonNull
     @UiThread
