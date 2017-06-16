@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import timber.log.Timber;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
@@ -21,11 +22,11 @@ public class ProgramRepositoryImpl implements SelectionRepository {
     //Using a List of table names instead of a single one, such that the Brite database knows to update us on change
     // of either.
     private static final List<String> TABLES = Collections.unmodifiableList(
-            Arrays.asList(ProgramModel.TABLE, OrganisationUnitProgramLinkModel.ORGANISATION_UNIT_PROGRAM_LINK,
+            Arrays.asList(ProgramModel.TABLE, OrganisationUnitProgramLinkModel.TABLE,
                     OrganisationUnitModel.TABLE));
 
     private static final String STATEMENT = "SELECT DISTINCT " + Columns.UID + ", " + Columns.DISPLAY_NAME + " FROM " +
-            OrganisationUnitProgramLinkModel.ORGANISATION_UNIT_PROGRAM_LINK +
+            OrganisationUnitProgramLinkModel.TABLE +
             " INNER JOIN " +
             ProgramModel.TABLE +
             " WHERE " + OrganisationUnitProgramLinkModel.Columns.ORGANISATION_UNIT + " =?;";
