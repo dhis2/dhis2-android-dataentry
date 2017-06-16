@@ -91,8 +91,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
         try {
             return DateUtils.uiDateFormat().format(DateUtils.databaseDateFormat().parse(date));
         } catch (ParseException e) {
-            Timber.e("DashboardRepository", "Unable to parse date. Expected format: " +
-                    DateUtils.databaseDateFormat() + ". Input: " + date, e);
+            Timber.e(e, "DashboardRepository - Unable to parse date. Expected format: " +
+                    DateUtils.databaseDateFormat().toPattern() + ". Input: " + date);
             return date;
         }
     }

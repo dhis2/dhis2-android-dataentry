@@ -9,7 +9,6 @@ import java.text.ParseException;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.flowables.ConnectableFlowable;
-import io.reactivex.functions.Function;
 import io.reactivex.observables.ConnectableObservable;
 import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
@@ -53,16 +52,13 @@ class FormPresenterImpl implements FormPresenter {
         compositeDisposable.add(formRepository.reportDate(reportUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
-                .map(new Function<String, String>() {
-                    @Override
-                    public String apply(@io.reactivex.annotations.NonNull String date) throws Exception {
-                        try {
-                            return DateUtils.uiDateFormat().format(DateUtils.databaseDateFormat().parse(date));
-                        } catch (ParseException e) {
-                            Timber.e("DashboardRepository", "Unable to parse date. Expected format: " +
-                                    DateUtils.databaseDateFormat() + ". Input: " + date, e);
-                            return date;
-                        }
+                .map(date -> {
+                    try {
+                        return DateUtils.uiDateFormat().format(DateUtils.databaseDateFormat().parse(date));
+                    } catch (ParseException e) {
+                        Timber.e(e, "DashboardRepository: Unable to parse date. Expected format: " +
+                                DateUtils.databaseDateFormat().toPattern() + ". Input: " + date);
+                        return date;
                     }
                 })
                 .subscribe(view.renderReportDate(), Timber::e));
