@@ -9,6 +9,7 @@ import org.hisp.dhis.android.dataentry.form.FormComponent;
 import org.hisp.dhis.android.dataentry.form.FormModule;
 import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryComponent;
 import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryModule;
+import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryStoreModule;
 import org.hisp.dhis.android.dataentry.main.MainComponent;
 import org.hisp.dhis.android.dataentry.main.MainModule;
 import org.hisp.dhis.android.dataentry.main.home.HomeComponent;
@@ -49,7 +50,8 @@ public interface UserComponent {
 
     // ToDo: remove this!
     @NonNull
-    DataEntryComponent plus(@NonNull DataEntryModule dataEntryModule);
+    DataEntryComponent plus(@NonNull DataEntryModule dataEntryModule,
+            @NonNull DataEntryStoreModule dataEntryStoreModule);
 
     @NonNull
     FormComponent plus(@NonNull FormModule formModule);
