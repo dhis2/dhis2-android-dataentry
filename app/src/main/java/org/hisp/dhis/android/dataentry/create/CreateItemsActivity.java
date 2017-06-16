@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +14,8 @@ import org.hisp.dhis.android.dataentry.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
 public class CreateItemsActivity extends AppCompatActivity {
 
@@ -37,19 +38,15 @@ public class CreateItemsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create);
         ButterKnife.bind(this);
 
-        CreateItemsArgument argument = getIntent().getExtras().getParcelable(ARG_CREATION);
-        if (argument == null) {
-            throw new IllegalStateException("CreateItemsArgument must be supplied!");
-        }
+        CreateItemsArgument argument = isNull(getIntent().getExtras().getParcelable(ARG_CREATION),
+                "CreateItems argument must be supplied.");
 
         setupToolbar(toolbar, argument.name());
-        attachCreateFragment(argument);
-    }
-
-    private void attachCreateFragment(CreateItemsArgument arg) {
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.content_frame, CreateItemsFragment.create(arg), TAG_CREATE)
-                .commitNow();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content_frame, CreateItemsFragment.create(argument), TAG_CREATE)
+                    .commitNow();
+        }
     }
 
     private void setupToolbar(@NonNull Toolbar toolbar, @NonNull String name) {

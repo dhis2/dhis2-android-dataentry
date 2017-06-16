@@ -5,7 +5,6 @@ import android.support.annotation.UiThread;
 
 import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
-import org.hisp.dhis.android.dataentry.selection.SelectionViewModel;
 
 import io.reactivex.Observable;
 

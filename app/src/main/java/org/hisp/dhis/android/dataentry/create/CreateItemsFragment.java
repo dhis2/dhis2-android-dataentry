@@ -34,15 +34,18 @@ import butterknife.BindView;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
+import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
+
 public class CreateItemsFragment extends BaseFragment implements CreateItemsView {
 
     private static final String ARG_CREATE = "arg:create";
     public static final String ARG_SELECTIONS = "arg:selectionStates";
+    public static final String TAG_SELECTION_DIALOG_FRAGMENT = "tag:selectionDialogFragment";
     public static final int FIRST_SELECTION = 0;
     public static final int SECOND_SELECTION = 1;
     private static final int[] REQUEST_CODES = {FIRST_SELECTION, SECOND_SELECTION}; //request codes for the
-    public static final String TAG_SELECTION_DIALOG_FRAGMENT = "tag:selectionDialogFragment";
     // DialogFragment. index should match the card view index.
+    public static final int SELECTORS_COUNT = 2;
 
     @BindView(R.id.text_selection1)
     FontTextView selectionTextView1;
@@ -62,16 +65,12 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     @Inject
     CreateItemsPresenter presenter;
 
-    CreateItemsArgument argument;
-
-    SelectionStateModel selectionState1;
-    SelectionStateModel selectionState2;
+    SelectionStateModel state1;
+    SelectionStateModel state2;
 
     public static Fragment create(CreateItemsArgument createArgument) {
         Bundle arguments = new Bundle();
-
         arguments.putParcelable(ARG_CREATE, createArgument);
-        arguments.putParcelableArrayList(ARG_SELECTIONS, initSelectionStates(createArgument));
 
         CreateItemsFragment fragment = new CreateItemsFragment();
         fragment.setArguments(arguments);
@@ -79,60 +78,23 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
         return fragment;
     }
 
-    @NonNull
-    private static ArrayList<SelectionStateModel> initSelectionStates(CreateItemsArgument createArgument) {
-        SelectionArgument.Type selection1Type;
-        SelectionArgument.Type selection2Type;
-        int selection1LabelId;
-        int selection2LabelId;
-
-        if (createArgument.type() == CreateItemsArgument.Type.ENROLMENT_EVENT) {
-            selection1Type = SelectionArgument.Type.PROGRAM;
-            selection2Type = SelectionArgument.Type.PROGRAM_STAGE;
-            selection1LabelId = R.string.program;
-            selection2LabelId = R.string.program_stage;
-        } else if (createArgument.type() == CreateItemsArgument.Type.TEI ||
-                createArgument.type() == CreateItemsArgument.Type.EVENT ||
-                createArgument.type() == CreateItemsArgument.Type.ENROLLMENT) {
-            selection1Type = SelectionArgument.Type.ORGANISATION;
-            selection2Type = SelectionArgument.Type.PROGRAM;
-            selection1LabelId = R.string.organisation;
-            selection2LabelId = R.string.program;
-        } else {
-            throw new IllegalStateException("Unknown CreateItemsArgument type.");
-        }
-        return new ArrayList<>(Arrays.asList(
-                SelectionStateModel.createEmpty(selection1LabelId, selection1Type),
-                SelectionStateModel.createEmpty(selection2LabelId, selection2Type)));
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        this.argument = getArguments().getParcelable(ARG_CREATE);
-        List<SelectionStateModel> selectionStates = getArguments().getParcelableArrayList(ARG_SELECTIONS);
-        if(argument == null) {
-            throw new IllegalArgumentException("CreteArgument must be supplied");
-        } else if (selectionStates == null) {
-            throw new IllegalArgumentException("SelectionStateModels must be supplied");
-        }
-        selectionState1 = selectionStates.get(FIRST_SELECTION);
-        selectionState2 = selectionStates.get(SECOND_SELECTION);
+        isNull(getArguments().<CreateItemsArgument>getParcelable(ARG_CREATE), "CreteArgument must be supplied");
 
         ((DhisApp) context.getApplicationContext()).userComponent()
-                .plus(new CreateItemsModule(argument))
+                .plus(new CreateItemsModule(getArguments().getParcelable(ARG_CREATE)))
                 .inject(this);
     }
 
-    //TODO: see if this would work. (test after hooking up the selectors and repositories.
     @Override
-    public void onDetach() {
-        super.onDetach();
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(ARG_CREATE, argument);
-        arguments.putParcelableArrayList(ARG_SELECTIONS, initSelectionStates(argument));
-        this.setArguments(arguments);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(ARG_SELECTIONS,
+                new ArrayList<>(Arrays.asList(this.state1, this.state2))
+        );
     }
 
     @Nullable
@@ -145,11 +107,50 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         bind(this, view);
+
+        if (savedInstanceState != null) {
+            List<SelectionStateModel> selectionStates = savedInstanceState.getParcelableArrayList(ARG_SELECTIONS);
+            isNull((selectionStates == null || selectionStates.size() < SELECTORS_COUNT),
+                    "SelectionStateModels must be supplied");
+            this.state1 = selectionStates.get(FIRST_SELECTION);
+            this.state2 = selectionStates.get(SECOND_SELECTION);
+        } else {
+            ArrayList<SelectionStateModel> states = initSelectionStates(getArguments().getParcelable(ARG_CREATE));
+            state1 = states.get(FIRST_SELECTION);
+            state2 = states.get(SECOND_SELECTION);
+        }
         //TODO: restore the states set text labels and hints
-        selectionTextView1.setText(selectionState1.name());
-        selectionTextView1.setHint(getString(selectionState1.labelId()));
-        selectionTextView2.setText(selectionState2.name());
-        selectionTextView2.setHint(getString(selectionState2.labelId()));
+        selectionTextView1.setText(state1.name());
+        selectionTextView1.setHint(state1.label());
+        selectionTextView2.setText(state2.name());
+        selectionTextView2.setHint(state2.label());
+
+    }
+
+    @NonNull
+    private ArrayList<SelectionStateModel> initSelectionStates(CreateItemsArgument createArgument) {
+        SelectionArgument.Type selection1Type;
+        SelectionArgument.Type selection2Type;
+        String selection1Label;
+        String selection2Label;
+
+        if (createArgument.type() == CreateItemsArgument.Type.EVENT ||
+                createArgument.type() == CreateItemsArgument.Type.ENROLMENT_EVENT) {
+            selection2Type = SelectionArgument.Type.PROGRAM_STAGE;
+            selection2Label = getString(R.string.program_stage);
+        } else if (createArgument.type() == CreateItemsArgument.Type.TEI ||
+                createArgument.type() == CreateItemsArgument.Type.ENROLLMENT) {
+            selection2Type = SelectionArgument.Type.PROGRAM;
+            selection2Label = getString(R.string.program);
+        } else {
+            throw new IllegalStateException("Unknown CreateItemsArgument type.");
+        }
+        selection1Type = SelectionArgument.Type.ORGANISATION;
+        selection1Label = getString(R.string.organisation);
+
+        return new ArrayList<>(Arrays.asList(
+                SelectionStateModel.createEmpty(selection1Label, selection1Type),
+                SelectionStateModel.createEmpty(selection2Label, selection2Type)));
     }
 
     @Override
@@ -175,9 +176,9 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     @Override
     public Observable<SelectionStateModel> selectionChanges(int id) {
         if (id == FIRST_SELECTION) {
-            return RxTextView.afterTextChangeEvents(selectionTextView1).map(event -> selectionState1);
+            return RxTextView.afterTextChangeEvents(selectionTextView1).map(event -> state1);
         } else if (id == SECOND_SELECTION) {
-            return RxTextView.afterTextChangeEvents(selectionTextView1).map(event -> selectionState1);
+            return RxTextView.afterTextChangeEvents(selectionTextView1).map(event -> state1);
         } else {
             throw new IllegalStateException("No such selection view: " + id);
         }
@@ -187,9 +188,9 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     @Override
     public SelectionStateModel getSelectionState(int id) {
         if (id == FIRST_SELECTION) {
-            return selectionState1;
+            return state1;
         } else if (id == SECOND_SELECTION) {
-            return selectionState2;
+            return state2;
         } else {
             throw new IllegalStateException("No such selection state: " + id);
         }
@@ -200,37 +201,29 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
         if (id == FIRST_SELECTION) {
             Timber.d("Set text of cardView " + id + " to " + name);
             selectionTextView1.setText(name);
-            selectionState1 = SelectionStateModel.createModifiedSelection(uid, name, selectionState1);
-            Timber.d("State : " + selectionState1.toString());
+            state1 = SelectionStateModel.createModifiedSelection(uid, name, state1);
+            Timber.d("State : " + state1.toString());
         } else {
             Timber.d("Set text of cardView " + id + " to " + name);
             selectionTextView2.setText(name);
-            selectionState2 = SelectionStateModel.createModifiedSelection(uid, name, selectionState2);
-            Timber.d("State : " + selectionState2.toString());
+            state2 = SelectionStateModel.createModifiedSelection(uid, name, state2);
+            Timber.d("State : " + state2.toString());
         }
     }
 
-    private void showDialog(int id, @NonNull String parentUid) {//, @NonNull String uid, @NonNull String name) {
-
-        //TODO: remove this :
-        Timber.d("Show dialog for " + id);
+    private void showDialog(int id, @NonNull String parentUid) {
         SelectionStateModel model;
         if (id == FIRST_SELECTION) {
-            model = selectionState1;
+            model = state1;
         } else if (id == SECOND_SELECTION) {
-            model = selectionState2;
+            model = state2;
         } else {
             throw new IllegalStateException("Called with non existing id.");
         }
-        SelectionArgument arg = SelectionArgument.create(parentUid, getString(model.labelId()), model.type());
+        SelectionArgument arg = SelectionArgument.create(parentUid, model.label(), model.type());
         SelectionDialogFragment dialog = SelectionDialogFragment.create(arg);
         dialog.setTargetFragment(this, REQUEST_CODES[id]);
         dialog.show(getFragmentManager(), TAG_SELECTION_DIALOG_FRAGMENT);
-/*        SelectionArgument arg = SelectionArgument.create("DiszpKrYNg8", "Program_test", SelectionArgument.Type
-.PROGRAM);
-        SelectionDialogFragment dialog = SelectionDialogFragment.create(arg);
-        dialog.setTargetFragment(this, REQUEST_CODES[id]);
-        dialog.show(getFragmentManager(), TAG_SELECTION_DIALOG_FRAGMENT);*/
     }
 
     @Override
@@ -270,7 +263,7 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     @NonNull
     @Override
     public Observable<Pair<String, String>> createButtonClick() {
-        return RxView.clicks(create).map(event -> Pair.create(selectionState1.uid(), selectionState2.uid()));
+        return RxView.clicks(create).map(event -> Pair.create(state1.uid(), state2.uid()));
     }
 
     @Override

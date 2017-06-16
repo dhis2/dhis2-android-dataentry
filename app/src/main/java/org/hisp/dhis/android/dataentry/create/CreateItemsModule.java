@@ -30,9 +30,11 @@ public class CreateItemsModule {
         } else if (argument.type() == Type.ENROLLMENT) {
             return new EnrollmentRepositoryImpl(database);
         } else if (argument.type() == Type.ENROLMENT_EVENT) {
-            return new EnrollmentRepositoryImpl(database); //TODO: add argument as argument ? type?
-        } else { //if (argument.type() == Type.EVENT) {
+            return new EnrollmentRepositoryImpl(database);
+        } else if (argument.type() == Type.EVENT) {
             return new EventRepositoryImpl(database);
+        } else {
+            throw new IllegalStateException("CreateItems Type is unknown.");
         }
     }
 

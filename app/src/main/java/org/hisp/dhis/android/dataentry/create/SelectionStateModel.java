@@ -35,13 +35,13 @@ abstract public class SelectionStateModel implements Parcelable {
      * @return
      */
     @NonNull
-    abstract public int labelId();
+    abstract public String label();
 
     @NonNull
     abstract public SelectionArgument.Type type();
 
     @NonNull
-    public static SelectionStateModel create(@NonNull String uid, @NonNull String name, int label,
+    public static SelectionStateModel create(@NonNull String uid, @NonNull String name, String label,
                                              SelectionArgument.Type type) {
         return new AutoValue_SelectionStateModel(uid, name, label, type);
     }
@@ -49,10 +49,10 @@ abstract public class SelectionStateModel implements Parcelable {
     @NonNull
     public static SelectionStateModel createModifiedSelection(@NonNull String uid, @NonNull String name,
                                                          @NonNull SelectionStateModel oldSelection) {
-        return new AutoValue_SelectionStateModel(uid, name, oldSelection.labelId(), oldSelection.type());
+        return new AutoValue_SelectionStateModel(uid, name, oldSelection.label(), oldSelection.type());
     }
 
-    public static SelectionStateModel createEmpty(int label, SelectionArgument.Type type) {
+    public static SelectionStateModel createEmpty(String label, SelectionArgument.Type type) {
         return new AutoValue_SelectionStateModel("", "", label, type);
     }
 
