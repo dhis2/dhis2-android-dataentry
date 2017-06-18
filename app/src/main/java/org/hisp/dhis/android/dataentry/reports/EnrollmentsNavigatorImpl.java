@@ -4,10 +4,6 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.dashboard.DashboardActivity;
-import org.hisp.dhis.android.dataentry.form.FormActivity;
-import org.hisp.dhis.android.dataentry.form.FormViewArguments;
-import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryActivity;
-import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryArguments;
 
 import timber.log.Timber;
 

@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
@@ -39,8 +38,8 @@ import io.reactivex.functions.Consumer;
 
 import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
+@SuppressWarnings("PMD.ExcessiveImports")
 public class DashboardFragment extends BaseFragment implements DashboardView {
-
     private static final String ARG_ENROLLMENT_UID = "enrollmentUid";
 
     @Inject
