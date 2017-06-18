@@ -6,6 +6,7 @@ import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 
 import io.reactivex.disposables.CompositeDisposable;
+import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
 class DashboardPresenterImpl implements DashboardPresenter {
@@ -48,7 +49,10 @@ class DashboardPresenterImpl implements DashboardPresenter {
                 .events(enrollmentUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
-                .subscribe(view.renderEvents(), Timber::e));
+                .subscribe(view.renderEvents(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+
     }
 
     @Override

@@ -1,14 +1,16 @@
 package org.hisp.dhis.android.dataentry.dashboard;
 
-
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +25,7 @@ import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
 import org.hisp.dhis.android.dataentry.commons.ui.FontTextView;
+import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
 import org.hisp.dhis.android.dataentry.form.FormActivity;
 import org.hisp.dhis.android.dataentry.form.FormViewArguments;
 
@@ -36,8 +39,6 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import io.reactivex.functions.Consumer;
 
-import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
-
 @SuppressWarnings("PMD.ExcessiveImports")
 public class DashboardFragment extends BaseFragment implements DashboardView {
     private static final String ARG_ENROLLMENT_UID = "enrollmentUid";
@@ -46,7 +47,10 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
     DashboardPresenter dashboardPresenter;
 
     @Inject // ToDo: remove
-    BriteDatabase briteDatabase;
+            BriteDatabase briteDatabase;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     @BindView(R.id.first_attribute)
     FontTextView firstAttribute;
@@ -73,7 +77,7 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_dashboard, container, false);
     }
 
@@ -82,10 +86,26 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
         super.onViewCreated(view, savedInstanceState);
         bind(this, view);
         setupRecyclerView();
+        setupActionBar();
+    }
+
+    private void setupActionBar() {
+        AppCompatActivity activity = ((AppCompatActivity) getActivity());
+        if (activity != null) {
+            activity.setSupportActionBar(toolbar);
+            if (activity.getSupportActionBar() != null) {
+                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                activity.getSupportActionBar().setHomeButtonEnabled(true);
+            }
+        }
     }
 
     private void setupRecyclerView() {
-        dashboardAdapter = new DashboardAdapter();
+        dashboardAdapter = new DashboardAdapter(eventViewModel -> {
+            Intent intent = FormActivity.create(getActivity(), FormViewArguments.createForEvent(eventViewModel.uid()));
+            startActivity(intent);
+        });
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);
@@ -99,7 +119,7 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        String enrollmentUid = isNull(getArguments()
+        String enrollmentUid = Preconditions.isNull(getArguments()
                 .getString(ARG_ENROLLMENT_UID), "enrollmentUid == null");
         getUserComponent()
                 .plus(new DashboardModule(enrollmentUid))
@@ -118,8 +138,8 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
                 .uid(UUID.randomUUID().toString())
                 .eventDate(new Date())
                 .enrollmentUid(getArguments().getString(ARG_ENROLLMENT_UID))
-                .program("IpHINAT79UW")
-                .programStage("PFDfvmGpsR3")
+                .program("ur1Edk5Oe2n")
+                .programStage("ZkbAXlQUYJG")
                 .organisationUnit("DiszpKrYNg8")
                 .state(State.TO_POST)
                 .status(EventStatus.ACTIVE)

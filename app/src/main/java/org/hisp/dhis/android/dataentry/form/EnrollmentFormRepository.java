@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
@@ -91,6 +92,8 @@ class EnrollmentFormRepository implements FormRepository {
         return reportDate -> {
             ContentValues enrollment = new ContentValues();
             enrollment.put(EnrollmentModel.Columns.DATE_OF_ENROLLMENT, reportDate);
+            enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            // TODO: and if so, keep the TO_POST state
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
                     EnrollmentModel.Columns.UID + " = ?", uid);
         };
@@ -103,6 +106,8 @@ class EnrollmentFormRepository implements FormRepository {
             ContentValues enrollment = new ContentValues();
             enrollment.put(EnrollmentModel.Columns.ENROLLMENT_STATUS,
                     ReportStatus.toEnrollmentStatus(reportStatus).name());
+            enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
+            // TODO: and if so, keep the TO_POST state
             briteDatabase.update(EnrollmentModel.TABLE, enrollment, EnrollmentModel.Columns.UID + " = ?", uid);
         };
     }

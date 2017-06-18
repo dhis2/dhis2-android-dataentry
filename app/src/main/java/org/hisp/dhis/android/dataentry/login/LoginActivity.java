@@ -26,6 +26,7 @@ import android.widget.Toast;
 import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.main.MainActivity;
+import org.hisp.dhis.android.dataentry.service.SyncService;
 
 import javax.inject.Inject;
 
@@ -252,10 +253,15 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         overridePendingTransition(
                 R.anim.activity_open_enter,
                 R.anim.activity_open_exit);
+        syncData();
         finish();
 
         // clean-up the component instance, since we don't need it anymore.
         ((Components) getApplicationContext()).releaseLoginComponent();
+    }
+
+    private void syncData() {
+        startService(new Intent(getApplicationContext(), SyncService.class));
     }
 
     /**
