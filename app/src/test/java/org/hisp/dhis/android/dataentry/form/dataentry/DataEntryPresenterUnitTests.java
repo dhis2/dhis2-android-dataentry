@@ -28,6 +28,9 @@ import static org.mockito.Mockito.when;
 public class DataEntryPresenterUnitTests {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    DataEntryStore dataEntryStore;
+
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     DataEntryRepository dataEntryRepository;
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -53,8 +56,8 @@ public class DataEntryPresenterUnitTests {
         when(dataEntryRepository.list()).thenReturn(fields);
         when(dataEntryView.rowActions()).thenReturn(rowActions);
 
-        dataEntryPresenter = new DataEntryPresenterImpl(dataEntryRepository,
-                new MockSchedulersProvider());
+        dataEntryPresenter = new DataEntryPresenterImpl(dataEntryStore,
+                dataEntryRepository, new MockSchedulersProvider());
     }
 
     @Test
@@ -100,10 +103,10 @@ public class DataEntryPresenterUnitTests {
         dataEntryPresenter.onAttach(dataEntryView);
 
         rowActions.onNext(RowAction.create("test_uid", "test_value"));
-        verify(dataEntryRepository, times(1)).save("test_uid", "test_value");
+        verify(dataEntryStore, times(1)).save("test_uid", "test_value");
 
         rowActions.onNext(RowAction.create("test_uid_two", "test_value_two"));
-        verify(dataEntryRepository, times(1)).save("test_uid_two", "test_value_two");
+        verify(dataEntryStore, times(1)).save("test_uid_two", "test_value_two");
     }
 
     @Test

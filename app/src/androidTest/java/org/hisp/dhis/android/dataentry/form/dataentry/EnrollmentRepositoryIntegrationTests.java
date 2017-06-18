@@ -35,18 +35,9 @@ import io.reactivex.subscribers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.hisp.dhis.android.dataentry.commons.utils.CursorAssert.assertThatCursor;
 
 @RunWith(AndroidJUnit4.class)
 public class EnrollmentRepositoryIntegrationTests {
-    private static final String[] TEAV_PROJECTION = {
-            Columns.CREATED,
-            Columns.LAST_UPDATED,
-            Columns.TRACKED_ENTITY_ATTRIBUTE,
-            Columns.TRACKED_ENTITY_INSTANCE,
-            Columns.VALUE,
-    };
-
     private static final String ENTER_TEXT = "enter_text";
     private static final String ENTER_LONG_TEXT = "enter_long_text";
     private static final String ENTER_NUMBER = "enter_number";
@@ -54,6 +45,7 @@ public class EnrollmentRepositoryIntegrationTests {
     private static final String ENTER_POSITIVE_INTEGER = "enter_positive_integer";
     private static final String ENTER_NEGATIVE_INTEGER = "enter_negative_integer";
     private static final String ENTER_POSITIVE_INTEGER_OR_ZERO = "enter_positive_integer_or_zero";
+    private static final String FILTER_OPTIONS = "filter_options";
 
     private static final String ATTRIBUTE_ONE_UID = "attribute_one_uid";
     private static final String ATTRIBUTE_ONE_NAME = "attribute_one_name";
@@ -115,15 +107,14 @@ public class EnrollmentRepositoryIntegrationTests {
 
         FieldViewModelFactory fieldViewModelFactory = new FieldViewModelFactoryImpl(
                 ENTER_TEXT, ENTER_LONG_TEXT, ENTER_NUMBER, ENTER_INTEGER, ENTER_POSITIVE_INTEGER,
-                ENTER_NEGATIVE_INTEGER, ENTER_POSITIVE_INTEGER_OR_ZERO);
+                ENTER_NEGATIVE_INTEGER, ENTER_POSITIVE_INTEGER_OR_ZERO, FILTER_OPTIONS);
 
         // provider of time stamps for data values
         currentDate = new Date();
-        CurrentDateProvider currentDateProvider = () -> currentDate;
 
         // class under tests
         enrollmentRepository = new EnrollmentRepository(databaseRule.briteDatabase(),
-                fieldViewModelFactory, currentDateProvider, ENROLLMENT_UID);
+                fieldViewModelFactory, ENROLLMENT_UID);
     }
 
     @Test
@@ -219,127 +210,6 @@ public class EnrollmentRepositoryIntegrationTests {
         assertThat(fields.get(0)).isEqualTo(fieldTwo);
         assertThat(fields.get(1)).isEqualTo(fieldThree);
         assertThat(fields.get(2)).isEqualTo(fieldOne);
-
-        testObserver.assertNoErrors();
-        testObserver.assertNotComplete();
-        testObserver.assertNotTerminated();
-    }
-
-    @Test
-    public void saveShouldUpdateExistingAttributeValue() {
-        SQLiteDatabase db = databaseRule.database();
-
-        Date createdDate = new Date();
-        db.insert(TrackedEntityAttributeValueModel.TABLE, null, attributeValue(TEI_UID, createdDate,
-                createdDate, ATTRIBUTE_ONE_UID, "test_attribute_value"));
-
-        TestSubscriber<Long> testSubscriber = enrollmentRepository.save(
-                ATTRIBUTE_ONE_UID, "test_updated_attribute_value").test();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertComplete();
-        testSubscriber.assertTerminated();
-
-        assertThat(testSubscriber.valueCount()).isEqualTo(1);
-        assertThat(testSubscriber.values().get(0)).isEqualTo(1);
-
-        assertThatCursor(db.query(TrackedEntityAttributeValueModel.TABLE, TEAV_PROJECTION,
-                Columns.TRACKED_ENTITY_ATTRIBUTE + " = ?", new String[]{
-                        ATTRIBUTE_ONE_UID}, null, null, null)
-        ).hasRow(
-                BaseIdentifiableObject.DATE_FORMAT.format(createdDate),
-                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
-                ATTRIBUTE_ONE_UID, TEI_UID, "test_updated_attribute_value"
-        ).isExhausted();
-    }
-
-    @Test
-    public void saveShouldNullifyExistingAttributeValue() {
-        SQLiteDatabase db = databaseRule.database();
-
-        Date createdDate = new Date();
-        db.insert(TrackedEntityAttributeValueModel.TABLE, null, attributeValue(TEI_UID, createdDate,
-                createdDate, ATTRIBUTE_ONE_UID, "test_attribute_value"));
-
-        TestSubscriber<Long> testSubscriber = enrollmentRepository.save(
-                ATTRIBUTE_ONE_UID, null).test();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertComplete();
-        testSubscriber.assertTerminated();
-
-        assertThat(testSubscriber.valueCount()).isEqualTo(1);
-        assertThat(testSubscriber.values().get(0)).isEqualTo(1);
-
-        assertThatCursor(db.query(TrackedEntityAttributeValueModel.TABLE, TEAV_PROJECTION,
-                Columns.TRACKED_ENTITY_ATTRIBUTE + " = ?", new String[]{
-                        ATTRIBUTE_ONE_UID}, null, null, null)
-        ).hasRow(
-                BaseIdentifiableObject.DATE_FORMAT.format(createdDate),
-                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
-                ATTRIBUTE_ONE_UID, TEI_UID, null
-        ).isExhausted();
-    }
-
-    @Test
-    public void saveShouldInsertNewAttributeValue() {
-        SQLiteDatabase db = databaseRule.database();
-
-        TestSubscriber<Long> testSubscriber = enrollmentRepository.save(
-                ATTRIBUTE_ONE_UID, "test_attribute_value").test();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertComplete();
-        testSubscriber.assertTerminated();
-
-        assertThat(testSubscriber.valueCount()).isEqualTo(1);
-        assertThat(testSubscriber.values().get(0)).isEqualTo(1);
-
-        assertThatCursor(db.query(TrackedEntityAttributeValueModel.TABLE, TEAV_PROJECTION,
-                Columns.TRACKED_ENTITY_ATTRIBUTE + " = ?", new String[]{
-                        ATTRIBUTE_ONE_UID}, null, null, null)
-        ).hasRow(
-                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
-                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
-                ATTRIBUTE_ONE_UID, TEI_UID, "test_attribute_value"
-        ).isExhausted();
-    }
-
-    @Test
-    public void saveShouldTriggerNewQueryOnList() {
-        SQLiteDatabase db = databaseRule.database();
-
-        db.insert(TrackedEntityAttributeValueModel.TABLE, null, attributeValue(TEI_UID, currentDate,
-                currentDate, ATTRIBUTE_ONE_UID, ATTRIBUTE_ONE_VALUE));
-        db.insert(TrackedEntityAttributeValueModel.TABLE, null, attributeValue(TEI_UID, currentDate,
-                currentDate, ATTRIBUTE_TWO_UID, ATTRIBUTE_TWO_VALUE));
-
-        FieldViewModel fieldOne = RadioButtonViewModel.fromRawValue(ATTRIBUTE_ONE_UID,
-                ATTRIBUTE_ONE_NAME, true, ATTRIBUTE_ONE_VALUE);
-        FieldViewModel fieldTwo = EditTextViewModel.create(ATTRIBUTE_TWO_UID,
-                ATTRIBUTE_TWO_NAME, false, ATTRIBUTE_TWO_VALUE, ENTER_LONG_TEXT, 3);
-        FieldViewModel fieldThree = EditTextViewModel.create(ATTRIBUTE_THREE_UID,
-                ATTRIBUTE_THREE_NAME, true, null, ENTER_TEXT, 1);
-
-        TestSubscriber<List<FieldViewModel>> testObserver = enrollmentRepository.list().test();
-        assertThat(testObserver.valueCount()).isEqualTo(1);
-        assertThat(testObserver.values().get(0).get(0)).isEqualTo(fieldTwo);
-        assertThat(testObserver.values().get(0).get(1)).isEqualTo(fieldThree);
-        assertThat(testObserver.values().get(0).get(2)).isEqualTo(fieldOne);
-
-        testObserver.assertNoErrors();
-        testObserver.assertNotComplete();
-        testObserver.assertNotTerminated();
-
-        TestSubscriber<Long> saveSubscriber = enrollmentRepository.save(
-                ATTRIBUTE_THREE_UID, ATTRIBUTE_THREE_VALUE).test();
-        saveSubscriber.assertNoErrors();
-        saveSubscriber.assertComplete();
-        saveSubscriber.assertTerminated();
-
-        FieldViewModel fieldThreeUpdated = EditTextViewModel.create(ATTRIBUTE_THREE_UID,
-                ATTRIBUTE_THREE_NAME, true, ATTRIBUTE_THREE_VALUE, ENTER_TEXT, 1);
-        assertThat(testObserver.valueCount()).isEqualTo(2);
-        assertThat(testObserver.values().get(1).get(0)).isEqualTo(fieldTwo);
-        assertThat(testObserver.values().get(1).get(1)).isEqualTo(fieldThreeUpdated);
-        assertThat(testObserver.values().get(1).get(2)).isEqualTo(fieldOne);
 
         testObserver.assertNoErrors();
         testObserver.assertNotComplete();

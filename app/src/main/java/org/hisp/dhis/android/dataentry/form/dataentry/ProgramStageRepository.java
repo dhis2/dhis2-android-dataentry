@@ -1,25 +1,20 @@
 package org.hisp.dhis.android.dataentry.form.dataentry;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
-import org.hisp.dhis.android.core.user.UserCredentialsModel;
-import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactory;
-import org.hisp.dhis.android.dataentry.user.UserRepository;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
@@ -63,44 +58,18 @@ final class ProgramStageRepository implements DataEntryRepository {
     private final FieldViewModelFactory fieldFactory;
 
     @NonNull
-    private final Flowable<UserCredentialsModel> userCredentials;
-
-    @NonNull
-    private final CurrentDateProvider currentDateProvider;
-
-    @NonNull
     private final String eventUid;
 
     @Nullable
     private final String sectionUid;
 
     ProgramStageRepository(@NonNull BriteDatabase briteDatabase,
-            @NonNull UserRepository userRepository,
             @NonNull FieldViewModelFactory fieldFactory,
-            @NonNull CurrentDateProvider currentDateProvider,
             @NonNull String eventUid, @Nullable String sectionUid) {
         this.briteDatabase = briteDatabase;
         this.fieldFactory = fieldFactory;
-        this.currentDateProvider = currentDateProvider;
         this.eventUid = eventUid;
         this.sectionUid = sectionUid;
-
-        // we want to re-use results of the user credentials query
-        this.userCredentials = userRepository.credentials()
-                .cacheWithInitialCapacity(1);
-    }
-
-    @NonNull
-    @Override
-    public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
-        return userCredentials.switchMap((userCredentials) -> {
-            long updated = update(uid, value);
-            if (updated > 0) {
-                return Flowable.just(updated);
-            }
-
-            return Flowable.just(insert(uid, value, userCredentials.username()));
-        });
     }
 
     @NonNull
@@ -119,6 +88,7 @@ final class ProgramStageRepository implements DataEntryRepository {
     }
 
     @NonNull
+    @SuppressFBWarnings("VA_FORMAT_STRING_USES_NEWLINE")
     private String prepareStatement() {
         String where;
         if (isEmpty(sectionUid)) {
@@ -129,38 +99,5 @@ final class ProgramStageRepository implements DataEntryRepository {
         }
 
         return String.format(Locale.US, QUERY, where);
-    }
-
-    private long update(@NonNull String uid, @Nullable String value) {
-        ContentValues dataValue = new ContentValues();
-
-        // update time stamp
-        dataValue.put(TrackedEntityDataValueModel.Columns.LAST_UPDATED,
-                BaseIdentifiableObject.DATE_FORMAT.format(currentDateProvider.currentDate()));
-        if (value == null) {
-            dataValue.putNull(TrackedEntityDataValueModel.Columns.VALUE);
-        } else {
-            dataValue.put(TrackedEntityDataValueModel.Columns.VALUE, value);
-        }
-
-        // ToDo: write test cases for different events
-        return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
-                TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                        TrackedEntityDataValueModel.Columns.EVENT + " = ?", uid, eventUid);
-    }
-
-    private long insert(@NonNull String uid, @Nullable String value, @NonNull String storedBy) {
-        Date created = currentDateProvider.currentDate();
-        TrackedEntityDataValueModel dataValueModel =
-                TrackedEntityDataValueModel.builder()
-                        .created(created)
-                        .lastUpdated(created)
-                        .dataElement(uid)
-                        .event(eventUid)
-                        .value(value)
-                        .storedBy(storedBy)
-                        .build();
-        return briteDatabase.insert(TrackedEntityDataValueModel.TABLE,
-                dataValueModel.toContentValues());
     }
 }

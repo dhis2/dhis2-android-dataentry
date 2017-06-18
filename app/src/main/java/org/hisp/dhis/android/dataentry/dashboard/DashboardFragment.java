@@ -41,7 +41,6 @@ import io.reactivex.functions.Consumer;
 
 @SuppressWarnings("PMD.ExcessiveImports")
 public class DashboardFragment extends BaseFragment implements DashboardView {
-
     private static final String ARG_ENROLLMENT_UID = "enrollmentUid";
 
     @Inject
