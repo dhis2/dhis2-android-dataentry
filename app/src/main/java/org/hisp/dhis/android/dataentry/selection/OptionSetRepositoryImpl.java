@@ -15,9 +15,7 @@ import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
-public class OptionSetRepositoryImpl implements SelectionRepository {
-
-    //TODO: consider abstracting these for the entire database in a separate class that can be used to querry.
+final class OptionSetRepositoryImpl implements SelectionRepository {
     // magic: need to have foreign keys of the current table referenced to get sqlBright updates.
     private static List<String> OPTIONS_TABLES = Collections.unmodifiableList(
             Arrays.asList(OptionSetModel.TABLE, OptionModel.TABLE)
@@ -31,7 +29,7 @@ public class OptionSetRepositoryImpl implements SelectionRepository {
     private final BriteDatabase database;
     private final String uid;
 
-    public OptionSetRepositoryImpl(@NonNull BriteDatabase database, @NonNull String uid) {
+    OptionSetRepositoryImpl(@NonNull BriteDatabase database, @NonNull String uid) {
         this.database = database;
         this.uid = uid;
     }
@@ -40,9 +38,7 @@ public class OptionSetRepositoryImpl implements SelectionRepository {
     @Override
     public Flowable<List<SelectionViewModel>> list() {
         return toV2Flowable(database.createQuery(OPTIONS_TABLES, SELECT_OPTIONS, uid)
-                .mapToList(cursor -> SelectionViewModel.from(cursor, OptionModel.Columns.UID,
-                        OptionModel.Columns.DISPLAY_NAME)
-                )
-        );
+                .mapToList(cursor -> SelectionViewModel.create(
+                        cursor.getString(0), cursor.getString(1))));
     }
 }

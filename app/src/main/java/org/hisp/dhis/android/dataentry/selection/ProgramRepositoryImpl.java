@@ -17,8 +17,8 @@ import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
-public class ProgramRepositoryImpl implements SelectionRepository {
-    //Using a List of table names instead of a single one, such that the Brite database knows to update us on change
+final class ProgramRepositoryImpl implements SelectionRepository {
+    //Using a List of table names instead of a single one, such that the Brite database knows to renderSearchResults us on change
     // of either.
     private static final List<String> TABLES = Collections.unmodifiableList(
             Arrays.asList(ProgramModel.TABLE, OrganisationUnitProgramLinkModel.ORGANISATION_UNIT_PROGRAM_LINK,
@@ -31,10 +31,9 @@ public class ProgramRepositoryImpl implements SelectionRepository {
             " WHERE " + OrganisationUnitProgramLinkModel.Columns.ORGANISATION_UNIT + " =?;";
 
     private final BriteDatabase database;
-
     private final String parentUid;
 
-    public ProgramRepositoryImpl(@NonNull BriteDatabase database, @NonNull String parentUid) {
+    ProgramRepositoryImpl(@NonNull BriteDatabase database, @NonNull String parentUid) {
         this.database = database;
         this.parentUid = parentUid;
     }
@@ -43,7 +42,8 @@ public class ProgramRepositoryImpl implements SelectionRepository {
     @Override
     public Flowable<List<SelectionViewModel>> list() {
         return toV2Flowable(database.createQuery(TABLES, STATEMENT, parentUid)
-                .mapToList(cursor -> SelectionViewModel.from(cursor, Columns.UID, Columns.DISPLAY_NAME))
+                .mapToList(cursor -> SelectionViewModel.create(
+                        cursor.getString(0), cursor.getString(1)))
         );
     }
 

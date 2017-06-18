@@ -13,14 +13,13 @@ import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
-public class OrganisationUnitRepositoryImpl implements SelectionRepository {
-
-    public static final String STATEMENT = "SELECT " + Columns.UID + ", " + Columns.DISPLAY_NAME +
+final class OrganisationUnitRepositoryImpl implements SelectionRepository {
+    private static final String STATEMENT = "SELECT " + Columns.UID + ", " + Columns.DISPLAY_NAME +
             " FROM " + OrganisationUnitModel.TABLE;
 
-    BriteDatabase database;
+    private final BriteDatabase database;
 
-    public OrganisationUnitRepositoryImpl(BriteDatabase database) {
+    OrganisationUnitRepositoryImpl(BriteDatabase database) {
         this.database = database;
     }
 
@@ -28,7 +27,7 @@ public class OrganisationUnitRepositoryImpl implements SelectionRepository {
     @Override
     public Flowable<List<SelectionViewModel>> list() { //uid is meaningless here.
         return toV2Flowable(database.createQuery(OrganisationUnitModel.TABLE, STATEMENT)
-                .mapToList(cursor -> SelectionViewModel.from(cursor, Columns.UID, Columns.DISPLAY_NAME))
-        );
+                .mapToList(cursor -> SelectionViewModel.create(
+                        cursor.getString(0), cursor.getString(1))));
     }
 }
