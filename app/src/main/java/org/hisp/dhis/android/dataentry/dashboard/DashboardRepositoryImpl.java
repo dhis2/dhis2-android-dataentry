@@ -9,6 +9,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.dataentry.commons.utils.DateUtils;
@@ -25,32 +26,33 @@ import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
 class DashboardRepositoryImpl implements DashboardRepository {
 
-    private static final String ATTRIBUTES_QUERY = "SELECT\n" +
-            "  TrackedEntityAttribute.displayName,\n" +
-            "  TrackedEntityAttributeValue.value\n" +
-            "FROM Enrollment\n" +
+    private static final String ATTRIBUTES_QUERY = "SELECT " +
+            "  TrackedEntityAttribute.displayName, " +
+            "  TrackedEntityAttributeValue.value " +
+            "FROM Enrollment " +
             "  INNER JOIN ProgramTrackedEntityAttribute ON Enrollment.program = " +
-            " ProgramTrackedEntityAttribute.program\n" +
+            " ProgramTrackedEntityAttribute.program " +
             "  INNER JOIN TrackedEntityAttribute ON ProgramTrackedEntityAttribute.trackedEntityAttribute = " +
-            "TrackedEntityAttribute.uid\n" +
-            "                                       AND ProgramTrackedEntityAttribute.displayInList = 1\n" +
-            "  LEFT JOIN TrackedEntityAttributeValue\n" +
-            "    ON TrackedEntityAttribute.uid = TrackedEntityAttributeValue.trackedEntityAttribute\n" +
-            "       AND Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance\n" +
-            "WHERE Enrollment.uid = ?\n" +
-            "ORDER BY ProgramTrackedEntityAttribute.sortOrder\n" +
+            "TrackedEntityAttribute.uid " +
+            "                                       AND ProgramTrackedEntityAttribute.displayInList = 1 " +
+            "  LEFT JOIN TrackedEntityAttributeValue " +
+            "    ON TrackedEntityAttribute.uid = TrackedEntityAttributeValue.trackedEntityAttribute " +
+            "       AND Enrollment.trackedEntityInstance = TrackedEntityAttributeValue.trackedEntityInstance " +
+            "WHERE Enrollment.uid = ? " +
+            "ORDER BY ProgramTrackedEntityAttribute.sortOrder " +
             "LIMIT 2";
 
     private static final List<String> ATTRIBUTE_TABLES = Arrays.asList(
-            TrackedEntityAttributeModel.TABLE, EnrollmentModel.TABLE, TrackedEntityAttributeValueModel.TABLE);
+            ProgramTrackedEntityAttributeModel.TABLE, TrackedEntityAttributeModel.TABLE, EnrollmentModel.TABLE,
+            TrackedEntityAttributeValueModel.TABLE);
 
-    private static final String EVENTS_QUERY = "SELECT\n" +
-            "  Event.uid,\n" +
-            "  ProgramStage.displayName,\n" +
-            "  Event.eventDate,\n" +
-            "  Event.status\n" +
-            "FROM Event\n" +
-            "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid\n" +
+    private static final String EVENTS_QUERY = "SELECT " +
+            "  Event.uid, " +
+            "  ProgramStage.displayName, " +
+            "  Event.eventDate, " +
+            "  Event.status " +
+            "FROM Event " +
+            "  JOIN ProgramStage ON Event.programStage = ProgramStage.uid " +
             "  WHERE Event.enrollment = ?" +
             "ORDER BY Event.eventDate DESC";
 
