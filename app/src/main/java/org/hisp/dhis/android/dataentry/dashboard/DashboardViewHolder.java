@@ -40,7 +40,7 @@ class DashboardViewHolder extends RecyclerView.ViewHolder {
     @NonNull
     private final Map<EventStatus, Integer> statusColors;
 
-    private OnEventClickListener onEventClickListener;
+    private final OnEventClickListener onEventClickListener;
     private EventViewModel eventViewModel;
 
     interface OnEventClickListener {
