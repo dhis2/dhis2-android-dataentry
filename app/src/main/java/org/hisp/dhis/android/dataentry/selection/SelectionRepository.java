@@ -9,5 +9,5 @@ import io.reactivex.Flowable;
 interface SelectionRepository {
 
     @NonNull
-    Flowable<List<SelectionViewModel>> list();
+    Flowable<List<SelectionViewModel>> search(@NonNull String query);
 }

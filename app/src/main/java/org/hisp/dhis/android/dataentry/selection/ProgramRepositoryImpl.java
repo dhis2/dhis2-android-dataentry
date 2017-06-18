@@ -12,23 +12,24 @@ import org.hisp.dhis.android.core.program.ProgramModel.Columns;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
+import static org.hisp.dhis.android.dataentry.commons.utils.DbUtils.escapeSqlToken;
 
 final class ProgramRepositoryImpl implements SelectionRepository {
-    //Using a List of table names instead of a single one, such that the Brite database knows to renderSearchResults us on change
-    // of either.
-    private static final List<String> TABLES = Collections.unmodifiableList(
-            Arrays.asList(ProgramModel.TABLE, OrganisationUnitProgramLinkModel.ORGANISATION_UNIT_PROGRAM_LINK,
-                    OrganisationUnitModel.TABLE));
+    // Using a List of table names instead of a single one, such that the Brite
+    // database knows to renderSearchResults us on change of either.
+    private static final List<String> TABLES = Collections.unmodifiableList(Arrays.asList(ProgramModel.TABLE,
+            OrganisationUnitProgramLinkModel.ORGANISATION_UNIT_PROGRAM_LINK, OrganisationUnitModel.TABLE));
 
-    private static final String STATEMENT = "SELECT DISTINCT " + Columns.UID + ", " + Columns.DISPLAY_NAME + " FROM " +
-            OrganisationUnitProgramLinkModel.ORGANISATION_UNIT_PROGRAM_LINK +
-            " INNER JOIN " +
-            ProgramModel.TABLE +
-            " WHERE " + OrganisationUnitProgramLinkModel.Columns.ORGANISATION_UNIT + " =?;";
+    private static final String STATEMENT = "SELECT DISTINCT " + Columns.UID + ", " + Columns.DISPLAY_NAME +
+            " FROM " + OrganisationUnitProgramLinkModel.ORGANISATION_UNIT_PROGRAM_LINK +
+            " INNER JOIN " + ProgramModel.TABLE +
+            " WHERE " + OrganisationUnitProgramLinkModel.Columns.ORGANISATION_UNIT + " = '%s'" +
+            " AND + " + Columns.DISPLAY_NAME + " LIKE '%%%s%%';";
 
     private final BriteDatabase database;
     private final String parentUid;
@@ -40,11 +41,11 @@ final class ProgramRepositoryImpl implements SelectionRepository {
 
     @NonNull
     @Override
-    public Flowable<List<SelectionViewModel>> list() {
-        return toV2Flowable(database.createQuery(TABLES, STATEMENT, parentUid)
+    public Flowable<List<SelectionViewModel>> search(@NonNull String query) {
+        return toV2Flowable(database.createQuery(TABLES, String.format(Locale.US,
+                STATEMENT, parentUid, escapeSqlToken(query)))
                 .mapToList(cursor -> SelectionViewModel.create(
                         cursor.getString(0), cursor.getString(1)))
         );
     }
-
 }
