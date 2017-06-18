@@ -5,10 +5,12 @@ import android.support.annotation.NonNull;
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
-class DashboardPresenterImpl implements DashboardPresenter {
+final class DashboardPresenterImpl implements DashboardPresenter {
 
     @NonNull
     private final String enrollmentUid;
@@ -22,13 +24,13 @@ class DashboardPresenterImpl implements DashboardPresenter {
     @NonNull
     private final CompositeDisposable compositeDisposable;
 
-    public DashboardPresenterImpl(@NonNull String enrollmentUid,
-                                  @NonNull SchedulerProvider schedulerProvider,
-                                  @NonNull DashboardRepository dashboardRepository) {
+    DashboardPresenterImpl(@NonNull String enrollmentUid,
+            @NonNull SchedulerProvider schedulerProvider,
+            @NonNull DashboardRepository dashboardRepository) {
         this.enrollmentUid = enrollmentUid;
         this.schedulerProvider = schedulerProvider;
         this.dashboardRepository = dashboardRepository;
-        compositeDisposable = new CompositeDisposable();
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -49,6 +51,16 @@ class DashboardPresenterImpl implements DashboardPresenter {
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(view.renderEvents(), Timber::e));
+
+        compositeDisposable.add(view.createEventActions()
+                .toFlowable(BackpressureStrategy.LATEST)
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.io())
+                .switchMap(click -> dashboardRepository.program(enrollmentUid))
+                .observeOn(schedulerProvider.ui())
+                .subscribe(view.navigateToCreateScreen(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
     }
 
     @Override

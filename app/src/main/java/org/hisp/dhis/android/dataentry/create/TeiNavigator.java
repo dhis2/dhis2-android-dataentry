@@ -2,26 +2,22 @@ package org.hisp.dhis.android.dataentry.create;
 
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.dataentry.reports.ReportsActivity;
-import org.hisp.dhis.android.dataentry.reports.ReportsArguments;
+import org.hisp.dhis.android.dataentry.form.FormActivity;
+import org.hisp.dhis.android.dataentry.form.FormViewArguments;
 
 final class TeiNavigator implements CreateItemsNavigator {
 
     @NonNull
     private final CreateItemsActivity currentActivity;
 
-    @NonNull
-    private final String teName;
-
-    TeiNavigator(@NonNull CreateItemsActivity activity, @NonNull String teName) {
+    TeiNavigator(@NonNull CreateItemsActivity activity) {
         this.currentActivity = activity;
-        this.teName = teName;
     }
 
     @Override
-    public void navigateTo(@NonNull String tei) {
-        currentActivity.startActivity(ReportsActivity.createIntent(currentActivity,
-                ReportsArguments.createForEnrollments(tei, teName)));
+    public void navigateTo(@NonNull String enrollment) {
+        currentActivity.startActivity(FormActivity.create(
+                currentActivity, FormViewArguments.createForEnrollment(enrollment)));
         currentActivity.finish();
     }
 }

@@ -5,20 +5,11 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 
-import com.squareup.sqlbrite.BriteDatabase;
-
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
-import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.create.CreateItemsActivity;
 import org.hisp.dhis.android.dataentry.create.CreateItemsArgument;
 import org.hisp.dhis.android.dataentry.reports.ReportsActivity;
 import org.hisp.dhis.android.dataentry.reports.ReportsArguments;
 import org.hisp.dhis.android.dataentry.reports.ReportsNavigator;
-
-import java.util.UUID;
 
 import timber.log.Timber;
 
@@ -30,15 +21,9 @@ final class SearchNavigator implements ReportsNavigator {
     @NonNull
     private final String teName;
 
-    // ToDo: remove
-    @NonNull
-    private final BriteDatabase briteDatabase;
-
     SearchNavigator(@NonNull Activity currentActivity, @NonNull String teName) {
         this.currentActivity = currentActivity;
         this.teName = teName;
-        this.briteDatabase = ((DhisApp) currentActivity.getApplication())
-                .appComponent().briteDatabase();
     }
 
     @Override
@@ -53,8 +38,7 @@ final class SearchNavigator implements ReportsNavigator {
         Timber.d("createFor(): %s", trackedEntity);
 
         currentActivity.startActivity(CreateItemsActivity.createIntent(currentActivity,
-                CreateItemsArgument.create("New Tracked Entity Instance ", trackedEntity, CreateItemsArgument.Type
-                        .TEI)));
+                CreateItemsArgument.create(trackedEntity, teName, CreateItemsArgument.Type.TEI)));
 
         /*TrackedEntityInstanceModel tei = TrackedEntityInstanceModel.builder()
                 .uid(UUID.randomUUID().toString())
@@ -67,14 +51,6 @@ final class SearchNavigator implements ReportsNavigator {
         Timber.d("Insert tei=[%d]", briteDatabase.insert(TrackedEntityInstanceModel.TABLE,
                 tei.toContentValues()));
 
-        EnrollmentModel enrollmentModel = EnrollmentModel.builder()
-                .uid(UUID.randomUUID().toString())
-                .trackedEntityInstance(tei.uid())
-                .organisationUnit("DiszpKrYNg8")
-                .program("IpHINAT79UW")
-                .state(State.TO_POST)
-                .enrollmentStatus(EnrollmentStatus.ACTIVE)
-                .build();
 
         navigateTo(tei.uid());
 

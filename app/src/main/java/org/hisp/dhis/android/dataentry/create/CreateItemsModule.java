@@ -13,9 +13,9 @@ import org.hisp.dhis.android.dataentry.create.CreateItemsArgument.Type;
 import dagger.Module;
 import dagger.Provides;
 
-@PerFragment
 @Module
-public class CreateItemsModule {
+@PerFragment
+public final class CreateItemsModule {
 
     @NonNull
     private final CreateItemsArgument argument;
@@ -28,19 +28,18 @@ public class CreateItemsModule {
         this.activity = activity;
     }
 
-    @PerFragment
     @Provides
+    @PerFragment
     CreateItemsRepository createItemsRepository(@NonNull BriteDatabase database,
-                                                @NonNull CodeGenerator codeGenerator,
-                                                @NonNull CurrentDateProvider currentDateProvider) {
+            @NonNull CodeGenerator codeGenerator, @NonNull CurrentDateProvider currentDateProvider) {
         if (argument.type() == Type.TEI) {
-            return new TeiRepositoryImpl(database, codeGenerator, currentDateProvider);
+            return new TeiRepositoryImpl(database, codeGenerator, currentDateProvider, argument.uid());
         } else if (argument.type() == Type.ENROLLMENT) {
             return new EnrollmentRepositoryImpl(database, codeGenerator,
                     currentDateProvider, argument.uid());
         } else if (argument.type() == Type.ENROLLMENT_EVENT) {
             return new EnrollmentEventRepositoryImpl(database, codeGenerator,
-                    currentDateProvider, argument.uid()); //TODO: add argument as argument ? type?
+                    currentDateProvider, argument.enrollment()); //TODO: add argument as argument ? type?
         } else if (argument.type() == Type.EVENT) {
             return new SingleEventRepositoryImpl(database, codeGenerator, currentDateProvider);
         } else {
@@ -48,21 +47,22 @@ public class CreateItemsModule {
         }
     }
 
-    @PerFragment
     @Provides
-    CreateItemsPresenter createItemsPresenter(CreateItemsRepository repository, SchedulerProvider schedulerProvider) {
+    @PerFragment
+    CreateItemsPresenter createItemsPresenter(@NonNull CreateItemsRepository repository,
+            @NonNull SchedulerProvider schedulerProvider) {
         return new CreateItemsPresenterImpl(argument, repository, schedulerProvider);
     }
 
-    @PerFragment
     @Provides
+    @PerFragment
     CreateItemsNavigator crateItemsNavigator() {
         if (argument.type() == Type.TEI) {
-            return new TeiNavigator(activity, "");
+            return new TeiNavigator(activity);
         } else if (argument.type() == Type.ENROLLMENT) {
-            return new EnrollmentsNavigator(activity);
+            return new EnrollmentNavigator(activity);
         } else if (argument.type() == Type.ENROLLMENT_EVENT) {
-            return new EnrollmentsNavigator(activity);
+            return new EnrollmentEventNavigator(activity);
         } else if (argument.type() == Type.EVENT) {
             return new SingleEventsNavigator(activity);
         } else {

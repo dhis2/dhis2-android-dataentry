@@ -1,5 +1,7 @@
 package org.hisp.dhis.android.dataentry.create;
 
+import android.support.annotation.NonNull;
+
 import org.hisp.dhis.android.dataentry.commons.dagger.PerFragment;
 
 import dagger.Subcomponent;
@@ -7,7 +9,5 @@ import dagger.Subcomponent;
 @PerFragment
 @Subcomponent(modules = CreateItemsModule.class)
 public interface CreateItemsComponent {
-
-    void inject(CreateItemsFragment fragment);
-
+    void inject(@NonNull CreateItemsFragment fragment);
 }

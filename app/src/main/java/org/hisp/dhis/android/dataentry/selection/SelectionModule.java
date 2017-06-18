@@ -36,7 +36,8 @@ public final class SelectionModule {
     @PerFragment
     SelectionNavigator selectionNavigator() {
         if (argument.type() == SelectionArgument.Type.ORGANISATION ||
-                argument.type() == SelectionArgument.Type.PROGRAM) {
+                argument.type() == SelectionArgument.Type.PROGRAM ||
+                argument.type() == SelectionArgument.Type.PROGRAM_STAGE) {
             return new OnActivityResultNavigator(selectionDialogFragment);
         } else {
             throw new IllegalArgumentException("Unsupported type: " + argument.type());
@@ -50,6 +51,8 @@ public final class SelectionModule {
             return new OrganisationUnitRepositoryImpl(database);
         } else if (argument.type() == SelectionArgument.Type.PROGRAM) {
             return new ProgramRepositoryImpl(database, argument.uid());
+        } else if (argument.type() == SelectionArgument.Type.PROGRAM_STAGE) {
+            return new ProgramStageRepositoryImpl(database, argument.uid());
         } else {
             throw new IllegalArgumentException("Unsupported type: " + argument.type());
         }

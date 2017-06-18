@@ -37,15 +37,18 @@ import timber.log.Timber;
 import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
 public class CreateItemsFragment extends BaseFragment implements CreateItemsView {
-
     private static final String ARG_CREATE = "arg:create";
-    public static final String ARG_SELECTIONS = "arg:selectionStates";
-    public static final String TAG_SELECTION_DIALOG_FRAGMENT = "tag:selectionDialogFragment";
-    public static final int FIRST_SELECTION = 0;
-    public static final int SECOND_SELECTION = 1;
-    private static final int[] REQUEST_CODES = {FIRST_SELECTION, SECOND_SELECTION}; //request codes for the
-    // DialogFragment. index should match the card view index.
-    public static final int SELECTORS_COUNT = 2;
+    private static final String ARG_SELECTIONS = "arg:selectionStates";
+    private static final String TAG_SELECTION_DIALOG_FRAGMENT = "tag:selectionDialogFragment";
+
+    private static final int FIRST_SELECTION = 0;
+    private static final int SECOND_SELECTION = 1;
+    private static final int SELECTORS_COUNT = 2;
+
+    // request codes for the
+    private static final int[] REQUEST_CODES = {
+            FIRST_SELECTION, SECOND_SELECTION
+    };
 
     @BindView(R.id.text_selection1)
     FontTextView selectionTextView1;
@@ -85,10 +88,10 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        isNull(getArguments().<CreateItemsArgument>getParcelable(ARG_CREATE), "CreteArgument must be supplied");
-
+        CreateItemsArgument createItemsArgument =
+                getArguments().getParcelable(ARG_CREATE);
         ((DhisApp) context.getApplicationContext()).userComponent()
-                .plus(new CreateItemsModule(getArguments().getParcelable(ARG_CREATE),
+                .plus(new CreateItemsModule(createItemsArgument,
                         (CreateItemsActivity) getActivity()))
                 .inject(this);
     }
@@ -97,14 +100,13 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(ARG_SELECTIONS,
-                new ArrayList<>(Arrays.asList(this.state1, this.state2))
-        );
+                new ArrayList<>(Arrays.asList(this.state1, this.state2)));
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_create, container, false);
     }
 
@@ -128,7 +130,6 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
         selectionTextView1.setHint(state1.label());
         selectionTextView2.setText(state2.name());
         selectionTextView2.setHint(state2.label());
-
     }
 
     @NonNull
@@ -138,17 +139,22 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
         String selection1Label;
         String selection2Label;
 
-        if (createArgument.type() == CreateItemsArgument.Type.EVENT ||
-                createArgument.type() == CreateItemsArgument.Type.ENROLLMENT_EVENT) {
+        if (createArgument.type() == CreateItemsArgument.Type.EVENT) {
+            selection2Type = SelectionArgument.Type.PROGRAM;
+            selection2Label = getString(R.string.program);
+        } else if (createArgument.type() == CreateItemsArgument.Type.ENROLLMENT_EVENT) {
             selection2Type = SelectionArgument.Type.PROGRAM_STAGE;
             selection2Label = getString(R.string.program_stage);
-        } else if (createArgument.type() == CreateItemsArgument.Type.TEI ||
-                createArgument.type() == CreateItemsArgument.Type.ENROLLMENT) {
+        } else if (createArgument.type() == CreateItemsArgument.Type.TEI) {
+            selection2Type = SelectionArgument.Type.PROGRAM;
+            selection2Label = getString(R.string.program);
+        } else if (createArgument.type() == CreateItemsArgument.Type.ENROLLMENT) {
             selection2Type = SelectionArgument.Type.PROGRAM;
             selection2Label = getString(R.string.program);
         } else {
             throw new IllegalStateException("Unknown CreateItemsArgument type.");
         }
+
         selection1Type = SelectionArgument.Type.ORGANISATION;
         selection1Label = getString(R.string.organisation);
 

@@ -7,7 +7,10 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.State;
+import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 import org.hisp.dhis.android.dataentry.commons.utils.CodeGenerator;
@@ -38,8 +41,21 @@ public class TeiRepositoryIntegrationTests {
             TrackedEntityInstanceModel.Columns.STATE,
     };
 
+    private static final String[] ENROLLMENT_PROJECTION = {
+            EnrollmentModel.Columns.UID,
+            EnrollmentModel.Columns.CREATED,
+            EnrollmentModel.Columns.LAST_UPDATED,
+            EnrollmentModel.Columns.DATE_OF_ENROLLMENT,
+            EnrollmentModel.Columns.ORGANISATION_UNIT,
+            EnrollmentModel.Columns.PROGRAM,
+            EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
+            EnrollmentModel.Columns.ENROLLMENT_STATUS,
+            EnrollmentModel.Columns.STATE
+    };
+
     private static final String TRACKED_ENTITY_UID = "tracked_entity_uid";
     private static final String ORGANIZATION_UNIT_UID = "organization_unit_uid";
+    private static final String PROGRAM_UID = "program_uid";
     private static final String TEST_CODE = "test_code";
 
     @Rule
@@ -59,18 +75,23 @@ public class TeiRepositoryIntegrationTests {
         trackedEntity.put(TrackedEntityModel.Columns.UID, TRACKED_ENTITY_UID);
         db.insert(TrackedEntityModel.TABLE, null, trackedEntity);
 
+        ContentValues program = new ContentValues();
+        program.put(ProgramModel.Columns.UID, PROGRAM_UID);
+        program.put(ProgramModel.Columns.TRACKED_ENTITY, TRACKED_ENTITY_UID);
+        db.insert(ProgramModel.TABLE, null, program);
+
         Date currentDate = BaseIdentifiableObject.DATE_FORMAT.parse(CURRENT_DATE);
 
         CodeGenerator codeGenerator = () -> TEST_CODE;
         CurrentDateProvider currentDateProvider = () -> currentDate;
         createItemsRepository = new TeiRepositoryImpl(databaseRule.briteDatabase(),
-                codeGenerator, currentDateProvider);
+                codeGenerator, currentDateProvider, TRACKED_ENTITY_UID);
     }
 
     @Test
     public void saveMustPersistTeiWithCorrectProperties() {
         TestObserver<String> testObserver = createItemsRepository.save(
-                ORGANIZATION_UNIT_UID, TRACKED_ENTITY_UID).test();
+                ORGANIZATION_UNIT_UID, PROGRAM_UID).test();
 
         testObserver.assertNoErrors();
         testObserver.assertComplete();
@@ -82,6 +103,11 @@ public class TeiRepositoryIntegrationTests {
                 .query(TrackedEntityInstanceModel.TABLE, PROJECTION, null, null, null, null, null))
                 .hasRow(TEST_CODE, CURRENT_DATE, CURRENT_DATE, ORGANIZATION_UNIT_UID,
                         TRACKED_ENTITY_UID, State.TO_POST.name())
+                .isExhausted();
+        assertThatCursor(databaseRule.database()
+                .query(EnrollmentModel.TABLE, ENROLLMENT_PROJECTION, null, null, null, null, null))
+                .hasRow(TEST_CODE, CURRENT_DATE, CURRENT_DATE, CURRENT_DATE, ORGANIZATION_UNIT_UID,
+                        PROGRAM_UID, TEST_CODE, EnrollmentStatus.ACTIVE.name(), State.TO_POST.name())
                 .isExhausted();
     }
 

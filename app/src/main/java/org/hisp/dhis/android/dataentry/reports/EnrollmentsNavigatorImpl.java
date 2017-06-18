@@ -14,7 +14,7 @@ final class EnrollmentsNavigatorImpl implements ReportsNavigator {
     @NonNull
     private final Activity currentActivity;
 
-    public EnrollmentsNavigatorImpl(@NonNull Activity currentActivity) {
+    EnrollmentsNavigatorImpl(@NonNull Activity currentActivity) {
         this.currentActivity = currentActivity;
     }
 
@@ -28,9 +28,9 @@ final class EnrollmentsNavigatorImpl implements ReportsNavigator {
     @Override
     public void createFor(@NonNull String trackedEntityInstanceUid) {
         Timber.d("createFor(): %s", trackedEntityInstanceUid);
-        //TODO: find a way to put a transatable heading in here: New Event or just the Program name ?..etc
+        // ToDo: replace hardcoded prompt
         currentActivity.startActivity(CreateItemsActivity.createIntent(currentActivity,
-                CreateItemsArgument.create("New Enrollment ", trackedEntityInstanceUid, CreateItemsArgument.Type
-                        .ENROLLMENT)));
+                CreateItemsArgument.create(trackedEntityInstanceUid, "New Enrollment ",
+                        CreateItemsArgument.Type.ENROLLMENT)));
     }
 }
