@@ -40,17 +40,11 @@ public class OptionSetSelectionRepositoryIntegrationTests {
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
 
-    private Date date;
-    private String dateString;
-
+    // under tests
     private SelectionRepository repository;
-    private TestSubscriber<List<SelectionViewModel>> subscriber;
 
     @Before
     public void setup() {
-        date = new Date();
-        dateString = date.toString();
-
         SQLiteDatabase database = databaseRule.database();
         repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase(), OPTIONSET_UID);
 
@@ -61,7 +55,7 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
     @Test
     public void searchMustReturnAllMatchingOptions() {
-        subscriber = repository.search("option").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("option").test();
 
         // happy path test: verify that one OptionSet with two options is in there.
         subscriber.assertValueCount(1);
@@ -76,7 +70,7 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
     @Test
     public void searchMustReturnAllOptionsOnEmptyQuery() {
-        subscriber = repository.search("").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("").test();
 
         // happy path test: verify that one OptionSet with two options is in there.
         subscriber.assertValueCount(1);
@@ -91,7 +85,7 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
     @Test
     public void searchMustNotReturnNonMatchingOptions() {
-        subscriber = repository.search("random_option").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("random_option").test();
 
         // happy path test: verify that one OptionSet with two options is in there.
         subscriber.assertValueCount(1);
@@ -104,7 +98,7 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
     @Test
     public void searchMustObserveUpdatesInOptionTable() {
-        subscriber = repository.search("option").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("option").test();
 
         // change name of option & verify that it happens.
         subscriber.assertValueCount(1);
@@ -126,7 +120,7 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
     @Test
     public void searchMustObserveInsertsInOptionTable() {
-        subscriber = repository.search("option").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("option").test();
 
         // add an option & verify that it happens.
         subscriber.assertValueCount(1);
@@ -149,7 +143,7 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
     @Test
     public void searchMustObserveDeletesInOptionTable() {
-        subscriber = repository.search("option").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("option").test();
         // delete the option & verify that it is observed.
 
         subscriber.assertValueCount(1);
@@ -170,7 +164,7 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
     @Test
     public void searchMustObserveParentTable() {
-        subscriber = repository.search("option").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("option").test();
 
         // delete an option set and verify that fk constrained
         // options are updated and the client is updated...
@@ -191,6 +185,7 @@ public class OptionSetSelectionRepositoryIntegrationTests {
     @Test
     public void searchMustReturnEmptyListOnWrongParent() {
         repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase(), "wrong");
+
         // try to retrieve optionSet that is not in db
         TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("option").test();
 
@@ -208,8 +203,8 @@ public class OptionSetSelectionRepositoryIntegrationTests {
         values.put(OptionSetModel.Columns.CODE, OPTIONSET_CODE);
         values.put(OptionSetModel.Columns.NAME, OPTIONSET_NAME);
         values.put(OptionSetModel.Columns.DISPLAY_NAME, displayName);
-        values.put(OptionSetModel.Columns.CREATED, dateString);
-        values.put(OptionSetModel.Columns.LAST_UPDATED, dateString);
+        values.put(OptionSetModel.Columns.CREATED, new Date().toString());
+        values.put(OptionSetModel.Columns.LAST_UPDATED, new Date().toString());
         values.put(OptionSetModel.Columns.VERSION, OPTIONSET_VERSION);
         values.put(OptionSetModel.Columns.VALUE_TYPE, OPTIONSET_TEXT);
         return values;
@@ -221,8 +216,8 @@ public class OptionSetSelectionRepositoryIntegrationTests {
         values.put(OptionModel.Columns.CODE, OPTION_CODE);
         values.put(OptionModel.Columns.NAME, OPTION_NAME);
         values.put(OptionModel.Columns.DISPLAY_NAME, displayName);
-        values.put(OptionModel.Columns.CREATED, dateString);
-        values.put(OptionModel.Columns.LAST_UPDATED, dateString);
+        values.put(OptionModel.Columns.CREATED, new Date().toString());
+        values.put(OptionModel.Columns.LAST_UPDATED, new Date().toString());
         values.put(OptionModel.Columns.OPTION_SET, optionSetUid);
         return values;
     }
