@@ -63,7 +63,7 @@ final class SelectionPresenterImpl implements SelectionPresenter {
         compositeDisposable.add(selectionView.searchResultClicks()
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
-                .switchMap(selectionHandler::viewModelProcessor)
+                .switchMap(viewModel -> selectionHandler.viewModelProcessor(viewModel))
                 .observeOn(schedulerProvider.ui())
                 .subscribe(selectionView.navigateTo(), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);

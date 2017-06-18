@@ -19,6 +19,7 @@ import org.hisp.dhis.android.dataentry.selection.SelectionDialogFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -41,6 +42,7 @@ final class OptionsViewHolder extends RecyclerView.ViewHolder {
     OptionsViewModel viewModel;
 
     @SuppressWarnings("CheckReturnValue")
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
     OptionsViewHolder(@NonNull FragmentManager manager,
             @NonNull View itemView, @NonNull ViewGroup parent,
             @NonNull FlowableProcessor<RowAction> processor,

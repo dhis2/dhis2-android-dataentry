@@ -179,7 +179,7 @@ public class SelectionDialogFragment extends AppCompatDialogFragment implements 
     @NonNull
     @Override
     public Consumer<List<SelectionViewModel>> renderSearchResults() {
-        return selectionAdapter::update;
+        return viewModels -> selectionAdapter.update(viewModels);
     }
 
     @NonNull
@@ -191,7 +191,7 @@ public class SelectionDialogFragment extends AppCompatDialogFragment implements 
     @NonNull
     @Override
     public Consumer<SelectionViewModel> navigateTo() {
-        return selectionNavigator::navigateTo;
+        return viewModel -> selectionNavigator.navigateTo(viewModel);
     }
 
     @OnClick(R.id.button_selection_dialog_cancel)

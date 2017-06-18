@@ -17,6 +17,7 @@ import org.hisp.dhis.android.dataentry.selection.SelectionDialogAdapter.Selectio
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 import rx.exceptions.OnErrorNotImplementedException;
@@ -74,6 +75,7 @@ final class SelectionDialogAdapter extends Adapter<SelectionViewHolder> {
         SelectionViewModel selectionViewModel;
 
         @SuppressWarnings("CheckReturnValue")
+        @SuppressFBWarnings({"RV_RETURN_VALUE_IGNORED", "BC_UNCONFIRMED_CAST"})
         SelectionViewHolder(@NonNull View itemView, @NonNull ViewGroup parent) {
             super(itemView);
             textView = (TextView) itemView;
