@@ -15,7 +15,7 @@ import java.util.List;
 public abstract class CreateItemsArgument implements Parcelable {
 
     public enum Type {
-        TEI, EVENT, ENROLMENT_EVENT, ENROLLMENT
+        TEI, EVENT, ENROLLMENT_EVENT, ENROLLMENT
     }
 
     @NonNull
@@ -35,7 +35,7 @@ public abstract class CreateItemsArgument implements Parcelable {
         SelectionArgument.Type firstType;
         SelectionArgument.Type secondType;
 
-        if (type == Type.ENROLMENT_EVENT) {
+        if (type == Type.ENROLLMENT_EVENT) {
             firstType = SelectionArgument.Type.PROGRAM;
             secondType = SelectionArgument.Type.PROGRAM_STAGE;
         } else {

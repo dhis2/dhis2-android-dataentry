@@ -139,7 +139,7 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
         String selection2Label;
 
         if (createArgument.type() == CreateItemsArgument.Type.EVENT ||
-                createArgument.type() == CreateItemsArgument.Type.ENROLMENT_EVENT) {
+                createArgument.type() == CreateItemsArgument.Type.ENROLLMENT_EVENT) {
             selection2Type = SelectionArgument.Type.PROGRAM_STAGE;
             selection2Label = getString(R.string.program_stage);
         } else if (createArgument.type() == CreateItemsArgument.Type.TEI ||

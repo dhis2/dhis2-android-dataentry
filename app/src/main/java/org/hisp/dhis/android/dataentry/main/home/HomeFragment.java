@@ -86,7 +86,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
                         SearchArguments.create(homeEntity.id(), homeEntity.title())));
             }*/
             startActivity(CreateItemsActivity.createIntent(getActivity(),
-                    CreateItemsArgument.create("Something", "uy2gU8kT1jF", CreateItemsArgument.Type.ENROLMENT_EVENT)));
+                    CreateItemsArgument.create("Something", "uy2gU8kT1jF", CreateItemsArgument.Type.ENROLLMENT_EVENT)));
         });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());

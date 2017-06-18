@@ -79,7 +79,7 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                     .filter(event -> !createItemsView.getSelectionState(FIRST_SELECTION).uid().isEmpty())
                     .subscribe(event -> {
                                 if (argument.type() == CreateItemsArgument.Type.EVENT ||
-                                        argument.type() == CreateItemsArgument.Type.ENROLMENT_EVENT) {
+                                        argument.type() == CreateItemsArgument.Type.ENROLLMENT_EVENT) {
                                     createItemsView.showDialog2(argument.uid());
                                 } else if (argument.type() == CreateItemsArgument.Type.TEI ||
                                         argument.type() == CreateItemsArgument.Type.ENROLLMENT) {
@@ -93,23 +93,33 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
             disposable.add(createItemsView.createButtonClick()
                     .debounce(DEBOUNCE, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
-                    //TODO: test for this in the tests:
+                    //TODO: test for this in the tests: testy testy test
                     .filter(event -> (!event.val0().isEmpty()) && (!event.val1().isEmpty()))
                     .observeOn(schedulerProvider.io())
                     .switchMap(event -> {
-                        Timber.d("Event = " + event.toString());
-                      /*  if (argument.type() == CreateItemsArgument.Type.EVENT ||
-                                argument.type() == CreateItemsArgument.Type.ENROLMENT_EVENT) {
-                            return repository.save(event.val0(), event.val1());
-                        }  else if (argument.type() == CreateItemsArgument.Type.TEI ||
-                                argument.type() == CreateItemsArgument.Type.ENROLLMENT) {
-                        }*/
-                        return repository.save(event.val0(), event.val1());
+                        Timber.d("Selection for " + argument.type() + "= " + event.toString());
+                        //val0 is always OrganisationUnit.
+                        if (argument.type() == CreateItemsArgument.Type.ENROLLMENT) {
+                            //val1:Program. Maybe tei uid can be passed through argument.uid() ?
+                            return repository.save(event.val0(), event.val1()); //Foreign key exception.
+                        } else if (argument.type() == CreateItemsArgument.Type.TEI) {
+                            //val1:Program
+                            return repository.save(event.val0(), event.val1()); //Foreign key exception.
+                        } else if (argument.type() == CreateItemsArgument.Type.EVENT) {
+                            //val1:ProgramStage //? requires Program? I have ProgramStage. Maybe I can have Program
+                            // from argument.uid() depending on CreateArguments creator.
+                            return repository.save(event.val0(), event.val1()); // Hangs. save never emits.
+                        } else if (argument.type() == CreateItemsArgument.Type.ENROLLMENT_EVENT) {
+                            //val1:ProgramStage
+                            return repository.save(event.val0(), event.val1());//Seems to work ok.
+                        } else {
+                            throw new IllegalArgumentException("Unknown type. ");
+                        }
                             }
                     )
                     .observeOn(schedulerProvider.ui())
                     .subscribe(uid -> {
-                        Timber.d("Uid = " + uid);
+                        Timber.d("Created Uid = " + uid);
                         createItemsView.navigateNext(uid);
                     }, err -> {
                         throw new OnErrorNotImplementedException(err);

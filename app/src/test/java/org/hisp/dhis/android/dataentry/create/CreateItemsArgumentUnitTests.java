@@ -58,7 +58,7 @@ public class CreateItemsArgumentUnitTests {
 
     @Test
     public void createWithEnrollment_Event() {
-        CreateItemsArgument.Type argType = CreateItemsArgument.Type.ENROLMENT_EVENT;
+        CreateItemsArgument.Type argType = CreateItemsArgument.Type.ENROLLMENT_EVENT;
         CreateItemsArgument arg = CreateItemsArgument.create(ARG_NAME, ARG_UID, argType);
 
         assertThat(arg.name()).isEqualTo(ARG_NAME);

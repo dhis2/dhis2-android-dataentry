@@ -38,7 +38,7 @@ public class CreateItemsModule {
         } else if (argument.type() == Type.ENROLLMENT) {
             return new EnrollmentRepositoryImpl(database, codeGenerator,
                     currentDateProvider, argument.uid());
-        } else if (argument.type() == Type.ENROLMENT_EVENT) {
+        } else if (argument.type() == Type.ENROLLMENT_EVENT) {
             return new EnrollmentEventRepositoryImpl(database, codeGenerator,
                     currentDateProvider, argument.uid()); //TODO: add argument as argument ? type?
         } else if (argument.type() == Type.EVENT) {
@@ -61,7 +61,7 @@ public class CreateItemsModule {
             return new TeiNavigator(activity, "");
         } else if (argument.type() == Type.ENROLLMENT) {
             return new EnrollmentsNavigator(activity);
-        } else if (argument.type() == Type.ENROLMENT_EVENT) {
+        } else if (argument.type() == Type.ENROLLMENT_EVENT) {
             return new EnrollmentsNavigator(activity);
         } else if (argument.type() == Type.EVENT) {
             return new SingleEventsNavigator(activity);
