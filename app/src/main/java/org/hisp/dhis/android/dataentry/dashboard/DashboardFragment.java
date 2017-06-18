@@ -25,6 +25,7 @@ import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
 import org.hisp.dhis.android.dataentry.commons.ui.FontTextView;
+import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
 import org.hisp.dhis.android.dataentry.form.FormActivity;
 import org.hisp.dhis.android.dataentry.form.FormViewArguments;
 
@@ -38,8 +39,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import io.reactivex.functions.Consumer;
 
-import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
-
+@SuppressWarnings("PMD.ExcessiveImports")
 public class DashboardFragment extends BaseFragment implements DashboardView {
 
     private static final String ARG_ENROLLMENT_UID = "enrollmentUid";
@@ -120,7 +120,7 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        String enrollmentUid = isNull(getArguments()
+        String enrollmentUid = Preconditions.isNull(getArguments()
                 .getString(ARG_ENROLLMENT_UID), "enrollmentUid == null");
         getUserComponent()
                 .plus(new DashboardModule(enrollmentUid))
