@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:minHeight="428dp"
-              android:minWidth="296dp"
-              android:orientation="vertical">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="428dp"
+    android:minWidth="296dp"
+    android:orientation="vertical">
 
-    <!--android:background="@color/color_primary_light"-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,9 +17,8 @@
         android:orientation="horizontal"
         android:weightSum="1">
 
-
         <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
-            android:id="@+id/selection_dialog_title"
+            android:id="@+id/textview_selection_dialog_title"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -29,9 +28,8 @@
             android:textSize="@dimen/text_size_large"
             app:font="@string/font_name_condensed"/>
 
-
         <ImageButton
-            android:id="@+id/selection_dialog_cancel"
+            android:id="@+id/button_selection_dialog_cancel"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:background="?attr/selectableItemBackground"
@@ -42,16 +40,16 @@
     </LinearLayout>
 
     <android.support.v7.widget.SearchView
-        android:id="@+id/selection_dialog_searchview"
+        android:id="@+id/searchview_selection_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:defaultQueryHint="@string/selection_hint"
-        app:iconifiedByDefault="false"
-        />
+        app:iconifiedByDefault="false"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/selection_dialog_recyclerView"
+        android:id="@+id/recyclerview_selection_dialog"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"/>
 </LinearLayout>

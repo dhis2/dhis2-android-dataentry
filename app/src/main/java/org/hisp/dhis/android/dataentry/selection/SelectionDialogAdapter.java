@@ -41,7 +41,7 @@ final class SelectionDialogAdapter extends Adapter<SelectionViewHolder> {
     @Override
     public SelectionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new SelectionViewHolder(inflater.inflate(
-                R.layout.recyclerview_selection_list, parent, false), parent);
+                R.layout.recyclerview_selection_item, parent, false), parent);
     }
 
     @Override

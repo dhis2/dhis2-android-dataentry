@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,7 @@ import com.jakewharton.rxbinding2.support.v7.widget.SearchViewQueryTextEvent;
 
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
 import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryStoreModule;
 
 import java.util.List;
@@ -57,13 +59,13 @@ public class SelectionDialogFragment extends AppCompatDialogFragment implements 
     private static final String SELECTION_ARG = "arg:selectionArg";
     private static final String OPTION_SELECTION_ARG = "arg:optionSelectionArgs";
 
-    @BindView(R.id.selection_dialog_title)
+    @BindView(R.id.textview_selection_dialog_title)
     TextView titleView;
 
-    @BindView(R.id.selection_dialog_searchview)
+    @BindView(R.id.searchview_selection_dialog)
     SearchView searchView;
 
-    @BindView(R.id.selection_dialog_recyclerView)
+    @BindView(R.id.recyclerview_selection_dialog)
     RecyclerView selectionListView;
 
     @Inject
@@ -121,7 +123,7 @@ public class SelectionDialogFragment extends AppCompatDialogFragment implements 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.selection_dialog_option, container, false);
+        return inflater.inflate(R.layout.fragment_selection, container, false);
     }
 
     @Override
@@ -140,6 +142,8 @@ public class SelectionDialogFragment extends AppCompatDialogFragment implements 
         selectionAdapter = new SelectionDialogAdapter(LayoutInflater.from(getActivity()));
         selectionListView.setLayoutManager(new LinearLayoutManager(getActivity()));
         selectionListView.setAdapter(selectionAdapter);
+        selectionListView.addItemDecoration(new DividerDecoration(ContextCompat.getDrawable(
+                selectionListView.getContext(), R.drawable.divider)));
     }
 
     @Override
@@ -190,7 +194,7 @@ public class SelectionDialogFragment extends AppCompatDialogFragment implements 
         return selectionNavigator::navigateTo;
     }
 
-    @OnClick(R.id.selection_dialog_cancel)
+    @OnClick(R.id.button_selection_dialog_cancel)
     public void onCancelClick() {
         dismiss();
     }
