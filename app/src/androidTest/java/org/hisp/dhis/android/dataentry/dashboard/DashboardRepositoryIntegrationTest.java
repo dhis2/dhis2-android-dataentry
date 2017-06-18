@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
+import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
@@ -121,6 +122,16 @@ public class DashboardRepositoryIntegrationTest {
         firstNameAttribute.put(TrackedEntityAttributeModel.Columns.DISPLAY_NAME, "First name");
         firstNameAttribute.put(TrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST_NO_PROGRAM, 1);
         briteDb.insert(TrackedEntityAttributeModel.TABLE, firstNameAttribute);
+
+        ContentValues firstNameProgramAttribute = new ContentValues();
+        firstNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.UID, "first_name_program_attribute_uid");
+        firstNameProgramAttribute.put(
+                ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE, "first_name_attribute_uid");
+        firstNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.PROGRAM, "program_uid");
+        firstNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST, "1");
+        firstNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER, "1");
+        briteDb.insert(ProgramTrackedEntityAttributeModel.TABLE, firstNameProgramAttribute);
+
         // with corresponding value
         ContentValues firstNameValue = new ContentValues();
         firstNameValue.put(TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE, "first_name_attribute_uid");
@@ -145,6 +156,16 @@ public class DashboardRepositoryIntegrationTest {
         lastNameAttribute.put(TrackedEntityAttributeModel.Columns.DISPLAY_NAME, "Last name");
         lastNameAttribute.put(TrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST_NO_PROGRAM, 1);
         briteDb.insert(TrackedEntityAttributeModel.TABLE, lastNameAttribute);
+
+        ContentValues lastNameProgramAttribute = new ContentValues();
+        lastNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.UID, "last_name_program_attribute_uid");
+        lastNameProgramAttribute.put(
+                ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE, "last_name_attribute_uid");
+        lastNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.PROGRAM, "program_uid");
+        lastNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST, "1");
+        lastNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER, "2");
+        briteDb.insert(ProgramTrackedEntityAttributeModel.TABLE, lastNameProgramAttribute);
+
         // with corresponding value
         ContentValues lastNameValue = new ContentValues();
         lastNameValue.put(TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE, "last_name_attribute_uid");
@@ -172,9 +193,17 @@ public class DashboardRepositoryIntegrationTest {
         ContentValues firstNameAttribute = new ContentValues();
         firstNameAttribute.put(TrackedEntityAttributeModel.Columns.UID, "first_name_attribute_uid");
         firstNameAttribute.put(TrackedEntityAttributeModel.Columns.DISPLAY_NAME, "First name");
-        // not marked as display in list
-        firstNameAttribute.put(TrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST_NO_PROGRAM, 0);
         briteDb.insert(TrackedEntityAttributeModel.TABLE, firstNameAttribute);
+
+        ContentValues firstNameProgramAttribute = new ContentValues();
+        firstNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.UID, "first_name_program_attribute_uid");
+        firstNameProgramAttribute.put(
+                ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE, "first_name_attribute_uid");
+        firstNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.PROGRAM, "program_uid");
+        // not marked as display in list
+        firstNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST, "0");
+        firstNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER, "1");
+        briteDb.insert(ProgramTrackedEntityAttributeModel.TABLE, firstNameProgramAttribute);
 
         ContentValues firstNameValue = new ContentValues();
         firstNameValue.put(TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE, "first_name_attribute_uid");
@@ -200,9 +229,16 @@ public class DashboardRepositoryIntegrationTest {
         ContentValues firstNameAttribute = new ContentValues();
         firstNameAttribute.put(TrackedEntityAttributeModel.Columns.UID, "first_name_attribute_uid");
         firstNameAttribute.put(TrackedEntityAttributeModel.Columns.DISPLAY_NAME, "First name");
-        firstNameAttribute.put(TrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST_NO_PROGRAM, 1);
-        firstNameAttribute.put(TrackedEntityAttributeModel.Columns.SORT_ORDER_IN_LIST_NO_PROGRAM, 2);
         briteDb.insert(TrackedEntityAttributeModel.TABLE, firstNameAttribute);
+
+        ContentValues firstNameProgramAttribute = new ContentValues();
+        firstNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.UID, "first_name_program_attribute_uid");
+        firstNameProgramAttribute.put(
+                ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE, "first_name_attribute_uid");
+        firstNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.PROGRAM, "program_uid");
+        firstNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST, "1");
+        firstNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER, "2");
+        briteDb.insert(ProgramTrackedEntityAttributeModel.TABLE, firstNameProgramAttribute);
 
         ContentValues firstNameValue = new ContentValues();
         firstNameValue.put(TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE, "first_name_attribute_uid");
@@ -213,9 +249,16 @@ public class DashboardRepositoryIntegrationTest {
         ContentValues lastNameAttribute = new ContentValues();
         lastNameAttribute.put(TrackedEntityAttributeModel.Columns.UID, "last_name_attribute_uid");
         lastNameAttribute.put(TrackedEntityAttributeModel.Columns.DISPLAY_NAME, "Last name");
-        lastNameAttribute.put(TrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST_NO_PROGRAM, 1);
-        lastNameAttribute.put(TrackedEntityAttributeModel.Columns.SORT_ORDER_IN_LIST_NO_PROGRAM, 1);
         briteDb.insert(TrackedEntityAttributeModel.TABLE, lastNameAttribute);
+
+        ContentValues lastNameProgramAttribute = new ContentValues();
+        lastNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.UID, "last_name_program_attribute_uid");
+        lastNameProgramAttribute.put(
+                ProgramTrackedEntityAttributeModel.Columns.TRACKED_ENTITY_ATTRIBUTE, "last_name_attribute_uid");
+        lastNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.PROGRAM, "program_uid");
+        lastNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.DISPLAY_IN_LIST, "1");
+        lastNameProgramAttribute.put(ProgramTrackedEntityAttributeModel.Columns.SORT_ORDER, "1");
+        briteDb.insert(ProgramTrackedEntityAttributeModel.TABLE, lastNameProgramAttribute);
 
         ContentValues lastNameValue = new ContentValues();
         lastNameValue.put(TrackedEntityAttributeValueModel.Columns.TRACKED_ENTITY_ATTRIBUTE, "last_name_attribute_uid");
