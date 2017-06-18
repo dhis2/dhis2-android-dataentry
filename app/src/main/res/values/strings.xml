@@ -30,6 +30,9 @@
     <string name="report_view_enrollment_status">Status</string>
     <string name="report_view_enrollment_date">Enrollment date</string>
 
+    <!-- CreateItemsActivity -->
+    <string name="create_event">Create event</string>
+
     <!-- Common dialogs -->
     <string name="option_confirm">OK</string>
 
