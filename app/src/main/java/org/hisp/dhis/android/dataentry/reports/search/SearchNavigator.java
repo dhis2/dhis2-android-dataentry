@@ -39,23 +39,5 @@ final class SearchNavigator implements ReportsNavigator {
 
         currentActivity.startActivity(CreateItemsActivity.createIntent(currentActivity,
                 CreateItemsArgument.create(trackedEntity, teName, CreateItemsArgument.Type.TEI)));
-
-        /*TrackedEntityInstanceModel tei = TrackedEntityInstanceModel.builder()
-                .uid(UUID.randomUUID().toString())
-                .trackedEntity(trackedEntity)
-                .organisationUnit("DiszpKrYNg8")
-                .state(State.TO_POST)
-                .build();
-
-        // insert dummy tei
-        Timber.d("Insert tei=[%d]", briteDatabase.insert(TrackedEntityInstanceModel.TABLE,
-                tei.toContentValues()));
-
-
-        navigateTo(tei.uid());
-
-        // insert dummy enrollment
-        Timber.d("Insert enrollment=[%d]", briteDatabase.insert(EnrollmentModel.TABLE,
-                enrollmentModel.toContentValues()));*/
     }
 }

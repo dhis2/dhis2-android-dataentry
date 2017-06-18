@@ -14,8 +14,10 @@ class DashboardAdapter extends RecyclerView.Adapter<DashboardViewHolder> {
 
     @NonNull
     private final List<EventViewModel> events;
+    private final DashboardViewHolder.OnEventClickListener onEventClickListener;
 
-    DashboardAdapter() {
+    DashboardAdapter(DashboardViewHolder.OnEventClickListener onEventClickListener) {
+        this.onEventClickListener = onEventClickListener;
         events = new ArrayList<>();
     }
 
@@ -23,7 +25,7 @@ class DashboardAdapter extends RecyclerView.Adapter<DashboardViewHolder> {
     public DashboardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new DashboardViewHolder(
                 LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.recyclerview_dashboard_event_item, parent, false));
+                        .inflate(R.layout.recyclerview_dashboard_event_item, parent, false), onEventClickListener);
     }
 
     @Override

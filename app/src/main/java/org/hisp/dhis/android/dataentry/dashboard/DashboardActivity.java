@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import org.hisp.dhis.android.dataentry.R;
 
@@ -35,5 +36,15 @@ public class DashboardActivity extends AppCompatActivity {
                         getIntent().getStringExtra(ARG_ENROLLMENT_UID)))
                 .commit();
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

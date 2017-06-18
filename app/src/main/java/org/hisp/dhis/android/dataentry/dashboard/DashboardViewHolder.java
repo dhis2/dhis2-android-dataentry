@@ -18,6 +18,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 class DashboardViewHolder extends RecyclerView.ViewHolder {
 
@@ -39,9 +40,17 @@ class DashboardViewHolder extends RecyclerView.ViewHolder {
     @NonNull
     private final Map<EventStatus, Integer> statusColors;
 
-    DashboardViewHolder(View itemView) {
+    private final OnEventClickListener onEventClickListener;
+    private EventViewModel eventViewModel;
+
+    interface OnEventClickListener {
+        void OnEventClicked(EventViewModel eventViewModel);
+    }
+
+    DashboardViewHolder(View itemView, OnEventClickListener onEventClickListener) {
         super(itemView);
         ButterKnife.bind(this, itemView);
+        this.onEventClickListener = onEventClickListener;
         statusIcons = new HashMap<>();
         statusColors = new HashMap<>();
         initCaches(itemView.getContext());
@@ -62,9 +71,17 @@ class DashboardViewHolder extends RecyclerView.ViewHolder {
     }
 
     void update(EventViewModel eventViewModel) {
+        this.eventViewModel = eventViewModel;
         name.setText(eventViewModel.title());
         date.setText(eventViewModel.date());
         statusIcon.setImageDrawable(statusIcons.get(eventViewModel.eventStatus()));
         statusBackground.setFillColor(statusColors.get(eventViewModel.eventStatus()));
+    }
+
+    @OnClick(R.id.event_item)
+    void onEventClick() {
+        if (onEventClickListener != null) {
+            onEventClickListener.OnEventClicked(eventViewModel);
+        }
     }
 }

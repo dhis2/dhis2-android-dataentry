@@ -51,7 +51,7 @@ public class MainPresenterUnitTests {
         userSubject = PublishProcessor.create();
         when(userRepository.me()).thenReturn(userSubject);
 
-        mainPresenter = new MainPresenterImpl(new MockSchedulersProvider(), userRepository);
+        mainPresenter = new MainPresenterImpl(null, new MockSchedulersProvider(), userRepository);
     }
 
     @Test

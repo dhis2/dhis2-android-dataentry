@@ -25,8 +25,8 @@ final class DashboardPresenterImpl implements DashboardPresenter {
     private final CompositeDisposable compositeDisposable;
 
     DashboardPresenterImpl(@NonNull String enrollmentUid,
-            @NonNull SchedulerProvider schedulerProvider,
-            @NonNull DashboardRepository dashboardRepository) {
+                           @NonNull SchedulerProvider schedulerProvider,
+                           @NonNull DashboardRepository dashboardRepository) {
         this.enrollmentUid = enrollmentUid;
         this.schedulerProvider = schedulerProvider;
         this.dashboardRepository = dashboardRepository;
@@ -50,7 +50,9 @@ final class DashboardPresenterImpl implements DashboardPresenter {
                 .events(enrollmentUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
-                .subscribe(view.renderEvents(), Timber::e));
+                .subscribe(view.renderEvents(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
 
         compositeDisposable.add(view.createEventActions()
                 .toFlowable(BackpressureStrategy.LATEST)
