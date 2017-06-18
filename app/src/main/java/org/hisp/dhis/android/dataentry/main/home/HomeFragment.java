@@ -17,13 +17,9 @@ import android.view.ViewGroup;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
-import org.hisp.dhis.android.dataentry.create.CreateItemsActivity;
-import org.hisp.dhis.android.dataentry.create.CreateItemsArgument;
 import org.hisp.dhis.android.dataentry.reports.ReportsActivity;
 import org.hisp.dhis.android.dataentry.reports.ReportsArguments;
 import org.hisp.dhis.android.dataentry.reports.search.SearchArguments;
-import org.hisp.dhis.android.dataentry.selection.SelectionArgument;
-import org.hisp.dhis.android.dataentry.selection.SelectionDialogFragment;
 
 import java.util.List;
 
@@ -88,11 +84,10 @@ public class HomeFragment extends BaseFragment implements HomeView {
                 startActivity(ReportsActivity.createIntent(getActivity(),
                         SearchArguments.create(homeEntity.id(), homeEntity.title())));
             }
-           /* startActivity(CreateItemsActivity.createIntent(getActivity(),
-                    CreateItemsArgument.create("Something", "uy2gU8kT1jF", CreateItemsArgument.Type.ENROLLMENT_EVENT)));
-        */});
+        });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(homeViewModelAdapter);
