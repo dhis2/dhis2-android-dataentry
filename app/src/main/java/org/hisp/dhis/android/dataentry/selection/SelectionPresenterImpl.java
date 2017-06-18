@@ -3,23 +3,25 @@ package org.hisp.dhis.android.dataentry.selection;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
-import org.hisp.dhis.android.dataentry.commons.ui.View;
 
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import rx.exceptions.OnErrorNotImplementedException;
 
-public final class SelectionPresenterImpl implements SelectionPresenter {
+final class SelectionPresenterImpl implements SelectionPresenter {
+    private static final int DEBOUNCE_TIME = 300;
 
-    public static final int DEBOUNCE_TIME = 300;
     @NonNull
-    private final SelectionArgument arg;
+    private final String name;
 
     @NonNull
     private final SelectionRepository repository;
+
+    @NonNull
+    private final SelectionHandler selectionHandler;
 
     @NonNull
     private final CompositeDisposable compositeDisposable;
@@ -27,39 +29,45 @@ public final class SelectionPresenterImpl implements SelectionPresenter {
     @NonNull
     private final SchedulerProvider schedulerProvider;
 
-    public SelectionPresenterImpl(@NonNull SelectionArgument arg, @NonNull SelectionRepository repository,
-                                  @NonNull SchedulerProvider schedulerProvider) {
-        this.arg = arg;
+    SelectionPresenterImpl(@NonNull String name,
+            @NonNull SelectionRepository repository,
+            @NonNull SelectionHandler selectionHandler,
+            @NonNull SchedulerProvider schedulerProvider) {
+        this.name = name;
         this.repository = repository;
+        this.selectionHandler = selectionHandler;
         this.schedulerProvider = schedulerProvider;
-        compositeDisposable = new CompositeDisposable();
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
-    public void onAttach(@NonNull View view) {
-        if (view instanceof SelectionView) {
-            SelectionView selectionView = (SelectionView) view;
-            selectionView.setTitle(arg.name());
+    public void onAttach(@NonNull SelectionView selectionView) {
+        compositeDisposable.add(Observable.just(name)
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(selectionView.renderTitle(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
 
-            compositeDisposable.add(selectionView.subscribeToSearchView()
-                    .toFlowable(BackpressureStrategy.LATEST)
-                    .subscribeOn(schedulerProvider.ui())
-                    .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
-                    .observeOn(schedulerProvider.io())
-                    .switchMap(query -> repository.list()
-                            .take(1)
-                            .flatMap(list -> Flowable.fromIterable(list))
-                            .filter(item -> item.label().contains(query.queryText().toString()))
-                            .toList()
-                            .toFlowable()
-                    )
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(selectionView.update(), throwable -> {
-                                throw new OnErrorNotImplementedException(throwable);
-                            }
-                    )
-            );
-        }
+        compositeDisposable.add(selectionView.searchView()
+                .toFlowable(BackpressureStrategy.LATEST)
+                .subscribeOn(schedulerProvider.ui())
+                .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
+                .observeOn(schedulerProvider.io())
+                .switchMap(query -> repository.search(query.queryText().toString()))
+                .observeOn(schedulerProvider.ui())
+                .subscribe(selectionView.renderSearchResults(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+
+        compositeDisposable.add(selectionView.searchResultClicks()
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.io())
+                .switchMap(selectionHandler::viewModelProcessor)
+                .observeOn(schedulerProvider.ui())
+                .subscribe(selectionView.navigateTo(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
     }
 
     @Override
