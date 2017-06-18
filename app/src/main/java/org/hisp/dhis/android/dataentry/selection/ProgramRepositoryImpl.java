@@ -22,11 +22,10 @@ import static org.hisp.dhis.android.dataentry.commons.utils.DbUtils.escapeSqlTok
 final class ProgramRepositoryImpl implements SelectionRepository {
     // Using a List of table names instead of a single one, such that the Brite
     // database knows to renderSearchResults us on change of either.
-    private static final List<String> TABLES = Collections.unmodifiableList(Arrays.asList(ProgramModel.TABLE,
-            OrganisationUnitProgramLinkModel.ORGANISATION_UNIT_PROGRAM_LINK, OrganisationUnitModel.TABLE));
-
+    private static final List<String> TABLES = Collections.unmodifiableList(Arrays.asList(
+            ProgramModel.TABLE, OrganisationUnitProgramLinkModel.TABLE, OrganisationUnitModel.TABLE));
     private static final String STATEMENT = "SELECT DISTINCT " + Columns.UID + ", " + Columns.DISPLAY_NAME +
-            " FROM " + OrganisationUnitProgramLinkModel.ORGANISATION_UNIT_PROGRAM_LINK +
+            " FROM " + OrganisationUnitProgramLinkModel.TABLE +
             " INNER JOIN " + ProgramModel.TABLE +
             " WHERE " + OrganisationUnitProgramLinkModel.Columns.ORGANISATION_UNIT + " = '%s'" +
             " AND + " + Columns.DISPLAY_NAME + " LIKE '%%%s%%';";
@@ -45,7 +44,6 @@ final class ProgramRepositoryImpl implements SelectionRepository {
         return toV2Flowable(database.createQuery(TABLES, String.format(Locale.US,
                 STATEMENT, parentUid, escapeSqlToken(query)))
                 .mapToList(cursor -> SelectionViewModel.create(
-                        cursor.getString(0), cursor.getString(1)))
-        );
+                        cursor.getString(0), cursor.getString(1))));
     }
 }

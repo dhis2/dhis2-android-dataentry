@@ -24,10 +24,10 @@ import rx.schedulers.Schedulers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(AndroidJUnit4.class)
-public class ProgramRepositoryImplUnitTests {
+public class ProgramRepositoryIntegrationTests {
     private static final String ORGUNIT_DISPLAY_NAME = "program_set_display_name";
     private static final String PROGRAM_DISPLAY_NAME = "program_display_name";
-    private static final String ORGUNIT_UID = "program_set_uid";
+    private static final String ORGUNIT_UID = "orgunit_uid";
     private static final String PROGRAM_UID = "program_uid";
     private static final String PROGRAM_2_UID = "program_2_uid";
     private static final String PROGRAM_3_UID = "program_3_uid";
@@ -54,11 +54,11 @@ public class ProgramRepositoryImplUnitTests {
         database.insert(OrganisationUnitModel.TABLE, null, orgUnit(ORGUNIT_UID, ORGUNIT_DISPLAY_NAME));
 
         database.insert(ProgramModel.TABLE, null, program(PROGRAM_UID, PROGRAM_DISPLAY_NAME));
-        database.insert(OrganisationUnitProgramLinkModel.ORGANISATION_UNIT_PROGRAM_LINK, null,
+        database.insert(OrganisationUnitProgramLinkModel.TABLE, null,
                 programOrgUnitLink(PROGRAM_UID, ORGUNIT_UID));
 
         database.insert(ProgramModel.TABLE, null, program(PROGRAM_2_UID, PROGRAM_2_DISPLAY_NAME));
-        database.insert(OrganisationUnitProgramLinkModel.ORGANISATION_UNIT_PROGRAM_LINK, null,
+        database.insert(OrganisationUnitProgramLinkModel.TABLE, null,
                 programOrgUnitLink(PROGRAM_2_UID, ORGUNIT_UID));
     }
 
@@ -137,7 +137,7 @@ public class ProgramRepositoryImplUnitTests {
         subscriber.assertNotComplete();
 
         databaseRule.briteDatabase().insert(ProgramModel.TABLE, program(PROGRAM_3_UID, PROGRAM_3_DISPLAY_NAME));
-        databaseRule.briteDatabase().insert(OrganisationUnitProgramLinkModel.ORGANISATION_UNIT_PROGRAM_LINK,
+        databaseRule.briteDatabase().insert(OrganisationUnitProgramLinkModel.TABLE,
                 programOrgUnitLink(PROGRAM_3_UID, ORGUNIT_UID));
 
         subscriber.assertValueCount(3);
