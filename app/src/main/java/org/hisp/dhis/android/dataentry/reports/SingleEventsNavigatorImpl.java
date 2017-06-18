@@ -9,6 +9,8 @@ import com.squareup.sqlbrite.BriteDatabase;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.dataentry.DhisApp;
+import org.hisp.dhis.android.dataentry.create.CreateItemsActivity;
+import org.hisp.dhis.android.dataentry.create.CreateItemsArgument;
 import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryActivity;
 import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryArguments;
 
@@ -41,8 +43,11 @@ final class SingleEventsNavigatorImpl implements ReportsNavigator {
     @Override
     public void createFor(@NonNull String programUid) {
         Timber.d("createFor(): %s", programUid);
+        //TODO: find a way to put a transatable heading in here: New Event or just the Program name ?..etc
+        currentActivity.startActivity(CreateItemsActivity.createIntent(currentActivity,
+                CreateItemsArgument.create("New Event", programUid, CreateItemsArgument.Type.EVENT)));
 
-        EventModel event = EventModel.builder()
+     /*   EventModel event = EventModel.builder()
                 .uid(UUID.randomUUID().toString())
                 .program(programUid)
                 .programStage(programStage(programUid))
@@ -50,7 +55,7 @@ final class SingleEventsNavigatorImpl implements ReportsNavigator {
                 .state(State.TO_POST)
                 .build();
 
-        briteDatabase.insert(EventModel.TABLE, event.toContentValues());
+        briteDatabase.insert(EventModel.TABLE, event.toContentValues());*/
     }
 
     @NonNull

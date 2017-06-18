@@ -11,6 +11,8 @@ import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.dataentry.DhisApp;
+import org.hisp.dhis.android.dataentry.create.CreateItemsActivity;
+import org.hisp.dhis.android.dataentry.create.CreateItemsArgument;
 import org.hisp.dhis.android.dataentry.reports.ReportsActivity;
 import org.hisp.dhis.android.dataentry.reports.ReportsArguments;
 import org.hisp.dhis.android.dataentry.reports.ReportsNavigator;
@@ -49,7 +51,11 @@ final class SearchNavigator implements ReportsNavigator {
     public void createFor(@NonNull String trackedEntity) {
         Timber.d("createFor(): %s", trackedEntity);
 
-        TrackedEntityInstanceModel tei = TrackedEntityInstanceModel.builder()
+        currentActivity.startActivity(CreateItemsActivity.createIntent(currentActivity,
+                CreateItemsArgument.create("New Tracked Entity Instance ", trackedEntity, CreateItemsArgument.Type
+                        .TEI)));
+
+        /*TrackedEntityInstanceModel tei = TrackedEntityInstanceModel.builder()
                 .uid(UUID.randomUUID().toString())
                 .trackedEntity(trackedEntity)
                 .organisationUnit("DiszpKrYNg8")
@@ -70,6 +76,6 @@ final class SearchNavigator implements ReportsNavigator {
 
         // insert dummy enrollment
         Timber.d("Insert enrollment=[%d]", briteDatabase.insert(EnrollmentModel.TABLE,
-                enrollmentModel.toContentValues()));
+                enrollmentModel.toContentValues()));*/
     }
 }

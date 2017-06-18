@@ -19,6 +19,8 @@ import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
 import org.hisp.dhis.android.dataentry.commons.ui.FontTextView;
+import org.hisp.dhis.android.dataentry.create.CreateItemsActivity;
+import org.hisp.dhis.android.dataentry.create.CreateItemsArgument;
 
 import java.util.List;
 
@@ -103,7 +105,10 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
 
     @OnClick(R.id.fab)
     void createEvent() {
-        Toast.makeText(getActivity(), "TODO: Show Create Items screen", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getActivity(), "TODO: Show Create Items screen", Toast.LENGTH_SHORT).show(); //DONE, but not
+// tested.
+        startActivity(CreateItemsActivity.createIntent(getActivity(),
+                CreateItemsArgument.create("New Enrollment Event ", "", CreateItemsArgument.Type.ENROLLMENT_EVENT)));
     }
 
 
