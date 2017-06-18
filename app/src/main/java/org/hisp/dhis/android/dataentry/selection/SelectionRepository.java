@@ -6,9 +6,8 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 
-public interface SelectionRepository {
+interface SelectionRepository {
 
     @NonNull
-    Flowable<List<SelectionViewModel>> list();
-
+    Flowable<List<SelectionViewModel>> search(@NonNull String query);
 }

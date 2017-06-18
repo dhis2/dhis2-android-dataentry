@@ -6,29 +6,32 @@ import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel.Columns;
+import org.hisp.dhis.android.dataentry.commons.utils.DbUtils;
 
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
-public class OrganisationUnitRepositoryImpl implements SelectionRepository {
+final class OrganisationUnitRepositoryImpl implements SelectionRepository {
+    private static final String STATEMENT = "SELECT " + Columns.UID + ", " + Columns.DISPLAY_NAME +
+            " FROM " + OrganisationUnitModel.TABLE +
+            " WHERE " + Columns.DISPLAY_NAME + " LIKE '%%%s%%';";
 
-    public static final String STATEMENT = "SELECT " + Columns.UID + ", " + Columns.DISPLAY_NAME +
-            " FROM " + OrganisationUnitModel.TABLE;
+    private final BriteDatabase database;
 
-    BriteDatabase database;
-
-    public OrganisationUnitRepositoryImpl(BriteDatabase database) {
+    OrganisationUnitRepositoryImpl(BriteDatabase database) {
         this.database = database;
     }
 
     @NonNull
     @Override
-    public Flowable<List<SelectionViewModel>> list() { //uid is meaningless here.
-        return toV2Flowable(database.createQuery(OrganisationUnitModel.TABLE, STATEMENT)
-                .mapToList(cursor -> SelectionViewModel.from(cursor, Columns.UID, Columns.DISPLAY_NAME))
-        );
+    public Flowable<List<SelectionViewModel>> search(@NonNull String query) {
+        return toV2Flowable(database.createQuery(OrganisationUnitModel.TABLE,
+                String.format(Locale.US, STATEMENT, DbUtils.escapeSqlToken(query)))
+                .mapToList(cursor -> SelectionViewModel.create(
+                        cursor.getString(0), cursor.getString(1))));
     }
 }

@@ -25,15 +25,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(AndroidJUnit4.class)
 public class ProgramRepositoryImplUnitTests {
-
-    public static final String ORGUNIT_DISPLAY_NAME = "program_set_dislayName";
-    public static final String PROGRAM_DISPLAY_NAME = "program_display_name";
-    public static final String ORGUNIT_UID = "programset_uid";
-    public static final String PROGRAM_UID = "program_uid";
-    public static final String PROGRAM_2_UID = "program2_uid";
-    public static final String PROGRAM_2_DISPLAY_NAME = "opton_2_name";
-    public static final String PROGRAM_3_UID = "program_3_uid";
-    public static final String PROGRAM_3_DISPLAY_NAME = "program_3_display_name";
+    private static final String ORGUNIT_DISPLAY_NAME = "program_set_display_name";
+    private static final String PROGRAM_DISPLAY_NAME = "program_display_name";
+    private static final String ORGUNIT_UID = "program_set_uid";
+    private static final String PROGRAM_UID = "program_uid";
+    private static final String PROGRAM_2_UID = "program_2_uid";
+    private static final String PROGRAM_3_UID = "program_3_uid";
+    private static final String PROGRAM_2_DISPLAY_NAME = "program_2_name";
+    private static final String PROGRAM_3_DISPLAY_NAME = "program_3_display_name";
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
@@ -61,12 +60,12 @@ public class ProgramRepositoryImplUnitTests {
         database.insert(ProgramModel.TABLE, null, program(PROGRAM_2_UID, PROGRAM_2_DISPLAY_NAME));
         database.insert(OrganisationUnitProgramLinkModel.ORGANISATION_UNIT_PROGRAM_LINK, null,
                 programOrgUnitLink(PROGRAM_2_UID, ORGUNIT_UID));
-
-        subscriber = repository.list().test();
     }
 
     @Test
-    public void retrieve() {
+    public void searchMustReturnAllMatchingPrograms() {
+        subscriber = repository.search("program").test();
+
         // happy path test: verify that one OptionSet with two programs is in there.
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -79,7 +78,37 @@ public class ProgramRepositoryImplUnitTests {
     }
 
     @Test
-    public void modification() {
+    public void searchMustReturnAllProgramsOnEmptyQuery() {
+        subscriber = repository.search("").test();
+
+        // happy path test: verify that one OptionSet with two programs is in there.
+        subscriber.assertValueCount(1);
+        subscriber.assertNoErrors();
+        subscriber.assertNotComplete();
+
+        List<SelectionViewModel> result = subscriber.values().get(0);
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_UID, PROGRAM_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_2_UID, PROGRAM_2_DISPLAY_NAME))).isTrue();
+    }
+
+    @Test
+    public void searchMustNotReturnNonMatchingPrograms() {
+        subscriber = repository.search("random_program").test();
+
+        // happy path test: verify that one OptionSet with two options is in there.
+        subscriber.assertValueCount(1);
+        subscriber.assertNoErrors();
+        subscriber.assertNotComplete();
+
+        List<SelectionViewModel> result = subscriber.values().get(0);
+        assertThat(result.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void searchMustObserveUpdatesInProgramTable() {
+        subscriber = repository.search("program").test();
+
         // change name of program & verify that it happens.
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -99,7 +128,9 @@ public class ProgramRepositoryImplUnitTests {
     }
 
     @Test
-    public void addition() {
+    public void searchMustObserveInsertsInProgramTable() {
+        subscriber = repository.search("program").test();
+
         // add an program & verify that it happens.
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -121,8 +152,9 @@ public class ProgramRepositoryImplUnitTests {
     }
 
     @Test
-    public void deletion() {
+    public void searchMustObserveDeletesInProgramTable() {
         // delete the program & verify that it is observed.
+        subscriber = repository.search("program").test();
 
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -140,7 +172,9 @@ public class ProgramRepositoryImplUnitTests {
     }
 
     @Test
-    public void parentDeletion() {
+    public void searchMustObserveParentTable() {
+        subscriber = repository.search("program").test();
+
         // delete the parent and verify that fk constraints are updated accordingly...
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -158,37 +192,10 @@ public class ProgramRepositoryImplUnitTests {
     }
 
     @Test
-    public void emptyParent() {
-        repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase(), "empty");
-        // try to retrieve program set that has no programs.
-        databaseRule.database().insert(OrganisationUnitModel.TABLE, null, orgUnit("empty", ORGUNIT_DISPLAY_NAME));
-
-        TestSubscriber<List<SelectionViewModel>> subscriber = repository.list().test();
-
-        subscriber.assertValueCount(1);
-        subscriber.assertNoErrors();
-        subscriber.assertNotComplete();
-
-        List<SelectionViewModel> result = subscriber.values().get(0);
-        assertThat(result.size()).isEqualTo(0);
-    }
-
-    @Test
-    public void parentNull() {
-        repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase(), null);
-        // try to retrieve orgUnit that is not in db
-        TestSubscriber<List<SelectionViewModel>> subscriber = repository.list().test();
-
-        subscriber.assertValueCount(0);
-        subscriber.assertError(IllegalArgumentException.class);
-        subscriber.assertNotComplete();
-    }
-
-    @Test
-    public void parentWrong() {
+    public void searchMustReturnEmptyListOnWrongParent() {
         repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase(), "wrong");
         // try to retrieve orgUnit that is not in db
-        TestSubscriber<List<SelectionViewModel>> subscriber = repository.list().test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("program").test();
 
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -198,8 +205,6 @@ public class ProgramRepositoryImplUnitTests {
         assertThat(result.size()).isEqualTo(0);
     }
 
-    ///Helper methods:
-    ///
     private ContentValues orgUnit(String orgunitUid, String orgunitName) {
         ContentValues result = new ContentValues();
         result.put(OrganisationUnitModel.Columns.UID, orgunitUid);

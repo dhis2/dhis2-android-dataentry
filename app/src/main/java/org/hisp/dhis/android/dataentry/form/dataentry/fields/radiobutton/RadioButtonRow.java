@@ -19,7 +19,7 @@ public final class RadioButtonRow implements Row<RadioButtonViewHolder, RadioBut
     private final FlowableProcessor<RowAction> processor;
 
     public RadioButtonRow(@NonNull LayoutInflater inflater,
-                          @NonNull FlowableProcessor<RowAction> processor) {
+            @NonNull FlowableProcessor<RowAction> processor) {
         this.inflater = inflater;
         this.processor = processor;
     }
