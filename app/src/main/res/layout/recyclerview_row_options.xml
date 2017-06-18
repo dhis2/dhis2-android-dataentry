@@ -27,10 +27,8 @@
             android:focusableInTouchMode="false"
             android:hint="@string/filter_options"
             android:includeFontPadding="false"
-            android:lines="1"
             android:textSize="@dimen/text_size_large"
             app:font="@string/font_name_regular"/>
-
     </LinearLayout>
 
     <include layout="@layout/recyclerview_row_divider_vertical"/>

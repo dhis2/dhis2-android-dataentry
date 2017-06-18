@@ -45,7 +45,8 @@ final class DataEntryAdapter extends Adapter {
     private final List<Row> rows;
 
     DataEntryAdapter(@NonNull LayoutInflater layoutInflater,
-            @NonNull FragmentManager fragmentManager) {
+            @NonNull FragmentManager fragmentManager,
+            @NonNull DataEntryArguments dataEntryArguments) {
         rows = new ArrayList<>();
         viewModels = new ArrayList<>();
         processor = PublishProcessor.create();
@@ -54,7 +55,8 @@ final class DataEntryAdapter extends Adapter {
         rows.add(ROW_EDITTEXT, new EditTextRow(layoutInflater, processor));
         rows.add(ROW_RADIO_BUTTONS, new RadioButtonRow(layoutInflater, processor));
         rows.add(ROW_TEXT, new TextRow(layoutInflater));
-        rows.add(ROW_OPTIONS, new OptionsRow(layoutInflater, fragmentManager, processor));
+        rows.add(ROW_OPTIONS, new OptionsRow(layoutInflater, fragmentManager,
+                processor, dataEntryArguments));
     }
 
     @Override
