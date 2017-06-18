@@ -21,8 +21,8 @@ final class EnrollmentsNavigatorImpl implements ReportsNavigator {
     @Override
     public void navigateTo(@NonNull String enrollmentUid) {
         Timber.d("navigateTo(): %s", enrollmentUid);
-        currentActivity.startActivity(DashboardActivity.create(currentActivity,
-                enrollmentUid));
+        currentActivity.startActivity(DashboardActivity
+                .create(currentActivity, enrollmentUid));
     }
 
     @Override

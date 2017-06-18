@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.hisp.dhis.android.core.common.FormType;
-import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramType;
@@ -24,47 +23,39 @@ import rx.schedulers.Schedulers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(AndroidJUnit4.class)
-public class ProgramStageRepositoryImplUintTests {
-    public static final String PROGRAM_UID = "program_uid";
-    public static final String PROGRAM_DISPLAY_NAME = "program_dislayName";
-
-    public static final String PROGRAM_STAGE_STAGE_UID = "program_stage_uid";
-    public static final String PROGRAM_STAGE_DISPLAY_NAME = "program_stage_display_name";
-    public static final String PROGRAM_STAGE_2_UID = "program_stage2_uid";
-    public static final String PROGRAM_STAGE_2_DISPLAY_NAME = "program_stage_2_name";
-    public static final String PROGRAM_STAGE_3_UID = "program_stage_3_uid";
-    public static final String PROGRAM_STAGE_3_DISPLAY_NAME = "program_stage_3_display_name";
+public class ProgramStageRepositoryIntegrationTests {
+    private static final String PROGRAM_UID = "program_uid";
+    private static final String PROGRAM_DISPLAY_NAME = "program_display_name";
+    private static final String PROGRAM_STAGE_1_UID = "program_stage_uid";
+    private static final String PROGRAM_STAGE_2_UID = "program_stage_2_uid";
+    private static final String PROGRAM_STAGE_3_UID = "program_stage_3_uid";
+    private static final String PROGRAM_STAGE_1_DISPLAY_NAME = "program_stage_display_name";
+    private static final String PROGRAM_STAGE_2_DISPLAY_NAME = "program_stage_2_name";
+    private static final String PROGRAM_STAGE_3_DISPLAY_NAME = "program_stage_3_display_name";
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
 
-    private Date date;
-    private String dateString;
-
+    // under tests
     private SelectionRepository repository;
-    private TestSubscriber<List<SelectionViewModel>> subscriber;
 
     @Before
     public void setup() {
-        date = new Date();
-        dateString = date.toString();
-
         SQLiteDatabase database = databaseRule.database();
-        repository = new ProgramStageRepositoryImpl(databaseRule.briteDatabase(), PROGRAM_UID);
 
         database.insert(ProgramModel.TABLE, null, program(PROGRAM_UID, PROGRAM_DISPLAY_NAME));
+        database.insert(ProgramStageModel.TABLE, null, programStage(PROGRAM_STAGE_1_UID,
+                PROGRAM_STAGE_1_DISPLAY_NAME, PROGRAM_UID));
+        database.insert(ProgramStageModel.TABLE, null, programStage(PROGRAM_STAGE_2_UID,
+                PROGRAM_STAGE_2_DISPLAY_NAME, PROGRAM_UID));
 
-        database.insert(ProgramStageModel.TABLE, null, programStage(PROGRAM_STAGE_STAGE_UID, PROGRAM_STAGE_DISPLAY_NAME,
-                PROGRAM_UID));
-
-        database.insert(ProgramStageModel.TABLE, null, programStage(PROGRAM_STAGE_2_UID, PROGRAM_STAGE_2_DISPLAY_NAME,
-                PROGRAM_UID));
-
-        subscriber = repository.list().test();
+        repository = new ProgramStageRepositoryImpl(databaseRule.briteDatabase(), PROGRAM_UID);
     }
 
     @Test
-    public void retrieve() {
+    public void searchMustReturnAllMatchingStages() {
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("program").test();
+
         // happy path test: verify that one OptionSet with two programs is in there.
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -72,14 +63,46 @@ public class ProgramStageRepositoryImplUintTests {
 
         List<SelectionViewModel> result = subscriber.values().get(0);
         assertThat(result.size()).isEqualTo(2);
-        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_STAGE_UID, PROGRAM_STAGE_DISPLAY_NAME)))
-                .isTrue();
-        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_2_UID, PROGRAM_STAGE_2_DISPLAY_NAME)))
-                .isTrue();
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_1_UID,
+                PROGRAM_STAGE_1_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_2_UID,
+                PROGRAM_STAGE_2_DISPLAY_NAME))).isTrue();
     }
 
     @Test
-    public void modification() {
+    public void searchMustReturnAllMatchingStagesOnEmptyQuery() {
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("").test();
+
+        // happy path test: verify that one OptionSet with two programs is in there.
+        subscriber.assertValueCount(1);
+        subscriber.assertNoErrors();
+        subscriber.assertNotComplete();
+
+        List<SelectionViewModel> result = subscriber.values().get(0);
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_1_UID,
+                PROGRAM_STAGE_1_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_2_UID,
+                PROGRAM_STAGE_2_DISPLAY_NAME))).isTrue();
+    }
+
+    @Test
+    public void searchMustNotReturnNonMatchingStages() {
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("random_stage").test();
+
+        // happy path test: verify that one OptionSet with two programs is in there.
+        subscriber.assertValueCount(1);
+        subscriber.assertNoErrors();
+        subscriber.assertNotComplete();
+
+        List<SelectionViewModel> result = subscriber.values().get(0);
+        assertThat(result.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void searchMustObserveUpdatesInStagesTable() {
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("program").test();
+
         // change name of programStage & verify that it happens.
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -94,13 +117,16 @@ public class ProgramStageRepositoryImplUintTests {
 
         List<SelectionViewModel> result = subscriber.values().get(1);
         assertThat(result.size()).isEqualTo(2);
-        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_STAGE_UID, PROGRAM_STAGE_DISPLAY_NAME)))
-                .isTrue();
-        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_2_UID, "updated_program2"))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_1_UID,
+                PROGRAM_STAGE_1_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_2_UID,
+                "updated_program2"))).isTrue();
     }
 
     @Test
-    public void addition() {
+    public void searchMustObserveInsertsInOptionTable() {
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("program").test();
+
         // add an programStage & verify that it happens.
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -115,24 +141,25 @@ public class ProgramStageRepositoryImplUintTests {
 
         List<SelectionViewModel> result = subscriber.values().get(1);
         assertThat(result.size()).isEqualTo(3);
-        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_STAGE_UID, PROGRAM_STAGE_DISPLAY_NAME)))
-                .isTrue();
-        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_2_UID, PROGRAM_STAGE_2_DISPLAY_NAME)))
-                .isTrue();
-        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_3_UID, PROGRAM_STAGE_3_DISPLAY_NAME)))
-                .isTrue();
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_1_UID,
+                PROGRAM_STAGE_1_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_2_UID,
+                PROGRAM_STAGE_2_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_3_UID,
+                PROGRAM_STAGE_3_DISPLAY_NAME))).isTrue();
     }
 
     @Test
-    public void deletion() {
+    public void searchMustObserveDeletesInStagesTable() {
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("program").test();
         // delete the programStage & verify that it is observed.
 
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
         subscriber.assertNotComplete();
 
-        databaseRule.briteDatabase().delete(ProgramStageModel.TABLE, ProgramStageModel.Columns.UID + "=?",
-                PROGRAM_STAGE_2_UID);
+        databaseRule.briteDatabase().delete(ProgramStageModel.TABLE,
+                ProgramStageModel.Columns.UID + "=?", PROGRAM_STAGE_2_UID);
 
         subscriber.assertValueCount(2);
         subscriber.assertNoErrors();
@@ -140,12 +167,14 @@ public class ProgramStageRepositoryImplUintTests {
 
         List<SelectionViewModel> result = subscriber.values().get(1);
         assertThat(result.size()).isEqualTo(1);
-        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_STAGE_UID, PROGRAM_STAGE_DISPLAY_NAME)))
-                .isTrue();
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_STAGE_1_UID,
+                PROGRAM_STAGE_1_DISPLAY_NAME))).isTrue();
     }
 
     @Test
-    public void parentDeletion() {
+    public void searchMustObserveParentTable() {
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("program").test();
+
         // delete the parent and verify that fk constraints are updated accordingly...
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -163,12 +192,11 @@ public class ProgramStageRepositoryImplUintTests {
     }
 
     @Test
-    public void emptyParent() {
-        repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase(), "empty");
-        // try to retrieve programStage set that has no programs.
-        databaseRule.database().insert(OrganisationUnitModel.TABLE, null, program("empty", PROGRAM_DISPLAY_NAME));
+    public void searchMustReturnEmptyListOnWrongParent() {
+        repository = new ProgramStageRepositoryImpl(databaseRule.briteDatabase(), "wrong");
 
-        TestSubscriber<List<SelectionViewModel>> subscriber = repository.list().test();
+        // try to retrieve program that is not in db
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("program").test();
 
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -178,38 +206,11 @@ public class ProgramStageRepositoryImplUintTests {
         assertThat(result.size()).isEqualTo(0);
     }
 
-    @Test
-    public void parentNull() {
-        repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase(), null);
-        // try to retrieve program that is not in db
-        TestSubscriber<List<SelectionViewModel>> subscriber = repository.list().test();
-
-        subscriber.assertValueCount(0);
-        subscriber.assertError(IllegalArgumentException.class);
-        subscriber.assertNotComplete();
-    }
-
-    @Test
-    public void parentWrong() {
-        repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase(), "wrong");
-        // try to retrieve program that is not in db
-        TestSubscriber<List<SelectionViewModel>> subscriber = repository.list().test();
-
-        subscriber.assertValueCount(1);
-        subscriber.assertNoErrors();
-        subscriber.assertNotComplete();
-
-        List<SelectionViewModel> result = subscriber.values().get(0);
-        assertThat(result.size()).isEqualTo(0);
-    }
-
-    ///Helper methods:
-    ///
     private ContentValues program(String uid, String displayName) {
         ContentValues values = new ContentValues();
         values.put(ProgramModel.Columns.UID, uid);
-        values.put(ProgramModel.Columns.CREATED, dateString);
-        values.put(ProgramModel.Columns.LAST_UPDATED, dateString);
+        values.put(ProgramModel.Columns.CREATED, new Date().toString());
+        values.put(ProgramModel.Columns.LAST_UPDATED, new Date().toString());
         values.put(ProgramModel.Columns.CODE, "test_code");
         values.put(ProgramModel.Columns.NAME, "test_name");
         values.put(ProgramModel.Columns.DISPLAY_NAME, displayName);
@@ -244,8 +245,8 @@ public class ProgramStageRepositoryImplUintTests {
         values.put(ProgramModel.Columns.UID, uid);
         values.put(ProgramStageModel.Columns.DISPLAY_NAME, displayName);
         values.put(ProgramStageModel.Columns.PROGRAM, programUid);
-        values.put(ProgramModel.Columns.CREATED, dateString);
-        values.put(ProgramModel.Columns.LAST_UPDATED, dateString);
+        values.put(ProgramModel.Columns.CREATED, new Date().toString());
+        values.put(ProgramModel.Columns.LAST_UPDATED, new Date().toString());
         values.put(ProgramStageModel.Columns.CODE, "test_code");
         values.put(ProgramStageModel.Columns.NAME, "test_name");
         values.put(ProgramStageModel.Columns.EXECUTION_DATE_LABEL, "test_executionDateLabel");
@@ -264,8 +265,6 @@ public class ProgramStageRepositoryImplUintTests {
         values.put(ProgramStageModel.Columns.BLOCK_ENTRY_FORM, 0);
         values.put(ProgramStageModel.Columns.MIN_DAYS_FROM_START, 5);
         values.put(ProgramStageModel.Columns.STANDARD_INTERVAL, 7);
-
         return values;
     }
-
 }

@@ -15,29 +15,29 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.PublishSubject;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(JUnit4.class)
 public class SelectionPresenterTests {
-
-    public static final String ARG_UID = "test_parent_uid";
-    public static final String ARG_NAME = "test_parent_name";
-    public static final String UID_1 = "test_uid_1";
-    public static final String NAME_1 = "test_1_name";
-    public static final String UID_2 = "test_uid_2";
-    public static final String NAME_2 = "test_2_name";
-    public static final String UID_3 = "test_uid_3";
-    public static final String NAME_3 = "test_3_name";
+    private static final String ARG_UID = "test_parent_uid";
+    private static final String ARG_NAME = "test_parent_name";
+    private static final String UID_1 = "test_uid_1";
+    private static final String UID_2 = "test_uid_2";
+    private static final String UID_3 = "test_uid_3";
+    private static final String NAME_1 = "test_1_name";
+    private static final String NAME_2 = "test_2_name";
+    private static final String NAME_3 = "test_3_name";
+    private static final String TEST_QUERY = "test_query";
+    private static final String TEST_QUERY_2 = "test_query_2";
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private SelectionView view;
@@ -45,84 +45,90 @@ public class SelectionPresenterTests {
     @Mock
     private SearchView searchView;
 
-    @Captor
-    private ArgumentCaptor<List<SelectionViewModel>> viewCaptor;
-    private PublishSubject<SearchViewQueryTextEvent> viewPublisher;
-    private PublishProcessor<List<SelectionViewModel>> repositoryPublisher;
-
     @Mock
     private SelectionRepository repository;
+
+    @Captor
+    private ArgumentCaptor<List<SelectionViewModel>> viewCaptor;
 
     @Mock
     private SelectionArgument argument;
 
-    private SelectionPresenter presenter;
+    private PublishSubject<SearchViewQueryTextEvent> viewPublisher;
+    private PublishProcessor<List<SelectionViewModel>> repositoryPublisher;
 
-    private List<SelectionViewModel> values;
+    // under tests
+    private SelectionPresenter presenter;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
+        presenter = new SelectionPresenterImpl(ARG_NAME, repository,
+                new NoopSelectionHandler(), new MockSchedulersProvider());
+
         viewPublisher = PublishSubject.create();
         repositoryPublisher = PublishProcessor.create();
-        presenter = new SelectionPresenterImpl(argument, repository, new MockSchedulersProvider());
-
-        values = new ArrayList<>(3);
-        values.add(SelectionViewModel.create(UID_1, NAME_1));
-        values.add(SelectionViewModel.create(UID_2, NAME_2));
 
         when(argument.uid()).thenReturn(ARG_UID);
         when(argument.name()).thenReturn(ARG_NAME);
 
-        when(repository.list()).thenReturn(repositoryPublisher);
-        when(view.subscribeToSearchView()).thenReturn(viewPublisher);
-
-
+        when(repository.search(TEST_QUERY)).thenReturn(repositoryPublisher);
+        when(view.searchView()).thenReturn(viewPublisher);
     }
 
     @Test
-    public void onAttach() throws Exception {
+    public void onAttachMustSubscribeToView() throws Exception {
         presenter.onAttach(view);
-        viewPublisher.onNext(SearchViewQueryTextEvent.create(searchView, "", false));
-        repositoryPublisher.onNext(values);
+        viewPublisher.onNext(SearchViewQueryTextEvent.create(searchView, TEST_QUERY, false));
+        repositoryPublisher.onNext(Arrays.asList(
+                SelectionViewModel.create(UID_1, NAME_1),
+                SelectionViewModel.create(UID_2, NAME_2)));
 
+        verify(view.renderSearchResults()).accept(viewCaptor.capture());
+        verify(repository).search(TEST_QUERY);
         assertThat(viewPublisher.hasObservers()).isTrue();
-        verify(view, times(1)).updateList(eq(values));
-        verify(repository).list();
-        assertThat(viewCaptor.getValue()).isEqualTo(values);
+        assertThat(viewCaptor.getValue()).isEqualTo(Arrays.asList(
+                SelectionViewModel.create(UID_1, NAME_1),
+                SelectionViewModel.create(UID_2, NAME_2)));
     }
 
-    /* Updates from database will not be propagated to the view, by design.
-    Since the complexity of writing an rx call that does that was quite high vs the benefits (how often does the data
-     in the database change when the dialog is up ?)
-*/
     @Test
     public void searchViewUpdates() throws Exception {
         presenter.onAttach(view);
-        viewPublisher.onNext(SearchViewQueryTextEvent.create(searchView, "", false));
-        repositoryPublisher.onNext(values);
 
+        // trigger first search event
+        when(repository.search(TEST_QUERY)).thenReturn(repositoryPublisher);
+        viewPublisher.onNext(SearchViewQueryTextEvent.create(searchView, TEST_QUERY, false));
+        repositoryPublisher.onNext(Arrays.asList(
+                SelectionViewModel.create(UID_1, NAME_1),
+                SelectionViewModel.create(UID_2, NAME_2)));
+
+        verify(view.renderSearchResults()).accept(viewCaptor.capture());
+        verify(repository).search(TEST_QUERY);
         assertThat(viewPublisher.hasObservers()).isTrue();
-        verify(view, times(1)).updateList(eq(values));
-        verify(repository).list();
-        assertThat(viewCaptor.getValue()).isEqualTo(values);
+        assertThat(viewCaptor.getValue()).isEqualTo(Arrays.asList(
+                SelectionViewModel.create(UID_1, NAME_1),
+                SelectionViewModel.create(UID_2, NAME_2)));
 
-        values.add( SelectionViewModel.create(UID_3, NAME_3));
-        viewPublisher.onNext(SearchViewQueryTextEvent.create(searchView, "3", false));
-        repositoryPublisher.onNext(values);
+        // trigger second search event
+        when(repository.search(TEST_QUERY_2)).thenReturn(repositoryPublisher);
+        viewPublisher.onNext(SearchViewQueryTextEvent.create(searchView, TEST_QUERY_2, false));
+        repositoryPublisher.onNext(Arrays.asList(SelectionViewModel.create(UID_3, NAME_3)));
 
+        verify(view.renderSearchResults(), times(2)).accept(viewCaptor.capture());
+        verify(repository).search(TEST_QUERY_2);
         assertThat(viewPublisher.hasObservers()).isTrue();
-        verify(view, times(2)).updateList(eq(values));
-        verify(repository, times(2)).list();
         assertThat(viewCaptor.getValue().size()).isEqualTo(1);
         assertThat(viewCaptor.getValue().get(0)).isEqualTo(SelectionViewModel.create(UID_3, NAME_3));
     }
 
     @Test
-    public void onDetach() {
+    public void onDetachMustUnsubscribeFromView() {
         presenter.onAttach(view);
         assertThat(viewPublisher.hasObservers()).isTrue();
+        assertThat(repositoryPublisher.hasSubscribers()).isFalse();
+
         presenter.onDetach();
         assertThat(repositoryPublisher.hasSubscribers()).isFalse();
         assertThat(viewPublisher.hasObservers()).isFalse();

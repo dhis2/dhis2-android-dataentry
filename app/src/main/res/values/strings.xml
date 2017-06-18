@@ -49,6 +49,7 @@
     <string name="enter_negative_integer">Enter negative integer</string>
     <string name="enter_positive_integer_or_zero">Enter positive integer or zero</string>
     <string name="enter_positive_integer">Enter positive integer</string>
+    <string name="filter_options">Filter options</string>
 
     <!-- RadioButton prompts -->
     <string name="yes">Yes</string>
@@ -77,7 +78,7 @@
 
     <string name="selection_hint">Find option:</string>
     <string name="cancel_description">Cancel</string>
-    
+
     <!-- Form screen -->
     <string name="undo">Undo</string>
     <string name="organisation">Organisation Unit</string>

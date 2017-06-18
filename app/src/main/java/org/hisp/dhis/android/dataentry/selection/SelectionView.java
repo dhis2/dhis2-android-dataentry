@@ -1,5 +1,7 @@
 package org.hisp.dhis.android.dataentry.selection;
 
+import android.support.annotation.NonNull;
+
 import com.jakewharton.rxbinding2.support.v7.widget.SearchViewQueryTextEvent;
 
 import org.hisp.dhis.android.dataentry.commons.ui.View;
@@ -7,12 +9,22 @@ import org.hisp.dhis.android.dataentry.commons.ui.View;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 
-public interface SelectionView extends View {
+interface SelectionView extends View {
 
-    void setTitle(String title);
+    @NonNull
+    Observable<SearchViewQueryTextEvent> searchView();
 
-    Observable<SearchViewQueryTextEvent> subscribeToSearchView();
+    @NonNull
+    Observable<SelectionViewModel> searchResultClicks();
 
-    void updateList(List<SelectionViewModel> selectionList);
+    @NonNull
+    Consumer<List<SelectionViewModel>> renderSearchResults();
+
+    @NonNull
+    Consumer<String> renderTitle();
+
+    @NonNull
+    Consumer<SelectionViewModel> navigateTo();
 }

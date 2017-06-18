@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
+import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
 
 import java.util.List;
 
@@ -125,6 +127,8 @@ public final class ReportsFragment extends BaseFragment
 
         reportsAdapter = new ReportsAdapter(getContext(), this);
         recyclerViewReports.setLayoutManager(layoutManager);
+        recyclerViewReports.addItemDecoration(new DividerDecoration(
+                ContextCompat.getDrawable(getActivity(), R.drawable.divider)));
         recyclerViewReports.setAdapter(reportsAdapter);
     }
 }

@@ -22,13 +22,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(AndroidJUnit4.class)
 public class OrganisationUnitSelectionRepositoryIntegrationTests {
-
-    public static final String ORGUNIT_DISPLAY_NAME = "orgunit_display_name";
-    public static final String ORGUNIT_UID = "orgunit_uid";
-    public static final String ORGUNIT_2_UID = "orgunit2_uid";
-    public static final String ORGUNIT_2_DISPLAY_NAME = "opton_2_name";
-    public static final String ORGUNIT_3_UID = "orgunit_3_uid";
-    public static final String ORGUNIT_3_DISPLAY_NAME = "orgunit_3_display_name";
+    private static final String ORGUNIT_UID = "orgunit_uid";
+    private static final String ORGUNIT_2_UID = "orgunit2_uid";
+    private static final String ORGUNIT_3_UID = "orgunit_3_uid";
+    private static final String ORGUNIT_DISPLAY_NAME = "orgunit_display_name";
+    private static final String ORGUNIT_2_DISPLAY_NAME = "orgunit_2_name";
+    private static final String ORGUNIT_3_DISPLAY_NAME = "orgunit_3_display_name";
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
@@ -49,12 +48,27 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
 
         database.insert(OrganisationUnitModel.TABLE, null, orgUnit(ORGUNIT_UID, ORGUNIT_DISPLAY_NAME));
         database.insert(OrganisationUnitModel.TABLE, null, orgUnit(ORGUNIT_2_UID, ORGUNIT_2_DISPLAY_NAME));
-
-        subscriber = repository.list().test();
     }
 
     @Test
-    public void retrieve() {
+    public void searchMustReturnAllMatchingOrgUnits() {
+        subscriber = repository.search("orgunit").test();
+
+        // happy path test: verify that one OptionSet with two options is in there.
+        subscriber.assertValueCount(1);
+        subscriber.assertNoErrors();
+        subscriber.assertNotComplete();
+
+        List<SelectionViewModel> result = subscriber.values().get(0);
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.contains(SelectionViewModel.create(ORGUNIT_UID, ORGUNIT_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(ORGUNIT_2_UID, ORGUNIT_2_DISPLAY_NAME))).isTrue();
+    }
+
+    @Test
+    public void searchMustReturnAllOrgUnitsOnEmptyQuery() {
+        subscriber = repository.search("").test();
+
         // happy path test: verify that one OptionSet with two options is in there.
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -68,14 +82,29 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
 
 
     @Test
-    public void modification() {
+    public void searchMustNotReturnNonMatchingOrgUnits() {
+        subscriber = repository.search("random_org_unit").test();
+
+        // happy path test: verify that one OptionSet with two options is in there.
+        subscriber.assertValueCount(1);
+        subscriber.assertNoErrors();
+        subscriber.assertNotComplete();
+
+        List<SelectionViewModel> result = subscriber.values().get(0);
+        assertThat(result.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void searchMustObserveUpdatesInOrgUnitTable() {
+        subscriber = repository.search("orgunit").test();
+
         // change name of orgunit & verify that it happens.
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
         subscriber.assertNotComplete();
 
-        databaseRule.briteDatabase().update(OrganisationUnitModel.TABLE, orgUnit(ORGUNIT_2_UID, "updated_orgUnit2"),
-                OrganisationUnitModel.Columns.UID + "=?", ORGUNIT_2_UID);
+        databaseRule.briteDatabase().update(OrganisationUnitModel.TABLE, orgUnit(ORGUNIT_2_UID,
+                "updated_orgUnit2"), OrganisationUnitModel.Columns.UID + "=?", ORGUNIT_2_UID);
 
         subscriber.assertValueCount(2);
         subscriber.assertNoErrors();
@@ -86,9 +115,11 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
         assertThat(result.contains(SelectionViewModel.create(ORGUNIT_UID, ORGUNIT_DISPLAY_NAME))).isTrue();
         assertThat(result.contains(SelectionViewModel.create(ORGUNIT_2_UID, "updated_orgUnit2"))).isTrue();
     }
-    
+
     @Test
-    public void addition() {
+    public void searchMustObserveInsertsInOrgUnitTable() {
+        subscriber = repository.search("orgunit").test();
+
         // add an option & verify that it happens.
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -109,14 +140,15 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
     }
 
     @Test
-    public void deletion() {
-        // delete an opitonSet and verify that fk constrainted Options are updated and the client is updated...
+    public void searchMustObserveDeletesInOrgUnitsTable() {
+        subscriber = repository.search("orgunit").test();
+
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
         subscriber.assertNotComplete();
 
-        databaseRule.briteDatabase().delete(OrganisationUnitModel.TABLE, OrganisationUnitModel.Columns.UID + "=?",
-                ORGUNIT_UID);
+        databaseRule.briteDatabase().delete(OrganisationUnitModel.TABLE,
+                OrganisationUnitModel.Columns.UID + "=?", ORGUNIT_UID);
 
         subscriber.assertValueCount(2);
         subscriber.assertNoErrors();

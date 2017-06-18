@@ -11,6 +11,7 @@ import org.hisp.dhis.android.dataentry.form.FormComponent;
 import org.hisp.dhis.android.dataentry.form.FormModule;
 import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryComponent;
 import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryModule;
+import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryStoreModule;
 import org.hisp.dhis.android.dataentry.main.MainComponent;
 import org.hisp.dhis.android.dataentry.main.MainModule;
 import org.hisp.dhis.android.dataentry.main.home.HomeComponent;
@@ -19,6 +20,8 @@ import org.hisp.dhis.android.dataentry.reports.ReportsComponent;
 import org.hisp.dhis.android.dataentry.reports.ReportsModule;
 import org.hisp.dhis.android.dataentry.reports.search.SearchComponent;
 import org.hisp.dhis.android.dataentry.reports.search.SearchModule;
+import org.hisp.dhis.android.dataentry.selection.OptionSelectionComponent;
+import org.hisp.dhis.android.dataentry.selection.OptionSelectionModule;
 import org.hisp.dhis.android.dataentry.selection.SelectionComponent;
 import org.hisp.dhis.android.dataentry.selection.SelectionModule;
 import org.hisp.dhis.android.dataentry.service.ServiceComponent;
@@ -49,9 +52,14 @@ public interface UserComponent {
     @NonNull
     SelectionComponent plus(@NonNull SelectionModule selectionModule);
 
+    @NonNull
+    OptionSelectionComponent plus(@NonNull OptionSelectionModule optionSelectionModule,
+            @NonNull DataEntryStoreModule dataEntryStoreModule);
+
     // ToDo: remove this!
     @NonNull
-    DataEntryComponent plus(@NonNull DataEntryModule dataEntryModule);
+    DataEntryComponent plus(@NonNull DataEntryModule dataEntryModule,
+            @NonNull DataEntryStoreModule dataEntryStoreModule);
 
     @NonNull
     FormComponent plus(@NonNull FormModule formModule);

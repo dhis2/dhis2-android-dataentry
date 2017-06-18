@@ -6,15 +6,11 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.create.CreateItemsActivity;
 import org.hisp.dhis.android.dataentry.create.CreateItemsArgument;
-import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryActivity;
-import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryArguments;
-
-import java.util.UUID;
+import org.hisp.dhis.android.dataentry.form.FormActivity;
+import org.hisp.dhis.android.dataentry.form.FormViewArguments;
 
 import timber.log.Timber;
 
@@ -36,8 +32,11 @@ final class SingleEventsNavigatorImpl implements ReportsNavigator {
     @Override
     public void navigateTo(@NonNull String eventUid) {
         Timber.d("navigateTo(): %s", eventUid);
-        currentActivity.startActivity(DataEntryActivity.create(currentActivity,
-                DataEntryArguments.forEvent(eventUid)));
+//        currentActivity.startActivity(DataEntryActivity.create(currentActivity,
+//                DataEntryArguments.forEvent(eventUid)));
+
+        currentActivity.startActivity(FormActivity.create(currentActivity,
+                FormViewArguments.createForEvent(eventUid)));
     }
 
     @Override
@@ -53,6 +52,7 @@ final class SingleEventsNavigatorImpl implements ReportsNavigator {
                 .programStage(programStage(programUid))
                 .organisationUnit("DiszpKrYNg8")
                 .state(State.TO_POST)
+                .status(EventStatus.ACTIVE)
                 .build();
 
         briteDatabase.insert(EventModel.TABLE, event.toContentValues());*/
