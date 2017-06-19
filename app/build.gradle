@@ -136,6 +136,10 @@ android {
         mHealth4Africa {
             applicationId "org.hisp.dhis.android.dataentry.mHeakth4Africa"
         }
+
+        main {
+
+        }
     }
 
     sourceSets {
