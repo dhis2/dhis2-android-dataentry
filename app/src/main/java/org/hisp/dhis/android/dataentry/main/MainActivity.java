@@ -183,7 +183,9 @@ public class MainActivity extends AppCompatActivity implements MainView,
     }
 
     private void logOut() {
-        ProgressDialog dialog = ProgressDialog.show(this, "Logging out", "Deleting all data");
+        ProgressDialog dialog =
+                ProgressDialog.show(this, getString(R.string.log_out_progress_title),
+                        getString(R.string.log_out_progress_message));
         mainPresenter.logOut();
         dialog.dismiss();
         finish();

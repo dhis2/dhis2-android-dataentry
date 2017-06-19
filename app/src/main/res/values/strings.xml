@@ -29,6 +29,8 @@
     <string name="log_out_title">Delete all data and log out?</string>
     <string name="log_out_button">LOG OUT</string>
     <string name="log_out_message">All your data will be erased</string>
+    <string name="log_out_progress_title">Logging out</string>
+    <string name="log_out_progress_message">Deleting all data</string>
 
     <!-- ReportsActivity -->
     <string name="report_view_program">Program</string>
