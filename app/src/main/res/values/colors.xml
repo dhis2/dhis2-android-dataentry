@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <!-- Theme colors -->
+    <color name="color_primary">#FF276696</color>
+    <color name="color_primary_dark">#FF194261</color>
+    <color name="color_primary_light">#FF3284C3</color>
+
+    <color name="color_accent">#FFFF9800</color>
+    <color name="color_accent_dark">#FFF57C00</color>
+    <color name="color_accent_light">#FFFFE0B2</color>
+
+    <color name="color_material_red">#FFF44336</color>
+    <color name="color_material_red_dark">#FFD32F2F</color>
+    <color name="color_material_red_light">#FFFFCDD2</color>
+
+    <color name="color_divider">#FFB6B6B6</color>
+
+    <!-- Custom colors -->
+    <color name="color_white_transparent">#CCFFFFFF</color>
+    <color name="color_material_green">#FF8BC34A</color>
+
+    <!-- Event status colors: -->
+    <color name="color_active">#ffd54f</color>
+    <color name="color_completed">#bdbdbd</color>
+    <color name="color_schedule">#81c784</color>
+    <color name="color_skipped">#a1887f</color>
+
 </resources>

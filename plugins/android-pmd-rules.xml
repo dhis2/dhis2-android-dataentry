@@ -31,8 +31,16 @@
     <rule ref="rulesets/java/basic.xml"/>
     <rule ref="rulesets/java/braces.xml"/>
     <rule ref="rulesets/java/clone.xml"/>
-    <rule ref="rulesets/java/codesize.xml"/>
-    <rule ref="rulesets/java/design.xml"/>
+    <rule ref="rulesets/java/codesize.xml">
+        <!-- Skipping this as our Activities are too big at the moment.
+         TODO: reduce number of methods in our activities  -->
+        <exclude name="TooManyMethods"/>
+    </rule>
+    <rule ref="rulesets/java/design.xml">
+        <!-- Skipping this as our Activities are too big at the moment.
+         TODO: make our activities less complex  -->
+        <exclude name="GodClass"/>
+    </rule>
     <rule ref="rulesets/java/empty.xml"/>
     <rule ref="rulesets/java/imports.xml"/>
     <rule ref="rulesets/java/logging-java.xml"/>

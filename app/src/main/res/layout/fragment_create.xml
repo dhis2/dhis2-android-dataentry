@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/keyline_default"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="3dp">
+
+        <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
+            android:id="@+id/text_selection1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/button_selector_transparent"
+            android:clickable="true"
+            android:ellipsize="end"
+            android:hint="@string/organisation"
+            android:lines="1"
+            android:padding="@dimen/keyline_default"
+            android:textSize="@dimen/text_size_medium"
+            app:font="@string/font_name_regular"/>
+
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/imagebutton_cancel1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center"
+            android:background="@color/color_white_transparent"
+            android:clickable="true"
+            android:padding="@dimen/keyline_default"
+            android:src="@drawable/ic_cancel_black"/>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/keyline_default"
+        android:layout_marginLeft="@dimen/keyline_default"
+        android:layout_marginRight="@dimen/keyline_default"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="3dp">
+
+        <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
+            android:id="@+id/text_selection2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/button_selector_transparent"
+            android:clickable="true"
+            android:ellipsize="end"
+            android:hint="@string/program"
+            android:lines="1"
+            android:padding="@dimen/keyline_default"
+            android:textSize="@dimen/text_size_medium"
+            app:font="@string/font_name_regular"/>
+
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/imagebutton_cancel2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center"
+            android:background="@color/color_white_transparent"
+            android:clickable="true"
+            android:padding="@dimen/keyline_default"
+            android:src="@drawable/ic_cancel_black"/>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_create"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/keyline_default"
+        android:src="@drawable/ic_arrow_forward_white"
+        app:elevation="3dp"
+        app:layout_anchorGravity="right|end|bottom"
+        app:pressedTranslationZ="3dp"/>
+</LinearLayout>

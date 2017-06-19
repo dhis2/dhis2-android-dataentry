@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/drawer_group_main"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/drawer_item_home"
+            android:icon="@drawable/ic_home"
+            android:orderInCategory="100"
+            android:title="@string/drawer_item_home"/>
+        <item
+            android:id="@+id/drawer_item_log_out"
+            android:icon="@drawable/ic_logout"
+            android:orderInCategory="200"
+            android:title="@string/drawer_item_log_out"/>
+    </group>
+</menu>

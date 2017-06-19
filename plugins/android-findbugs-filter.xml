@@ -9,6 +9,23 @@
     <Match>
         <Class name="~.*ViewBinding.*"/>
     </Match>
+    <Match>
+        <Class name="~.*\$\$ViewBinder*"/>
+    </Match>
+    <Match>
+        <Class name="~.*\$\$ViewBinder\$InnerUnbinder*"/>
+    </Match>
+
+    <!-- Ignore UPM in lambdas from Retrolambda, FindBugs does not correctly understand them -->
+    <Match>
+        <Bug code="UPM"/>
+        <Class name="~.*\$\$Lambda\$.*"/>
+    </Match>
+
+    <!-- Do not check auto-generated classes (Dagger puts $ into class names) -->
+    <Match>
+        <Class name="~.*Dagger*.*"/>
+    </Match>
 
     <Match>
         <!-- This rule fails the build in case if any anonymous
@@ -18,10 +35,20 @@
     </Match>
 
     <Match>
+        <!-- FindBugs complains when a constructor reads a field that has been instantiated by ButterKnife -->
+        <Bug pattern="UR_UNINIT_READ"/>
+    </Match>
+
+    <Match>
         <!-- Since most fields in android components such as activities and fragments
         are instantiated within lifecycle methods (onCreate(), onResume(), etc), this
         rule is triggered even in cases when it is safe to deference variable without
         null-check.  -->
         <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
+    </Match>
+    <Match>
+        <!-- Allow Unchecked/unconfirmed cast from android.view.View when using findViewById(id)  -->
+        <Bug method="findViewById" pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE"
+             returns="android.view.View"/>
     </Match>
 </FindBugsFilter>

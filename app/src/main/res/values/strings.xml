@@ -1,3 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">dhis2-android-dataentry</string>
+    <string name="app_name">DHIS2 Android</string>
+
+    <!-- LoginActivity  -->
+    <string name="server_url">Server URL</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="log_in">Log in</string>
+    <string name="two">2</string>
+
+    <!-- Warnings and error messages -->
+    <string name="error">Error</string>
+    <string name="error_wrong_server_url">Wrong server url</string>
+    <string name="error_wrong_credentials">Wrong credentials</string>
+    <string name="error_unexpected_error">Unexpected error</string>
+    <string name="error_internal_server_error">Internal server error</string>
+
+    <!-- MainActivity -->
+    <string name="drawer_item_home">Home</string>
+    <string name="drawer_item_other">Other</string>
+    <string name="drawer_item_profile">Profile</string>
+    <string name="drawer_item_log_out">Log out</string>
+    <string name="drawer_item_synchronized">Synchronized: %s</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <!-- Log out dialog -->
+    <string name="log_out_title">Delete all data and log out?</string>
+    <string name="log_out_button">LOG OUT</string>
+    <string name="log_out_message">All your data will be erased</string>
+
+    <!-- ReportsActivity -->
+    <string name="report_view_program">Program</string>
+    <string name="report_view_enrollment_status">Status</string>
+    <string name="report_view_enrollment_date">Enrollment date</string>
+
+    <!-- CreateItemsActivity -->
+    <string name="create_event">Create event</string>
+
+    <!-- Common dialogs -->
+    <string name="option_confirm">OK</string>
+
+    <!-- START SECTION: FORMS -->
+    <string name="choose_report_date">Choose report date</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="complete">Complete</string>
+    <string name="active">Active</string>
+
+    <!-- Input hints -->
+    <string name="search">Search</string>
+    <string name="enter_text">Enter text</string>
+    <string name="enter_long_text">Enter long text</string>
+    <string name="enter_number">Enter number</string>
+    <string name="enter_integer">Enter integer</string>
+    <string name="enter_negative_integer">Enter negative integer</string>
+    <string name="enter_positive_integer_or_zero">Enter positive integer or zero</string>
+    <string name="enter_positive_integer">Enter positive integer</string>
+    <string name="filter_options">Filter options</string>
+
+    <!-- RadioButton prompts -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="none">None</string>
+
+    <!-- Fonts  -->
+    <string name="font_name_regular">Roboto-Regular.ttf</string>
+    <string name="font_name_medium">Roboto-Medium.ttf</string>
+    <string name="font_name_condensed">Roboto-Condensed.ttf</string>
+    <string name="font_name_light">Roboto-Light.ttf</string>
+
+    <!-- SyncService strings: -->
+    <string name="sync_now">Synchronise now</string>
+    <string name="sync_text">Synchronising with server</string>
+    <string name="sync_title">Syncing now</string>
+
+    <string name="sync_complete_title">Finished</string>
+    <string name="sync_complete_text">Sync complete</string>
+
+    <string name="sync_error_title">Sync Error</string>
+    <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
+
+    <!--<string name="fatal_sync_error_title">Fatal Sync Error</string>-->
+    <!--<string name="fatal_sync_error_text">An error has occurred during synchronisation.</string>-->
+
+    <string name="selection_hint">Find option:</string>
+    <string name="cancel_description">Cancel</string>
+
+    <!-- Form screen -->
+    <string name="undo">Undo</string>
+    <string name="organisation">Organisation Unit</string>
+    <string name="program">Program</string>
+    <string name="program_stage">Program Stage</string>
+
+    <!-- Dashboard screen -->
+    <string name="status_icon_description">Event status</string>
+    <string name="edit">EDIT</string>
+
 </resources>
