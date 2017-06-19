@@ -7,7 +7,6 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class ReportsArguments implements Parcelable {
-    static final String TYPE_TEIS = "type:teis";
     static final String TYPE_EVENTS = "type:events";
     static final String TYPE_ENROLLMENTS = "type:enrollments";
 
@@ -31,11 +30,5 @@ public abstract class ReportsArguments implements Parcelable {
             @NonNull String programUid, @NonNull String programName) {
         return new AutoValue_ReportsArguments(programUid,
                 programName, ReportsArguments.TYPE_EVENTS);
-    }
-
-    @NonNull
-    public static ReportsArguments createForTeis(
-            @NonNull String teiUid, @NonNull String teName) {
-        return new AutoValue_ReportsArguments(teiUid, teName, TYPE_TEIS);
     }
 }

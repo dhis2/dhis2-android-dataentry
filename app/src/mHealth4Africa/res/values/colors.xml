@@ -5,9 +5,9 @@
     <color name="color_primary_dark">#195d27</color>
     <color name="color_primary_light">#25b345</color>
 
-    <color name="color_accent">#FFFF9800</color>
-    <color name="color_accent_dark">#FFF57C00</color>
-    <color name="color_accent_light">#FFFFE0B2</color>
+    <color name="color_accent">#25c2e2</color>
+    <color name="color_accent_dark">#00b5db</color>
+    <color name="color_accent_light">#7ecbda</color>
 
     <color name="color_material_red">#FFF44336</color>
     <color name="color_material_red_dark">#FFD32F2F</color>

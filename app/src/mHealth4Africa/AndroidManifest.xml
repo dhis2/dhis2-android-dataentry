@@ -21,7 +21,16 @@
             android:theme="@style/AppTheme"/>
         <activity android:name=".reports.ReportsActivity"/>
 
-        <!-- Splash screen -->
+
+        <activity android:name=".launcher.LauncherActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!--
         <activity
             android:name=".SplashActivity"
             android:screenOrientation="portrait"
@@ -32,6 +41,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        -->
 
         <service
             android:name=".service.SyncService"

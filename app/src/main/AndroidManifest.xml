@@ -25,11 +25,15 @@
             android:name=".main.MainActivity"
             android:theme="@style/AppTheme"/>
         <activity android:name=".reports.ReportsActivity"/>
+        <activity android:name=".form.dataentry.DataEntryActivity"/>
+        <activity android:name=".form.FormActivity"/>
+        <activity android:name=".dashboard.DashboardActivity"/>
 
         <service
             android:name=".service.SyncService"
             android:enabled="true"
             android:exported="false"/>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="${fabricKey}"/>
