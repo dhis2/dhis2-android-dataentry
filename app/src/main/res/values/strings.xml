@@ -35,6 +35,9 @@
     <string name="report_view_enrollment_status">Status</string>
     <string name="report_view_enrollment_date">Enrollment date</string>
 
+    <!-- CreateItemsActivity -->
+    <string name="create_event">Create event</string>
+
     <!-- Common dialogs -->
     <string name="option_confirm">OK</string>
 
@@ -86,6 +89,9 @@
 
     <!-- Form screen -->
     <string name="undo">Undo</string>
+    <string name="organisation">Organisation Unit</string>
+    <string name="program">Program</string>
+    <string name="program_stage">Program Stage</string>
 
     <!-- Dashboard screen -->
     <string name="status_icon_description">Event status</string>

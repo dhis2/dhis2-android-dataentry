@@ -8,7 +8,7 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class SelectionArgument implements Parcelable {
     public enum Type {
-        PROGRAM, ORGANISATION
+        ORGANISATION, PROGRAM, PROGRAM_STAGE
     }
 
     @NonNull

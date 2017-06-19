@@ -89,7 +89,7 @@ final class SelectionDialogAdapter extends Adapter<SelectionViewHolder> {
 
         void update(@NonNull SelectionViewModel viewModel) {
             textView.setTag(viewModel);
-            textView.setText(viewModel.label());
+            textView.setText(viewModel.name());
             selectionViewModel = viewModel;
         }
     }

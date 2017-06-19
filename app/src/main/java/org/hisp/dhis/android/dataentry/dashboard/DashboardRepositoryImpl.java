@@ -56,6 +56,11 @@ class DashboardRepositoryImpl implements DashboardRepository {
             "  WHERE Event.enrollment = ?" +
             "ORDER BY Event.eventDate DESC";
 
+    private static final String SELECT_ENROLLMENT = "SELECT " + EnrollmentModel.Columns.PROGRAM +
+            " FROM " + EnrollmentModel.TABLE +
+            " WHERE " + EnrollmentModel.Columns.UID + " =? " +
+            " LIMIT 1;";
+
     private static final List<String> EVENT_TABLES = Arrays.asList(EventModel.TABLE, ProgramStageModel.TABLE);
 
     @NonNull
@@ -63,6 +68,15 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
     DashboardRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
         this.briteDataBase = briteDatabase;
+    }
+
+    @NonNull
+    @Override
+    public Flowable<String> program(@NonNull String enrollmentUid) {
+        return toV2Flowable(briteDataBase.createQuery(EnrollmentModel.TABLE,
+                SELECT_ENROLLMENT, enrollmentUid)
+                .mapToOne(cursor -> cursor.getString(0))
+                .take(1));
     }
 
     @NonNull

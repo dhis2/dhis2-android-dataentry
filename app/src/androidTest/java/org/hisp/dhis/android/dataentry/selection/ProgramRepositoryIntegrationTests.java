@@ -37,17 +37,11 @@ public class ProgramRepositoryIntegrationTests {
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
 
-    private Date date;
-    private String dateString;
-
+    // under tests
     private SelectionRepository repository;
-    private TestSubscriber<List<SelectionViewModel>> subscriber;
 
     @Before
     public void setup() {
-        date = new Date();
-        dateString = date.toString();
-
         SQLiteDatabase database = databaseRule.database();
         repository = new ProgramRepositoryImpl(databaseRule.briteDatabase(), ORGUNIT_UID);
 
@@ -64,7 +58,7 @@ public class ProgramRepositoryIntegrationTests {
 
     @Test
     public void searchMustReturnAllMatchingPrograms() {
-        subscriber = repository.search("program").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("program").test();
 
         // happy path test: verify that one OptionSet with two programs is in there.
         subscriber.assertValueCount(1);
@@ -79,7 +73,7 @@ public class ProgramRepositoryIntegrationTests {
 
     @Test
     public void searchMustReturnAllProgramsOnEmptyQuery() {
-        subscriber = repository.search("").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("").test();
 
         // happy path test: verify that one OptionSet with two programs is in there.
         subscriber.assertValueCount(1);
@@ -94,7 +88,7 @@ public class ProgramRepositoryIntegrationTests {
 
     @Test
     public void searchMustNotReturnNonMatchingPrograms() {
-        subscriber = repository.search("random_program").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("random_program").test();
 
         // happy path test: verify that one OptionSet with two options is in there.
         subscriber.assertValueCount(1);
@@ -107,7 +101,7 @@ public class ProgramRepositoryIntegrationTests {
 
     @Test
     public void searchMustObserveUpdatesInProgramTable() {
-        subscriber = repository.search("program").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("program").test();
 
         // change name of program & verify that it happens.
         subscriber.assertValueCount(1);
@@ -129,7 +123,7 @@ public class ProgramRepositoryIntegrationTests {
 
     @Test
     public void searchMustObserveInsertsInProgramTable() {
-        subscriber = repository.search("program").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("program").test();
 
         // add an program & verify that it happens.
         subscriber.assertValueCount(1);
@@ -154,7 +148,7 @@ public class ProgramRepositoryIntegrationTests {
     @Test
     public void searchMustObserveDeletesInProgramTable() {
         // delete the program & verify that it is observed.
-        subscriber = repository.search("program").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("program").test();
 
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -173,7 +167,7 @@ public class ProgramRepositoryIntegrationTests {
 
     @Test
     public void searchMustObserveParentTable() {
-        subscriber = repository.search("program").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("program").test();
 
         // delete the parent and verify that fk constraints are updated accordingly...
         subscriber.assertValueCount(1);
@@ -211,15 +205,15 @@ public class ProgramRepositoryIntegrationTests {
         result.put(OrganisationUnitModel.Columns.CODE, "orgUnitCode");
         result.put(OrganisationUnitModel.Columns.NAME, "orgUnitName");
         result.put(OrganisationUnitModel.Columns.DISPLAY_NAME, orgunitName);
-        result.put(OrganisationUnitModel.Columns.CREATED, dateString);
-        result.put(OrganisationUnitModel.Columns.LAST_UPDATED, dateString);
+        result.put(OrganisationUnitModel.Columns.CREATED, new Date().toString());
+        result.put(OrganisationUnitModel.Columns.LAST_UPDATED, new Date().toString());
         result.put(OrganisationUnitModel.Columns.SHORT_NAME, "orgUnitName");
         result.put(OrganisationUnitModel.Columns.DISPLAY_SHORT_NAME, "orgUnitShortName");
         result.put(OrganisationUnitModel.Columns.DESCRIPTION, "description");
         result.put(OrganisationUnitModel.Columns.DISPLAY_DESCRIPTION, "displayDescription");
         result.put(OrganisationUnitModel.Columns.PATH, "path");
-        result.put(OrganisationUnitModel.Columns.OPENING_DATE, dateString);
-        result.put(OrganisationUnitModel.Columns.CLOSED_DATE, dateString);
+        result.put(OrganisationUnitModel.Columns.OPENING_DATE, new Date().toString());
+        result.put(OrganisationUnitModel.Columns.CLOSED_DATE, new Date().toString());
         result.put(OrganisationUnitModel.Columns.PARENT, "parent");
         result.put(OrganisationUnitModel.Columns.LEVEL, 1);
         return result;
@@ -228,8 +222,8 @@ public class ProgramRepositoryIntegrationTests {
     private ContentValues program(String uid, String displayName) {
         ContentValues values = new ContentValues();
         values.put(Columns.UID, uid);
-        values.put(Columns.CREATED, dateString);
-        values.put(Columns.LAST_UPDATED, dateString);
+        values.put(Columns.CREATED, new Date().toString());
+        values.put(Columns.LAST_UPDATED, new Date().toString());
         values.put(Columns.CODE, "test_code");
         values.put(Columns.NAME, "test_name");
         values.put(Columns.DISPLAY_NAME, displayName);

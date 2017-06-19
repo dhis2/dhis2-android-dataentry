@@ -32,17 +32,11 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
 
-    private Date date;
-    private String dateString;
-
+    // under tests
     private OrganisationUnitRepositoryImpl repository;
-    private TestSubscriber<List<SelectionViewModel>> subscriber;
 
     @Before
     public void setup() {
-        date = new Date();
-        dateString = date.toString();
-
         SQLiteDatabase database = databaseRule.database();
         repository = new OrganisationUnitRepositoryImpl(databaseRule.briteDatabase());
 
@@ -52,7 +46,7 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
 
     @Test
     public void searchMustReturnAllMatchingOrgUnits() {
-        subscriber = repository.search("orgunit").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("orgunit").test();
 
         // happy path test: verify that one OptionSet with two options is in there.
         subscriber.assertValueCount(1);
@@ -67,7 +61,7 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
 
     @Test
     public void searchMustReturnAllOrgUnitsOnEmptyQuery() {
-        subscriber = repository.search("").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("").test();
 
         // happy path test: verify that one OptionSet with two options is in there.
         subscriber.assertValueCount(1);
@@ -83,7 +77,7 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
 
     @Test
     public void searchMustNotReturnNonMatchingOrgUnits() {
-        subscriber = repository.search("random_org_unit").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("random_org_unit").test();
 
         // happy path test: verify that one OptionSet with two options is in there.
         subscriber.assertValueCount(1);
@@ -96,7 +90,7 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
 
     @Test
     public void searchMustObserveUpdatesInOrgUnitTable() {
-        subscriber = repository.search("orgunit").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("orgunit").test();
 
         // change name of orgunit & verify that it happens.
         subscriber.assertValueCount(1);
@@ -118,7 +112,7 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
 
     @Test
     public void searchMustObserveInsertsInOrgUnitTable() {
-        subscriber = repository.search("orgunit").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("orgunit").test();
 
         // add an option & verify that it happens.
         subscriber.assertValueCount(1);
@@ -141,7 +135,7 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
 
     @Test
     public void searchMustObserveDeletesInOrgUnitsTable() {
-        subscriber = repository.search("orgunit").test();
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("orgunit").test();
 
         subscriber.assertValueCount(1);
         subscriber.assertNoErrors();
@@ -164,15 +158,15 @@ public class OrganisationUnitSelectionRepositoryIntegrationTests {
         result.put(Columns.CODE, "orgUnitCode");
         result.put(Columns.NAME, "orgUnitName");
         result.put(Columns.DISPLAY_NAME, orgunitName);
-        result.put(Columns.CREATED, dateString);
-        result.put(Columns.LAST_UPDATED, dateString);
+        result.put(Columns.CREATED, new Date().toString());
+        result.put(Columns.LAST_UPDATED, new Date().toString());
         result.put(Columns.SHORT_NAME, "orgUnitName");
         result.put(Columns.DISPLAY_SHORT_NAME, "orgUnitShortName");
         result.put(Columns.DESCRIPTION, "description");
         result.put(Columns.DISPLAY_DESCRIPTION, "displayDescription");
         result.put(Columns.PATH, "path");
-        result.put(Columns.OPENING_DATE, dateString);
-        result.put(Columns.CLOSED_DATE, dateString);
+        result.put(Columns.OPENING_DATE, new Date().toString());
+        result.put(Columns.CLOSED_DATE, new Date().toString());
         result.put(Columns.PARENT, "parent");
         result.put(Columns.LEVEL, 1);
         return result;

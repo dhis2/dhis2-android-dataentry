@@ -56,8 +56,10 @@ import io.reactivex.functions.Consumer;
  * }
  */
 public class SelectionDialogFragment extends AppCompatDialogFragment implements SelectionView {
-    private static final String SELECTION_ARG = "arg:selectionArg";
     private static final String OPTION_SELECTION_ARG = "arg:optionSelectionArgs";
+    private static final String SELECTION_ARG = "arg:selectionArg";
+    public static final String SELECTION_RESULT = "arg:selectionResult";
+    public static final int RESULT_CODE = 0;
 
     @BindView(R.id.textview_selection_dialog_title)
     TextView titleView;

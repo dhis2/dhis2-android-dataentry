@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -15,28 +16,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.sqlbrite.BriteDatabase;
+import com.jakewharton.rxbinding2.view.RxView;
 
-import org.hisp.dhis.android.core.common.State;
-import org.hisp.dhis.android.core.event.EventModel;
-import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
 import org.hisp.dhis.android.dataentry.commons.ui.FontTextView;
+import org.hisp.dhis.android.dataentry.create.CreateItemsActivity;
+import org.hisp.dhis.android.dataentry.create.CreateItemsArgument;
 import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
 import org.hisp.dhis.android.dataentry.form.FormActivity;
 import org.hisp.dhis.android.dataentry.form.FormViewArguments;
 
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 @SuppressWarnings("PMD.ExcessiveImports")
@@ -46,9 +45,6 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
     @Inject
     DashboardPresenter dashboardPresenter;
 
-    @Inject // ToDo: remove
-            BriteDatabase briteDatabase;
-
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -57,6 +53,9 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
 
     @BindView(R.id.second_attribute)
     FontTextView secondAttribute;
+
+    @BindView(R.id.fab)
+    FloatingActionButton createEventsButton;
 
     @BindView(R.id.event_list)
     RecyclerView recyclerView;
@@ -132,23 +131,6 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
         dashboardPresenter.onAttach(this);
     }
 
-    @OnClick(R.id.fab)
-    void createEvent() {
-        EventModel event = EventModel.builder()
-                .uid(UUID.randomUUID().toString())
-                .eventDate(new Date())
-                .enrollmentUid(getArguments().getString(ARG_ENROLLMENT_UID))
-                .program("ur1Edk5Oe2n")
-                .programStage("ZkbAXlQUYJG")
-                .organisationUnit("DiszpKrYNg8")
-                .state(State.TO_POST)
-                .status(EventStatus.ACTIVE)
-                .build();
-
-        briteDatabase.insert(EventModel.TABLE, event.toContentValues());
-    }
-
-
     @OnClick({R.id.appbar_layout, R.id.edit_profile_button})
     void showProfile() {
         startActivity(FormActivity.create(getActivity(), FormViewArguments
@@ -159,6 +141,23 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
     public void onPause() {
         super.onPause();
         dashboardPresenter.onDetach();
+    }
+
+    @NonNull
+    @Override
+    public Observable<Object> createEventActions() {
+        return RxView.clicks(createEventsButton);
+    }
+
+    @NonNull
+    @Override
+    public Consumer<String> navigateToCreateScreen() {
+        return program -> {
+            Intent createItemsIntent = CreateItemsActivity.createIntent(getActivity(),
+                    CreateItemsArgument.forEnrollmentEvent(program, "",
+                            getArguments().getString(ARG_ENROLLMENT_UID)));
+            getActivity().startActivity(createItemsIntent);
+        };
     }
 
     @NonNull

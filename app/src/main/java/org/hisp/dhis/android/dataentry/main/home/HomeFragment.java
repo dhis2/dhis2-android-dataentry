@@ -87,6 +87,7 @@ public class HomeFragment extends BaseFragment implements HomeView {
         });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(homeViewModelAdapter);

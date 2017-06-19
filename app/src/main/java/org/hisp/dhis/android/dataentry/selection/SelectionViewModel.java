@@ -12,7 +12,7 @@ public abstract class SelectionViewModel implements Parcelable {
     public abstract String uid();
 
     @NonNull
-    public abstract String label();
+    public abstract String name();
 
     @NonNull
     public static SelectionViewModel create(String uid, String name) {
