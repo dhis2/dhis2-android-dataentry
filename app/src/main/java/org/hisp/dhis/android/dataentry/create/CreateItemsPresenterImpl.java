@@ -11,6 +11,11 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
+@SuppressWarnings({
+        "PMD.CyclomaticComplexity",
+        "PMD.StdCyclomaticComplexity",
+        "PMD.ModifiedCyclomaticComplexity"
+})
 class CreateItemsPresenterImpl implements CreateItemsPresenter {
     private static final int FIRST_SELECTION = 0;
     private static final int SECOND_SELECTION = 1;
