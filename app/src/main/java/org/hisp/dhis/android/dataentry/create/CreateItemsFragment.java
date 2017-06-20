@@ -31,11 +31,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
 import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
+@SuppressWarnings("PMD.ExcessiveImports")
 public class CreateItemsFragment extends BaseFragment implements CreateItemsView {
     private static final String ARG_CREATE = "arg:create";
     private static final String ARG_SELECTIONS = "arg:selectionStates";
@@ -111,19 +113,20 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     }
 
     @Override
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH")
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         bind(this, view);
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState == null) {
+            List<SelectionStateModel> states = initSelectionStates(getArguments().getParcelable(ARG_CREATE));
+            state1 = states.get(FIRST_SELECTION);
+            state2 = states.get(SECOND_SELECTION);
+        } else {
             List<SelectionStateModel> selectionStates = savedInstanceState.getParcelableArrayList(ARG_SELECTIONS);
-            isNull((selectionStates == null || selectionStates.size() < SELECTORS_COUNT),
+            isNull(selectionStates == null || selectionStates.size() < SELECTORS_COUNT,
                     "SelectionStateModels must be supplied");
             this.state1 = selectionStates.get(FIRST_SELECTION);
             this.state2 = selectionStates.get(SECOND_SELECTION);
-        } else {
-            ArrayList<SelectionStateModel> states = initSelectionStates(getArguments().getParcelable(ARG_CREATE));
-            state1 = states.get(FIRST_SELECTION);
-            state2 = states.get(SECOND_SELECTION);
         }
         //TODO: restore the states set text labels and hints
         selectionTextView1.setText(state1.name());
@@ -133,10 +136,8 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     }
 
     @NonNull
-    private ArrayList<SelectionStateModel> initSelectionStates(CreateItemsArgument createArgument) {
-        SelectionArgument.Type selection1Type;
+    private List<SelectionStateModel> initSelectionStates(CreateItemsArgument createArgument) {
         SelectionArgument.Type selection2Type;
-        String selection1Label;
         String selection2Label;
 
         if (createArgument.type() == CreateItemsArgument.Type.EVENT) {
@@ -155,11 +156,8 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
             throw new IllegalStateException("Unknown CreateItemsArgument type.");
         }
 
-        selection1Type = SelectionArgument.Type.ORGANISATION;
-        selection1Label = getString(R.string.organisation);
-
         return new ArrayList<>(Arrays.asList(
-                SelectionStateModel.createEmpty(selection1Label, selection1Type),
+                SelectionStateModel.createEmpty(getString(R.string.organisation), SelectionArgument.Type.ORGANISATION),
                 SelectionStateModel.createEmpty(selection2Label, selection2Type)));
     }
 

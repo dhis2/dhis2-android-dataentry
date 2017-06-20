@@ -46,7 +46,8 @@ final class SyncPresenterImpl implements SyncPresenter {
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .map(response -> SyncResult.success())
-                .onErrorReturn(throwable -> SyncResult.failure(throwable.getMessage()))
+                .onErrorReturn(throwable -> SyncResult.failure(
+                        throwable.getMessage() == null ? "" : throwable.getMessage()))
                 .startWith(SyncResult.progress())
                 .subscribe(update(), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
