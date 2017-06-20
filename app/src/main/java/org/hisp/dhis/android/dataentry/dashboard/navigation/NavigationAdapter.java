@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.dashboard;
+package org.hisp.dhis.android.dataentry.dashboard.navigation;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -10,26 +10,26 @@ import org.hisp.dhis.android.dataentry.R;
 import java.util.ArrayList;
 import java.util.List;
 
-class DashboardAdapter extends RecyclerView.Adapter<DashboardViewHolder> {
+class NavigationAdapter extends RecyclerView.Adapter<NavigationViewHolder> {
 
     @NonNull
     private final List<EventViewModel> events;
-    private final DashboardViewHolder.OnEventClickListener onEventClickListener;
+    private final NavigationViewHolder.OnEventClickListener onEventClickListener;
 
-    DashboardAdapter(DashboardViewHolder.OnEventClickListener onEventClickListener) {
+    NavigationAdapter(NavigationViewHolder.OnEventClickListener onEventClickListener) {
         this.onEventClickListener = onEventClickListener;
         events = new ArrayList<>();
     }
 
     @Override
-    public DashboardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new DashboardViewHolder(
+    public NavigationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new NavigationViewHolder(
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.recyclerview_dashboard_event_item, parent, false), onEventClickListener);
     }
 
     @Override
-    public void onBindViewHolder(DashboardViewHolder holder, int position) {
+    public void onBindViewHolder(NavigationViewHolder holder, int position) {
         holder.update(events.get(position));
     }
 

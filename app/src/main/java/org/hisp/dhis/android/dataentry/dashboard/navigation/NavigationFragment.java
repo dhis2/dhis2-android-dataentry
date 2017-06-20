@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.dashboard;
+package org.hisp.dhis.android.dataentry.dashboard.navigation;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,11 +23,10 @@ import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
 import org.hisp.dhis.android.dataentry.commons.ui.FontTextView;
+import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
 import org.hisp.dhis.android.dataentry.create.CreateItemsActivity;
 import org.hisp.dhis.android.dataentry.create.CreateItemsArgument;
-import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
-import org.hisp.dhis.android.dataentry.form.FormActivity;
-import org.hisp.dhis.android.dataentry.form.FormViewArguments;
+import org.hisp.dhis.android.dataentry.dashboard.DashboardNavigator;
 
 import java.util.List;
 
@@ -38,12 +37,15 @@ import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
-@SuppressWarnings("PMD.ExcessiveImports")
-public class DashboardFragment extends BaseFragment implements DashboardView {
+public class NavigationFragment extends BaseFragment implements NavigationView {
     private static final String ARG_ENROLLMENT_UID = "enrollmentUid";
+    private static final String ARG_TWO_PANE_LAYOUT = "twoPaneLayout";
 
     @Inject
-    DashboardPresenter dashboardPresenter;
+    NavigationPresenter navigationPresenter;
+
+    @Inject
+    DashboardNavigator dashboardNavigator;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -60,16 +62,17 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
     @BindView(R.id.event_list)
     RecyclerView recyclerView;
 
-    private DashboardAdapter dashboardAdapter;
+    private NavigationAdapter navigationAdapter;
 
-    public DashboardFragment() {
+    public NavigationFragment() {
         // Required empty public constructor
     }
 
-    public static DashboardFragment newInstance(String enrollmentUid) {
-        DashboardFragment fragment = new DashboardFragment();
+    public static NavigationFragment newInstance(NavigationViewArguments navigationViewArguments) {
+        NavigationFragment fragment = new NavigationFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_ENROLLMENT_UID, enrollmentUid);
+        args.putString(ARG_ENROLLMENT_UID, navigationViewArguments.enrollmentUid());
+        args.putBoolean(ARG_TWO_PANE_LAYOUT, navigationViewArguments.twoPaneLayout());
         fragment.setArguments(args);
         return fragment;
     }
@@ -100,15 +103,14 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
     }
 
     private void setupRecyclerView() {
-        dashboardAdapter = new DashboardAdapter(eventViewModel -> {
-            Intent intent = FormActivity.create(getActivity(), FormViewArguments.createForEvent(eventViewModel.uid()));
-            startActivity(intent);
+        navigationAdapter = new NavigationAdapter(eventViewModel -> {
+            dashboardNavigator.navigateToEvent(eventViewModel.uid());
         });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(dashboardAdapter);
+        recyclerView.setAdapter(navigationAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerDecoration(
                 ContextCompat.getDrawable(getActivity(), R.drawable.divider)));
@@ -120,27 +122,28 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
 
         String enrollmentUid = Preconditions.isNull(getArguments()
                 .getString(ARG_ENROLLMENT_UID), "enrollmentUid == null");
+        Boolean twoPaneLayout = Preconditions.isNull(getArguments()
+                .getBoolean(ARG_TWO_PANE_LAYOUT), "enrollmentUid == null");
         getUserComponent()
-                .plus(new DashboardModule(enrollmentUid))
+                .plus(new NavigationModule(getActivity(), enrollmentUid, twoPaneLayout))
                 .inject(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        dashboardPresenter.onAttach(this);
+        navigationPresenter.onAttach(this);
     }
 
     @OnClick({R.id.appbar_layout, R.id.edit_profile_button})
     void showProfile() {
-        startActivity(FormActivity.create(getActivity(), FormViewArguments
-                .createForEnrollment(getArguments().getString(ARG_ENROLLMENT_UID))));
+        dashboardNavigator.navigateToEnrollment(getArguments().getString(ARG_ENROLLMENT_UID));
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        dashboardPresenter.onDetach();
+        navigationPresenter.onDetach();
     }
 
     @NonNull
@@ -163,7 +166,7 @@ public class DashboardFragment extends BaseFragment implements DashboardView {
     @NonNull
     @Override
     public Consumer<List<EventViewModel>> renderEvents() {
-        return events -> dashboardAdapter.swap(events);
+        return events -> navigationAdapter.swap(events);
     }
 
     @NonNull

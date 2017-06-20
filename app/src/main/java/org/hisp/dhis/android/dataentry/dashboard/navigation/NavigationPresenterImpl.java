@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.dashboard;
+package org.hisp.dhis.android.dataentry.dashboard.navigation;
 
 import android.support.annotation.NonNull;
 
@@ -10,7 +10,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
-final class DashboardPresenterImpl implements DashboardPresenter {
+final class NavigationPresenterImpl implements NavigationPresenter {
 
     @NonNull
     private final String enrollmentUid;
@@ -19,23 +19,23 @@ final class DashboardPresenterImpl implements DashboardPresenter {
     private final SchedulerProvider schedulerProvider;
 
     @NonNull
-    private final DashboardRepository dashboardRepository;
+    private final NavigationRepository navigationRepository;
 
     @NonNull
     private final CompositeDisposable compositeDisposable;
 
-    DashboardPresenterImpl(@NonNull String enrollmentUid,
-                           @NonNull SchedulerProvider schedulerProvider,
-                           @NonNull DashboardRepository dashboardRepository) {
+    NavigationPresenterImpl(@NonNull String enrollmentUid,
+                            @NonNull SchedulerProvider schedulerProvider,
+                            @NonNull NavigationRepository navigationRepository) {
         this.enrollmentUid = enrollmentUid;
         this.schedulerProvider = schedulerProvider;
-        this.dashboardRepository = dashboardRepository;
+        this.navigationRepository = navigationRepository;
         this.compositeDisposable = new CompositeDisposable();
     }
 
     @Override
-    public void onAttach(@NonNull DashboardView view) {
-        compositeDisposable.add(dashboardRepository
+    public void onAttach(@NonNull NavigationView view) {
+        compositeDisposable.add(navigationRepository
                 .attributes(enrollmentUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -46,7 +46,7 @@ final class DashboardPresenterImpl implements DashboardPresenter {
                 })
                 .subscribe(view.renderAttributes(), Timber::e));
 
-        compositeDisposable.add(dashboardRepository
+        compositeDisposable.add(navigationRepository
                 .events(enrollmentUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -58,7 +58,7 @@ final class DashboardPresenterImpl implements DashboardPresenter {
                 .toFlowable(BackpressureStrategy.LATEST)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
-                .switchMap(click -> dashboardRepository.program(enrollmentUid))
+                .switchMap(click -> navigationRepository.program(enrollmentUid))
                 .observeOn(schedulerProvider.ui())
                 .subscribe(view.navigateToCreateScreen(), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);

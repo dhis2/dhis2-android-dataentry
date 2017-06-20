@@ -6,11 +6,11 @@ import android.support.annotation.NonNull;
 import org.hisp.dhis.android.dataentry.form.FormActivity;
 import org.hisp.dhis.android.dataentry.form.FormViewArguments;
 
-class SinglePaneDashboardNavigator implements DashboardNavigator {
+public class SinglePaneDashboardNavigator implements DashboardNavigator {
 
     private final Activity currentActivity;
 
-    SinglePaneDashboardNavigator(@NonNull Activity currentActivity) {
+    public SinglePaneDashboardNavigator(@NonNull Activity currentActivity) {
         this.currentActivity = currentActivity;
     }
 

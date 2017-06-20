@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.dashboard;
+package org.hisp.dhis.android.dataentry.dashboard.navigation;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -20,7 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-class DashboardViewHolder extends RecyclerView.ViewHolder {
+class NavigationViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.name)
     TextView name;
@@ -47,7 +47,7 @@ class DashboardViewHolder extends RecyclerView.ViewHolder {
         void OnEventClicked(EventViewModel eventViewModel);
     }
 
-    DashboardViewHolder(View itemView, OnEventClickListener onEventClickListener) {
+    NavigationViewHolder(View itemView, OnEventClickListener onEventClickListener) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         this.onEventClickListener = onEventClickListener;

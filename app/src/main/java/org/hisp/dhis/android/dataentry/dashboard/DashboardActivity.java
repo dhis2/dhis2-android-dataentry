@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.view.View;
 
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
+import org.hisp.dhis.android.dataentry.dashboard.navigation.NavigationFragment;
+import org.hisp.dhis.android.dataentry.dashboard.navigation.NavigationViewArguments;
 import org.hisp.dhis.android.dataentry.form.FormFragment;
 import org.hisp.dhis.android.dataentry.form.FormViewArguments;
 
@@ -33,21 +35,24 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        String enrollmentUid = Preconditions.isNull(
+                getIntent().getStringExtra(ARG_ENROLLMENT_UID), "enrollmentUid == null");
+
+        Boolean useTwoPaneLayout = findViewById(R.id.form) != null;
+
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.navigation, DashboardFragment.newInstance(
-                        getIntent().getStringExtra(ARG_ENROLLMENT_UID)))
+                .replace(R.id.navigation,
+                        NavigationFragment.newInstance(NavigationViewArguments.create(enrollmentUid, useTwoPaneLayout)))
                 .commit();
 
-        // if using two-pane layout (tablets in landscape mode), there will exist a layout for data entry
-        View dataEntry = findViewById(R.id.data_entry);
-        if (dataEntry != null) {
+        if (useTwoPaneLayout) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.data_entry, FormFragment.newInstance(FormViewArguments.createForEvent("aygYgTAvuXy")))
+                    .replace(R.id.form,
+                            FormFragment.newInstance(FormViewArguments.createForEvent("aygYgTAvuXy")))
                     .commit();
         }
-
     }
 
     @Override

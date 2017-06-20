@@ -25,4 +25,5 @@
     <color name="color_schedule">#81c784</color>
     <color name="color_skipped">#a1887f</color>
 
+    <color name="data_entry_background">#F5F5F5</color>
 </resources>

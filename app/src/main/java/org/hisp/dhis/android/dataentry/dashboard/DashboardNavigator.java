@@ -1,6 +1,6 @@
 package org.hisp.dhis.android.dataentry.dashboard;
 
-interface DashboardNavigator {
+public interface DashboardNavigator {
 
     void navigateToEvent(String eventUid);
 

@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:baselineAligned="false"
               android:orientation="horizontal"
               android:weightSum="1">
 
@@ -10,12 +9,15 @@
         android:id="@+id/navigation"
         android:layout_width="360dp"
         android:layout_height="match_parent"
-        android:layout_marginEnd="@dimen/two_pane_separation_margin"
-        android:layout_marginRight="@dimen/two_pane_separation_margin"
         />
 
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/color_divider"/>
+
     <FrameLayout
-        android:id="@+id/data_entry"
+        android:id="@+id/form"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"/>
