@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
+import org.hisp.dhis.android.dataentry.selection.OrganisationUnitRepositoryImpl;
 
 import java.util.concurrent.TimeUnit;
 
@@ -18,16 +19,18 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
     public static final int SECOND_SELECTION = 1;
     private final CreateItemsArgument argument;
     private final CreateItemsRepository repository;
+    private final OrganisationUnitRepositoryImpl orgRepository;
     private final SchedulerProvider schedulerProvider;
     private final CompositeDisposable disposable;
-
     private final String[] selectedUids;
 
     public CreateItemsPresenterImpl(@NonNull CreateItemsArgument argument,
-            @NonNull CreateItemsRepository repository,
-            @NonNull SchedulerProvider schedulerProvider) {
+                                    @NonNull CreateItemsRepository repository,
+                                    @NonNull OrganisationUnitRepositoryImpl orgRepository,
+                                    @NonNull SchedulerProvider schedulerProvider) {
         this.argument = argument;
         this.repository = repository;
+        this.orgRepository = orgRepository;
         this.schedulerProvider = schedulerProvider;
         this.disposable = new CompositeDisposable();
         this.selectedUids = new String[SELECTIONS];
@@ -39,7 +42,7 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
         if (view instanceof CreateItemsView) {
             CreateItemsView createItemsView = (CreateItemsView) view;
 
-
+            ///check if single org unit & set it if .
             disposable.add(createItemsView.selection1ClearEvent()
                     .debounce(DEBOUNCE, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
@@ -47,6 +50,16 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                     .subscribe(event -> {
                         createItemsView.setSelection(FIRST_SELECTION, "", "");
                         createItemsView.setSelection(SECOND_SELECTION, "", "");
+                    }, err -> {
+                        throw new OnErrorNotImplementedException(err);
+                    }));
+            disposable.add(orgRepository.search("")
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(list -> {
+                        if (list.size() == 1) {
+                            createItemsView.setSelection(FIRST_SELECTION, list.get(0).uid(), list.get(0).name());
+                        }
                     }, err -> {
                         throw new OnErrorNotImplementedException(err);
                     }));
