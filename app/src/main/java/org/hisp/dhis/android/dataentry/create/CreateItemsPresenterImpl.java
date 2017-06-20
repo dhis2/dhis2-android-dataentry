@@ -15,7 +15,8 @@ import timber.log.Timber;
 @SuppressWarnings({
         "PMD.CyclomaticComplexity",
         "PMD.StdCyclomaticComplexity",
-        "PMD.ModifiedCyclomaticComplexity"
+        "PMD.ModifiedCyclomaticComplexity",
+        "PMD.ExcessiveMethodLength"
 })
 class CreateItemsPresenterImpl implements CreateItemsPresenter {
     private static final int FIRST_SELECTION = 0;
