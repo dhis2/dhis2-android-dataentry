@@ -158,7 +158,8 @@ public class NavigationFragment extends BaseFragment implements NavigationView {
         return program -> {
             Intent createItemsIntent = CreateItemsActivity.createIntent(getActivity(),
                     CreateItemsArgument.forEnrollmentEvent(program, "",
-                            getArguments().getString(ARG_ENROLLMENT_UID)));
+                            Preconditions.isNull(getArguments()
+                                    .getString(ARG_ENROLLMENT_UID), "enrollmentUid == null")));
             getActivity().startActivity(createItemsIntent);
         };
     }
