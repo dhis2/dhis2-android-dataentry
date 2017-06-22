@@ -12,6 +12,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
+import org.hisp.dhis.android.dataentry.commons.utils.OnErrorHandler;
 import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 
@@ -44,7 +45,7 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
     @SuppressWarnings("CheckReturnValue")
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED")
     EditTextViewHolder(@NonNull ViewGroup parent, @NonNull View itemView,
-                       @NonNull FlowableProcessor<RowAction> processor) {
+            @NonNull FlowableProcessor<RowAction> processor) {
         super(itemView);
 
         // bind views
@@ -81,18 +82,28 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
                 .scan(Pair.create(false, false), (state, hasFocus) ->
                         Pair.create(state.val1() && !hasFocus, hasFocus))
                 .filter(state -> state.val0() && model.hasValue())
-                .filter(valueHasChanged())
-                .map(event -> RowAction.create(model.getValue().uid(), editText.getText().toString()))
-                .subscribe(action -> processor.onNext(action), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
+                .filter(valueHasChangedPredicate())
+                .map(event -> RowAction.create(model.getValue().uid(),
+                        editText.getText().toString()))
+                .subscribe(action -> processor.onNext(action), OnErrorHandler.create(), () -> {
+                    // this is necessary for persisting last value in the form
+                    if (valueHasChanged()) {
+                        processor.onNext(RowAction.create(model.getValue().uid(),
+                                editText.getText().toString()));
+                    }
                 });
 
         editTextObservable.connect();
     }
 
     @NonNull
-    private Predicate<Pair<Boolean, Boolean>> valueHasChanged() {
-        return state -> !Preconditions.equals(isEmpty(editText.getText()) ? "" : editText.getText().toString(),
+    private Predicate<Pair<Boolean, Boolean>> valueHasChangedPredicate() {
+        return state -> valueHasChanged();
+    }
+
+    @NonNull
+    private Boolean valueHasChanged() {
+        return !Preconditions.equals(isEmpty(editText.getText()) ? "" : editText.getText().toString(),
                 model.getValue().value() == null ? "" : valueOf(model.getValue().value()));
     }
 

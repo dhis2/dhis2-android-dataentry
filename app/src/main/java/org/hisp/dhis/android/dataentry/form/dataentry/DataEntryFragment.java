@@ -71,18 +71,13 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         bind(this, view);
         setUpRecyclerView();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dataEntryPresenter.onDetach();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         dataEntryPresenter.onAttach(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        dataEntryPresenter.onDetach();
     }
 
     @NonNull
