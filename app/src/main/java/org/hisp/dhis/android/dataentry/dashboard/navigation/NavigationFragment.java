@@ -63,6 +63,7 @@ public class NavigationFragment extends BaseFragment implements NavigationView {
     RecyclerView recyclerView;
 
     private NavigationAdapter navigationAdapter;
+    private Boolean twoPaneLayout;
 
     public NavigationFragment() {
         // Required empty public constructor
@@ -105,6 +106,9 @@ public class NavigationFragment extends BaseFragment implements NavigationView {
     private void setupRecyclerView() {
         navigationAdapter = new NavigationAdapter(eventViewModel -> {
             dashboardNavigator.navigateToEvent(eventViewModel.uid());
+            if (twoPaneLayout) {
+                markEventAsSelected(eventViewModel);
+            }
         });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -116,13 +120,18 @@ public class NavigationFragment extends BaseFragment implements NavigationView {
                 ContextCompat.getDrawable(getActivity(), R.drawable.divider)));
     }
 
+    private void markEventAsSelected(EventViewModel eventViewModel) {
+        navigationAdapter.setSelectedEvent(eventViewModel);
+        navigationAdapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
         String enrollmentUid = Preconditions.isNull(getArguments()
                 .getString(ARG_ENROLLMENT_UID), "enrollmentUid == null");
-        Boolean twoPaneLayout = Preconditions.isNull(getArguments()
+        twoPaneLayout = Preconditions.isNull(getArguments()
                 .getBoolean(ARG_TWO_PANE_LAYOUT), "enrollmentUid == null");
         getUserComponent()
                 .plus(new NavigationModule(getActivity(), enrollmentUid, twoPaneLayout))
