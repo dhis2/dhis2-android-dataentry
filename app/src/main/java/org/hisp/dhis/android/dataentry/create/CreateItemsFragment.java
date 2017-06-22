@@ -141,16 +141,16 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
         String selection2Label;
 
         if (createArgument.type() == CreateItemsArgument.Type.EVENT) {
-            selection2Type = SelectionArgument.Type.PROGRAM;
+            selection2Type = SelectionArgument.Type.PROGRAM_NO_REG;
             selection2Label = getString(R.string.program);
         } else if (createArgument.type() == CreateItemsArgument.Type.ENROLLMENT_EVENT) {
             selection2Type = SelectionArgument.Type.PROGRAM_STAGE;
             selection2Label = getString(R.string.program_stage);
         } else if (createArgument.type() == CreateItemsArgument.Type.TEI) {
-            selection2Type = SelectionArgument.Type.PROGRAM;
+            selection2Type = SelectionArgument.Type.PROGRAM_REG;
             selection2Label = getString(R.string.program);
         } else if (createArgument.type() == CreateItemsArgument.Type.ENROLLMENT) {
-            selection2Type = SelectionArgument.Type.PROGRAM;
+            selection2Type = SelectionArgument.Type.PROGRAM_NO_REG;
             selection2Label = getString(R.string.program);
         } else {
             throw new IllegalStateException("Unknown CreateItemsArgument type.");

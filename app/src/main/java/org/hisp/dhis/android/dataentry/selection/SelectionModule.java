@@ -36,7 +36,8 @@ public final class SelectionModule {
     @PerFragment
     SelectionNavigator selectionNavigator() {
         if (argument.type() == SelectionArgument.Type.ORGANISATION ||
-                argument.type() == SelectionArgument.Type.PROGRAM ||
+                argument.type() == SelectionArgument.Type.PROGRAM_NO_REG ||
+                argument.type() == SelectionArgument.Type.PROGRAM_REG ||
                 argument.type() == SelectionArgument.Type.PROGRAM_STAGE) {
             return new OnActivityResultNavigator(selectionDialogFragment);
         } else {
@@ -49,8 +50,10 @@ public final class SelectionModule {
     SelectionRepository selectionRepository(@NonNull BriteDatabase database) {
         if (argument.type() == SelectionArgument.Type.ORGANISATION) {
             return new OrganisationUnitRepositoryImpl(database);
-        } else if (argument.type() == SelectionArgument.Type.PROGRAM) {
-            return new ProgramRepositoryImpl(database, argument.uid());
+        } else if (argument.type() == SelectionArgument.Type.PROGRAM_NO_REG) {
+            return new ProgramRepositoryImpl(database, argument.uid(), 0);
+        }else if (argument.type() == SelectionArgument.Type.PROGRAM_REG) {
+            return new ProgramRepositoryImpl(database, argument.uid(), 1);
         } else if (argument.type() == SelectionArgument.Type.PROGRAM_STAGE) {
             return new ProgramStageRepositoryImpl(database, argument.uid());
         } else {
