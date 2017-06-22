@@ -37,6 +37,9 @@ import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
+@SuppressWarnings({
+        "PMD.ExcessiveImports"
+})
 public class NavigationFragment extends BaseFragment implements NavigationView {
     private static final String ARG_ENROLLMENT_UID = "enrollmentUid";
     private static final String ARG_TWO_PANE_LAYOUT = "twoPaneLayout";
