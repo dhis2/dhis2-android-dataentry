@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
 import org.hisp.dhis.android.dataentry.dashboard.navigation.NavigationFragment;
 import org.hisp.dhis.android.dataentry.dashboard.navigation.NavigationViewArguments;
 import org.hisp.dhis.android.dataentry.form.FormFragment;
@@ -35,7 +34,7 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        String enrollmentUid = Preconditions.isNull(
+        String enrollmentUid = isNull(
                 getIntent().getStringExtra(ARG_ENROLLMENT_UID), "enrollmentUid == null");
 
         Boolean useTwoPaneLayout = findViewById(R.id.form) != null;
