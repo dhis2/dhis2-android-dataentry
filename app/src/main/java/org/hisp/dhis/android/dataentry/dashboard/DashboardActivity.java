@@ -48,8 +48,7 @@ public class DashboardActivity extends AppCompatActivity {
         if (useTwoPaneLayout) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.form,
-                            FormFragment.newInstance(FormViewArguments.createForEvent("aygYgTAvuXy")))
+                    .replace(R.id.form, FormFragment.newInstance(FormViewArguments.createForEmptyState()))
                     .commit();
         }
     }
