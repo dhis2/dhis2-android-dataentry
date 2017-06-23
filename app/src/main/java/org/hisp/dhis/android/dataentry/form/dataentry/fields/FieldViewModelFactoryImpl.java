@@ -6,6 +6,7 @@ import android.text.InputType;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox.CheckBoxViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.daterow.DateViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextDoubleViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextIntegerViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextViewModel;
@@ -42,10 +43,14 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
     @NonNull
     private final String hintFilterOptions;
 
+    @NonNull
+    private final String hintChooseDate;
+
     public FieldViewModelFactoryImpl(@NonNull String hintEnterText, @NonNull String hintEnterLongText,
             @NonNull String hintEnterNumber, @NonNull String hintEnterInteger,
             @NonNull String hintEnterIntegerPositive, @NonNull String hintEnterIntegerNegative,
-            @NonNull String hintEnterIntegerZeroOrPositive, @NonNull String filterOptions) {
+            @NonNull String hintEnterIntegerZeroOrPositive, @NonNull String filterOptions,
+            @NonNull String hintChooseDate) {
         this.hintEnterText = hintEnterText;
         this.hintEnterLongText = hintEnterLongText;
         this.hintEnterNumber = hintEnterNumber;
@@ -54,6 +59,7 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
         this.hintEnterIntegerNegative = hintEnterIntegerNegative;
         this.hintEnterIntegerZeroOrPositive = hintEnterIntegerZeroOrPositive;
         this.hintFilterOptions = filterOptions;
+        this.hintChooseDate = hintChooseDate;
     }
 
     @NonNull
@@ -89,9 +95,25 @@ public final class FieldViewModelFactoryImpl implements FieldViewModelFactory {
                 return createIntegerNegative(id, label, mandatory, value);
             case INTEGER_ZERO_OR_POSITIVE:
                 return createIntegerZeroOrPositive(id, label, mandatory, value);
+            case DATE:
+                return createDate(id, label, mandatory, value);
+            case DATETIME:
+                return createDateTime(id, label, mandatory, value);
             default:
                 return TextViewModel.create(id, label, type.toString());
         }
+    }
+
+    @NonNull
+    private DateViewModel createDate(@NonNull String uid, @NonNull String label,
+            @NonNull Boolean mandatory, @Nullable String value) {
+        return DateViewModel.forDate(uid, label, hintChooseDate, mandatory, value);
+    }
+
+    @NonNull
+    private DateViewModel createDateTime(@NonNull String uid, @NonNull String label,
+            @NonNull Boolean mandatory, @Nullable String value) {
+        return DateViewModel.forDateTime(uid, label, hintChooseDate, mandatory, value);
     }
 
     @NonNull

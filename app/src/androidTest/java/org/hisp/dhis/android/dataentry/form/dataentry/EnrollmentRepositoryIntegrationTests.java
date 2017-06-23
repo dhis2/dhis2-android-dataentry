@@ -61,6 +61,7 @@ public class EnrollmentRepositoryIntegrationTests {
 
     private static final String TEI_UID = "tei_uid";
     private static final String ENROLLMENT_UID = "enrollment_uid";
+    private static final String CHOOSE_DATE = "Choose date";
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
@@ -107,7 +108,7 @@ public class EnrollmentRepositoryIntegrationTests {
 
         FieldViewModelFactory fieldViewModelFactory = new FieldViewModelFactoryImpl(
                 ENTER_TEXT, ENTER_LONG_TEXT, ENTER_NUMBER, ENTER_INTEGER, ENTER_POSITIVE_INTEGER,
-                ENTER_NEGATIVE_INTEGER, ENTER_POSITIVE_INTEGER_OR_ZERO, FILTER_OPTIONS);
+                ENTER_NEGATIVE_INTEGER, ENTER_POSITIVE_INTEGER_OR_ZERO, FILTER_OPTIONS, CHOOSE_DATE);
 
         // provider of time stamps for data values
         currentDate = new Date();
