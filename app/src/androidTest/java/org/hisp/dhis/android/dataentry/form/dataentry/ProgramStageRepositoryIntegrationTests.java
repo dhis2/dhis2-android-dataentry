@@ -61,6 +61,7 @@ public class ProgramStageRepositoryIntegrationTests {
     private static final String DATA_ELEMENT_THREE_NAME = "data_element_three_name";
     private static final String TEST_USERNAME = "test_username";
     private static final String PS_SECTION_UID = "ps_section_uid";
+    private static final String CHOOSE_DATE = "Choose date";
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
@@ -124,7 +125,7 @@ public class ProgramStageRepositoryIntegrationTests {
 
         fieldViewModelFactory = new FieldViewModelFactoryImpl(
                 ENTER_TEXT, ENTER_LONG_TEXT, ENTER_NUMBER, ENTER_INTEGER, ENTER_POSITIVE_INTEGER,
-                ENTER_NEGATIVE_INTEGER, ENTER_POSITIVE_INTEGER_OR_ZERO, FILTER_OPTIONS);
+                ENTER_NEGATIVE_INTEGER, ENTER_POSITIVE_INTEGER_OR_ZERO, FILTER_OPTIONS, CHOOSE_DATE);
 
         // provider of time stamps for data values
         currentDate = new Date();

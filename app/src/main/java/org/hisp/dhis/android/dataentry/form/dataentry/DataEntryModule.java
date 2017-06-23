@@ -36,7 +36,8 @@ public class DataEntryModule {
                 context.getString(R.string.enter_positive_integer),
                 context.getString(R.string.enter_negative_integer),
                 context.getString(R.string.enter_positive_integer_or_zero),
-                context.getString(R.string.filter_options));
+                context.getString(R.string.filter_options),
+                context.getString(R.string.choose_date));
     }
 
     @Provides

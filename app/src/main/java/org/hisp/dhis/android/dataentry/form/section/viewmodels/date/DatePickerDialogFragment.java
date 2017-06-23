@@ -9,18 +9,16 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 
 import java.util.Calendar;
-
-import static org.hisp.dhis.android.dataentry.commons.utils.DateUtils.databaseDateFormat;
+import java.util.Date;
 
 public class DatePickerDialogFragment extends DialogFragment {
-
     private static final String TAG = DatePickerDialogFragment.class.getSimpleName();
     private static final String ARG_ALLOW_DATES_IN_FUTURE = "arg:allowDatesInFuture";
 
     @Nullable
     private FormattedOnDateSetListener onDateSetListener;
 
-    public static DatePickerDialogFragment newInstance(boolean allowDatesInFuture) {
+    public static DatePickerDialogFragment create(boolean allowDatesInFuture) {
         Bundle arguments = new Bundle();
         arguments.putBoolean(ARG_ALLOW_DATES_IN_FUTURE, allowDatesInFuture);
 
@@ -39,7 +37,7 @@ public class DatePickerDialogFragment extends DialogFragment {
             Calendar chosenDate = Calendar.getInstance();
             chosenDate.set(year, month, dayOfMonth);
             if (onDateSetListener != null) {
-                onDateSetListener.onDateSet(databaseDateFormat().format(chosenDate.getTime()));
+                onDateSetListener.onDateSet(chosenDate.getTime());
             }
         }, calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -71,6 +69,6 @@ public class DatePickerDialogFragment extends DialogFragment {
         /**
          * @param date the date in the correct simple fate format
          */
-        void onDateSet(String date);
+        void onDateSet(@NonNull Date date);
     }
 }
