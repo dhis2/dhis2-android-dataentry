@@ -98,4 +98,6 @@
     <string name="status_icon_description">Event status</string>
     <string name="edit">EDIT</string>
 
+    <string name="search_register_te">Search / Register %s</string>
+
 </resources>
