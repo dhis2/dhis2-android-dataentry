@@ -13,7 +13,7 @@
         android:contentDescription="@null"
         android:paddingLeft="@dimen/keyline_default"
         android:paddingStart="@dimen/keyline_default"
-        tools:src="@drawable/ic_border_all"/>
+        tools:src="@drawable/ic_person"/>
 
     <org.hisp.dhis.android.dataentry.commons.ui.FontTextView
         android:id="@+id/text"
