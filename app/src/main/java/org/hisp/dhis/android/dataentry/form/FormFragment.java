@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,7 +77,7 @@ public class FormFragment extends BaseFragment implements FormView {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_form, container, false);
     }
 
@@ -146,6 +147,7 @@ public class FormFragment extends BaseFragment implements FormView {
         return sectionViewModels -> {
             formSectionAdapter.swapData(sectionViewModels);
             if (sectionViewModels.size() == 0) {
+                Log.d("EMPTY", "Show empty state");
                 // TODO: Show empty state
             }
 
