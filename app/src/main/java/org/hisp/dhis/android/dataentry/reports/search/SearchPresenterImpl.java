@@ -3,7 +3,6 @@ package org.hisp.dhis.android.dataentry.reports.search;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
-import org.hisp.dhis.android.dataentry.commons.ui.View;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,30 +34,25 @@ final class SearchPresenterImpl implements SearchPresenter {
     }
 
     @Override
-    public void onAttach(@NonNull View view) {
-        if (view instanceof SearchView) {
-            SearchView searchView = (SearchView) view;
+    public void onAttach(@NonNull SearchView searchView) {
+        compositeDisposable.add(searchView.createReportsActions()
+                .map(action -> searchArguments.entityUid())
+                .subscribe(searchView.createReport(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
 
-            compositeDisposable.add(searchView.createReportsActions()
-                    .map(action -> searchArguments.entityUid())
-                    .subscribe(searchView.createReport(), throwable -> {
-                        throw new OnErrorNotImplementedException(throwable);
-                    }));
-
-            compositeDisposable.add(searchView.searchBoxActions()
-                    .subscribeOn(schedulerProvider.ui())
-                    .debounce(256, TimeUnit.MILLISECONDS, schedulerProvider.computation())
-                    .distinctUntilChanged()
-                    .filter(event -> event.editable() != null)
-                    .map(event -> event.editable().toString())
-                    .toFlowable(BackpressureStrategy.LATEST)
-                    .observeOn(schedulerProvider.io())
-                    .switchMap(token -> searchRepository.search(token))
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(searchView.renderSearchResults(), throwable -> {
-                        throw new OnErrorNotImplementedException(throwable);
-                    }));
-        }
+        compositeDisposable.add(searchView.searchBoxActions()
+                .subscribeOn(schedulerProvider.ui())
+                .debounce(256, TimeUnit.MILLISECONDS, schedulerProvider.computation())
+                .distinctUntilChanged()
+                .map(event -> event.queryText().toString())
+                .toFlowable(BackpressureStrategy.LATEST)
+                .observeOn(schedulerProvider.io())
+                .switchMap(token -> searchRepository.search(token))
+                .observeOn(schedulerProvider.ui())
+                .subscribe(searchView.renderSearchResults(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
     }
 
     @Override

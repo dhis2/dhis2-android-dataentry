@@ -10,11 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
+import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView;
+import com.jakewharton.rxbinding2.support.v7.widget.SearchViewQueryTextEvent;
 import com.jakewharton.rxbinding2.view.RxView;
-import com.jakewharton.rxbinding2.widget.RxTextView;
-import com.jakewharton.rxbinding2.widget.TextViewAfterTextChangeEvent;
 
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
@@ -43,7 +42,7 @@ public final class SearchFragment extends BaseFragment
     FloatingActionButton buttonCreateReport;
 
     @BindView(R.id.edittext_search)
-    EditText searchReportsEditText;
+    android.support.v7.widget.SearchView searchReports;
 
     @Inject
     SearchPresenter presenter;
@@ -76,7 +75,7 @@ public final class SearchFragment extends BaseFragment
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
@@ -100,8 +99,8 @@ public final class SearchFragment extends BaseFragment
 
     @NonNull
     @Override
-    public Observable<TextViewAfterTextChangeEvent> searchBoxActions() {
-        return RxTextView.afterTextChangeEvents(searchReportsEditText);
+    public Observable<SearchViewQueryTextEvent> searchBoxActions() {
+        return RxSearchView.queryTextChangeEvents(searchReports);
     }
 
     @NonNull
