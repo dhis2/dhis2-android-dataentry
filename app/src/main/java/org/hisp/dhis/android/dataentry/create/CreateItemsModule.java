@@ -9,6 +9,7 @@ import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.utils.CodeGenerator;
 import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 import org.hisp.dhis.android.dataentry.create.CreateItemsArgument.Type;
+import org.hisp.dhis.android.dataentry.selection.OrganisationUnitRepositoryImpl;
 
 import dagger.Module;
 import dagger.Provides;
@@ -49,9 +50,16 @@ public final class CreateItemsModule {
 
     @Provides
     @PerFragment
+    OrganisationUnitRepositoryImpl organisationUnitRepository(@NonNull BriteDatabase database) {
+        return new OrganisationUnitRepositoryImpl(database);
+    }
+
+    @Provides
+    @PerFragment
     CreateItemsPresenter createItemsPresenter(@NonNull CreateItemsRepository repository,
-            @NonNull SchedulerProvider schedulerProvider) {
-        return new CreateItemsPresenterImpl(argument, repository, schedulerProvider);
+                                              @NonNull OrganisationUnitRepositoryImpl organisationRepository,
+                                              @NonNull SchedulerProvider schedulerProvider) {
+        return new CreateItemsPresenterImpl(argument, repository, organisationRepository, schedulerProvider);
     }
 
     @Provides

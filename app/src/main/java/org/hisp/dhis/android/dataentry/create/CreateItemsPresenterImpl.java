@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
+import org.hisp.dhis.android.dataentry.selection.OrganisationUnitRepositoryImpl;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,21 +15,27 @@ import timber.log.Timber;
 @SuppressWarnings({
         "PMD.CyclomaticComplexity",
         "PMD.StdCyclomaticComplexity",
-        "PMD.ModifiedCyclomaticComplexity"
+        "PMD.ModifiedCyclomaticComplexity",
+        "PMD.ExcessiveMethodLength"
 })
 class CreateItemsPresenterImpl implements CreateItemsPresenter {
     private static final int FIRST_SELECTION = 0;
     private static final int SECOND_SELECTION = 1;
     private final CreateItemsArgument argument;
     private final CreateItemsRepository repository;
+    private final OrganisationUnitRepositoryImpl orgRepository;
     private final SchedulerProvider schedulerProvider;
     private final CompositeDisposable disposable;
+//    private final String[] selectedUids;
 
-    CreateItemsPresenterImpl(@NonNull CreateItemsArgument argument,
-            @NonNull CreateItemsRepository repository,
-            @NonNull SchedulerProvider schedulerProvider) {
+    public CreateItemsPresenterImpl(@NonNull CreateItemsArgument argument,
+                                    @NonNull CreateItemsRepository repository,
+                                    @NonNull OrganisationUnitRepositoryImpl orgRepository,
+                                    @NonNull SchedulerProvider schedulerProvider) {
+
         this.argument = argument;
         this.repository = repository;
+        this.orgRepository = orgRepository;
         this.schedulerProvider = schedulerProvider;
         this.disposable = new CompositeDisposable();
     }
@@ -39,7 +46,7 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
         if (view instanceof CreateItemsView) {
             CreateItemsView createItemsView = (CreateItemsView) view;
 
-
+            ///check if single org unit & set it if .
             disposable.add(createItemsView.selection1ClearEvent()
                     .debounce(150, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
@@ -47,6 +54,16 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                     .subscribe(event -> {
                         createItemsView.setSelection(FIRST_SELECTION, "", "");
                         createItemsView.setSelection(SECOND_SELECTION, "", "");
+                    }, err -> {
+                        throw new OnErrorNotImplementedException(err);
+                    }));
+            disposable.add(orgRepository.search("")
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(list -> {
+                        if (list.size() == 1) {
+                            createItemsView.setSelection(FIRST_SELECTION, list.get(0).uid(), list.get(0).name());
+                        }
                     }, err -> {
                         throw new OnErrorNotImplementedException(err);
                     }));
