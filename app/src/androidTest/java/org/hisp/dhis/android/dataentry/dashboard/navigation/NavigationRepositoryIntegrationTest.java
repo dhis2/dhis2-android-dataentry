@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.dashboard;
+package org.hisp.dhis.android.dataentry.dashboard.navigation;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
@@ -28,12 +28,12 @@ import rx.schedulers.Schedulers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DashboardRepositoryIntegrationTest {
+public class NavigationRepositoryIntegrationTest {
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
 
-    DashboardRepository dashboardRepository;
+    NavigationRepository navigationRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -99,14 +99,14 @@ public class DashboardRepositoryIntegrationTest {
         secondEvent.put(EventModel.Columns.STATUS, EventStatus.SKIPPED.name());
         db.insert(EventModel.TABLE, null, secondEvent);
 
-        dashboardRepository = new DashboardRepositoryImpl(databaseRule.briteDatabase());
+        navigationRepository = new NavigationRepositoryImpl(databaseRule.briteDatabase());
 
     }
 
     @Test
     public void attributesShouldPropagateCorrectResults() throws Exception {
 
-        TestSubscriber<List<String>> testObserver = dashboardRepository.attributes("enrollment_uid").test();
+        TestSubscriber<List<String>> testObserver = navigationRepository.attributes("enrollment_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -185,7 +185,7 @@ public class DashboardRepositoryIntegrationTest {
 
     @Test
     public void attributesNotMarkedAsDisplayInListShouldNotBePropagated() throws Exception {
-        TestSubscriber<List<String>> testObserver = dashboardRepository.attributes("enrollment_uid").test();
+        TestSubscriber<List<String>> testObserver = navigationRepository.attributes("enrollment_uid").test();
 
         BriteDatabase briteDb = databaseRule.briteDatabase();
         BriteDatabase.Transaction transaction = briteDb.newTransaction();
@@ -269,7 +269,7 @@ public class DashboardRepositoryIntegrationTest {
         transaction.markSuccessful();
         transaction.end();
 
-        TestSubscriber<List<String>> testObserver = dashboardRepository.attributes("enrollment_uid").test();
+        TestSubscriber<List<String>> testObserver = navigationRepository.attributes("enrollment_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -288,7 +288,7 @@ public class DashboardRepositoryIntegrationTest {
         EventViewModel secondEvent =
                 EventViewModel.create("event_uid_2", "Program Stage 2", "1999-12-31", EventStatus.SKIPPED);
 
-        TestSubscriber<List<EventViewModel>> testObserver = dashboardRepository.events("enrollment_uid").test();
+        TestSubscriber<List<EventViewModel>> testObserver = navigationRepository.events("enrollment_uid").test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();

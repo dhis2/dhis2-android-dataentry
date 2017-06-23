@@ -8,6 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.dashboard.navigation.NavigationFragment;
+import org.hisp.dhis.android.dataentry.dashboard.navigation.NavigationViewArguments;
+import org.hisp.dhis.android.dataentry.form.FormFragment;
+import org.hisp.dhis.android.dataentry.form.FormViewArguments;
 
 import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull;
 
@@ -28,14 +32,26 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_form);
+        setContentView(R.layout.activity_dashboard);
+
+        String enrollmentUid = isNull(
+                getIntent().getStringExtra(ARG_ENROLLMENT_UID), "enrollmentUid == null");
+
+        Boolean useTwoPaneLayout = findViewById(R.id.form) != null;
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.content, DashboardFragment.newInstance(
-                        getIntent().getStringExtra(ARG_ENROLLMENT_UID)))
+                .replace(R.id.navigation,
+                        NavigationFragment.newInstance(NavigationViewArguments.create(enrollmentUid, useTwoPaneLayout)))
                 .commit();
 
+        if (useTwoPaneLayout) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.form,
+                            FormFragment.newInstance(FormViewArguments.createForEvent("aygYgTAvuXy")))
+                    .commit();
+        }
     }
 
     @Override

@@ -32,7 +32,7 @@ public class FormActivity extends AppCompatActivity {
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.content, FormFragment.newInstance(
+                .replace(R.id.dashboard, FormFragment.newInstance(
                         getIntent().getParcelableExtra(ARGUMENTS)))
                 .commit();
 
