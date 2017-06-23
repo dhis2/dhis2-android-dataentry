@@ -33,6 +33,8 @@ public class ProgramRepositoryIntegrationTests {
     private static final String PROGRAM_3_UID = "program_3_uid";
     private static final String PROGRAM_2_DISPLAY_NAME = "program_2_name";
     private static final String PROGRAM_3_DISPLAY_NAME = "program_3_display_name";
+    public static final int WITH_REG = 1;
+    public static final int WITHOUT_REG = 0;
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
@@ -43,15 +45,15 @@ public class ProgramRepositoryIntegrationTests {
     @Before
     public void setup() {
         SQLiteDatabase database = databaseRule.database();
-        repository = new ProgramRepositoryImpl(databaseRule.briteDatabase(), ORGUNIT_UID);
+        repository = new ProgramRepositoryImpl(databaseRule.briteDatabase(), ORGUNIT_UID, WITH_REG);
 
         database.insert(OrganisationUnitModel.TABLE, null, orgUnit(ORGUNIT_UID, ORGUNIT_DISPLAY_NAME));
 
-        database.insert(ProgramModel.TABLE, null, program(PROGRAM_UID, PROGRAM_DISPLAY_NAME));
+        database.insert(ProgramModel.TABLE, null, program(PROGRAM_UID, PROGRAM_DISPLAY_NAME, true));
         database.insert(OrganisationUnitProgramLinkModel.TABLE, null,
                 programOrgUnitLink(PROGRAM_UID, ORGUNIT_UID));
 
-        database.insert(ProgramModel.TABLE, null, program(PROGRAM_2_UID, PROGRAM_2_DISPLAY_NAME));
+        database.insert(ProgramModel.TABLE, null, program(PROGRAM_2_UID, PROGRAM_2_DISPLAY_NAME, true));
         database.insert(OrganisationUnitProgramLinkModel.TABLE, null,
                 programOrgUnitLink(PROGRAM_2_UID, ORGUNIT_UID));
     }
@@ -69,6 +71,29 @@ public class ProgramRepositoryIntegrationTests {
         assertThat(result.size()).isEqualTo(2);
         assertThat(result.contains(SelectionViewModel.create(PROGRAM_UID, PROGRAM_DISPLAY_NAME))).isTrue();
         assertThat(result.contains(SelectionViewModel.create(PROGRAM_2_UID, PROGRAM_2_DISPLAY_NAME))).isTrue();
+    }
+
+    @Test
+    public void searchMustReturnAllMatchingProgramsOfType() {
+        ProgramRepositoryImpl repository = new ProgramRepositoryImpl(databaseRule.briteDatabase(), ORGUNIT_UID,
+                WITHOUT_REG);
+
+        databaseRule.database().insert(ProgramModel.TABLE, null,
+                program(PROGRAM_3_UID, PROGRAM_3_DISPLAY_NAME, false));
+        databaseRule.database().insert(OrganisationUnitProgramLinkModel.TABLE, null,
+                programOrgUnitLink(PROGRAM_3_UID, ORGUNIT_UID));
+
+        TestSubscriber<List<SelectionViewModel>> subscriber = repository.search("program").test();
+
+        subscriber.assertValueCount(1);
+        subscriber.assertNoErrors();
+        subscriber.assertNotComplete();
+
+        List<SelectionViewModel> result = subscriber.values().get(0);
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_3_UID, PROGRAM_3_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_UID, PROGRAM_DISPLAY_NAME))).isFalse();
+        assertThat(result.contains(SelectionViewModel.create(PROGRAM_2_UID, PROGRAM_2_DISPLAY_NAME))).isFalse();
     }
 
     @Test
@@ -108,7 +133,7 @@ public class ProgramRepositoryIntegrationTests {
         subscriber.assertNoErrors();
         subscriber.assertNotComplete();
 
-        databaseRule.briteDatabase().update(ProgramModel.TABLE, program(PROGRAM_2_UID, "updated_program2"),
+        databaseRule.briteDatabase().update(ProgramModel.TABLE, program(PROGRAM_2_UID, "updated_program2", true),
                 ProgramModel.Columns.UID + "=?", PROGRAM_2_UID);
 
         subscriber.assertValueCount(2);
@@ -130,7 +155,7 @@ public class ProgramRepositoryIntegrationTests {
         subscriber.assertNoErrors();
         subscriber.assertNotComplete();
 
-        databaseRule.briteDatabase().insert(ProgramModel.TABLE, program(PROGRAM_3_UID, PROGRAM_3_DISPLAY_NAME));
+        databaseRule.briteDatabase().insert(ProgramModel.TABLE, program(PROGRAM_3_UID, PROGRAM_3_DISPLAY_NAME, true));
         databaseRule.briteDatabase().insert(OrganisationUnitProgramLinkModel.TABLE,
                 programOrgUnitLink(PROGRAM_3_UID, ORGUNIT_UID));
 
@@ -219,7 +244,7 @@ public class ProgramRepositoryIntegrationTests {
         return result;
     }
 
-    private ContentValues program(String uid, String displayName) {
+    private ContentValues program(String uid, String displayName, Boolean registration) {
         ContentValues values = new ContentValues();
         values.put(Columns.UID, uid);
         values.put(Columns.CREATED, new Date().toString());
@@ -236,7 +261,7 @@ public class ProgramRepositoryIntegrationTests {
         values.put(Columns.ENROLLMENT_DATE_LABEL, "enrollment date");
         values.put(Columns.DISPLAY_INCIDENT_DATE, true);
         values.put(Columns.INCIDENT_DATE_LABEL, "incident date label");
-        values.put(Columns.REGISTRATION, true);
+        values.put(Columns.REGISTRATION, registration);
         values.put(Columns.SELECT_ENROLLMENT_DATES_IN_FUTURE, true);
         values.put(Columns.DATA_ENTRY_METHOD, true);
         values.put(Columns.IGNORE_OVERDUE_EVENTS, false);
