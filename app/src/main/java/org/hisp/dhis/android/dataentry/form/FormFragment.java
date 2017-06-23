@@ -142,7 +142,13 @@ public class FormFragment extends BaseFragment implements FormView {
     @NonNull
     @Override
     public Consumer<List<FormSectionViewModel>> renderSectionViewModels() {
-        return sectionViewModels -> formSectionAdapter.swapData(sectionViewModels);
+        return sectionViewModels -> {
+            formSectionAdapter.swapData(sectionViewModels);
+            if (sectionViewModels.size() == 0) {
+                // TODO: Show empty state
+            }
+
+        };
     }
 
     @NonNull
