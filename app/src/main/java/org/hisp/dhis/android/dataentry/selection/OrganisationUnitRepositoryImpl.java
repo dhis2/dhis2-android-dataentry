@@ -15,14 +15,14 @@ import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
-final class OrganisationUnitRepositoryImpl implements SelectionRepository {
+public final class OrganisationUnitRepositoryImpl implements SelectionRepository {
     private static final String STATEMENT = "SELECT " + Columns.UID + ", " + Columns.DISPLAY_NAME +
             " FROM " + OrganisationUnitModel.TABLE +
             " WHERE " + Columns.DISPLAY_NAME + " LIKE '%%%s%%';";
 
     private final BriteDatabase database;
 
-    OrganisationUnitRepositoryImpl(BriteDatabase database) {
+    public OrganisationUnitRepositoryImpl(BriteDatabase database) {
         this.database = database;
     }
 
