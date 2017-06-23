@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.form.section.viewmodels.date.DatePickerDialogFragment;
@@ -75,7 +76,7 @@ public class FormFragment extends BaseFragment implements FormView {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_form, container, false);
     }
 
@@ -196,7 +197,7 @@ public class FormFragment extends BaseFragment implements FormView {
 
     private void initReportDatePicker() {
         reportDate.setOnClickListener(v -> {
-            DatePickerDialogFragment dialog = DatePickerDialogFragment.newInstance(false);
+            DatePickerDialogFragment dialog = DatePickerDialogFragment.create(false);
             dialog.show(getFragmentManager());
             dialog.setFormattedOnDateSetListener(publishReportDateChange());
         });
@@ -206,7 +207,7 @@ public class FormFragment extends BaseFragment implements FormView {
     private DatePickerDialogFragment.FormattedOnDateSetListener publishReportDateChange() {
         return date -> {
             if (onReportDateChanged != null) {
-                onReportDateChanged.onNext(date);
+                onReportDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(date));
             }
         };
     }
