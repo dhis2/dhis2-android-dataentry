@@ -91,9 +91,10 @@ class HomeViewModelAdapter extends RecyclerView.Adapter {
 
             int iconResourceId;
             if (homeViewModel.type() == HomeViewModel.Type.TRACKED_ENTITY) {
-                iconResourceId = R.drawable.ic_widgets_black;
+                iconResourceId = R.drawable.ic_person;
+
             } else {
-                iconResourceId = R.drawable.ic_border_all;
+                iconResourceId = R.drawable.ic_single_event;
             }
 
             icon.setImageResource(iconResourceId);
