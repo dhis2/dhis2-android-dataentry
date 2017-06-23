@@ -36,4 +36,6 @@
 
     <dimen name="title_bar_height">56dp</dimen>
 
+    <dimen name="two_pane_separation_margin">8dp</dimen>
+
 </resources>

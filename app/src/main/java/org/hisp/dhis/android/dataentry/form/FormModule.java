@@ -32,10 +32,10 @@ public class FormModule {
     @Provides
     @PerFragment
     FormRepository formRepository(@NonNull BriteDatabase briteDatabase) {
-        if (formViewArguments.type() == FormViewArguments.Type.EVENT) {
-            return new EventRepository(briteDatabase);
-        } else {
+        if (formViewArguments.type() == FormViewArguments.Type.ENROLLMENT) {
             return new EnrollmentFormRepository(briteDatabase);
+        } else {
+            return new EventRepository(briteDatabase);
         }
     }
 }

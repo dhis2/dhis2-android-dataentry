@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.dashboard;
+package org.hisp.dhis.android.dataentry.dashboard.navigation;
 
 import android.support.annotation.NonNull;
 
@@ -10,7 +10,7 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
-interface DashboardView extends View {
+interface NavigationView extends View {
 
     @NonNull
     Observable<Object> createEventActions();

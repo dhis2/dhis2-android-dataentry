@@ -5,8 +5,8 @@ import android.support.annotation.NonNull;
 import org.hisp.dhis.android.dataentry.commons.dagger.PerUser;
 import org.hisp.dhis.android.dataentry.create.CreateItemsComponent;
 import org.hisp.dhis.android.dataentry.create.CreateItemsModule;
-import org.hisp.dhis.android.dataentry.dashboard.DashboardComponent;
-import org.hisp.dhis.android.dataentry.dashboard.DashboardModule;
+import org.hisp.dhis.android.dataentry.dashboard.navigation.NavigationComponent;
+import org.hisp.dhis.android.dataentry.dashboard.navigation.NavigationModule;
 import org.hisp.dhis.android.dataentry.form.FormComponent;
 import org.hisp.dhis.android.dataentry.form.FormModule;
 import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryComponent;
@@ -67,5 +67,5 @@ public interface UserComponent {
     @NonNull
     CreateItemsComponent plus(@NonNull CreateItemsModule createItemsModule);
 
-    DashboardComponent plus(@NonNull DashboardModule dashboardModule);
+    NavigationComponent plus(@NonNull NavigationModule navigationModule);
 }
