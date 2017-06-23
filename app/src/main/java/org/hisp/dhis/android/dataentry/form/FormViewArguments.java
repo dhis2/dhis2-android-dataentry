@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 
+import static org.hisp.dhis.android.dataentry.form.FormViewArguments.Type.EMPTY_STATE;
 import static org.hisp.dhis.android.dataentry.form.FormViewArguments.Type.ENROLLMENT;
 import static org.hisp.dhis.android.dataentry.form.FormViewArguments.Type.EVENT;
 
@@ -28,7 +29,12 @@ public abstract class FormViewArguments implements Parcelable {
         return new AutoValue_FormViewArguments(eventUid, EVENT);
     }
 
+    @NonNull
+    public static FormViewArguments createForEmptyState() {
+        return new AutoValue_FormViewArguments("", EMPTY_STATE);
+    }
+
     enum Type {
-        ENROLLMENT, EVENT
+        ENROLLMENT, EVENT, EMPTY_STATE
     }
 }
