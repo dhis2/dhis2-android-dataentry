@@ -64,8 +64,8 @@ final class ProgramStageRepository implements DataEntryRepository {
     private final String sectionUid;
 
     ProgramStageRepository(@NonNull BriteDatabase briteDatabase,
-            @NonNull FieldViewModelFactory fieldFactory,
-            @NonNull String eventUid, @Nullable String sectionUid) {
+                           @NonNull FieldViewModelFactory fieldFactory,
+                           @NonNull String eventUid, @Nullable String sectionUid) {
         this.briteDatabase = briteDatabase;
         this.fieldFactory = fieldFactory;
         this.eventUid = eventUid;
