@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.dashboard;
+package org.hisp.dhis.android.dataentry.dashboard.navigation;
 
 import android.support.annotation.NonNull;
 
@@ -6,7 +6,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 
-interface DashboardRepository {
+interface NavigationRepository {
 
     @NonNull
     Flowable<String> program(@NonNull String enrollmentUid);

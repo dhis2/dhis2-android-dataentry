@@ -28,21 +28,24 @@ final class ProgramRepositoryImpl implements SelectionRepository {
             " FROM " + OrganisationUnitProgramLinkModel.TABLE +
             " INNER JOIN " + ProgramModel.TABLE +
             " WHERE " + OrganisationUnitProgramLinkModel.Columns.ORGANISATION_UNIT + " = '%s'" +
-            " AND + " + Columns.DISPLAY_NAME + " LIKE '%%%s%%';";
+            " AND + " + Columns.DISPLAY_NAME + " LIKE '%%%s%%'" +
+            " AND " + Columns.REGISTRATION + "=? ;";
 
     private final BriteDatabase database;
     private final String parentUid;
+    private final String registration;
 
-    ProgramRepositoryImpl(@NonNull BriteDatabase database, @NonNull String parentUid) {
+    ProgramRepositoryImpl(@NonNull BriteDatabase database, @NonNull String parentUid, int registration) {
         this.database = database;
         this.parentUid = parentUid;
+        this.registration = Integer.toString(registration);
     }
 
     @NonNull
     @Override
     public Flowable<List<SelectionViewModel>> search(@NonNull String query) {
         return toV2Flowable(database.createQuery(TABLES, String.format(Locale.US,
-                STATEMENT, parentUid, escapeSqlToken(query)))
+                STATEMENT, parentUid, escapeSqlToken(query)), registration)
                 .mapToList(cursor -> SelectionViewModel.create(
                         cursor.getString(0), cursor.getString(1))));
     }

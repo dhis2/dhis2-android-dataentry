@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.dashboard;
+package org.hisp.dhis.android.dataentry.dashboard.navigation;
 
 import android.support.annotation.NonNull;
 

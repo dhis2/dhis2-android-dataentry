@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.form.section.viewmodels.date.DatePickerDialogFragment;
@@ -142,7 +144,14 @@ public class FormFragment extends BaseFragment implements FormView {
     @NonNull
     @Override
     public Consumer<List<FormSectionViewModel>> renderSectionViewModels() {
-        return sectionViewModels -> formSectionAdapter.swapData(sectionViewModels);
+        return sectionViewModels -> {
+            formSectionAdapter.swapData(sectionViewModels);
+            if (sectionViewModels.size() == 0) {
+                Log.d("EMPTY", "Show empty state");
+                // TODO: Show empty state
+            }
+
+        };
     }
 
     @NonNull
@@ -196,7 +205,7 @@ public class FormFragment extends BaseFragment implements FormView {
 
     private void initReportDatePicker() {
         reportDate.setOnClickListener(v -> {
-            DatePickerDialogFragment dialog = DatePickerDialogFragment.newInstance(false);
+            DatePickerDialogFragment dialog = DatePickerDialogFragment.create(false);
             dialog.show(getFragmentManager());
             dialog.setFormattedOnDateSetListener(publishReportDateChange());
         });
@@ -206,7 +215,7 @@ public class FormFragment extends BaseFragment implements FormView {
     private DatePickerDialogFragment.FormattedOnDateSetListener publishReportDateChange() {
         return date -> {
             if (onReportDateChanged != null) {
-                onReportDateChanged.onNext(date);
+                onReportDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(date));
             }
         };
     }

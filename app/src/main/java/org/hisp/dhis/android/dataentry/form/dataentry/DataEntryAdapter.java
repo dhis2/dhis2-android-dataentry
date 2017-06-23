@@ -13,6 +13,8 @@ import org.hisp.dhis.android.dataentry.form.dataentry.fields.Row;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox.CheckBoxRow;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox.CheckBoxViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.daterow.DateRow;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.daterow.DateViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextRow;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.optionsrow.OptionsRow;
@@ -34,6 +36,7 @@ final class DataEntryAdapter extends Adapter {
     private static final int ROW_RADIO_BUTTONS = 2;
     private static final int ROW_TEXT = 3;
     private static final int ROW_OPTIONS = 4;
+    private static final int ROW_DATE = 5;
 
     @NonNull
     private final List<FieldViewModel> viewModels;
@@ -57,6 +60,7 @@ final class DataEntryAdapter extends Adapter {
         rows.add(ROW_TEXT, new TextRow(layoutInflater));
         rows.add(ROW_OPTIONS, new OptionsRow(layoutInflater, fragmentManager,
                 processor, dataEntryArguments));
+        rows.add(ROW_DATE, new DateRow(layoutInflater, fragmentManager, processor));
     }
 
     @Override
@@ -88,6 +92,8 @@ final class DataEntryAdapter extends Adapter {
             return ROW_TEXT;
         } else if (viewModel instanceof OptionsViewModel) {
             return ROW_OPTIONS;
+        } else if (viewModel instanceof DateViewModel) {
+            return ROW_DATE;
         } else {
             throw new IllegalStateException("Unsupported view model type: "
                     + viewModel.getClass());
