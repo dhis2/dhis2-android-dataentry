@@ -53,8 +53,8 @@ final class EnrollmentRepository implements DataEntryRepository {
     private final String enrollment;
 
     EnrollmentRepository(@NonNull BriteDatabase briteDatabase,
-            @NonNull FieldViewModelFactory fieldFactory,
-            @NonNull String enrollment) {
+                         @NonNull FieldViewModelFactory fieldFactory,
+                         @NonNull String enrollment) {
         this.briteDatabase = briteDatabase;
         this.fieldFactory = fieldFactory;
         this.enrollment = enrollment;

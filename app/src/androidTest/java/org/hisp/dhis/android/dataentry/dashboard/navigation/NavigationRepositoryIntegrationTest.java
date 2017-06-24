@@ -320,4 +320,60 @@ public class NavigationRepositoryIntegrationTest {
         assertThat(testObserver.values().get(1).get(0).date()).isEqualTo("2199-02-01");
         assertThat(testObserver.values().get(1).get(1).date()).isEqualTo("2099-02-01");
     }
+
+    @Test
+    public void titleShouldPropagateCorrectResults() throws Exception {
+        TestSubscriber<String> titleObserver = navigationRepository.title("enrollment_uid").test();
+
+        titleObserver.assertValueCount(1);
+        titleObserver.assertNoErrors();
+        titleObserver.assertNotComplete();
+        assertThat(titleObserver.values().get(0)).isEqualTo("Program");
+    }
+
+    @Test
+    public void titleShouldListenToProgramTableChanges() throws Exception {
+        TestSubscriber<String> titleObserver = navigationRepository.title("enrollment_uid").test();
+
+        titleObserver.assertValueCount(1);
+        titleObserver.assertNoErrors();
+        titleObserver.assertNotComplete();
+        assertThat(titleObserver.values().get(0)).isEqualTo("Program");
+
+        // change the program name
+        ContentValues program = new ContentValues();
+        program.put(ProgramModel.Columns.DISPLAY_NAME, "New Program");
+        databaseRule.briteDatabase().update(ProgramModel.TABLE, program, ProgramModel.Columns.UID + " = 'program_uid'");
+
+        titleObserver.assertValueCount(2);
+        titleObserver.assertNoErrors();
+        titleObserver.assertNotComplete();
+        assertThat(titleObserver.values().get(1)).isEqualTo("New Program");
+    }
+
+    @Test
+    public void titleShouldListenToEnrollmentTableChanges() throws Exception {
+        TestSubscriber<String> titleObserver = navigationRepository.title("enrollment_uid").test();
+
+        titleObserver.assertValueCount(1);
+        titleObserver.assertNoErrors();
+        titleObserver.assertNotComplete();
+        assertThat(titleObserver.values().get(0)).isEqualTo("Program");
+
+        //insert new program
+        ContentValues program = new ContentValues();
+        program.put(ProgramModel.Columns.UID, "second_program_uid");
+        program.put(ProgramModel.Columns.DISPLAY_NAME, "Second Program");
+        databaseRule.database().insert(ProgramModel.TABLE, null, program);
+
+        // switch enrollment to the new program
+        ContentValues enrollment = new ContentValues();
+        enrollment.put(EnrollmentModel.Columns.PROGRAM, "second_program_uid");
+        databaseRule.briteDatabase().update(EnrollmentModel.TABLE, enrollment, EnrollmentModel.Columns.UID + " = 'enrollment_uid'");
+
+        titleObserver.assertValueCount(2);
+        titleObserver.assertNoErrors();
+        titleObserver.assertNotComplete();
+        assertThat(titleObserver.values().get(1)).isEqualTo("Second Program");
+    }
 }
