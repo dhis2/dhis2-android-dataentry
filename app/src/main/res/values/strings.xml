@@ -34,6 +34,9 @@
     <string name="report_view_program">Program</string>
     <string name="report_view_enrollment_status">Status</string>
     <string name="report_view_enrollment_date">Enrollment date</string>
+    <string name="report_view_no_reports">
+        No reports.\nClick the \"plus\" button to create a report.
+    </string>
 
     <!-- CreateItemsActivity -->
     <string name="create_event">Create event</string>

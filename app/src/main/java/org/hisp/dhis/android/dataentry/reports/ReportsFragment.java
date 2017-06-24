@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
@@ -32,6 +33,9 @@ import static org.hisp.dhis.android.dataentry.commons.utils.Preconditions.isNull
 public final class ReportsFragment extends BaseFragment
         implements ReportsView, ReportsAdapter.OnReportViewModelClickListener {
     private static final String ARG_ARGUMENTS = "arg:arguments";
+
+    @BindView(R.id.linear_layout_empty_state)
+    LinearLayout emptyState;
 
     @BindView(R.id.recyclerview_reports)
     RecyclerView recyclerViewReports;
@@ -95,7 +99,10 @@ public final class ReportsFragment extends BaseFragment
     @NonNull
     @Override
     public Consumer<List<ReportViewModel>> renderReportViewModels() {
-        return reportViewModels -> reportsAdapter.swapData(reportViewModels);
+        return reportViewModels -> {
+            emptyState.setVisibility(reportViewModels.isEmpty() ? View.VISIBLE : View.GONE);
+            reportsAdapter.swapData(reportViewModels);
+        };
     }
 
     @NonNull
@@ -122,6 +129,8 @@ public final class ReportsFragment extends BaseFragment
     }
 
     private void setUpRecyclerView() {
+        emptyState.setVisibility(View.GONE);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
