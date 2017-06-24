@@ -2,13 +2,19 @@ package org.hisp.dhis.android.dataentry.reports.search;
 
 import android.support.annotation.NonNull;
 
+import com.jakewharton.rxbinding2.support.v7.widget.SearchViewQueryTextEvent;
+
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.utils.OnErrorHandler;
 
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
+import io.reactivex.observables.ConnectableObservable;
+
+import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
 
 final class SearchPresenterImpl implements SearchPresenter {
 
@@ -41,7 +47,11 @@ final class SearchPresenterImpl implements SearchPresenter {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
 
-        compositeDisposable.add(searchView.searchBoxActions()
+        ConnectableObservable<SearchViewQueryTextEvent> searchActions =
+                searchView.searchBoxActions()
+                        .publish();
+
+        compositeDisposable.add(searchActions
                 .subscribeOn(schedulerProvider.ui())
                 .debounce(256, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                 .distinctUntilChanged()
@@ -53,6 +63,15 @@ final class SearchPresenterImpl implements SearchPresenter {
                 .subscribe(searchView.renderSearchResults(), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
+
+        compositeDisposable.add(searchActions
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.ui())
+                .map(action -> !isEmpty(action.queryText().toString()))
+                .startWith(false)
+                .subscribe(searchView.renderCreateButton(), OnErrorHandler.create()));
+
+        compositeDisposable.add(searchActions.connect());
     }
 
     @Override

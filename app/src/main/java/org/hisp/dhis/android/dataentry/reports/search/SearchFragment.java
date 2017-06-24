@@ -45,10 +45,10 @@ public final class SearchFragment extends BaseFragment
     android.support.v7.widget.SearchView searchReports;
 
     @Inject
-    SearchPresenter presenter;
+    ReportsNavigator reportsNavigator;
 
     @Inject
-    ReportsNavigator reportsNavigator;
+    SearchPresenter presenter;
 
     ReportsAdapter reportsAdapter;
 
@@ -107,6 +107,18 @@ public final class SearchFragment extends BaseFragment
     @Override
     public Consumer<List<ReportViewModel>> renderSearchResults() {
         return reportViewModels -> reportsAdapter.swapData(reportViewModels);
+    }
+
+    @NonNull
+    @Override
+    public Consumer<Boolean> renderCreateButton() {
+        return isVisible -> {
+            if (isVisible) {
+                buttonCreateReport.show();
+            } else {
+                buttonCreateReport.hide();
+            }
+        };
     }
 
     @NonNull

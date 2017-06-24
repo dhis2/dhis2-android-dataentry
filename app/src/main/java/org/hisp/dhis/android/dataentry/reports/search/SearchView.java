@@ -20,11 +20,15 @@ interface SearchView extends View {
 
     @NonNull
     @UiThread
+    Observable<Object> createReportsActions();
+
+    @NonNull
+    @UiThread
     Consumer<List<ReportViewModel>> renderSearchResults();
 
     @NonNull
     @UiThread
-    Observable<Object> createReportsActions();
+    Consumer<Boolean> renderCreateButton();
 
     @NonNull
     @UiThread

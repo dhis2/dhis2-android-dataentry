@@ -14,6 +14,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.PublishSubject;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,6 +47,9 @@ public class SearchPresenterUnitTests {
 
     @Captor
     private ArgumentCaptor<String> createReportCaptor;
+
+    @Captor
+    private ArgumentCaptor<Boolean> createButtonVisibility;
 
     private SearchPresenter searchPresenter;
     private PublishProcessor<List<ReportViewModel>> reportsPublisher;
@@ -112,6 +117,39 @@ public class SearchPresenterUnitTests {
         verify(searchView.renderSearchResults(), times(2)).accept(reportViewModelsCaptor.capture());
         verify(searchRepository).search("test_entity");
         assertThat(reportViewModelsCaptor.getValue()).isEqualTo(reportsTwo);
+    }
+
+    @Test
+    public void onAttachMustListenToFabUpdates() throws Exception {
+        searchPresenter.onAttach(searchView);
+
+        // empty query
+        when(searchRepository.search("")).thenReturn(reportsPublisher);
+        when(textChangeEvent.queryText().toString()).thenReturn("");
+        searchBoxActions.onNext(textChangeEvent);
+        reportsPublisher.onNext(new ArrayList<>());
+
+        verify(searchView.renderSearchResults()).accept(reportViewModelsCaptor.capture());
+        verify(searchView.renderCreateButton(), times(2)).accept(createButtonVisibility.capture());
+        verify(searchRepository).search("");
+
+        assertThat(reportViewModelsCaptor.getValue()).isEmpty();
+        assertThat(createButtonVisibility.getAllValues().get(0)).isFalse();
+        assertThat(createButtonVisibility.getAllValues().get(1)).isFalse();
+
+        // non-empty query
+        SearchViewQueryTextEvent textChangeEventTwo = mock(SearchViewQueryTextEvent.class, Answers.RETURNS_DEEP_STUBS);
+        when(searchRepository.search("test_entity")).thenReturn(reportsPublisher);
+        when(textChangeEventTwo.queryText().toString()).thenReturn("test_entity");
+        searchBoxActions.onNext(textChangeEventTwo);
+        reportsPublisher.onNext(new ArrayList<>());
+
+        verify(searchView.renderSearchResults(), times(2)).accept(reportViewModelsCaptor.capture());
+        verify(searchView.renderCreateButton(), times(3)).accept(createButtonVisibility.capture());
+        verify(searchRepository).search("test_entity");
+
+        assertThat(reportViewModelsCaptor.getAllValues().get(2)).isEmpty();
+        assertThat(createButtonVisibility.getAllValues().get(4)).isTrue();
     }
 
     @Test
