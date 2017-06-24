@@ -2,8 +2,8 @@ package org.hisp.dhis.android.dataentry.main.home;
 
 import android.support.annotation.NonNull;
 
-import org.hisp.dhis.android.dataentry.commons.ui.View;
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.ui.View;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -31,9 +31,8 @@ class HomePresenterImpl implements HomePresenter {
             compositeDisposable.add(homeRepository.homeViewModels()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(
-                            homeView.swapData(),
-                            throwable -> homeView.renderError(throwable.getMessage())));
+                    .subscribe(homeView.swapData(), throwable ->
+                            homeView.renderError(throwable.getMessage())));
         }
     }
 

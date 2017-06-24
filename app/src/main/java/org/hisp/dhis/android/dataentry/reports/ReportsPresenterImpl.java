@@ -3,7 +3,6 @@ package org.hisp.dhis.android.dataentry.reports;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
-import org.hisp.dhis.android.dataentry.commons.ui.View;
 
 import io.reactivex.disposables.CompositeDisposable;
 import rx.exceptions.OnErrorNotImplementedException;
@@ -32,21 +31,18 @@ final class ReportsPresenterImpl implements ReportsPresenter {
     }
 
     @Override
-    public void onAttach(@NonNull View view) {
-        if (view instanceof ReportsView) {
-            ReportsView reportsView = (ReportsView) view;
-            compositeDisposable.add(reportsView.createReportsActions()
-                    .map(action -> reportsArguments.entityUid())
-                    .subscribe(reportsView.createReport(), throwable -> {
-                        throw new OnErrorNotImplementedException(throwable);
-                    }));
-            compositeDisposable.add(reportsRepository.reports(reportsArguments.entityUid())
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
-                    .subscribe(reportsView.renderReportViewModels(), throwable -> {
-                        throw new OnErrorNotImplementedException(throwable);
-                    }));
-        }
+    public void onAttach(@NonNull ReportsView reportsView) {
+        compositeDisposable.add(reportsView.createReportsActions()
+                .map(action -> reportsArguments.entityUid())
+                .subscribe(reportsView.createReport(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+        compositeDisposable.add(reportsRepository.reports(reportsArguments.entityUid())
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(reportsView.renderReportViewModels(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
     }
 
     @Override
