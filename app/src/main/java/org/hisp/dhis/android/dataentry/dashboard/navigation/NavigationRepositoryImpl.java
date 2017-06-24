@@ -8,6 +8,7 @@ import com.squareup.sqlbrite.BriteDatabase;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.event.EventModel;
 import org.hisp.dhis.android.core.event.EventStatus;
+import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.program.ProgramStageModel;
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttributeModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeModel;
@@ -63,6 +64,14 @@ class NavigationRepositoryImpl implements NavigationRepository {
 
     private static final List<String> EVENT_TABLES = Arrays.asList(EventModel.TABLE, ProgramStageModel.TABLE);
 
+    private static final String TITLE_QUERY = "SELECT Program.displayName " +
+            "FROM Enrollment " +
+            "  JOIN Program " +
+            "    ON Program.uid = Enrollment.program " +
+            "WHERE Enrollment.uid = ?";
+
+    private static final List<String> TITLE_TABLES = Arrays.asList(EnrollmentModel.TABLE, ProgramModel.TABLE);
+
     @NonNull
     private final BriteDatabase briteDataBase;
 
@@ -101,6 +110,14 @@ class NavigationRepositoryImpl implements NavigationRepository {
                 .mapToList(cursor -> EventViewModel
                         .create(cursor.getString(0), cursor.getString(1), formatDate(cursor.getString(2)),
                                 EventStatus.valueOf(cursor.getString(3)))));
+    }
+
+    @NonNull
+    @Override
+    public Flowable<String> title(@NonNull String enrollmentUid) {
+        return toV2Flowable(briteDataBase
+                .createQuery(TITLE_TABLES, TITLE_QUERY, enrollmentUid)
+                .mapToOne(cursor -> cursor.getString(0)));
     }
 
     private String formatDate(String date) {

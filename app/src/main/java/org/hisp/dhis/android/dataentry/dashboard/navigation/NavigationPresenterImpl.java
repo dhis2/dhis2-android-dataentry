@@ -8,7 +8,6 @@ import org.hisp.dhis.android.dataentry.commons.tuples.Pair;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
-import timber.log.Timber;
 
 final class NavigationPresenterImpl implements NavigationPresenter {
 
@@ -35,6 +34,16 @@ final class NavigationPresenterImpl implements NavigationPresenter {
 
     @Override
     public void onAttach(@NonNull NavigationView view) {
+
+        compositeDisposable.add(navigationRepository
+                .title(enrollmentUid)
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .distinctUntilChanged()
+                .subscribe(view.renderTitle(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+
         compositeDisposable.add(navigationRepository
                 .attributes(enrollmentUid)
                 .subscribeOn(schedulerProvider.io())
@@ -44,7 +53,9 @@ final class NavigationPresenterImpl implements NavigationPresenter {
                     String secondAttribute = strings.size() > 1 ? strings.get(1) : "";
                     return Pair.create(firstAttribute, secondAttribute);
                 })
-                .subscribe(view.renderAttributes(), Timber::e));
+                .subscribe(view.renderAttributes(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
 
         compositeDisposable.add(navigationRepository
                 .events(enrollmentUid)

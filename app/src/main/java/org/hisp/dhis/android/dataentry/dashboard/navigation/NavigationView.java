@@ -23,4 +23,7 @@ interface NavigationView extends View {
 
     @NonNull
     Consumer<Pair<String, String>> renderAttributes();
+
+    @NonNull
+    Consumer<String> renderTitle();
 }
