@@ -91,8 +91,8 @@ public class NavigationFragment extends BaseFragment implements NavigationView {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_dashboard, container, false);
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_navigation, container, false);
     }
 
     @Override
@@ -157,6 +157,12 @@ public class NavigationFragment extends BaseFragment implements NavigationView {
 
     @NonNull
     @Override
+    public Consumer<String> renderTitle() {
+        return title -> toolbar.setTitle(title);
+    }
+
+    @NonNull
+    @Override
     public Consumer<Pair<String, String>> renderAttributes() {
         return attributes -> {
             firstAttribute.setText(attributes.val0());
@@ -165,7 +171,7 @@ public class NavigationFragment extends BaseFragment implements NavigationView {
     }
 
     @OnClick({
-            R.id.appbar_layout, R.id.edit_profile_button
+            R.id.appbar_layout
     })
     void showProfile() {
         dashboardNavigator.navigateToEnrollment(
