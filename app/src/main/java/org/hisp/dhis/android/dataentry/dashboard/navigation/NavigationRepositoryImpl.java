@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.dashboard;
+package org.hisp.dhis.android.dataentry.dashboard.navigation;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -24,7 +24,7 @@ import timber.log.Timber;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 
-class DashboardRepositoryImpl implements DashboardRepository {
+class NavigationRepositoryImpl implements NavigationRepository {
 
     private static final String ATTRIBUTES_QUERY = "SELECT " +
             "  TrackedEntityAttribute.displayName, " +
@@ -66,7 +66,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
     @NonNull
     private final BriteDatabase briteDataBase;
 
-    DashboardRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
+    NavigationRepositoryImpl(@NonNull BriteDatabase briteDatabase) {
         this.briteDataBase = briteDatabase;
     }
 
@@ -107,7 +107,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
         try {
             return DateUtils.uiDateFormat().format(DateUtils.databaseDateFormat().parse(date));
         } catch (ParseException e) {
-            Timber.e(e, "DashboardRepository - Unable to parse date. Expected format: " +
+            Timber.e(e, "NavigationRepository - Unable to parse date. Expected format: " +
                     DateUtils.databaseDateFormat().toPattern() + ". Input: " + date);
             return date;
         }

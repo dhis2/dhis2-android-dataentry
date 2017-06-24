@@ -84,7 +84,8 @@
             <android.support.v4.view.ViewPager
                 android:id="@+id/viewpager_dataentry"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:background="@color/data_entry_background"/>
 
         </FrameLayout>
     </android.support.v4.widget.NestedScrollView>

@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.dashboard;
+package org.hisp.dhis.android.dataentry.dashboard.navigation;
 
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.dataentry.commons.schedulers.MockSchedulersProvider;
@@ -23,15 +23,15 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class DashboardPresenterUnitTests {
 
-    private DashboardPresenter dashboardPresenter;
+    private NavigationPresenter navigationPresenter;
 
     private String enrollmentUid = "enrollment_uid";
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private DashboardView dashboardView;
+    private NavigationView navigationView;
 
     @Mock
-    private DashboardRepository dashboardRepository;
+    private NavigationRepository navigationRepository;
 
     @Captor
     private ArgumentCaptor<Pair<String, String>> attributesCaptor;
@@ -49,66 +49,66 @@ public class DashboardPresenterUnitTests {
         attributesPublisher = PublishProcessor.create();
         eventsPublisher = PublishProcessor.create();
 
-        when(dashboardRepository.attributes(enrollmentUid)).thenReturn(attributesPublisher);
-        when(dashboardRepository.events(enrollmentUid)).thenReturn(eventsPublisher);
+        when(navigationRepository.attributes(enrollmentUid)).thenReturn(attributesPublisher);
+        when(navigationRepository.events(enrollmentUid)).thenReturn(eventsPublisher);
 
-        dashboardPresenter = new DashboardPresenterImpl(enrollmentUid, new MockSchedulersProvider(),
-                dashboardRepository);
+        navigationPresenter = new NavigationPresenterImpl(enrollmentUid, new MockSchedulersProvider(),
+                navigationRepository);
     }
 
     @Test
     public void attributesAreRenderedOnAttach() throws Exception {
-        dashboardPresenter.onAttach(dashboardView);
+        navigationPresenter.onAttach(navigationView);
         attributesPublisher.onNext(Arrays.asList("Attribute 1", "Attribute 2"));
 
-        verify(dashboardView.renderAttributes()).accept(attributesCaptor.capture());
-        verify(dashboardRepository).attributes(enrollmentUid);
+        verify(navigationView.renderAttributes()).accept(attributesCaptor.capture());
+        verify(navigationRepository).attributes(enrollmentUid);
         assertThat(attributesCaptor.getValue().val0()).isEqualTo("Attribute 1");
         assertThat(attributesCaptor.getValue().val1()).isEqualTo("Attribute 2");
     }
 
     @Test
     public void attributesAreUpdatedAccordingToDatabase() throws Exception {
-        dashboardPresenter.onAttach(dashboardView);
+        navigationPresenter.onAttach(navigationView);
         attributesPublisher.onNext(Arrays.asList("Attribute 1", "Attribute 2"));
 
-        verify(dashboardView.renderAttributes()).accept(attributesCaptor.capture());
-        verify(dashboardRepository).attributes(enrollmentUid);
+        verify(navigationView.renderAttributes()).accept(attributesCaptor.capture());
+        verify(navigationRepository).attributes(enrollmentUid);
         assertThat(attributesCaptor.getValue().val0()).isEqualTo("Attribute 1");
         assertThat(attributesCaptor.getValue().val1()).isEqualTo("Attribute 2");
 
         attributesPublisher.onNext(Arrays.asList("Second Attribute 1", "Second Attribute 2"));
-        verify(dashboardView.renderAttributes(), times(2)).accept(attributesCaptor.capture());
+        verify(navigationView.renderAttributes(), times(2)).accept(attributesCaptor.capture());
         assertThat(attributesCaptor.getValue().val0()).isEqualTo("Second Attribute 1");
         assertThat(attributesCaptor.getValue().val1()).isEqualTo("Second Attribute 2");
     }
 
     @Test
     public void eventsAreRenderedOnAttach() throws Exception {
-        dashboardPresenter.onAttach(dashboardView);
+        navigationPresenter.onAttach(navigationView);
 
         EventViewModel eventOne = EventViewModel.create("event_uid_1", "Event 1", "2017-06-30", EventStatus.SCHEDULE);
         EventViewModel eventTwo = EventViewModel.create("event_uid_2", "Event 2", "1999-12-31", EventStatus.SKIPPED);
 
         eventsPublisher.onNext(Arrays.asList(eventOne, eventTwo));
 
-        verify(dashboardView.renderEvents()).accept(eventsCaptor.capture());
-        verify(dashboardRepository).events(enrollmentUid);
+        verify(navigationView.renderEvents()).accept(eventsCaptor.capture());
+        verify(navigationRepository).events(enrollmentUid);
         assertThat(eventsCaptor.getValue().get(0)).isEqualTo(eventOne);
         assertThat(eventsCaptor.getValue().get(1)).isEqualTo(eventTwo);
     }
 
     @Test
     public void eventsAreUpdatedAccordingToDatabase() throws Exception {
-        dashboardPresenter.onAttach(dashboardView);
+        navigationPresenter.onAttach(navigationView);
 
         EventViewModel eventOne = EventViewModel.create("event_uid_1", "Event 1", "2017-06-30", EventStatus.SCHEDULE);
         EventViewModel eventTwo = EventViewModel.create("event_uid_2", "Event 2", "1999-12-31", EventStatus.SKIPPED);
 
         eventsPublisher.onNext(Arrays.asList(eventOne, eventTwo));
 
-        verify(dashboardView.renderEvents()).accept(eventsCaptor.capture());
-        verify(dashboardRepository).events(enrollmentUid);
+        verify(navigationView.renderEvents()).accept(eventsCaptor.capture());
+        verify(navigationRepository).events(enrollmentUid);
         assertThat(eventsCaptor.getValue().get(0)).isEqualTo(eventOne);
         assertThat(eventsCaptor.getValue().get(1)).isEqualTo(eventTwo);
 
@@ -120,7 +120,7 @@ public class DashboardPresenterUnitTests {
 
         eventsPublisher.onNext(Arrays.asList(newEventOne, newEventTwo));
 
-        verify(dashboardView.renderEvents(), times(2)).accept(eventsCaptor.capture());
+        verify(navigationView.renderEvents(), times(2)).accept(eventsCaptor.capture());
         assertThat(eventsCaptor.getValue().get(0)).isEqualTo(newEventOne);
         assertThat(eventsCaptor.getValue().get(1)).isEqualTo(newEventTwo);
     }

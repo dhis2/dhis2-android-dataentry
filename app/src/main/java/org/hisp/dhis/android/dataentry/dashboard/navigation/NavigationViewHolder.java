@@ -1,4 +1,4 @@
-package org.hisp.dhis.android.dataentry.dashboard;
+package org.hisp.dhis.android.dataentry.dashboard.navigation;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -20,7 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-class DashboardViewHolder extends RecyclerView.ViewHolder {
+class NavigationViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.name)
     TextView name;
@@ -35,22 +35,33 @@ class DashboardViewHolder extends RecyclerView.ViewHolder {
     ImageView statusIcon;
 
     @NonNull
+    private final View view;
+
+    @NonNull
+    private final OnEventClickListener onEventClickListener;
+
+    @NonNull
+    private final EventSelection eventSelection;
+
+    @NonNull
     private final Map<EventStatus, Drawable> statusIcons;
 
     @NonNull
     private final Map<EventStatus, Integer> statusColors;
 
-    private final OnEventClickListener onEventClickListener;
     private EventViewModel eventViewModel;
 
     interface OnEventClickListener {
         void OnEventClicked(EventViewModel eventViewModel);
     }
 
-    DashboardViewHolder(View itemView, OnEventClickListener onEventClickListener) {
+    NavigationViewHolder(@NonNull View itemView, @NonNull OnEventClickListener onEventClickListener,
+                         @NonNull EventSelection eventSelection) {
         super(itemView);
+        this.view = itemView;
         ButterKnife.bind(this, itemView);
         this.onEventClickListener = onEventClickListener;
+        this.eventSelection = eventSelection;
         statusIcons = new HashMap<>();
         statusColors = new HashMap<>();
         initCaches(itemView.getContext());
@@ -76,12 +87,20 @@ class DashboardViewHolder extends RecyclerView.ViewHolder {
         date.setText(eventViewModel.date());
         statusIcon.setImageDrawable(statusIcons.get(eventViewModel.eventStatus()));
         statusBackground.setFillColor(statusColors.get(eventViewModel.eventStatus()));
+        if (isSelected(eventViewModel)) {
+            view.setBackgroundColor(ContextCompat.getColor(view.getContext(), R.color.data_entry_background));
+        } else {
+            view.setBackgroundColor(ContextCompat.getColor(view.getContext(), R.color.cardview_light_background));
+        }
+    }
+
+    private boolean isSelected(EventViewModel eventViewModel) {
+        return eventSelection.getSelectedEvent() != null
+                && eventSelection.getSelectedEvent().equals(eventViewModel);
     }
 
     @OnClick(R.id.event_item)
     void onEventClick() {
-        if (onEventClickListener != null) {
-            onEventClickListener.OnEventClicked(eventViewModel);
-        }
+        onEventClickListener.OnEventClicked(eventViewModel);
     }
 }
