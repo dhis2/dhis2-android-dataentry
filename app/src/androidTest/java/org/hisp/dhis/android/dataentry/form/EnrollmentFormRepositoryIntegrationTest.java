@@ -10,10 +10,13 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
+import org.hisp.dhis.android.dataentry.commons.utils.CodeGenerator;
+import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.util.List;
 
@@ -21,8 +24,15 @@ import io.reactivex.subscribers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class EnrollmentFormRepositoryIntegrationTest {
+
+    @Mock
+    CodeGenerator codeGenerator;
+
+    @Mock
+    CurrentDateProvider currentDateProvider;
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
@@ -59,7 +69,9 @@ public class EnrollmentFormRepositoryIntegrationTest {
         enrollment.put(EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE, "tei_uid");
         db.insert(EnrollmentModel.TABLE, null, enrollment);
 
-        formRepository = new EnrollmentFormRepository(databaseRule.briteDatabase());
+        initMocks(this);
+
+        formRepository = new EnrollmentFormRepository(databaseRule.briteDatabase(), codeGenerator, currentDateProvider);
     }
 
     @Test
