@@ -102,8 +102,7 @@ final class DataValueStore implements DataEntryStore {
         return toV2Flowable(briteDatabase.createQuery(EventModel.TABLE, SELECT_EVENT, eventUid)
                 .mapToOne(cursor -> EventModel.create(cursor)).take(1))
                 .switchMap(eventModel -> {
-                    if (State.SYNCED.equals(eventModel.state()) ||
-                            State.TO_DELETE.equals(eventModel.state()) ||
+                    if (State.SYNCED.equals(eventModel.state()) || State.TO_DELETE.equals(eventModel.state()) ||
                             State.ERROR.equals(eventModel.state())) {
 
                         ContentValues values = eventModel.toContentValues();
@@ -113,7 +112,7 @@ final class DataValueStore implements DataEntryStore {
                                 EventModel.Columns.UID + " = ?", eventUid) <= 0) {
 
                             throw new IllegalStateException(String.format(Locale.US, "Event=[%s] " +
-                                    "has not been successfully updated: status", eventUid));
+                                    "has not been successfully updated", eventUid));
                         }
                     }
 

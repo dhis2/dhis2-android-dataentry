@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dataentry.form.dataentry;
 
+import android.content.ContentValues;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,11 +8,16 @@ import android.support.annotation.Nullable;
 import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValueModel;
+import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
+
+import java.util.Locale;
 
 import io.reactivex.Flowable;
 
+import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 import static org.hisp.dhis.android.core.utils.StoreUtils.sqLiteBind;
 
 final class AttributeValueStore implements DataEntryStore {
@@ -26,6 +32,14 @@ final class AttributeValueStore implements DataEntryStore {
             ") VALUES (?, ?, ?, ?, (\n" +
             "  SELECT trackedEntityInstance FROM Enrollment WHERE uid = ? LIMIT 1\n" +
             "));";
+
+    private static final String SELECT_TEI = "SELECT *\n" +
+            "FROM TrackedEntityInstance\n" +
+            "WHERE uid IN (\n" +
+            "  SELECT trackedEntityInstance\n" +
+            "  FROM Enrollment\n" +
+            "  WHERE Enrollment.uid = ?\n" +
+            ") LIMIT 1;";
 
     @NonNull
     private final BriteDatabase briteDatabase;
@@ -57,14 +71,16 @@ final class AttributeValueStore implements DataEntryStore {
     @NonNull
     @Override
     public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
-        return Flowable.defer(() -> {
-            long updated = update(uid, value);
-            if (updated > 0) {
-                return Flowable.just(updated);
-            }
+        return Flowable
+                .defer(() -> {
+                    long updated = update(uid, value);
+                    if (updated > 0) {
+                        return Flowable.just(updated);
+                    }
 
-            return Flowable.just(insert(uid, value));
-        });
+                    return Flowable.just(insert(uid, value));
+                })
+                .switchMap(status -> updateEnrollment(status));
     }
 
 
@@ -97,5 +113,27 @@ final class AttributeValueStore implements DataEntryStore {
         insertStatement.clearBindings();
 
         return inserted;
+    }
+
+    @NonNull
+    private Flowable<Long> updateEnrollment(long status) {
+        return toV2Flowable(briteDatabase.createQuery(TrackedEntityInstanceModel.TABLE, SELECT_TEI, enrollment)
+                .mapToOne(cursor -> TrackedEntityInstanceModel.create(cursor)).take(1))
+                .switchMap(tei -> {
+                    if (State.SYNCED.equals(tei.state()) || State.TO_DELETE.equals(tei.state()) ||
+                            State.ERROR.equals(tei.state())) {
+                        ContentValues values = tei.toContentValues();
+                        values.put(TrackedEntityInstanceModel.Columns.STATE, State.TO_UPDATE.toString());
+
+                        if (briteDatabase.update(TrackedEntityInstanceModel.TABLE, values,
+                                TrackedEntityInstanceModel.Columns.UID + " = ?", tei.uid()) <= 0) {
+
+                            throw new IllegalStateException(String.format(Locale.US, "Tei=[%s] " +
+                                    "has not been successfully updated", tei.uid()));
+                        }
+                    }
+
+                    return Flowable.just(status);
+                });
     }
 }
