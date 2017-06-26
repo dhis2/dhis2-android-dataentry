@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.text.ParseException;
 import java.util.Date;
 
 import io.reactivex.subscribers.TestSubscriber;
@@ -41,6 +42,23 @@ public class AttributeValueStoreIntegrationTests {
             Columns.VALUE,
     };
 
+    private static final String[] TEI_PROJECTION = {
+            TrackedEntityInstanceModel.Columns.UID,
+            TrackedEntityInstanceModel.Columns.CREATED,
+            TrackedEntityInstanceModel.Columns.LAST_UPDATED,
+            TrackedEntityInstanceModel.Columns.ORGANISATION_UNIT,
+            TrackedEntityInstanceModel.Columns.TRACKED_ENTITY,
+            TrackedEntityInstanceModel.Columns.STATE
+    };
+
+    private static final String[] ENROLLMENT_PROJECTION = {
+            EnrollmentModel.Columns.UID,
+            EnrollmentModel.Columns.PROGRAM,
+            EnrollmentModel.Columns.ORGANISATION_UNIT,
+            EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE,
+            EnrollmentModel.Columns.STATE
+    };
+
     private static final String ATTRIBUTE_ONE_UID = "attribute_one_uid";
     private static final String ATTRIBUTE_ONE_NAME = "attribute_one_name";
 
@@ -52,6 +70,10 @@ public class AttributeValueStoreIntegrationTests {
 
     private static final String TEI_UID = "tei_uid";
     private static final String ENROLLMENT_UID = "enrollment_uid";
+    private static final String ORGANISATION_UNIT_UID = "organisation_unit_uid";
+    private static final String TRACKED_ENTITY_UID = "tracked_entity_uid";
+    private static final String PROGRAM_UID = "program_uid";
+    private static final String CURRENT_DATE = "2016-04-06T00:05:57.495";
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
@@ -64,16 +86,16 @@ public class AttributeValueStoreIntegrationTests {
         SQLiteDatabase db = databaseRule.database();
 
         ContentValues orgUnit = new ContentValues();
-        orgUnit.put(OrganisationUnitModel.Columns.UID, "organisation_unit_uid");
+        orgUnit.put(OrganisationUnitModel.Columns.UID, ORGANISATION_UNIT_UID);
         db.insert(OrganisationUnitModel.TABLE, null, orgUnit);
 
         ContentValues trackedEntity = new ContentValues();
-        trackedEntity.put(TrackedEntityModel.Columns.UID, "tracked_entity_uid");
+        trackedEntity.put(TrackedEntityModel.Columns.UID, TRACKED_ENTITY_UID);
         db.insert(TrackedEntityModel.TABLE, null, trackedEntity);
 
         ContentValues program = new ContentValues();
-        program.put(ProgramModel.Columns.UID, "program_uid");
-        program.put(ProgramModel.Columns.TRACKED_ENTITY, "tracked_entity_uid");
+        program.put(ProgramModel.Columns.UID, PROGRAM_UID);
+        program.put(ProgramModel.Columns.TRACKED_ENTITY, TRACKED_ENTITY_UID);
         db.insert(ProgramModel.TABLE, null, program);
 
         db.insert(TrackedEntityAttributeModel.TABLE, null, attribute(ATTRIBUTE_ONE_UID,
@@ -84,20 +106,14 @@ public class AttributeValueStoreIntegrationTests {
                 ATTRIBUTE_THREE_NAME, ValueType.TEXT.name()));
 
         db.insert(ProgramTrackedEntityAttributeModel.TABLE, null, ptea(
-                "ptea_one", "program_uid", ATTRIBUTE_ONE_UID, 3, true));
+                "ptea_one", PROGRAM_UID, ATTRIBUTE_ONE_UID, 3, true));
         db.insert(ProgramTrackedEntityAttributeModel.TABLE, null, ptea(
-                "ptea_two", "program_uid", ATTRIBUTE_TWO_UID, 1, false));
+                "ptea_two", PROGRAM_UID, ATTRIBUTE_TWO_UID, 1, false));
         db.insert(ProgramTrackedEntityAttributeModel.TABLE, null, ptea(
-                "ptea_three", "program_uid", ATTRIBUTE_THREE_UID, 2, true));
-
-        db.insert(TrackedEntityInstanceModel.TABLE, null, tei(TEI_UID,
-                BaseIdentifiableObject.DATE_FORMAT.parse("2016-04-06T00:05:57.495"),
-                "organisation_unit_uid", "tracked_entity_uid", State.TO_POST));
-        db.insert(EnrollmentModel.TABLE, null, enrollment(ENROLLMENT_UID,
-                "program_uid", "organisation_unit_uid", TEI_UID, State.TO_POST));
+                "ptea_three", PROGRAM_UID, ATTRIBUTE_THREE_UID, 2, true));
 
         // provider of time stamps for data values
-        currentDate = new Date();
+        currentDate = BaseIdentifiableObject.DATE_FORMAT.parse(CURRENT_DATE);
         CurrentDateProvider currentDateProvider = () -> currentDate;
 
         // class under tests
@@ -106,8 +122,14 @@ public class AttributeValueStoreIntegrationTests {
     }
 
     @Test
-    public void saveShouldUpdateExistingAttributeValue() {
+    public void saveShouldUpdateExistingAttributeValue() throws ParseException {
         SQLiteDatabase db = databaseRule.database();
+
+        db.insert(TrackedEntityInstanceModel.TABLE, null, tei(TEI_UID,
+                BaseIdentifiableObject.DATE_FORMAT.parse(CURRENT_DATE),
+                ORGANISATION_UNIT_UID, TRACKED_ENTITY_UID, State.TO_POST));
+        db.insert(EnrollmentModel.TABLE, null, enrollment(ENROLLMENT_UID,
+                PROGRAM_UID, ORGANISATION_UNIT_UID, TEI_UID, State.TO_POST));
 
         Date createdDate = new Date();
         db.insert(TrackedEntityAttributeValueModel.TABLE, null, attributeValue(TEI_UID, createdDate,
@@ -133,8 +155,14 @@ public class AttributeValueStoreIntegrationTests {
     }
 
     @Test
-    public void saveShouldNullifyExistingAttributeValue() {
+    public void saveShouldNullifyExistingAttributeValue() throws ParseException {
         SQLiteDatabase db = databaseRule.database();
+
+        db.insert(TrackedEntityInstanceModel.TABLE, null, tei(TEI_UID,
+                BaseIdentifiableObject.DATE_FORMAT.parse(CURRENT_DATE),
+                ORGANISATION_UNIT_UID, TRACKED_ENTITY_UID, State.TO_POST));
+        db.insert(EnrollmentModel.TABLE, null, enrollment(ENROLLMENT_UID,
+                PROGRAM_UID, ORGANISATION_UNIT_UID, TEI_UID, State.TO_POST));
 
         Date createdDate = new Date();
         db.insert(TrackedEntityAttributeValueModel.TABLE, null, attributeValue(TEI_UID, createdDate,
@@ -160,8 +188,14 @@ public class AttributeValueStoreIntegrationTests {
     }
 
     @Test
-    public void saveShouldInsertNewAttributeValue() {
+    public void saveShouldInsertNewAttributeValue() throws ParseException {
         SQLiteDatabase db = databaseRule.database();
+
+        db.insert(TrackedEntityInstanceModel.TABLE, null, tei(TEI_UID,
+                BaseIdentifiableObject.DATE_FORMAT.parse(CURRENT_DATE),
+                ORGANISATION_UNIT_UID, TRACKED_ENTITY_UID, State.TO_POST));
+        db.insert(EnrollmentModel.TABLE, null, enrollment(ENROLLMENT_UID,
+                PROGRAM_UID, ORGANISATION_UNIT_UID, TEI_UID, State.TO_POST));
 
         TestSubscriber<Long> testSubscriber = dataEntryStore
                 .save(ATTRIBUTE_ONE_UID, "test_attribute_value").test();
@@ -182,6 +216,226 @@ public class AttributeValueStoreIntegrationTests {
         ).isExhausted();
     }
 
+    @Test
+    public void saveMustUpdateTeiStateFromSyncedToUpdate() throws ParseException {
+        SQLiteDatabase db = databaseRule.database();
+
+        db.insert(TrackedEntityInstanceModel.TABLE, null, tei(TEI_UID,
+                BaseIdentifiableObject.DATE_FORMAT.parse(CURRENT_DATE),
+                ORGANISATION_UNIT_UID, TRACKED_ENTITY_UID, State.SYNCED));
+        db.insert(EnrollmentModel.TABLE, null, enrollment(ENROLLMENT_UID,
+                PROGRAM_UID, ORGANISATION_UNIT_UID, TEI_UID, State.SYNCED));
+
+        TestSubscriber<Long> testSubscriber = dataEntryStore
+                .save(ATTRIBUTE_ONE_UID, "test_attribute_value").test();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertComplete();
+        testSubscriber.assertTerminated();
+
+        assertThat(testSubscriber.valueCount()).isEqualTo(1);
+        assertThat(testSubscriber.values().get(0)).isEqualTo(1);
+
+        assertThatCursor(db.query(TrackedEntityAttributeValueModel.TABLE, TEAV_PROJECTION,
+                Columns.TRACKED_ENTITY_ATTRIBUTE + " = ?", new String[]{
+                        ATTRIBUTE_ONE_UID}, null, null, null)
+        ).hasRow(
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                ATTRIBUTE_ONE_UID, TEI_UID, "test_attribute_value"
+        ).isExhausted();
+
+        assertThatCursor(db.query(TrackedEntityInstanceModel.TABLE, TEI_PROJECTION,
+                TrackedEntityInstanceModel.Columns.UID + " = ?", new String[]{
+                        TEI_UID}, null, null, null)
+        ).hasRow(TEI_UID,
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                ORGANISATION_UNIT_UID, TRACKED_ENTITY_UID, State.TO_UPDATE.toString()
+        ).isExhausted();
+
+        assertThatCursor(db.query(EnrollmentModel.TABLE, ENROLLMENT_PROJECTION,
+                EnrollmentModel.Columns.UID + " = ?", new String[]{
+                        ENROLLMENT_UID}, null, null, null)
+        ).hasRow(ENROLLMENT_UID, PROGRAM_UID, ORGANISATION_UNIT_UID, TEI_UID, State.SYNCED.toString()
+        ).isExhausted();
+    }
+
+    @Test
+    public void saveMustUpdateTeiStateFromErrorToUpdate() throws ParseException {
+        SQLiteDatabase db = databaseRule.database();
+
+        db.insert(TrackedEntityInstanceModel.TABLE, null, tei(TEI_UID,
+                BaseIdentifiableObject.DATE_FORMAT.parse(CURRENT_DATE),
+                ORGANISATION_UNIT_UID, TRACKED_ENTITY_UID, State.ERROR));
+        db.insert(EnrollmentModel.TABLE, null, enrollment(ENROLLMENT_UID,
+                PROGRAM_UID, ORGANISATION_UNIT_UID, TEI_UID, State.SYNCED));
+
+        TestSubscriber<Long> testSubscriber = dataEntryStore
+                .save(ATTRIBUTE_ONE_UID, "test_attribute_value").test();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertComplete();
+        testSubscriber.assertTerminated();
+
+        assertThat(testSubscriber.valueCount()).isEqualTo(1);
+        assertThat(testSubscriber.values().get(0)).isEqualTo(1);
+
+        assertThatCursor(db.query(TrackedEntityAttributeValueModel.TABLE, TEAV_PROJECTION,
+                Columns.TRACKED_ENTITY_ATTRIBUTE + " = ?", new String[]{
+                        ATTRIBUTE_ONE_UID}, null, null, null)
+        ).hasRow(
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                ATTRIBUTE_ONE_UID, TEI_UID, "test_attribute_value"
+        ).isExhausted();
+
+        assertThatCursor(db.query(TrackedEntityInstanceModel.TABLE, TEI_PROJECTION,
+                TrackedEntityInstanceModel.Columns.UID + " = ?", new String[]{
+                        TEI_UID}, null, null, null)
+        ).hasRow(TEI_UID,
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                ORGANISATION_UNIT_UID, TRACKED_ENTITY_UID, State.TO_UPDATE.toString()
+        ).isExhausted();
+
+        assertThatCursor(db.query(EnrollmentModel.TABLE, ENROLLMENT_PROJECTION,
+                EnrollmentModel.Columns.UID + " = ?", new String[]{
+                        ENROLLMENT_UID}, null, null, null)
+        ).hasRow(ENROLLMENT_UID, PROGRAM_UID, ORGANISATION_UNIT_UID, TEI_UID, State.SYNCED.toString()
+        ).isExhausted();
+    }
+
+    @Test
+    public void saveMustUpdateTeiStateFromToDeleteToUpdate() throws ParseException {
+        SQLiteDatabase db = databaseRule.database();
+
+        db.insert(TrackedEntityInstanceModel.TABLE, null, tei(TEI_UID,
+                BaseIdentifiableObject.DATE_FORMAT.parse(CURRENT_DATE),
+                ORGANISATION_UNIT_UID, TRACKED_ENTITY_UID, State.TO_DELETE));
+        db.insert(EnrollmentModel.TABLE, null, enrollment(ENROLLMENT_UID,
+                PROGRAM_UID, ORGANISATION_UNIT_UID, TEI_UID, State.SYNCED));
+
+        TestSubscriber<Long> testSubscriber = dataEntryStore
+                .save(ATTRIBUTE_ONE_UID, "test_attribute_value").test();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertComplete();
+        testSubscriber.assertTerminated();
+
+        assertThat(testSubscriber.valueCount()).isEqualTo(1);
+        assertThat(testSubscriber.values().get(0)).isEqualTo(1);
+
+        assertThatCursor(db.query(TrackedEntityAttributeValueModel.TABLE, TEAV_PROJECTION,
+                Columns.TRACKED_ENTITY_ATTRIBUTE + " = ?", new String[]{
+                        ATTRIBUTE_ONE_UID}, null, null, null)
+        ).hasRow(
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                ATTRIBUTE_ONE_UID, TEI_UID, "test_attribute_value"
+        ).isExhausted();
+
+        assertThatCursor(db.query(TrackedEntityInstanceModel.TABLE, TEI_PROJECTION,
+                TrackedEntityInstanceModel.Columns.UID + " = ?", new String[]{
+                        TEI_UID}, null, null, null)
+        ).hasRow(TEI_UID,
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                ORGANISATION_UNIT_UID, TRACKED_ENTITY_UID, State.TO_UPDATE.toString()
+        ).isExhausted();
+
+        assertThatCursor(db.query(EnrollmentModel.TABLE, ENROLLMENT_PROJECTION,
+                EnrollmentModel.Columns.UID + " = ?", new String[]{
+                        ENROLLMENT_UID}, null, null, null)
+        ).hasRow(ENROLLMENT_UID, PROGRAM_UID, ORGANISATION_UNIT_UID, TEI_UID, State.SYNCED.toString()
+        ).isExhausted();
+    }
+
+    @Test
+    public void saveMustNotUpdateTeiStateFromToPostToUpdate() throws ParseException {
+        SQLiteDatabase db = databaseRule.database();
+
+        db.insert(TrackedEntityInstanceModel.TABLE, null, tei(TEI_UID,
+                BaseIdentifiableObject.DATE_FORMAT.parse(CURRENT_DATE),
+                ORGANISATION_UNIT_UID, TRACKED_ENTITY_UID, State.TO_POST));
+        db.insert(EnrollmentModel.TABLE, null, enrollment(ENROLLMENT_UID,
+                PROGRAM_UID, ORGANISATION_UNIT_UID, TEI_UID, State.SYNCED));
+
+        TestSubscriber<Long> testSubscriber = dataEntryStore
+                .save(ATTRIBUTE_ONE_UID, "test_attribute_value").test();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertComplete();
+        testSubscriber.assertTerminated();
+
+        assertThat(testSubscriber.valueCount()).isEqualTo(1);
+        assertThat(testSubscriber.values().get(0)).isEqualTo(1);
+
+        assertThatCursor(db.query(TrackedEntityAttributeValueModel.TABLE, TEAV_PROJECTION,
+                Columns.TRACKED_ENTITY_ATTRIBUTE + " = ?", new String[]{
+                        ATTRIBUTE_ONE_UID}, null, null, null)
+        ).hasRow(
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                ATTRIBUTE_ONE_UID, TEI_UID, "test_attribute_value"
+        ).isExhausted();
+
+        assertThatCursor(db.query(TrackedEntityInstanceModel.TABLE, TEI_PROJECTION,
+                TrackedEntityInstanceModel.Columns.UID + " = ?", new String[]{
+                        TEI_UID}, null, null, null)
+        ).hasRow(TEI_UID,
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                ORGANISATION_UNIT_UID, TRACKED_ENTITY_UID, State.TO_POST.toString()
+        ).isExhausted();
+
+        assertThatCursor(db.query(EnrollmentModel.TABLE, ENROLLMENT_PROJECTION,
+                EnrollmentModel.Columns.UID + " = ?", new String[]{
+                        ENROLLMENT_UID}, null, null, null)
+        ).hasRow(ENROLLMENT_UID, PROGRAM_UID, ORGANISATION_UNIT_UID, TEI_UID, State.SYNCED.toString()
+        ).isExhausted();
+    }
+
+    @Test
+    public void saveMustUpdateTeiStateFromToUpdateToUpdate() throws ParseException {
+        SQLiteDatabase db = databaseRule.database();
+
+        db.insert(TrackedEntityInstanceModel.TABLE, null, tei(TEI_UID,
+                BaseIdentifiableObject.DATE_FORMAT.parse(CURRENT_DATE),
+                ORGANISATION_UNIT_UID, TRACKED_ENTITY_UID, State.TO_UPDATE));
+        db.insert(EnrollmentModel.TABLE, null, enrollment(ENROLLMENT_UID,
+                PROGRAM_UID, ORGANISATION_UNIT_UID, TEI_UID, State.SYNCED));
+
+        TestSubscriber<Long> testSubscriber = dataEntryStore
+                .save(ATTRIBUTE_ONE_UID, "test_attribute_value").test();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertComplete();
+        testSubscriber.assertTerminated();
+
+        assertThat(testSubscriber.valueCount()).isEqualTo(1);
+        assertThat(testSubscriber.values().get(0)).isEqualTo(1);
+
+        assertThatCursor(db.query(TrackedEntityAttributeValueModel.TABLE, TEAV_PROJECTION,
+                Columns.TRACKED_ENTITY_ATTRIBUTE + " = ?", new String[]{
+                        ATTRIBUTE_ONE_UID}, null, null, null)
+        ).hasRow(
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                ATTRIBUTE_ONE_UID, TEI_UID, "test_attribute_value"
+        ).isExhausted();
+
+        assertThatCursor(db.query(TrackedEntityInstanceModel.TABLE, TEI_PROJECTION,
+                TrackedEntityInstanceModel.Columns.UID + " = ?", new String[]{
+                        TEI_UID}, null, null, null)
+        ).hasRow(TEI_UID,
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                BaseIdentifiableObject.DATE_FORMAT.format(currentDate),
+                ORGANISATION_UNIT_UID, TRACKED_ENTITY_UID, State.TO_UPDATE.toString()
+        ).isExhausted();
+
+        assertThatCursor(db.query(EnrollmentModel.TABLE, ENROLLMENT_PROJECTION,
+                EnrollmentModel.Columns.UID + " = ?", new String[]{
+                        ENROLLMENT_UID}, null, null, null)
+        ).hasRow(ENROLLMENT_UID, PROGRAM_UID, ORGANISATION_UNIT_UID, TEI_UID, State.SYNCED.toString()
+        ).isExhausted();
+    }
+
     private static ContentValues enrollment(String uid, String program,
             String orgUnit, String tei, State state) {
         ContentValues enrollment = new ContentValues();
@@ -198,6 +452,8 @@ public class AttributeValueStoreIntegrationTests {
         ContentValues trackedEntityInstance = new ContentValues();
         trackedEntityInstance.put(TrackedEntityInstanceModel.Columns.UID, uid);
         trackedEntityInstance.put(TrackedEntityInstanceModel.Columns.CREATED,
+                BaseIdentifiableObject.DATE_FORMAT.format(created));
+        trackedEntityInstance.put(TrackedEntityInstanceModel.Columns.LAST_UPDATED,
                 BaseIdentifiableObject.DATE_FORMAT.format(created));
         trackedEntityInstance.put(TrackedEntityInstanceModel.Columns.ORGANISATION_UNIT, orgUnit);
         trackedEntityInstance.put(TrackedEntityInstanceModel.Columns.TRACKED_ENTITY, trackedEntity);
