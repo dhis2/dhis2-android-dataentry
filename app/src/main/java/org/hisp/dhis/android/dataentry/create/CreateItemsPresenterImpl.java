@@ -1,6 +1,7 @@
 package org.hisp.dhis.android.dataentry.create;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
@@ -62,7 +63,16 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                     .observeOn(schedulerProvider.ui())
                     .subscribe(list -> {
                         if (list.size() == 1) {
+
                             createItemsView.setSelection(FIRST_SELECTION, list.get(0).uid(), list.get(0).name());
+
+                            if (argument.type() == CreateItemsArgument.Type.EVENT) {
+                                disposable.add(repository.save(list.get(0).uid(), argument.uid())
+                                        .subscribe(eventUid -> {
+                                            createItemsView.navigateNext(eventUid);
+                                            createItemsView.finish();
+                                        }));
+                            }
                         }
                     }, err -> {
                         throw new OnErrorNotImplementedException(err);

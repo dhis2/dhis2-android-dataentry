@@ -50,4 +50,5 @@ public interface CreateItemsView extends View {
     @UiThread
     void navigateNext(@NonNull String uid);
 
+    void finish();
 }
