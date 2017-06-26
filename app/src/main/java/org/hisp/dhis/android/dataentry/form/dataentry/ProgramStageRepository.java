@@ -24,30 +24,34 @@ import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
         "PMD.AvoidDuplicateLiterals"
 })
 final class ProgramStageRepository implements DataEntryRepository {
-    private static final String QUERY = "SELECT " +
-            "  Field.id, " +
-            "  Field.label, " +
-            "  Field.type, " +
-            "  Field.mandatory, " +
-            "  Field.optionSet, " +
-            "  Value.value " +
-            "FROM Event " +
-            "  LEFT OUTER JOIN ( " +
-            "      SELECT " +
-            "        DataElement.displayName AS label, " +
-            "        DataElement.valueType AS type, " +
-            "        DataElement.uid AS id, " +
-            "        DataElement.optionSet AS optionSet, " +
-            "        ProgramStageDataElement.sortOrder AS formOrder, " +
-            "        ProgramStageDataElement.programStage AS stage, " +
-            "        ProgramStageDataElement.compulsory AS mandatory, " +
-            "        ProgramStageDataElement.programStageSection AS section " +
-            "      FROM ProgramStageDataElement " +
-            "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement " +
-            "    ) AS Field ON (Field.stage = Event.programStage) " +
-            "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON ( " +
-            "    Value.event = Event.uid AND Value.dataElement = Field.id " +
-            "  ) " +
+    private static final String QUERY = "SELECT\n" +
+            "  Field.id,\n" +
+            "  Field.label,\n" +
+            "  Field.type,\n" +
+            "  Field.mandatory,\n" +
+            "  Field.optionSet,\n" +
+            "  Value.value,\n" +
+            "  Option.name\n" +
+            "FROM Event\n" +
+            "  LEFT OUTER JOIN (\n" +
+            "      SELECT\n" +
+            "        DataElement.displayName AS label,\n" +
+            "        DataElement.valueType AS type,\n" +
+            "        DataElement.uid AS id,\n" +
+            "        DataElement.optionSet AS optionSet,\n" +
+            "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
+            "        ProgramStageDataElement.programStage AS stage,\n" +
+            "        ProgramStageDataElement.compulsory AS mandatory,\n" +
+            "        ProgramStageDataElement.programStageSection AS section\n" +
+            "      FROM ProgramStageDataElement\n" +
+            "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
+            "    ) AS Field ON (Field.stage = Event.programStage)\n" +
+            "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
+            "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
+            "  )\n" +
+            "  LEFT OUTER JOIN Option ON (\n" +
+            "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
+            "  )\n" +
             " %s  " +
             "ORDER BY Field.formOrder ASC;";
 
@@ -64,8 +68,8 @@ final class ProgramStageRepository implements DataEntryRepository {
     private final String sectionUid;
 
     ProgramStageRepository(@NonNull BriteDatabase briteDatabase,
-                           @NonNull FieldViewModelFactory fieldFactory,
-                           @NonNull String eventUid, @Nullable String sectionUid) {
+            @NonNull FieldViewModelFactory fieldFactory,
+            @NonNull String eventUid, @Nullable String sectionUid) {
         this.briteDatabase = briteDatabase;
         this.fieldFactory = fieldFactory;
         this.eventUid = eventUid;
@@ -82,9 +86,16 @@ final class ProgramStageRepository implements DataEntryRepository {
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
+        String dataValue = cursor.getString(5);
+        String optionCodeName = cursor.getString(6);
+
+        if (!isEmpty(optionCodeName)) {
+            dataValue = optionCodeName;
+        }
+
         return fieldFactory.create(cursor.getString(0), cursor.getString(1),
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), cursor.getString(5));
+                cursor.getString(4), dataValue);
     }
 
     @NonNull
