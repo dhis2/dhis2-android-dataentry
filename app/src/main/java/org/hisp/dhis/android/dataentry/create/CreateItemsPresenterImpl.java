@@ -65,13 +65,7 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
 
                             createItemsView.setSelection(FIRST_SELECTION, list.get(0).uid(), list.get(0).name());
 
-                            if (argument.type() == CreateItemsArgument.Type.EVENT) {
-                                disposable.add(repository.save(list.get(0).uid(), argument.uid())
-                                        .subscribe(eventUid -> {
-                                            createItemsView.navigateNext(eventUid);
-                                            createItemsView.finish();
-                                        }));
-                            }
+                            goToDataEntryIfProgramIsPreselected(createItemsView, list.get(0).uid());
                         }
                     }, err -> {
                         throw new OnErrorNotImplementedException(err);
@@ -150,6 +144,17 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                         createItemsView.navigateNext(uid);
                     }, err -> {
                         throw new OnErrorNotImplementedException(err);
+                    }));
+        }
+    }
+
+    private void goToDataEntryIfProgramIsPreselected(CreateItemsView createItemsView, String orgUnit) {
+        if (argument.type() == CreateItemsArgument.Type.EVENT) {
+            String program = argument.uid();
+            disposable.add(repository.save(orgUnit, program)
+                    .subscribe(eventUid -> {
+                        createItemsView.navigateNext(eventUid);
+                        createItemsView.finish();
                     }));
         }
     }
