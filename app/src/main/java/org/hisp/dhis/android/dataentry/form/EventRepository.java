@@ -127,6 +127,16 @@ class EventRepository implements FormRepository {
         };
     }
 
+    @Override
+    public Consumer<String> autoGenerateEvent() {
+        return new Consumer<String>() {
+            @Override
+            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
+                // no-op
+            }
+        };
+    }
+
     @NonNull
     private FormSectionViewModel mapToFormSectionViewModels(
             @NonNull String eventUid, @NonNull Cursor cursor) {
