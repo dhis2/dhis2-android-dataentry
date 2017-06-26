@@ -129,11 +129,8 @@ class EventRepository implements FormRepository {
 
     @Override
     public Consumer<String> autoGenerateEvent() {
-        return new Consumer<String>() {
-            @Override
-            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
-                // no-op
-            }
+        return s -> {
+            // no-op. Events are only auto generated for Enrollments
         };
     }
 
