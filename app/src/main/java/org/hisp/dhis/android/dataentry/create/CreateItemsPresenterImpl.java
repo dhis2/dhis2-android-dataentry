@@ -1,7 +1,6 @@
 package org.hisp.dhis.android.dataentry.create;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
