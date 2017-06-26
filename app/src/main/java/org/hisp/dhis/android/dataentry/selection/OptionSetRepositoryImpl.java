@@ -24,7 +24,9 @@ final class OptionSetRepositoryImpl implements SelectionRepository {
     );
 
     private static final String SELECT_OPTIONS = "SELECT " +
-            OptionModel.Columns.UID + ", " + OptionModel.Columns.DISPLAY_NAME +
+            OptionModel.Columns.UID + ", " +
+            OptionModel.Columns.DISPLAY_NAME + ", " +
+            OptionModel.Columns.CODE +
             " FROM " + OptionModel.TABLE +
             " WHERE " + OptionModel.Columns.OPTION_SET + " = '%s'" +
             " AND " + OptionModel.Columns.DISPLAY_NAME + " LIKE '%%%s%%';";
@@ -43,6 +45,6 @@ final class OptionSetRepositoryImpl implements SelectionRepository {
         return toV2Flowable(database.createQuery(OPTIONS_TABLES,
                 String.format(Locale.US, SELECT_OPTIONS, uid, escapeSqlToken(query)))
                 .mapToList(cursor -> SelectionViewModel.create(
-                        cursor.getString(0), cursor.getString(1))));
+                        cursor.getString(0), cursor.getString(1), cursor.getString(2))));
     }
 }

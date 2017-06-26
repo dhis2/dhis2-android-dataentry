@@ -24,7 +24,7 @@ final class OptionPersistenceHandler implements SelectionHandler {
     @Override
     public Observable<SelectionViewModel> viewModelProcessor(
             @NonNull SelectionViewModel viewModel) {
-        return dataEntryStore.save(fieldUid, viewModel.name())
+        return dataEntryStore.save(fieldUid, viewModel.code())
                 .map(id -> viewModel)
                 .toObservable();
     }
