@@ -2,8 +2,6 @@ package org.hisp.dhis.android.dataentry.reports.search;
 
 import android.support.annotation.NonNull;
 
-import com.jakewharton.rxbinding2.support.v7.widget.SearchViewQueryTextEvent;
-
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.utils.OnErrorHandler;
 
@@ -47,31 +45,25 @@ final class SearchPresenterImpl implements SearchPresenter {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
 
-        ConnectableObservable<SearchViewQueryTextEvent> searchActions =
-                searchView.searchBoxActions()
-                        .publish();
+        ConnectableObservable<CharSequence> searchActions =
+                searchView.searchBoxActions().publish();
 
-        compositeDisposable.add(searchActions
+        compositeDisposable.add(searchActions.refCount()
+                .subscribeOn(schedulerProvider.ui())
+                .observeOn(schedulerProvider.ui())
+                .map(action -> !isEmpty(action.toString()))
+                .subscribe(searchView.renderCreateButton(), OnErrorHandler.create()));
+
+        compositeDisposable.add(searchActions.refCount()
                 .subscribeOn(schedulerProvider.ui())
                 .debounce(256, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                 .distinctUntilChanged()
-                .map(event -> event.queryText().toString())
+                .map(event -> event.toString())
                 .toFlowable(BackpressureStrategy.LATEST)
                 .observeOn(schedulerProvider.io())
                 .switchMap(token -> searchRepository.search(token))
                 .observeOn(schedulerProvider.ui())
-                .subscribe(searchView.renderSearchResults(), throwable -> {
-                    throw new OnErrorNotImplementedException(throwable);
-                }));
-
-        compositeDisposable.add(searchActions
-                .subscribeOn(schedulerProvider.ui())
-                .observeOn(schedulerProvider.ui())
-                .map(action -> !isEmpty(action.queryText().toString()))
-                .startWith(false)
-                .subscribe(searchView.renderCreateButton(), OnErrorHandler.create()));
-
-        compositeDisposable.add(searchActions.connect());
+                .subscribe(searchView.renderSearchResults(), OnErrorHandler.create()));
     }
 
     @Override

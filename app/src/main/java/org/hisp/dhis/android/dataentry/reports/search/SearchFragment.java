@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView;
-import com.jakewharton.rxbinding2.support.v7.widget.SearchViewQueryTextEvent;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.hisp.dhis.android.dataentry.R;
@@ -99,8 +98,8 @@ public final class SearchFragment extends BaseFragment
 
     @NonNull
     @Override
-    public Observable<SearchViewQueryTextEvent> searchBoxActions() {
-        return RxSearchView.queryTextChangeEvents(searchReports);
+    public Observable<CharSequence> searchBoxActions() {
+        return RxSearchView.queryTextChanges(searchReports);
     }
 
     @NonNull

@@ -16,7 +16,7 @@ import io.reactivex.functions.Consumer;
 interface SearchView extends View {
 
     @NonNull
-    Observable<SearchViewQueryTextEvent> searchBoxActions();
+    Observable<CharSequence> searchBoxActions();
 
     @NonNull
     @UiThread
