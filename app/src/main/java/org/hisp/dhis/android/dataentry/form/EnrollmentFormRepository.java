@@ -1,6 +1,7 @@
 package org.hisp.dhis.android.dataentry.form;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite.BriteDatabase;
@@ -8,12 +9,19 @@ import com.squareup.sqlbrite.BriteDatabase;
 import org.hisp.dhis.android.core.common.State;
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
+import org.hisp.dhis.android.core.event.EventModel;
+import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
+import org.hisp.dhis.android.dataentry.commons.utils.CodeGenerator;
+import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.functions.Consumer;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
@@ -42,11 +50,27 @@ class EnrollmentFormRepository implements FormRepository {
             "FROM Enrollment\n" +
             "WHERE Enrollment.uid = ?";
 
+    private static final String SELECT_AUTO_GENERATE_PROGRAM_STAGE = "SELECT ProgramStage.uid, " +
+            "Program.uid, Enrollment.organisationUnit, ProgramStage.minDaysFromStart \n" +
+            "FROM Enrollment\n" +
+            "  JOIN Program ON Enrollment.program = Program.uid\n" +
+            "  JOIN ProgramStage ON Program.uid = ProgramStage.program AND ProgramStage.autoGenerateEvent = 1\n" +
+            "WHERE Enrollment.uid = ?";
+
     @NonNull
     private final BriteDatabase briteDatabase;
 
-    EnrollmentFormRepository(@NonNull BriteDatabase briteDatabase) {
+    @NonNull
+    private final CodeGenerator codeGenerator;
+
+    @NonNull
+    private final CurrentDateProvider currentDateProvider;
+
+    EnrollmentFormRepository(@NonNull BriteDatabase briteDatabase, @NonNull CodeGenerator codeGenerator,
+                             CurrentDateProvider currentDateProvider) {
         this.briteDatabase = briteDatabase;
+        this.codeGenerator = codeGenerator;
+        this.currentDateProvider = currentDateProvider;
     }
 
     @NonNull
@@ -109,6 +133,41 @@ class EnrollmentFormRepository implements FormRepository {
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
             briteDatabase.update(EnrollmentModel.TABLE, enrollment, EnrollmentModel.Columns.UID + " = ?", uid);
+        };
+    }
+
+    @Override
+    public Consumer<String> autoGenerateEvent() {
+        return enrollmentUid -> {
+            Cursor cursor = briteDatabase.query(SELECT_AUTO_GENERATE_PROGRAM_STAGE, enrollmentUid);
+            cursor.moveToFirst();
+            String programStage = cursor.getString(0);
+            String program = cursor.getString(1);
+            String orgUnit = cursor.getString(2);
+            int minDaysFromStart = cursor.getInt(3);
+            cursor.close();
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(currentDateProvider.currentDate());
+            cal.add(Calendar.DATE, minDaysFromStart);
+            Date eventDate = cal.getTime();
+
+            EventModel event = EventModel.builder()
+                    .uid(codeGenerator.generate())
+                    .created(currentDateProvider.currentDate())
+                    .lastUpdated(currentDateProvider.currentDate())
+                    .eventDate(eventDate)
+                    .enrollmentUid(enrollmentUid)
+                    .program(program)
+                    .programStage(programStage)
+                    .organisationUnit(orgUnit)
+                    .status(EventStatus.SCHEDULE)
+                    .state(State.TO_POST)
+                    .build();
+            
+            if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
+                throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
+            }
         };
     }
 }

@@ -108,7 +108,7 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_create, container, false);
     }
 
@@ -179,6 +179,13 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     public void navigateNext(@NonNull String uid) {
         Timber.d("Navigating to next: " + uid);
         navigator.navigateTo(uid);
+    }
+
+    @Override
+    public void finish() {
+        if (getActivity() != null) {
+            getActivity().finish();
+        }
     }
 
     @NonNull

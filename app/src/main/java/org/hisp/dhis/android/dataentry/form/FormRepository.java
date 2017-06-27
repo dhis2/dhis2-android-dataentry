@@ -34,4 +34,6 @@ public interface FormRepository {
 
     @NonNull
     Consumer<ReportStatus> storeReportStatus(@NonNull String uid);
+
+    Consumer<String> autoGenerateEvent();
 }

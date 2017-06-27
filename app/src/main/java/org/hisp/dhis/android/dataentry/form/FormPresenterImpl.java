@@ -7,6 +7,7 @@ import org.hisp.dhis.android.dataentry.commons.utils.DateUtils;
 
 import java.text.ParseException;
 
+import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.observables.ConnectableObservable;
@@ -106,11 +107,19 @@ class FormPresenterImpl implements FormPresenter {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
 
-        compositeDisposable.add(statusChangeObservable
+        Observable<String> enrollmentDoneStream = statusChangeObservable
                 .filter(eventStatus -> formViewArguments.type() == FormViewArguments.Type.ENROLLMENT)
                 .map(reportStatus -> formViewArguments.uid())
+                .observeOn(schedulerProvider.io()).share();
+
+        compositeDisposable.add(enrollmentDoneStream
+                .subscribeOn(schedulerProvider.io())
+                .subscribe(formRepository.autoGenerateEvent(), throwable -> {
+                    throw new OnErrorNotImplementedException(throwable);
+                }));
+
+        compositeDisposable.add(enrollmentDoneStream
                 .subscribeOn(schedulerProvider.ui())
-                .observeOn(schedulerProvider.io())
                 .subscribe(view.finishEnrollment(), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
