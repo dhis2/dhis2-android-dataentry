@@ -101,8 +101,8 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                     .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .observeOn(schedulerProvider.ui())
                     .subscribeOn(schedulerProvider.ui())
-                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""), OnErrorHandler.create
-                            ()));
+                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""),
+                            OnErrorHandler.create()));
 
             //clear second selector if clear event on it:
             disposable.add(createItemsView.selection2ClearEvent()
@@ -110,8 +110,8 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                     .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""), OnErrorHandler.create
-                            ()));
+                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""),
+                            OnErrorHandler.create()));
             //show dialog if first selector clicked:
             disposable.add(createItemsView.selection1ClickEvents()
                     .toFlowable(BackpressureStrategy.LATEST)
