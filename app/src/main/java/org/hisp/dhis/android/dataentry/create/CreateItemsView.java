@@ -50,4 +50,6 @@ public interface CreateItemsView extends View {
     @UiThread
     void navigateNext(@NonNull String uid);
 
+    @UiThread
+    void setVisibilitySelection1(Boolean visibility);
 }

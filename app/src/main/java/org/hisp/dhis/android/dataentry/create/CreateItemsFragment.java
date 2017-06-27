@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,9 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     private static final int[] REQUEST_CODES = {
             FIRST_SELECTION, SECOND_SELECTION
     };
+
+    @BindView(R.id.cardView2)
+    CardView cardView2;
 
     @BindView(R.id.text_selection1)
     FontTextView selectionTextView1;
@@ -273,6 +277,16 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     @Override
     public Observable<Pair<String, String>> createButtonClick() {
         return RxView.clicks(create).map(event -> Pair.create(state1.uid(), state2.uid()));
+    }
+
+    @NonNull
+    @Override
+    public void setVisibilitySelection1(Boolean visible) {
+        if (visible) {
+            cardView2.setVisibility(View.VISIBLE);
+        } else {
+            cardView2.setVisibility(View.GONE);
+        }
     }
 
     @Override
