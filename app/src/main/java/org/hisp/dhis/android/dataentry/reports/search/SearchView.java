@@ -3,8 +3,6 @@ package org.hisp.dhis.android.dataentry.reports.search;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
-import com.jakewharton.rxbinding2.support.v7.widget.SearchViewQueryTextEvent;
-
 import org.hisp.dhis.android.dataentry.commons.ui.View;
 import org.hisp.dhis.android.dataentry.reports.ReportViewModel;
 

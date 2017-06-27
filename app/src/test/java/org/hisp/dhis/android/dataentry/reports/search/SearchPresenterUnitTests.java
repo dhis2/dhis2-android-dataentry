@@ -39,9 +39,6 @@ public class SearchPresenterUnitTests {
     @Mock
     private SearchArguments searchArguments;
 
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private SearchViewQueryTextEvent textChangeEvent;
-
     @Captor
     private ArgumentCaptor<List<ReportViewModel>> reportViewModelsCaptor;
 
@@ -54,7 +51,7 @@ public class SearchPresenterUnitTests {
     private SearchPresenter searchPresenter;
     private PublishProcessor<List<ReportViewModel>> reportsPublisher;
 
-    private PublishSubject<SearchViewQueryTextEvent> searchBoxActions;
+    private PublishSubject<CharSequence> searchBoxActions;
     private PublishSubject<Object> createReportPublisher;
 
     @Before
@@ -68,7 +65,6 @@ public class SearchPresenterUnitTests {
         searchPresenter = new SearchPresenterImpl(searchArguments,
                 new MockSchedulersProvider(), searchRepository);
 
-        when(textChangeEvent.queryText().toString()).thenReturn("test_entity");
         when(searchArguments.entityUid()).thenReturn("test_entity_uid");
         when(searchRepository.search("test_entity")).thenReturn(reportsPublisher);
         when(searchView.createReportsActions()).thenReturn(createReportPublisher);
@@ -86,7 +82,7 @@ public class SearchPresenterUnitTests {
                         "test_label_one\ntest_label_two"));
 
         searchPresenter.onAttach(searchView);
-        searchBoxActions.onNext(textChangeEvent);
+        searchBoxActions.onNext("test_entity");
         reportsPublisher.onNext(reports);
 
         verify(searchView.renderSearchResults()).accept(reportViewModelsCaptor.capture());
@@ -102,7 +98,7 @@ public class SearchPresenterUnitTests {
         when(searchRepository.search("test_entity")).thenReturn(reportsPublisher);
 
         searchPresenter.onAttach(searchView);
-        searchBoxActions.onNext(textChangeEvent);
+        searchBoxActions.onNext("test_entity");
         reportsPublisher.onNext(reportsOne);
 
         verify(searchView.renderSearchResults()).accept(reportViewModelsCaptor.capture());
@@ -125,31 +121,29 @@ public class SearchPresenterUnitTests {
 
         // empty query
         when(searchRepository.search("")).thenReturn(reportsPublisher);
-        when(textChangeEvent.queryText().toString()).thenReturn("");
-        searchBoxActions.onNext(textChangeEvent);
+        searchBoxActions.onNext("test_entity");
         reportsPublisher.onNext(new ArrayList<>());
 
         verify(searchView.renderSearchResults()).accept(reportViewModelsCaptor.capture());
-        verify(searchView.renderCreateButton(), times(2)).accept(createButtonVisibility.capture());
-        verify(searchRepository).search("");
+        verify(searchView.renderCreateButton(), times(1)).accept(createButtonVisibility.capture());
+        verify(searchRepository).search("test_entity");
 
         assertThat(reportViewModelsCaptor.getValue()).isEmpty();
-        assertThat(createButtonVisibility.getAllValues().get(0)).isFalse();
-        assertThat(createButtonVisibility.getAllValues().get(1)).isFalse();
+        assertThat(createButtonVisibility.getAllValues().get(0)).isTrue();
 
         // non-empty query
         SearchViewQueryTextEvent textChangeEventTwo = mock(SearchViewQueryTextEvent.class, Answers.RETURNS_DEEP_STUBS);
         when(searchRepository.search("test_entity")).thenReturn(reportsPublisher);
         when(textChangeEventTwo.queryText().toString()).thenReturn("test_entity");
-        searchBoxActions.onNext(textChangeEventTwo);
+        searchBoxActions.onNext("test_entity");
         reportsPublisher.onNext(new ArrayList<>());
 
         verify(searchView.renderSearchResults(), times(2)).accept(reportViewModelsCaptor.capture());
-        verify(searchView.renderCreateButton(), times(3)).accept(createButtonVisibility.capture());
+        verify(searchView.renderCreateButton(), times(2)).accept(createButtonVisibility.capture());
         verify(searchRepository).search("test_entity");
 
         assertThat(reportViewModelsCaptor.getAllValues().get(2)).isEmpty();
-        assertThat(createButtonVisibility.getAllValues().get(4)).isTrue();
+        assertThat(createButtonVisibility.getAllValues().get(2)).isTrue();
     }
 
     @Test
