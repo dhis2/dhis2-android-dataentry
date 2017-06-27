@@ -4,13 +4,17 @@ import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
+import org.hisp.dhis.android.dataentry.commons.utils.OnErrorHandler;
 import org.hisp.dhis.android.dataentry.selection.OrganisationUnitRepositoryImpl;
+import org.hisp.dhis.android.dataentry.selection.SelectionViewModel;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.exceptions.OnErrorNotImplementedException;
-import timber.log.Timber;
+import io.reactivex.flowables.ConnectableFlowable;
 
 @SuppressWarnings({
         "PMD.CyclomaticComplexity",
@@ -19,6 +23,7 @@ import timber.log.Timber;
         "PMD.ExcessiveMethodLength"
 })
 class CreateItemsPresenterImpl implements CreateItemsPresenter {
+    public static final int DEBOUNCE_TIME = 110;
     private static final int FIRST_SELECTION = 0;
     private static final int SECOND_SELECTION = 1;
     private final CreateItemsArgument argument;
@@ -26,7 +31,6 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
     private final OrganisationUnitRepositoryImpl orgRepository;
     private final SchedulerProvider schedulerProvider;
     private final CompositeDisposable disposable;
-//    private final String[] selectedUids;
 
     public CreateItemsPresenterImpl(@NonNull CreateItemsArgument argument,
                                     @NonNull CreateItemsRepository repository,
@@ -42,60 +46,85 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
 
     @Override
     public void onAttach(@NonNull View view) {
-        //TODO: resume state?
         if (view instanceof CreateItemsView) {
             CreateItemsView createItemsView = (CreateItemsView) view;
-
-            ///check if single org unit & set it if .
+            //pre-select and hide program if type is EVENT:
+            disposable.add(Observable.just(argument.type() == CreateItemsArgument.Type.EVENT)
+                    .subscribeOn(schedulerProvider.ui())
+                    .observeOn(schedulerProvider.ui())
+                    .filter(isEvent -> isEvent)
+                    .subscribe(value -> {
+                        createItemsView.setSelection(SECOND_SELECTION, argument.uid(), "");
+                        createItemsView.setVisibilitySelection1(false);
+                    }, OnErrorHandler.create()));
+            //clearing of selections:
             disposable.add(createItemsView.selection1ClearEvent()
-                    .debounce(150, TimeUnit.MILLISECONDS, schedulerProvider.computation())
+                    .toFlowable(BackpressureStrategy.LATEST)
+                    .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(event -> {
                         createItemsView.setSelection(FIRST_SELECTION, "", "");
-                        createItemsView.setSelection(SECOND_SELECTION, "", "");
-                    }, err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
-            disposable.add(orgRepository.search("")
+                        if (argument.type() != CreateItemsArgument.Type.EVENT) {
+                            createItemsView.setSelection(SECOND_SELECTION, "", "");
+                        }
+                    }, OnErrorHandler.create()));
+
+            ConnectableFlowable<List<SelectionViewModel>> connectableFlowable = orgRepository.search("")
+                    .onBackpressureLatest()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(list -> {
-                        if (list.size() == 1) {
+                    .filter(list -> list.size() == 1)
+                    .publish();
 
-                            createItemsView.setSelection(FIRST_SELECTION, list.get(0).uid(), list.get(0).name());
+            disposable.add(connectableFlowable.subscribe(list ->
+                            createItemsView.setSelection(FIRST_SELECTION,
+                                    list.get(0).uid(), list.get(0).name()),
+                    OnErrorHandler.create()));
 
-                            goToDataEntryIfProgramIsPreselected(createItemsView, list.get(0).uid());
-                        }
-                    }, err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
+            //Fast track pre-select
+            disposable.add(connectableFlowable
+                            .filter(eventUid -> argument.type() == CreateItemsArgument.Type.EVENT)
+                    .switchMap(list ->
+                            repository.save(list.get(0).uid(), argument.uid()).toFlowable(BackpressureStrategy.LATEST))
+                    .subscribe(eventUid -> {
+                        createItemsView.navigateNext(eventUid);
+                        createItemsView.finish();
+                    }, OnErrorHandler.create()));
+
+            disposable.add(connectableFlowable.connect());
+
+            //clear second selection if changes to first & not EVENT
             disposable.add(createItemsView.selectionChanges(FIRST_SELECTION)
-                    .debounce(150, TimeUnit.MILLISECONDS, schedulerProvider.computation())
-                    .subscribeOn(schedulerProvider.ui())
+                    .toFlowable(BackpressureStrategy.LATEST)
+                    .filter(eventUid -> argument.type() != CreateItemsArgument.Type.EVENT)
+                    .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""), err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
+                    .subscribeOn(schedulerProvider.ui())
+                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""),
+                            OnErrorHandler.create()));
+
+            //clear second selector if clear event on it:
             disposable.add(createItemsView.selection2ClearEvent()
-                    .debounce(150, TimeUnit.MILLISECONDS, schedulerProvider.computation())
+                    .toFlowable(BackpressureStrategy.LATEST)
+                    .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""), err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
+                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""),
+                            OnErrorHandler.create()));
+            //show dialog if first selector clicked:
             disposable.add(createItemsView.selection1ClickEvents()
-                    .debounce(150, TimeUnit.MILLISECONDS, schedulerProvider.computation())
+                    .toFlowable(BackpressureStrategy.LATEST)
+                    .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(event -> createItemsView.showDialog1(argument.uid()), err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
+                    .subscribe(event -> createItemsView.showDialog1(argument.uid()), OnErrorHandler.create()));
+            //show dialog for second selector if clicked:
             disposable.add(createItemsView.selection2ClickEvents()
-                    .debounce(150, TimeUnit.MILLISECONDS, schedulerProvider.computation())
+                    .toFlowable(BackpressureStrategy.LATEST)
+                    .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
-                    //TODO: test for this in the tests:
                     .filter(event -> !createItemsView.getSelectionState(FIRST_SELECTION).uid().isEmpty())
                     .subscribe(event -> {
                         if (argument.type() == CreateItemsArgument.Type.EVENT) {
@@ -107,55 +136,18 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                         } else if (argument.type() == CreateItemsArgument.Type.ENROLLMENT) {
                             createItemsView.showDialog2(createItemsView.getSelectionState(FIRST_SELECTION).uid());
                         }
-                    }, err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
+                    }, OnErrorHandler.create()));
+            //create if create button clicked and navigate to next
             disposable.add(createItemsView.createButtonClick()
-                    .debounce(150, TimeUnit.MILLISECONDS, schedulerProvider.computation())
+                    .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
-                    //TODO: test for this in the tests: testy testy test
                     .filter(event -> !event.val0().isEmpty() && !event.val1().isEmpty())
                     .observeOn(schedulerProvider.io())
-                    .switchMap(event -> {
-                                Timber.d("Selection for " + argument.type() + "= " + event.toString());
-                                //val0 is always OrganisationUnit.
-                                if (argument.type() == CreateItemsArgument.Type.ENROLLMENT) {
-                                    //val1:Program. Maybe tei uid can be passed through argument.uid() ?
-                                    return repository.save(event.val0(), event.val1()); //Foreign key exception.
-                                } else if (argument.type() == CreateItemsArgument.Type.TEI) {
-                                    //val1:Program
-                                    return repository.save(event.val0(), event.val1()); //Foreign key exception.
-                                } else if (argument.type() == CreateItemsArgument.Type.EVENT) {
-                                    // val1:ProgramStage //? requires Program? I have ProgramStage. Maybe I
-                                    // can have Program from argument.uid() depending on CreateArguments
-                                    // creator.
-                                    return repository.save(event.val0(), event.val1()); // Hangs. save never emits.
-                                } else if (argument.type() == CreateItemsArgument.Type.ENROLLMENT_EVENT) {
-                                    //val1:ProgramStage
-                                    return repository.save(event.val0(), event.val1()); //Seems to work ok.
-                                } else {
-                                    throw new IllegalArgumentException("Unknown type. ");
-                                }
-                            }
-                    )
+                    .switchMap(event -> repository.save(event.val0(), event.val1()))
                     .observeOn(schedulerProvider.ui())
                     .subscribe(uid -> {
-                        Timber.d("Created Uid = " + uid);
                         createItemsView.navigateNext(uid);
-                    }, err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
-        }
-    }
-
-    private void goToDataEntryIfProgramIsPreselected(CreateItemsView createItemsView, String orgUnit) {
-        if (argument.type() == CreateItemsArgument.Type.EVENT) {
-            String program = argument.uid();
-            disposable.add(repository.save(orgUnit, program)
-                    .subscribe(eventUid -> {
-                        createItemsView.navigateNext(eventUid);
-                        createItemsView.finish();
-                    }));
+                    }, OnErrorHandler.create()));
         }
     }
 
