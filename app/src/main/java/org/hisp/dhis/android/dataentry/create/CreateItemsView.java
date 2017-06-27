@@ -52,4 +52,7 @@ public interface CreateItemsView extends View {
 
     @UiThread
     void setVisibilitySelection1(Boolean visibility);
+
+    void finish();
+
 }

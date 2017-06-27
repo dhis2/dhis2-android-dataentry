@@ -57,6 +57,9 @@ public class FormPresenterUnitTests {
     @Mock
     Consumer<ReportStatus> reportStatusConsumer;
 
+    @Mock
+    Consumer<String> autoGenerateConsumer;
+
     @Before
     public void setUp() throws Exception {
         initMocks(this);
@@ -75,6 +78,8 @@ public class FormPresenterUnitTests {
 
         when(formRepository.storeReportDate("test_uid")).thenReturn(reportDateConsumer);
         when(formRepository.storeReportStatus("test_uid")).thenReturn(reportStatusConsumer);
+
+        when(formRepository.autoGenerateEvent()).thenReturn(autoGenerateConsumer);
 
         reportStatusSubject = PublishSubject.create();
         reportDateSubject = PublishSubject.create();

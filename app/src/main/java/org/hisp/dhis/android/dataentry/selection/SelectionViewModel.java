@@ -15,7 +15,17 @@ public abstract class SelectionViewModel implements Parcelable {
     public abstract String name();
 
     @NonNull
-    public static SelectionViewModel create(String uid, String name) {
-        return new AutoValue_SelectionViewModel(uid, name);
+    public abstract String code();
+
+    @NonNull
+    public static SelectionViewModel create(@NonNull String uid,
+            @NonNull String name, @NonNull String code) {
+        return new AutoValue_SelectionViewModel(uid, name, code);
+    }
+
+    @NonNull
+    public static SelectionViewModel create(@NonNull String uid,
+            @NonNull String name) {
+        return new AutoValue_SelectionViewModel(uid, name, "");
     }
 }

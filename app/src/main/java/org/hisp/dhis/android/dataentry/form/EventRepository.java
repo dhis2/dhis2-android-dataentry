@@ -127,6 +127,13 @@ class EventRepository implements FormRepository {
         };
     }
 
+    @Override
+    public Consumer<String> autoGenerateEvent() {
+        return s -> {
+            // no-op. Events are only auto generated for Enrollments
+        };
+    }
+
     @NonNull
     private FormSectionViewModel mapToFormSectionViewModels(
             @NonNull String eventUid, @NonNull Cursor cursor) {

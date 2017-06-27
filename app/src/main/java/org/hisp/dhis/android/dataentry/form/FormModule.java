@@ -6,6 +6,8 @@ import com.squareup.sqlbrite.BriteDatabase;
 
 import org.hisp.dhis.android.dataentry.commons.dagger.PerFragment;
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.utils.CodeGenerator;
+import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 
 import dagger.Module;
 import dagger.Provides;
@@ -31,9 +33,10 @@ public class FormModule {
 
     @Provides
     @PerFragment
-    FormRepository formRepository(@NonNull BriteDatabase briteDatabase) {
+    FormRepository formRepository(@NonNull BriteDatabase briteDatabase, @NonNull CodeGenerator codeGenerator,
+                                  @NonNull CurrentDateProvider currentDateProvider) {
         if (formViewArguments.type() == FormViewArguments.Type.ENROLLMENT) {
-            return new EnrollmentFormRepository(briteDatabase);
+            return new EnrollmentFormRepository(briteDatabase, codeGenerator, currentDateProvider);
         } else {
             return new EventRepository(briteDatabase);
         }

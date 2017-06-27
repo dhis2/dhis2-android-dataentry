@@ -4,14 +4,17 @@ import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.ui.View;
+import org.hisp.dhis.android.dataentry.commons.utils.OnErrorHandler;
 import org.hisp.dhis.android.dataentry.selection.OrganisationUnitRepositoryImpl;
+import org.hisp.dhis.android.dataentry.selection.SelectionViewModel;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.exceptions.OnErrorNotImplementedException;
+import io.reactivex.flowables.ConnectableFlowable;
 
 @SuppressWarnings({
         "PMD.CyclomaticComplexity",
@@ -53,9 +56,7 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                     .subscribe(value -> {
                         createItemsView.setSelection(SECOND_SELECTION, argument.uid(), "");
                         createItemsView.setVisibilitySelection1(false);
-                    }, err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
+                    }, OnErrorHandler.create()));
             //clearing of selections:
             disposable.add(createItemsView.selection1ClearEvent()
                     .toFlowable(BackpressureStrategy.LATEST)
@@ -67,49 +68,57 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                         if (argument.type() != CreateItemsArgument.Type.EVENT) {
                             createItemsView.setSelection(SECOND_SELECTION, "", "");
                         }
-                    }, err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
-            ///check if single org unit & set it if so.
-            disposable.add(orgRepository.search("")
+                    }, OnErrorHandler.create()));
+
+            ConnectableFlowable<List<SelectionViewModel>> connectableFlowable = orgRepository.search("")
                     .onBackpressureLatest()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .filter(list -> list.size() == 1)
-                    .subscribe(list -> createItemsView.setSelection(FIRST_SELECTION,
-                            list.get(0).uid(), list.get(0).name()),
-                            err -> {
-                                throw new OnErrorNotImplementedException(err);
-                            }));
+                    .publish();
+
+            disposable.add(connectableFlowable.subscribe(list ->
+                            createItemsView.setSelection(FIRST_SELECTION,
+                                    list.get(0).uid(), list.get(0).name()),
+                    OnErrorHandler.create()));
+
+            //Fast track pre-select
+            disposable.add(connectableFlowable
+                            .filter(eventUid -> argument.type() == CreateItemsArgument.Type.EVENT)
+                    .switchMap(list ->
+                            repository.save(list.get(0).uid(), argument.uid()).toFlowable(BackpressureStrategy.LATEST))
+                    .subscribe(eventUid -> {
+                        createItemsView.navigateNext(eventUid);
+                        createItemsView.finish();
+                    }, OnErrorHandler.create()));
+
+            disposable.add(connectableFlowable.connect());
+
             //clear second selection if changes to first & not EVENT
-            if (argument.type() != CreateItemsArgument.Type.EVENT) {
             disposable.add(createItemsView.selectionChanges(FIRST_SELECTION)
                     .toFlowable(BackpressureStrategy.LATEST)
+                    .filter(eventUid -> argument.type() != CreateItemsArgument.Type.EVENT)
                     .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .observeOn(schedulerProvider.ui())
                     .subscribeOn(schedulerProvider.ui())
-                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""), err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
-            }
+                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""), OnErrorHandler.create
+                            ()));
+
             //clear second selector if clear event on it:
             disposable.add(createItemsView.selection2ClearEvent()
                     .toFlowable(BackpressureStrategy.LATEST)
                     .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""), err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
+                    .subscribe(event -> createItemsView.setSelection(SECOND_SELECTION, "", ""), OnErrorHandler.create
+                            ()));
             //show dialog if first selector clicked:
             disposable.add(createItemsView.selection1ClickEvents()
                     .toFlowable(BackpressureStrategy.LATEST)
                     .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
                     .subscribeOn(schedulerProvider.ui())
                     .observeOn(schedulerProvider.ui())
-                    .subscribe(event -> createItemsView.showDialog1(argument.uid()), err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
+                    .subscribe(event -> createItemsView.showDialog1(argument.uid()), OnErrorHandler.create()));
             //show dialog for second selector if clicked:
             disposable.add(createItemsView.selection2ClickEvents()
                     .toFlowable(BackpressureStrategy.LATEST)
@@ -127,9 +136,7 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                         } else if (argument.type() == CreateItemsArgument.Type.ENROLLMENT) {
                             createItemsView.showDialog2(createItemsView.getSelectionState(FIRST_SELECTION).uid());
                         }
-                    }, err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
+                    }, OnErrorHandler.create()));
             //create if create button clicked and navigate to next
             disposable.add(createItemsView.createButtonClick()
                     .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS, schedulerProvider.computation())
@@ -140,9 +147,7 @@ class CreateItemsPresenterImpl implements CreateItemsPresenter {
                     .observeOn(schedulerProvider.ui())
                     .subscribe(uid -> {
                         createItemsView.navigateNext(uid);
-                    }, err -> {
-                        throw new OnErrorNotImplementedException(err);
-                    }));
+                    }, OnErrorHandler.create()));
         }
     }
 
