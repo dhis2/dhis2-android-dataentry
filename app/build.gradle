@@ -128,6 +128,17 @@ android {
             // Using dataentry.jks to sign debug build type.
             signingConfig = signingConfigs.debug
         }
+        alpha {
+            // custom application suffix which allows to
+            // install debug and release builds at the same time
+            applicationIdSuffix = ".alpha"
+
+            // Disable fabric build ID generation for debug builds
+            ext.enableCrashlytics = false
+
+            // Using dataentry.jks to sign debug build type.
+            signingConfig = signingConfigs.debug
+        }
         release {
             // enabling crashlytics for debug builds
             ext.enableCrashlytics = true
@@ -189,6 +200,7 @@ dependencies {
     // Square libraries
     debugCompile "com.squareup.leakcanary:leakcanary-android:${libraries.leakcanary}"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:${libraries.leakcanary}"
+    alphaCompile "com.squareup.leakcanary:leakcanary-android-no-op:${libraries.leakcanary}"
     compile "com.squareup.sqlbrite:sqlbrite:${libraries.sqlbrite}"
 
     // Jake Wharton libraries
