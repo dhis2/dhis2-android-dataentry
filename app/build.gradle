@@ -175,7 +175,10 @@ dependencies {
     // dependency conflict between .apk and test .apk
     compile "com.google.code.findbugs:jsr305:${libraries.jsr305}"
 
-    // DHIS 2 RuleEngine with android module
+    // Core module of the DHIS 2 Android SDK
+    compile "org.hisp.dhis:android-core:${libraries.dhis2sdk}"
+
+    // RuleEngine module of the DHIS 2 Android SDK
     compile "org.hisp.dhis:core-rules:${libraries.dhis2sdk}"
     compile "org.hisp.dhis:android-rules:${libraries.dhis2sdk}"
 
