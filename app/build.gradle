@@ -171,8 +171,13 @@ dependencies {
     compile "com.github.castorflex.smoothprogressbar:library-circular:${libraries.progressbar}"
     provided "com.google.code.findbugs:annotations:${libraries.findbugs}"
 
-    // dhis2 libraries
-    compile "org.hisp.dhis:android-core:${libraries.dhis2sdk}"
+    // Explicitly compiling JSR305 in order to resolve
+    // dependency conflict between .apk and test .apk
+    compile "com.google.code.findbugs:jsr305:${libraries.jsr305}"
+
+    // DHIS 2 RuleEngine with android module
+    compile "org.hisp.dhis:core-rules:${libraries.dhis2sdk}"
+    compile "org.hisp.dhis:android-rules:${libraries.dhis2sdk}"
 
     // Fabric tools
     compile("com.crashlytics.sdk.android:crashlytics:${libraries.crashlytics}@aar") {
@@ -228,15 +233,19 @@ dependencies {
 
     androidTestCompile("com.android.support.test.espresso:espresso-idling-resource:${libraries.espresso}") {
         exclude module: "support-annotations"
+        exclude group: "com.google.code.findbugs", module: "jsr305"
     }
     androidTestCompile("com.android.support.test.espresso:espresso-core:${libraries.espresso}") {
         exclude module: "support-annotations"
+        exclude group: "com.google.code.findbugs", module: "jsr305"
     }
     androidTestCompile("com.android.support.test.espresso:espresso-intents:${libraries.espresso}") {
         exclude module: "support-annotations"
+        exclude group: "com.google.code.findbugs", module: "jsr305"
     }
     androidTestCompile("com.android.support.test.espresso:espresso-contrib:${libraries.espresso}") {
         // Causes IncompatibleClassChangeError
+        exclude group: "com.google.code.findbugs", module: "jsr305"
         exclude module: "support-annotations"
         exclude module: "recyclerview-v7"
         exclude module: "appcompat-v7"
