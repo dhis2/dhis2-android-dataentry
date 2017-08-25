@@ -29,10 +29,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class EnrollmentFormRepositoryIntegrationTest {
 
     @Mock
-    CodeGenerator codeGenerator;
+    private CodeGenerator codeGenerator;
 
     @Mock
-    CurrentDateProvider currentDateProvider;
+    private CurrentDateProvider currentDateProvider;
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
@@ -71,13 +71,13 @@ public class EnrollmentFormRepositoryIntegrationTest {
 
         initMocks(this);
 
-        formRepository = new EnrollmentFormRepository(databaseRule.briteDatabase(), codeGenerator, currentDateProvider);
+        formRepository = new EnrollmentFormRepository(databaseRule.briteDatabase(),
+                codeGenerator, currentDateProvider, "enrollment_uid");
     }
 
     @Test
     public void titleShouldPropagateCorrectResults() throws Exception {
-        TestSubscriber<String> testObserver =
-                formRepository.title("enrollment_uid").test();
+        TestSubscriber<String> testObserver = formRepository.title().test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -96,8 +96,7 @@ public class EnrollmentFormRepositoryIntegrationTest {
 
     @Test
     public void reportDateShouldPropagateCorrectResults() throws Exception {
-        TestSubscriber<String> testObserver =
-                formRepository.reportDate("enrollment_uid").test();
+        TestSubscriber<String> testObserver = formRepository.reportDate().test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -122,8 +121,7 @@ public class EnrollmentFormRepositoryIntegrationTest {
         databaseRule.briteDatabase()
                 .update(EnrollmentModel.TABLE, activeEnrollment, "Enrollment.uid = 'enrollment_uid'", null);
 
-        TestSubscriber<ReportStatus> testObserver =
-                formRepository.reportStatus("enrollment_uid").test();
+        TestSubscriber<ReportStatus> testObserver = formRepository.reportStatus().test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -145,7 +143,8 @@ public class EnrollmentFormRepositoryIntegrationTest {
         FormSectionViewModel formSectionViewModel =
                 FormSectionViewModel.createForEnrollment("enrollment_uid");
 
-        TestSubscriber<List<FormSectionViewModel>> testObserver = formRepository.sections("enrollment_uid").test();
+        TestSubscriber<List<FormSectionViewModel>> testObserver =
+                formRepository.sections().test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -156,7 +155,7 @@ public class EnrollmentFormRepositoryIntegrationTest {
 
     @Test
     public void reportDateShouldBeStoredCorrectly() throws Exception {
-        formRepository.storeReportDate("enrollment_uid").accept("2019-09-09");
+        formRepository.storeReportDate().accept("2019-09-09");
 
         Cursor cursor = databaseRule.database().rawQuery("SELECT Enrollment.enrollmentDate FROM " +
                 "Enrollment WHERE Enrollment.uid = 'enrollment_uid'", null);
@@ -168,7 +167,7 @@ public class EnrollmentFormRepositoryIntegrationTest {
 
     @Test
     public void enrollmentStatusShouldBeStoredCorrectly() throws Exception {
-        formRepository.storeReportStatus("enrollment_uid").accept(ReportStatus.COMPLETED);
+        formRepository.storeReportStatus().accept(ReportStatus.COMPLETED);
 
         Cursor cursor = databaseRule.database().rawQuery("SELECT Enrollment.status FROM " +
                 "Enrollment WHERE Enrollment.uid = 'enrollment_uid'", null);
