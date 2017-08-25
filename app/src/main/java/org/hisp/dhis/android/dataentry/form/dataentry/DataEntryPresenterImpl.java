@@ -33,6 +33,11 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
     @Override
     public void onAttach(@NonNull DataEntryView dataEntryView) {
+        // application of the rule effects is
+        // going to happen within this chain
+
+        // ToDo: find a way to make RuleEngine resilient to errors
+        // ToDo: i.e. provide meaningful output in case something went wrong
         disposable.add(dataEntryRepository.list()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
