@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
@@ -54,7 +55,8 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
         DataEntryArguments args = Preconditions.isNull(getArguments()
                 .getParcelable(ARGUMENTS), "dataEntryArguments == null");
 
-        getUserComponent()
+        ((DhisApp) getActivity().getApplicationContext())
+                .formComponent()
                 .plus(new DataEntryModule(context, args),
                         new DataEntryStoreModule(args))
                 .inject(this);

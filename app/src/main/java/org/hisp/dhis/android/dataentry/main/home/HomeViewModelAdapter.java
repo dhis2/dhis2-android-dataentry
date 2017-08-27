@@ -87,13 +87,13 @@ class HomeViewModelAdapter extends RecyclerView.Adapter {
         void update(HomeViewModel homeViewModel) {
             this.homeViewModel = homeViewModel;
 
-            title.setText(String.format(title.getContext().getString(R.string.search_register_te),
-                    homeViewModel.title()));
-
+            title.setText(homeViewModel.title());
 
             int iconResourceId;
             if (homeViewModel.type() == HomeViewModel.Type.TRACKED_ENTITY) {
                 iconResourceId = R.drawable.ic_person;
+                title.setText(String.format(title.getContext().getString(R.string.search_register_te),
+                        homeViewModel.title()));
 
             } else {
                 iconResourceId = R.drawable.ic_single_event;

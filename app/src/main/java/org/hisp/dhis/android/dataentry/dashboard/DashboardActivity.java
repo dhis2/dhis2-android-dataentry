@@ -19,8 +19,7 @@ public class DashboardActivity extends AppCompatActivity {
     private static String ARG_ENROLLMENT_UID = "enrollmentUid";
 
     @NonNull
-    public static Intent create(@NonNull Activity activity,
-                                @NonNull String enrollmentUid) {
+    public static Intent create(@NonNull Activity activity, @NonNull String enrollmentUid) {
         isNull(activity, "activity must not be null");
         isNull(enrollmentUid, "enrollmentUid must not be null");
 
@@ -34,21 +33,19 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        String enrollmentUid = isNull(
-                getIntent().getStringExtra(ARG_ENROLLMENT_UID), "enrollmentUid == null");
+        String enrollmentUid = isNull(getIntent().getStringExtra(
+                ARG_ENROLLMENT_UID), "enrollmentUid == null");
 
         Boolean useTwoPaneLayout = findViewById(R.id.form) != null;
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.navigation,
-                        NavigationFragment.newInstance(NavigationViewArguments.create(enrollmentUid, useTwoPaneLayout)))
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.navigation, NavigationFragment.newInstance(
+                        NavigationViewArguments.create(enrollmentUid, useTwoPaneLayout)))
                 .commit();
 
         if (useTwoPaneLayout) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.form, FormFragment.newInstance(FormViewArguments.createForEmptyState()))
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.form, FormFragment.newInstance(
+                            FormViewArguments.createForEmptyState()))
                     .commit();
         }
     }

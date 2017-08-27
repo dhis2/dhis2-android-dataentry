@@ -1,7 +1,7 @@
 package org.hisp.dhis.android.dataentry.service;
 
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.common.Call;
+import org.hisp.dhis.android.core.calls.Call;
 import org.hisp.dhis.android.dataentry.commons.schedulers.MockSchedulersProvider;
 import org.junit.Before;
 import org.junit.Test;

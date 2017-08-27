@@ -8,6 +8,8 @@ import com.squareup.sqlbrite.BriteDatabase;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.dagger.PerFragment;
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.commons.utils.CodeGenerator;
+import org.hisp.dhis.android.dataentry.form.FormRepository;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactory;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactoryImpl;
 
@@ -42,9 +44,29 @@ public class DataEntryModule {
 
     @Provides
     @PerFragment
-    DataEntryPresenter dataEntryPresenter(@NonNull SchedulerProvider schedulerProvider,
-            @NonNull DataEntryStore dataEntryStore, @NonNull DataEntryRepository dataEntryRepository) {
-        return new DataEntryPresenterImpl(dataEntryStore, dataEntryRepository, schedulerProvider);
+    RuleEngineRepository ruleEngineRepository(@NonNull BriteDatabase briteDatabase,
+            @NonNull FormRepository formRepository) {
+        if (!isEmpty(arguments.event())) { // NOPMD
+            return new EventsRuleEngineRepository(briteDatabase,
+                    formRepository, arguments.event());
+        } else if (!isEmpty(arguments.enrollment())) { //NOPMD
+            return new EnrollmentRuleEngineRepository(briteDatabase,
+                    formRepository, arguments.enrollment());
+        } else {
+            throw new IllegalArgumentException("Unsupported entity type");
+        }
+    }
+
+    @Provides
+    @PerFragment
+    DataEntryPresenter dataEntryPresenter(
+            @NonNull CodeGenerator codeGenerator,
+            @NonNull SchedulerProvider schedulerProvider,
+            @NonNull DataEntryStore dataEntryStore,
+            @NonNull DataEntryRepository dataEntryRepository,
+            @NonNull RuleEngineRepository ruleEngineRepository) {
+        return new DataEntryPresenterImpl(codeGenerator, dataEntryStore,
+                dataEntryRepository, ruleEngineRepository, schedulerProvider);
     }
 
     @Provides

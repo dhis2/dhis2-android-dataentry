@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,9 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     private static final int[] REQUEST_CODES = {
             FIRST_SELECTION, SECOND_SELECTION
     };
+
+    @BindView(R.id.cardView2)
+    CardView cardView2;
 
     @BindView(R.id.text_selection1)
     FontTextView selectionTextView1;
@@ -108,7 +112,7 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_create, container, false);
     }
 
@@ -150,7 +154,7 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
             selection2Type = SelectionArgument.Type.PROGRAM_REG;
             selection2Label = getString(R.string.program);
         } else if (createArgument.type() == CreateItemsArgument.Type.ENROLLMENT) {
-            selection2Type = SelectionArgument.Type.PROGRAM_NO_REG;
+            selection2Type = SelectionArgument.Type.PROGRAM_REG;
             selection2Label = getString(R.string.program);
         } else {
             throw new IllegalStateException("Unknown CreateItemsArgument type.");
@@ -179,6 +183,13 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     public void navigateNext(@NonNull String uid) {
         Timber.d("Navigating to next: " + uid);
         navigator.navigateTo(uid);
+    }
+
+    @Override
+    public void finish() {
+        if (getActivity() != null) {
+            getActivity().finish();
+        }
     }
 
     @NonNull
@@ -273,6 +284,16 @@ public class CreateItemsFragment extends BaseFragment implements CreateItemsView
     @Override
     public Observable<Pair<String, String>> createButtonClick() {
         return RxView.clicks(create).map(event -> Pair.create(state1.uid(), state2.uid()));
+    }
+
+    @NonNull
+    @Override
+    public void setVisibilitySelection1(Boolean visible) {
+        if (visible) {
+            cardView2.setVisibility(View.VISIBLE);
+        } else {
+            cardView2.setVisibility(View.GONE);
+        }
     }
 
     @Override

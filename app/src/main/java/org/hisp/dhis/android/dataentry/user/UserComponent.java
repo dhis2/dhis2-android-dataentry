@@ -9,8 +9,6 @@ import org.hisp.dhis.android.dataentry.dashboard.navigation.NavigationComponent;
 import org.hisp.dhis.android.dataentry.dashboard.navigation.NavigationModule;
 import org.hisp.dhis.android.dataentry.form.FormComponent;
 import org.hisp.dhis.android.dataentry.form.FormModule;
-import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryComponent;
-import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryModule;
 import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryStoreModule;
 import org.hisp.dhis.android.dataentry.main.MainComponent;
 import org.hisp.dhis.android.dataentry.main.MainModule;
@@ -54,11 +52,6 @@ public interface UserComponent {
 
     @NonNull
     OptionSelectionComponent plus(@NonNull OptionSelectionModule optionSelectionModule,
-            @NonNull DataEntryStoreModule dataEntryStoreModule);
-
-    // ToDo: remove this!
-    @NonNull
-    DataEntryComponent plus(@NonNull DataEntryModule dataEntryModule,
             @NonNull DataEntryStoreModule dataEntryStoreModule);
 
     @NonNull

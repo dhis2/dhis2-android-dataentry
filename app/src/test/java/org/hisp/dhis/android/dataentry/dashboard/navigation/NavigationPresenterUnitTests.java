@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class DashboardPresenterUnitTests {
+public class NavigationPresenterUnitTests {
 
     private NavigationPresenter navigationPresenter;
 
@@ -34,11 +34,15 @@ public class DashboardPresenterUnitTests {
     private NavigationRepository navigationRepository;
 
     @Captor
+    private ArgumentCaptor<String> titleCaptor;
+
+    @Captor
     private ArgumentCaptor<Pair<String, String>> attributesCaptor;
 
     @Captor
     private ArgumentCaptor<List<EventViewModel>> eventsCaptor;
 
+    private PublishProcessor<String> titlePublisher;
     private PublishProcessor<List<String>> attributesPublisher;
     private PublishProcessor<List<EventViewModel>> eventsPublisher;
 
@@ -46,14 +50,40 @@ public class DashboardPresenterUnitTests {
     public void setUp() throws Exception {
         initMocks(this);
 
+        titlePublisher = PublishProcessor.create();
         attributesPublisher = PublishProcessor.create();
         eventsPublisher = PublishProcessor.create();
 
+        when(navigationRepository.title(enrollmentUid)).thenReturn(titlePublisher);
         when(navigationRepository.attributes(enrollmentUid)).thenReturn(attributesPublisher);
         when(navigationRepository.events(enrollmentUid)).thenReturn(eventsPublisher);
 
         navigationPresenter = new NavigationPresenterImpl(enrollmentUid, new MockSchedulersProvider(),
                 navigationRepository);
+    }
+
+    @Test
+    public void titleIsRenderedOnAttach() throws Exception {
+        navigationPresenter.onAttach(navigationView);
+        titlePublisher.onNext("Title");
+
+        verify(navigationView.renderTitle()).accept(titleCaptor.capture());
+        verify(navigationRepository).title(enrollmentUid);
+        assertThat(titleCaptor.getValue()).isEqualTo("Title");
+    }
+
+    @Test
+    public void titleIsUpdatedAccordingToDatabase() throws Exception {
+        navigationPresenter.onAttach(navigationView);
+        titlePublisher.onNext("Title");
+
+        verify(navigationView.renderTitle()).accept(titleCaptor.capture());
+        verify(navigationRepository).title(enrollmentUid);
+        assertThat(titleCaptor.getValue()).isEqualTo("Title");
+
+        titlePublisher.onNext("Second title");
+        verify(navigationView.renderTitle(), times(2)).accept(titleCaptor.capture());
+        assertThat(titleCaptor.getValue()).isEqualTo("Second title");
     }
 
     @Test

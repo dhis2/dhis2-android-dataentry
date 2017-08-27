@@ -16,4 +16,7 @@ interface NavigationRepository {
 
     @NonNull
     Flowable<List<EventViewModel>> events(@NonNull String enrollmentUid);
+
+    @NonNull
+    Flowable<String> title(@NonNull String enrollmentUid);
 }

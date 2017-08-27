@@ -15,15 +15,17 @@ import java.util.List;
 import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
+import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
 
 final class EnrollmentRepository implements DataEntryRepository {
-    private static final String QUERY = "SELECT\n" +
+    private static final String QUERY = "SELECT \n" +
             "  Field.id,\n" +
             "  Field.label,\n" +
             "  Field.type,\n" +
             "  Field.mandatory,\n" +
             "  Field.optionSet,\n" +
-            "  Value.value\n" +
+            "  Value.value,\n" +
+            "  Option.name\n" +
             "FROM (Enrollment INNER JOIN Program ON Program.uid = Enrollment.program)\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -32,14 +34,17 @@ final class EnrollmentRepository implements DataEntryRepository {
             "        TrackedEntityAttribute.valueType AS type,\n" +
             "        TrackedEntityAttribute.optionSet AS optionSet,\n" +
             "        ProgramTrackedEntityAttribute.program AS program,\n" +
-            "        ProgramTrackedEntityAttribute.sortOrder AS formOrder, \n" +
+            "        ProgramTrackedEntityAttribute.sortOrder AS formOrder,\n" +
             "        ProgramTrackedEntityAttribute.mandatory AS mandatory\n" +
             "      FROM ProgramTrackedEntityAttribute INNER JOIN TrackedEntityAttribute\n" +
             "          ON TrackedEntityAttribute.uid = ProgramTrackedEntityAttribute.trackedEntityAttribute\n" +
             "    ) AS Field ON Field.program = Program.uid\n" +
             "  LEFT OUTER JOIN TrackedEntityAttributeValue AS Value ON (\n" +
-            "    Value.trackedEntityAttribute = Field.id \n" +
+            "    Value.trackedEntityAttribute = Field.id\n" +
             "        AND Value.trackedEntityInstance = Enrollment.trackedEntityInstance)\n" +
+            "  LEFT OUTER JOIN Option ON (\n" +
+            "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
+            "  )\n" +
             "WHERE Enrollment.uid = ?\n" +
             "ORDER BY Field.formOrder ASC;";
 
@@ -70,8 +75,15 @@ final class EnrollmentRepository implements DataEntryRepository {
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
+        String dataValue = cursor.getString(5);
+        String optionCodeName = cursor.getString(6);
+
+        if (!isEmpty(optionCodeName)) {
+            dataValue = optionCodeName;
+        }
+
         return fieldFactory.create(cursor.getString(0), cursor.getString(1),
                 ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), cursor.getString(5));
+                cursor.getString(4), dataValue);
     }
 }

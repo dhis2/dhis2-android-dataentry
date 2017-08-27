@@ -45,7 +45,15 @@ final class SearchRepositoryImpl implements SearchRepository {
             "    ON (TrackedEntityAttributeValue.trackedEntityAttribute = InstanceAttribute.tea " +
             "    AND TrackedEntityAttributeValue.trackedEntityInstance = TrackedEntityInstance.uid) " +
             "WHERE TrackedEntityInstance.trackedEntity = '%s' AND NOT TrackedEntityInstance.state = 'TO_DELETE'" +
-            "  AND TrackedEntityAttributeValue.value LIKE '%%%s%%' AND length('%s') != 0 " +
+            "    AND TrackedEntityInstance.uid IN (" +
+            "       SELECT DISTINCT" +
+            "           trackedEntityInstance" +
+            "       FROM (TrackedEntityAttributeValue INNER JOIN ProgramTrackedEntityAttribute" +
+            "        ON ProgramTrackedEntityAttribute.trackedEntityAttribute = " +
+            "               TrackedEntityAttributeValue.trackedEntityAttribute" +
+            "           AND ProgramTrackedEntityAttribute.displayInList = 1)" + 
+            "       WHERE value LIKE '%%%s%%' AND length('%s') != 0 " +
+            "  )" +
             "ORDER BY datetime(TrackedEntityInstance.created) DESC," +
             "  TrackedEntityInstance.uid ASC," +
             "  InstanceAttribute.formOrder ASC;";

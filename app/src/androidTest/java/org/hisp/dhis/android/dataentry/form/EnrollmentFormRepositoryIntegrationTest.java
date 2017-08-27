@@ -4,16 +4,23 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.squareup.duktape.Duktape;
+
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstanceModel;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
+import org.hisp.dhis.android.dataentry.commons.utils.CodeGenerator;
+import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
+import org.hisp.dhis.rules.android.DuktapeEvaluator;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.util.List;
 
@@ -21,13 +28,21 @@ import io.reactivex.subscribers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class EnrollmentFormRepositoryIntegrationTest {
+
+    @Mock
+    private CodeGenerator codeGenerator;
+
+    @Mock
+    private CurrentDateProvider currentDateProvider;
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
 
     private FormRepository formRepository;
+    private Duktape duktape;
 
     @Before
     public void setUp() throws Exception {
@@ -59,13 +74,23 @@ public class EnrollmentFormRepositoryIntegrationTest {
         enrollment.put(EnrollmentModel.Columns.TRACKED_ENTITY_INSTANCE, "tei_uid");
         db.insert(EnrollmentModel.TABLE, null, enrollment);
 
-        formRepository = new EnrollmentFormRepository(databaseRule.briteDatabase());
+        initMocks(this);
+
+        duktape = Duktape.create();
+
+        formRepository = new EnrollmentFormRepository(databaseRule.briteDatabase(),
+                new DuktapeEvaluator(duktape), new RulesRepository(databaseRule.briteDatabase()),
+                codeGenerator, currentDateProvider, "enrollment_uid");
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        duktape.close();
     }
 
     @Test
     public void titleShouldPropagateCorrectResults() throws Exception {
-        TestSubscriber<String> testObserver =
-                formRepository.title("enrollment_uid").test();
+        TestSubscriber<String> testObserver = formRepository.title().test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -84,8 +109,7 @@ public class EnrollmentFormRepositoryIntegrationTest {
 
     @Test
     public void reportDateShouldPropagateCorrectResults() throws Exception {
-        TestSubscriber<String> testObserver =
-                formRepository.reportDate("enrollment_uid").test();
+        TestSubscriber<String> testObserver = formRepository.reportDate().test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -110,8 +134,7 @@ public class EnrollmentFormRepositoryIntegrationTest {
         databaseRule.briteDatabase()
                 .update(EnrollmentModel.TABLE, activeEnrollment, "Enrollment.uid = 'enrollment_uid'", null);
 
-        TestSubscriber<ReportStatus> testObserver =
-                formRepository.reportStatus("enrollment_uid").test();
+        TestSubscriber<ReportStatus> testObserver = formRepository.reportStatus().test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -133,7 +156,8 @@ public class EnrollmentFormRepositoryIntegrationTest {
         FormSectionViewModel formSectionViewModel =
                 FormSectionViewModel.createForEnrollment("enrollment_uid");
 
-        TestSubscriber<List<FormSectionViewModel>> testObserver = formRepository.sections("enrollment_uid").test();
+        TestSubscriber<List<FormSectionViewModel>> testObserver =
+                formRepository.sections().test();
 
         testObserver.assertValueCount(1);
         testObserver.assertNoErrors();
@@ -144,7 +168,7 @@ public class EnrollmentFormRepositoryIntegrationTest {
 
     @Test
     public void reportDateShouldBeStoredCorrectly() throws Exception {
-        formRepository.storeReportDate("enrollment_uid").accept("2019-09-09");
+        formRepository.storeReportDate().accept("2019-09-09");
 
         Cursor cursor = databaseRule.database().rawQuery("SELECT Enrollment.enrollmentDate FROM " +
                 "Enrollment WHERE Enrollment.uid = 'enrollment_uid'", null);
@@ -156,7 +180,7 @@ public class EnrollmentFormRepositoryIntegrationTest {
 
     @Test
     public void enrollmentStatusShouldBeStoredCorrectly() throws Exception {
-        formRepository.storeReportStatus("enrollment_uid").accept(ReportStatus.COMPLETED);
+        formRepository.storeReportStatus().accept(ReportStatus.COMPLETED);
 
         Cursor cursor = databaseRule.database().rawQuery("SELECT Enrollment.status FROM " +
                 "Enrollment WHERE Enrollment.uid = 'enrollment_uid'", null);

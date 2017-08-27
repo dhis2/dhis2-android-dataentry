@@ -29,13 +29,15 @@ public class OptionSetSelectionRepositoryIntegrationTests {
     private static final String OPTIONSET_NAME = "option_set_name";
     private static final String OPTIONSET_DISPLAY_NAME = "option_set_display_name";
     private static final String OPTION_UID = "option_uid";
-    private static final String OPTION_CODE = "option_code";
+    private static final String OPTION_CODE_1 = "option_code_1";
+    private static final String OPTION_CODE_2 = "option_code_2";
     private static final String OPTION_NAME = "option_name";
     private static final String OPTION_2_UID = "option2_uid";
     private static final String OPTION_3_UID = "option_3_uid";
     private static final String OPTION_DISPLAY_NAME = "option_display_name";
     private static final String OPTION_2_DISPLAY_NAME = "option_2_name";
     private static final String OPTION_3_DISPLAY_NAME = "option_3_display_name";
+    private static final String OPTION_CODE_3 = "option_code_3";
 
     @Rule
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
@@ -49,8 +51,10 @@ public class OptionSetSelectionRepositoryIntegrationTests {
         repository = new OptionSetRepositoryImpl(databaseRule.briteDatabase(), OPTIONSET_UID);
 
         database.insert(OptionSetModel.TABLE, null, optionSet(OPTIONSET_UID, OPTIONSET_DISPLAY_NAME));
-        database.insert(OptionModel.TABLE, null, option(OPTION_UID, OPTION_DISPLAY_NAME, OPTIONSET_UID));
-        database.insert(OptionModel.TABLE, null, option(OPTION_2_UID, OPTION_2_DISPLAY_NAME, OPTIONSET_UID));
+        database.insert(OptionModel.TABLE, null, option(OPTION_UID,
+                OPTION_DISPLAY_NAME, OPTIONSET_UID, OPTION_CODE_1));
+        database.insert(OptionModel.TABLE, null, option(OPTION_2_UID,
+                OPTION_2_DISPLAY_NAME, OPTIONSET_UID, OPTION_CODE_2));
     }
 
     @Test
@@ -64,8 +68,10 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
         List<SelectionViewModel> result = subscriber.values().get(0);
         assertThat(result.size()).isEqualTo(2);
-        assertThat(result.contains(SelectionViewModel.create(OPTION_UID, OPTION_DISPLAY_NAME))).isTrue();
-        assertThat(result.contains(SelectionViewModel.create(OPTION_2_UID, OPTION_2_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(OPTION_UID,
+                OPTION_DISPLAY_NAME, OPTION_CODE_1))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(OPTION_2_UID,
+                OPTION_2_DISPLAY_NAME, OPTION_CODE_2))).isTrue();
     }
 
     @Test
@@ -79,8 +85,10 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
         List<SelectionViewModel> result = subscriber.values().get(0);
         assertThat(result.size()).isEqualTo(2);
-        assertThat(result.contains(SelectionViewModel.create(OPTION_UID, OPTION_DISPLAY_NAME))).isTrue();
-        assertThat(result.contains(SelectionViewModel.create(OPTION_2_UID, OPTION_2_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(OPTION_UID,
+                OPTION_DISPLAY_NAME, OPTION_CODE_1))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(OPTION_2_UID,
+                OPTION_2_DISPLAY_NAME, OPTION_CODE_2))).isTrue();
     }
 
     @Test
@@ -106,7 +114,8 @@ public class OptionSetSelectionRepositoryIntegrationTests {
         subscriber.assertNotComplete();
 
         databaseRule.briteDatabase().update(OptionModel.TABLE, option(OPTION_2_UID,
-                "updated_option2", OPTIONSET_UID), OptionModel.Columns.UID + "=?", OPTION_2_UID);
+                "updated_option2", OPTIONSET_UID, OPTION_CODE_2),
+                OptionModel.Columns.UID + "=?", OPTION_2_UID);
 
         subscriber.assertValueCount(2);
         subscriber.assertNoErrors();
@@ -114,8 +123,10 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
         List<SelectionViewModel> result = subscriber.values().get(1);
         assertThat(result.size()).isEqualTo(2);
-        assertThat(result.contains(SelectionViewModel.create(OPTION_UID, OPTION_DISPLAY_NAME))).isTrue();
-        assertThat(result.contains(SelectionViewModel.create(OPTION_2_UID, "updated_option2"))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(OPTION_UID,
+                OPTION_DISPLAY_NAME, OPTION_CODE_1))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(OPTION_2_UID,
+                "updated_option2", OPTION_CODE_2))).isTrue();
     }
 
     @Test
@@ -127,8 +138,8 @@ public class OptionSetSelectionRepositoryIntegrationTests {
         subscriber.assertNoErrors();
         subscriber.assertNotComplete();
 
-        databaseRule.briteDatabase().insert(OptionModel.TABLE, option(OPTION_3_UID, OPTION_3_DISPLAY_NAME,
-                OPTIONSET_UID));
+        databaseRule.briteDatabase().insert(OptionModel.TABLE, option(OPTION_3_UID,
+                OPTION_3_DISPLAY_NAME, OPTIONSET_UID, OPTION_CODE_3));
 
         subscriber.assertValueCount(2);
         subscriber.assertNoErrors();
@@ -136,9 +147,12 @@ public class OptionSetSelectionRepositoryIntegrationTests {
 
         List<SelectionViewModel> result = subscriber.values().get(1);
         assertThat(result.size()).isEqualTo(3);
-        assertThat(result.contains(SelectionViewModel.create(OPTION_UID, OPTION_DISPLAY_NAME))).isTrue();
-        assertThat(result.contains(SelectionViewModel.create(OPTION_2_UID, OPTION_2_DISPLAY_NAME))).isTrue();
-        assertThat(result.contains(SelectionViewModel.create(OPTION_3_UID, OPTION_3_DISPLAY_NAME))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(OPTION_UID,
+                OPTION_DISPLAY_NAME, OPTION_CODE_1))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(OPTION_2_UID,
+                OPTION_2_DISPLAY_NAME, OPTION_CODE_2))).isTrue();
+        assertThat(result.contains(SelectionViewModel.create(OPTION_3_UID,
+                OPTION_3_DISPLAY_NAME, OPTION_CODE_3))).isTrue();
     }
 
     @Test
@@ -150,7 +164,7 @@ public class OptionSetSelectionRepositoryIntegrationTests {
         subscriber.assertNoErrors();
         subscriber.assertNotComplete();
 
-        databaseRule.briteDatabase().delete(OptionModel.TABLE, OptionModel.Columns.UID + "=?", OPTION_2_UID);
+        databaseRule.briteDatabase().delete(OptionModel.TABLE, OptionModel.Columns.UID + " = ?", OPTION_2_UID);
 
         subscriber.assertValueCount(2);
         subscriber.assertNoErrors();
@@ -160,6 +174,7 @@ public class OptionSetSelectionRepositoryIntegrationTests {
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).uid()).isEqualTo(OPTION_UID);
         assertThat(result.get(0).name()).isEqualTo(OPTION_DISPLAY_NAME);
+        assertThat(result.get(0).code()).isEqualTo(OPTION_CODE_1);
     }
 
     @Test
@@ -210,10 +225,11 @@ public class OptionSetSelectionRepositoryIntegrationTests {
         return values;
     }
 
-    private ContentValues option(String uid, String displayName, String optionSetUid) {
+    private ContentValues option(String uid, String displayName,
+            String optionSetUid, String optionCode) {
         ContentValues values = new ContentValues();
         values.put(OptionModel.Columns.UID, uid);
-        values.put(OptionModel.Columns.CODE, OPTION_CODE);
+        values.put(OptionModel.Columns.CODE, optionCode);
         values.put(OptionModel.Columns.NAME, OPTION_NAME);
         values.put(OptionModel.Columns.DISPLAY_NAME, displayName);
         values.put(OptionModel.Columns.CREATED, new Date().toString());
