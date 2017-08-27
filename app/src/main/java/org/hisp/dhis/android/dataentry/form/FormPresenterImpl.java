@@ -31,8 +31,8 @@ class FormPresenterImpl implements FormPresenter {
     private final CompositeDisposable compositeDisposable;
 
     FormPresenterImpl(@NonNull FormViewArguments formViewArguments,
-                      @NonNull SchedulerProvider schedulerProvider,
-                      @NonNull FormRepository formRepository) {
+            @NonNull SchedulerProvider schedulerProvider,
+            @NonNull FormRepository formRepository) {
         this.formViewArguments = formViewArguments;
         this.formRepository = formRepository;
         this.schedulerProvider = schedulerProvider;
@@ -43,14 +43,12 @@ class FormPresenterImpl implements FormPresenter {
     public void onAttach(@NonNull FormView view) {
         isNull(view, "FormView must not be null");
 
-        String reportUid = formViewArguments.uid();
-
-        compositeDisposable.add(formRepository.title(reportUid)
+        compositeDisposable.add(formRepository.title()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(view.renderTitle(), Timber::e));
 
-        compositeDisposable.add(formRepository.reportDate(reportUid)
+        compositeDisposable.add(formRepository.reportDate()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .map(date -> {
@@ -64,7 +62,7 @@ class FormPresenterImpl implements FormPresenter {
                 })
                 .subscribe(view.renderReportDate(), Timber::e));
 
-        compositeDisposable.add(formRepository.sections(reportUid)
+        compositeDisposable.add(formRepository.sections()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(view.renderSectionViewModels(), Timber::e));
@@ -72,9 +70,9 @@ class FormPresenterImpl implements FormPresenter {
         compositeDisposable.add(view.reportDateChanged()
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
-                .subscribe(formRepository.storeReportDate(reportUid), Timber::e));
+                .subscribe(formRepository.storeReportDate(), Timber::e));
 
-        ConnectableFlowable<ReportStatus> statusObservable = formRepository.reportStatus(reportUid)
+        ConnectableFlowable<ReportStatus> statusObservable = formRepository.reportStatus()
                 .distinctUntilChanged()
                 .publish();
 
@@ -103,7 +101,7 @@ class FormPresenterImpl implements FormPresenter {
                 .filter(eventStatus -> formViewArguments.type() != FormViewArguments.Type.ENROLLMENT)
                 .subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.io())
-                .subscribe(formRepository.storeReportStatus(reportUid), throwable -> {
+                .subscribe(formRepository.storeReportStatus(), throwable -> {
                     throw new OnErrorNotImplementedException(throwable);
                 }));
 

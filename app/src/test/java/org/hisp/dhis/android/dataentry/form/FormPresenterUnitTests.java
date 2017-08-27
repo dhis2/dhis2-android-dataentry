@@ -32,7 +32,7 @@ public class FormPresenterUnitTests {
     private FormRepository formRepository;
 
     @Mock
-    FormViewArguments formViewArguments;
+    private FormViewArguments formViewArguments;
 
     @Captor
     private ArgumentCaptor<List<FormSectionViewModel>> sectionsCaptor;
@@ -71,13 +71,13 @@ public class FormPresenterUnitTests {
 
         when(formViewArguments.uid()).thenReturn("test_uid");
 
-        when(formRepository.title("test_uid")).thenReturn(titlePublisher);
-        when(formRepository.reportDate("test_uid")).thenReturn(reportDatePublisher);
-        when(formRepository.reportStatus("test_uid")).thenReturn(reportStatusPublisher);
-        when(formRepository.sections("test_uid")).thenReturn(sectionPublisher);
+        when(formRepository.title()).thenReturn(titlePublisher);
+        when(formRepository.reportDate()).thenReturn(reportDatePublisher);
+        when(formRepository.reportStatus()).thenReturn(reportStatusPublisher);
+        when(formRepository.sections()).thenReturn(sectionPublisher);
 
-        when(formRepository.storeReportDate("test_uid")).thenReturn(reportDateConsumer);
-        when(formRepository.storeReportStatus("test_uid")).thenReturn(reportStatusConsumer);
+        when(formRepository.storeReportDate()).thenReturn(reportDateConsumer);
+        when(formRepository.storeReportStatus()).thenReturn(reportStatusConsumer);
 
         when(formRepository.autoGenerateEvent()).thenReturn(autoGenerateConsumer);
 
@@ -97,7 +97,7 @@ public class FormPresenterUnitTests {
         titlePublisher.onNext("TITLE");
 
         verify(formView.renderTitle()).accept(stringCaptor.capture());
-        verify(formRepository).title("test_uid");
+        verify(formRepository).title();
         assertThat(stringCaptor.getValue()).isEqualTo("TITLE");
     }
 
@@ -107,7 +107,7 @@ public class FormPresenterUnitTests {
         titlePublisher.onNext("TITLE");
 
         verify(formView.renderTitle()).accept(stringCaptor.capture());
-        verify(formRepository).title("test_uid");
+        verify(formRepository).title();
         assertThat(stringCaptor.getValue()).isEqualTo("TITLE");
 
         titlePublisher.onNext("NEW TITLE");
@@ -121,7 +121,7 @@ public class FormPresenterUnitTests {
         reportDatePublisher.onNext("2016-09-09");
 
         verify(formView.renderReportDate()).accept(stringCaptor.capture());
-        verify(formRepository).reportDate("test_uid");
+        verify(formRepository).reportDate();
         assertThat(stringCaptor.getValue()).isEqualTo("2016-09-09");
     }
 
@@ -131,7 +131,7 @@ public class FormPresenterUnitTests {
         reportDatePublisher.onNext("2016-09-09");
 
         verify(formView.renderReportDate()).accept(stringCaptor.capture());
-        verify(formRepository).reportDate("test_uid");
+        verify(formRepository).reportDate();
         assertThat(stringCaptor.getValue()).isEqualTo("2016-09-09");
 
         reportDatePublisher.onNext("2077-07-07");
@@ -148,7 +148,7 @@ public class FormPresenterUnitTests {
         reportStatusPublisher.onNext(ReportStatus.ACTIVE);
 
         verify(formView.renderStatus()).accept(reportStatusCaptor.capture());
-        verify(formRepository).reportStatus("test_uid");
+        verify(formRepository).reportStatus();
         assertThat(reportStatusCaptor.getValue()).isEqualTo(ReportStatus.ACTIVE);
     }
 
@@ -160,7 +160,7 @@ public class FormPresenterUnitTests {
         reportStatusPublisher.onNext(ReportStatus.ACTIVE);
 
         verify(formView.renderStatus()).accept(reportStatusCaptor.capture());
-        verify(formRepository).reportStatus("test_uid");
+        verify(formRepository).reportStatus();
         assertThat(reportStatusCaptor.getValue()).isEqualTo(ReportStatus.ACTIVE);
 
         reportStatusPublisher.onNext(ReportStatus.COMPLETED);
@@ -171,7 +171,7 @@ public class FormPresenterUnitTests {
     @Test
     public void statusChangeSnackBarIsRenderedOnStatusChanges() throws Exception {
         formPresenter.onAttach(formView);
-        verify(formRepository, times(1)).reportStatus("test_uid");
+        verify(formRepository, times(1)).reportStatus();
 
         // no snack bar is shown when page is first drawn
         reportStatusPublisher.onNext(ReportStatus.ACTIVE);
@@ -203,7 +203,7 @@ public class FormPresenterUnitTests {
         sectionPublisher.onNext(sections);
 
         verify(formView.renderSectionViewModels()).accept(sectionsCaptor.capture());
-        verify(formRepository).sections("test_uid");
+        verify(formRepository).sections();
         assertThat(sectionsCaptor.getValue()).isEqualTo(sections);
     }
 
@@ -219,7 +219,7 @@ public class FormPresenterUnitTests {
         sectionPublisher.onNext(sections);
 
         verify(formView.renderSectionViewModels()).accept(sectionsCaptor.capture());
-        verify(formRepository).sections("test_uid");
+        verify(formRepository).sections();
         assertThat(sectionsCaptor.getValue()).isEqualTo(sections);
 
         FormSectionViewModel newFormSectionViewModel =

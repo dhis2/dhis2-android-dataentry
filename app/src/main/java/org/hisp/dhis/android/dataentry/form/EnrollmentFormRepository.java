@@ -14,6 +14,9 @@ import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.dataentry.commons.utils.CodeGenerator;
 import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
+import org.hisp.dhis.rules.RuleEngine;
+import org.hisp.dhis.rules.RuleEngineContext;
+import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -57,6 +60,12 @@ class EnrollmentFormRepository implements FormRepository {
             "  JOIN ProgramStage ON Program.uid = ProgramStage.program AND ProgramStage.autoGenerateEvent = 1\n" +
             "WHERE Enrollment.uid = ?";
 
+    private static final String SELECT_PROGRAM = "SELECT \n" +
+            "  program\n" +
+            "FROM Enrollment\n" +
+            "WHERE uid = ?\n" +
+            "LIMIT 1;";
+
     @NonNull
     private final BriteDatabase briteDatabase;
 
@@ -66,36 +75,65 @@ class EnrollmentFormRepository implements FormRepository {
     @NonNull
     private final CurrentDateProvider currentDateProvider;
 
-    EnrollmentFormRepository(@NonNull BriteDatabase briteDatabase, @NonNull CodeGenerator codeGenerator,
-                             CurrentDateProvider currentDateProvider) {
+    @NonNull
+    private final Flowable<RuleEngine> cachedRuleEngineFlowable;
+
+    @NonNull
+    private final String enrollmentUid;
+
+    EnrollmentFormRepository(@NonNull BriteDatabase briteDatabase,
+            @NonNull RuleExpressionEvaluator expressionEvaluator,
+            @NonNull RulesRepository rulesRepository,
+            @NonNull CodeGenerator codeGenerator,
+            @NonNull CurrentDateProvider currentDateProvider,
+            @NonNull String enrollmentUid) {
         this.briteDatabase = briteDatabase;
         this.codeGenerator = codeGenerator;
         this.currentDateProvider = currentDateProvider;
+        this.enrollmentUid = enrollmentUid;
+
+        // We don't want to rebuild RuleEngine on each request, since metadata of
+        // the event is not changing throughout lifecycle of FormComponent.
+        this.cachedRuleEngineFlowable = enrollmentProgram()
+                .switchMap(program -> Flowable.zip(rulesRepository.rules(program),
+                        rulesRepository.ruleVariables(program), (rules, variables) ->
+                                RuleEngineContext.builder(expressionEvaluator)
+                                        .rules(rules)
+                                        .ruleVariables(variables)
+                                        .build().toEngineBuilder()
+                                        .build()))
+                .cacheWithInitialCapacity(1);
     }
 
     @NonNull
     @Override
-    public Flowable<String> title(@NonNull String uid) {
+    public Flowable<RuleEngine> ruleEngine() {
+        return cachedRuleEngineFlowable;
+    }
+
+    @NonNull
+    @Override
+    public Flowable<String> title() {
         return toV2Flowable(briteDatabase
-                .createQuery(TITLE_TABLES, SELECT_TITLE, uid)
+                .createQuery(TITLE_TABLES, SELECT_TITLE, enrollmentUid)
                 .mapToOne(cursor -> cursor.getString(0)))
                 .distinctUntilChanged();
     }
 
     @NonNull
     @Override
-    public Flowable<String> reportDate(@NonNull String uid) {
+    public Flowable<String> reportDate() {
         return toV2Flowable(briteDatabase
-                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_DATE, uid)
+                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_DATE, enrollmentUid)
                 .mapToOne(cursor -> cursor.getString(0) == null ? "" : cursor.getString(0)))
                 .distinctUntilChanged();
     }
 
     @NonNull
     @Override
-    public Flowable<ReportStatus> reportStatus(@NonNull String uid) {
+    public Flowable<ReportStatus> reportStatus() {
         return toV2Flowable(briteDatabase
-                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_STATUS, uid)
+                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_STATUS, enrollmentUid)
                 .mapToOne(cursor ->
                         ReportStatus.fromEnrollmentStatus(EnrollmentStatus.valueOf(cursor.getString(0)))))
                 .distinctUntilChanged();
@@ -103,36 +141,37 @@ class EnrollmentFormRepository implements FormRepository {
 
     @NonNull
     @Override
-    public Flowable<List<FormSectionViewModel>> sections(@NonNull String uid) {
+    public Flowable<List<FormSectionViewModel>> sections() {
         return toV2Flowable(briteDatabase
-                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_UID, uid)
+                .createQuery(EnrollmentModel.TABLE, SELECT_ENROLLMENT_UID, enrollmentUid)
                 .mapToList(cursor -> FormSectionViewModel
                         .createForEnrollment(cursor.getString(0))));
     }
 
     @NonNull
     @Override
-    public Consumer<String> storeReportDate(@NonNull String uid) {
+    public Consumer<String> storeReportDate() {
         return reportDate -> {
             ContentValues enrollment = new ContentValues();
             enrollment.put(EnrollmentModel.Columns.DATE_OF_ENROLLMENT, reportDate);
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
             briteDatabase.update(EnrollmentModel.TABLE, enrollment,
-                    EnrollmentModel.Columns.UID + " = ?", uid);
+                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
         };
     }
 
     @NonNull
     @Override
-    public Consumer<ReportStatus> storeReportStatus(@NonNull String uid) {
+    public Consumer<ReportStatus> storeReportStatus() {
         return reportStatus -> {
             ContentValues enrollment = new ContentValues();
             enrollment.put(EnrollmentModel.Columns.ENROLLMENT_STATUS,
                     ReportStatus.toEnrollmentStatus(reportStatus).name());
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
-            briteDatabase.update(EnrollmentModel.TABLE, enrollment, EnrollmentModel.Columns.UID + " = ?", uid);
+            briteDatabase.update(EnrollmentModel.TABLE, enrollment,
+                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
         };
     }
 
@@ -164,10 +203,16 @@ class EnrollmentFormRepository implements FormRepository {
                     .status(EventStatus.SCHEDULE)
                     .state(State.TO_POST)
                     .build();
-            
+
             if (briteDatabase.insert(EventModel.TABLE, event.toContentValues()) < 0) {
                 throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
             }
         };
+    }
+
+    @NonNull
+    private Flowable<String> enrollmentProgram() {
+        return toV2Flowable(briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_PROGRAM, enrollmentUid)
+                .mapToOne(cursor -> cursor.getString(0)));
     }
 }
