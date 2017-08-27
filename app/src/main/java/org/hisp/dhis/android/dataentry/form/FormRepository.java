@@ -9,7 +9,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 
-interface FormRepository {
+public interface FormRepository {
 
     @NonNull
     Flowable<String> title();

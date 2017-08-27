@@ -3,6 +3,7 @@ package org.hisp.dhis.android.dataentry.form.dataentry;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.form.FormRepository;
 
 import io.reactivex.disposables.CompositeDisposable;
 import rx.exceptions.OnErrorNotImplementedException;
@@ -17,6 +18,9 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
     private final DataEntryRepository dataEntryRepository;
 
     @NonNull
+    private final FormRepository formRepository;
+
+    @NonNull
     private final SchedulerProvider schedulerProvider;
 
     @NonNull
@@ -24,9 +28,11 @@ final class DataEntryPresenterImpl implements DataEntryPresenter {
 
     DataEntryPresenterImpl(@NonNull DataEntryStore dataEntryStore,
             @NonNull DataEntryRepository dataEntryRepository,
+            @NonNull FormRepository formRepository,
             @NonNull SchedulerProvider schedulerProvider) {
         this.dataEntryStore = dataEntryStore;
         this.dataEntryRepository = dataEntryRepository;
+        this.formRepository = formRepository;
         this.schedulerProvider = schedulerProvider;
         this.disposable = new CompositeDisposable();
     }

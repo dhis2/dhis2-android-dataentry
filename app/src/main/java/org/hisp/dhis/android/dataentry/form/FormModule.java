@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
-import org.hisp.dhis.android.dataentry.commons.dagger.PerFragment;
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
 import org.hisp.dhis.android.dataentry.commons.utils.CodeGenerator;
 import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
@@ -14,7 +13,7 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-@PerFragment
+@PerForm
 public class FormModule {
 
     @NonNull
@@ -25,20 +24,20 @@ public class FormModule {
     }
 
     @Provides
-    @PerFragment
+    @PerForm
     FormPresenter formPresenter(@NonNull SchedulerProvider schedulerProvider,
             @NonNull FormRepository formRepository) {
         return new FormPresenterImpl(formViewArguments, schedulerProvider, formRepository);
     }
 
     @Provides
-    @PerFragment
+    @PerForm
     RulesRepository rulesRepository(@NonNull BriteDatabase briteDatabase) {
         return new RulesRepository(briteDatabase);
     }
 
     @Provides
-    @PerFragment
+    @PerForm
     FormRepository formRepository(@NonNull BriteDatabase briteDatabase,
             @NonNull RuleExpressionEvaluator evaluator,
             @NonNull RulesRepository rulesRepository,

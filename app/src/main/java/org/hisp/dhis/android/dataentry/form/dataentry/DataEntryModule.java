@@ -8,6 +8,7 @@ import com.squareup.sqlbrite.BriteDatabase;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.dagger.PerFragment;
 import org.hisp.dhis.android.dataentry.commons.schedulers.SchedulerProvider;
+import org.hisp.dhis.android.dataentry.form.FormRepository;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactory;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactoryImpl;
 
@@ -43,8 +44,11 @@ public class DataEntryModule {
     @Provides
     @PerFragment
     DataEntryPresenter dataEntryPresenter(@NonNull SchedulerProvider schedulerProvider,
-            @NonNull DataEntryStore dataEntryStore, @NonNull DataEntryRepository dataEntryRepository) {
-        return new DataEntryPresenterImpl(dataEntryStore, dataEntryRepository, schedulerProvider);
+            @NonNull DataEntryStore dataEntryStore,
+            @NonNull DataEntryRepository dataEntryRepository,
+            @NonNull FormRepository formRepository) {
+        return new DataEntryPresenterImpl(dataEntryStore,
+                dataEntryRepository, formRepository, schedulerProvider);
     }
 
     @Provides

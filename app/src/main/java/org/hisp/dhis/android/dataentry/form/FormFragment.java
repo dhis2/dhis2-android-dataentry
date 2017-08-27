@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.form.section.viewmodels.date.DatePickerDialogFragment;
@@ -77,7 +78,7 @@ public class FormFragment extends BaseFragment implements FormView {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_form, container, false);
     }
 
@@ -124,9 +125,18 @@ public class FormFragment extends BaseFragment implements FormView {
         super.onAttach(context);
         FormViewArguments arguments = isNull(getArguments()
                 .getParcelable(FORM_VIEW_ARGUMENTS), "formViewArguments == null");
-        getUserComponent()
-                .plus(new FormModule(arguments))
+
+        ((DhisApp) getActivity().getApplicationContext())
+                .createFormComponent(new FormModule(arguments))
                 .inject(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        ((DhisApp) getActivity().getApplicationContext())
+                .releaseFormComponent();
     }
 
     @Override

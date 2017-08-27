@@ -1,6 +1,7 @@
 package org.hisp.dhis.android.dataentry.form.dataentry;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.MockSchedulersProvider;
+import org.hisp.dhis.android.dataentry.form.FormRepository;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.text.TextViewModel;
@@ -34,6 +35,9 @@ public class DataEntryPresenterUnitTests {
     DataEntryRepository dataEntryRepository;
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    FormRepository formRepository;
+
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     DataEntryView dataEntryView;
 
     @Captor
@@ -57,7 +61,7 @@ public class DataEntryPresenterUnitTests {
         when(dataEntryView.rowActions()).thenReturn(rowActions);
 
         dataEntryPresenter = new DataEntryPresenterImpl(dataEntryStore,
-                dataEntryRepository, new MockSchedulersProvider());
+                dataEntryRepository, formRepository, new MockSchedulersProvider());
     }
 
     @Test
