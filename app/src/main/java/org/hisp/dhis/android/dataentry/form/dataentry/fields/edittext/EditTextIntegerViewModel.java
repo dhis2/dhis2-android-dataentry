@@ -14,8 +14,8 @@ public abstract class EditTextIntegerViewModel extends EditTextModel<Integer> {
 
     @NonNull
     public static EditTextIntegerViewModel fromRawValue(@NonNull String uid, @NonNull String label,
-                                                        @NonNull Boolean mandatory, @Nullable String value,
-                                                        @NonNull String hint, @NonNull Integer type) {
+            @NonNull Boolean mandatory, @Nullable String value,
+            @NonNull String hint, @NonNull Integer type) {
         Integer intValue = null;
         if (!isEmpty(value)) {
             try {
@@ -31,8 +31,21 @@ public abstract class EditTextIntegerViewModel extends EditTextModel<Integer> {
 
     @NonNull
     public static EditTextIntegerViewModel create(@NonNull String uid, @NonNull String label,
-                                                  @NonNull Boolean mandatory, @Nullable Integer value,
-                                                  @NonNull String hint, @NonNull Integer type) {
-        return new AutoValue_EditTextIntegerViewModel(uid, label, mandatory, value, hint, 1, type);
+            @NonNull Boolean mandatory, @Nullable Integer value,
+            @NonNull String hint, @NonNull Integer type) {
+        return new AutoValue_EditTextIntegerViewModel(uid, label, mandatory,
+                value, hint, 1, type, null, null);
+    }
+
+    @NonNull
+    public EditTextIntegerViewModel withWarning(@NonNull String warning) {
+        return new AutoValue_EditTextIntegerViewModel(uid(), label(), mandatory(),
+                value(), hint(), maxLines(), inputType(), warning, error());
+    }
+
+    @NonNull
+    public EditTextIntegerViewModel withError(@NonNull String error) {
+        return new AutoValue_EditTextIntegerViewModel(uid(), label(), mandatory(),
+                value(), hint(), maxLines(), inputType(), warning(), error);
     }
 }

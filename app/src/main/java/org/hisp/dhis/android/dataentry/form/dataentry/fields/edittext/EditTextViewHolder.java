@@ -56,6 +56,17 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
         model.subscribe(editTextModel -> {
             editText.setText(editTextModel.value() == null ?
                     null : valueOf(editTextModel.value()));
+
+            if (!isEmpty(editTextModel.warning())) {
+                textInputLayout.setError(editTextModel.warning());
+                textInputLayout.setErrorTextAppearance(R.style.textInputLayoutWarningTextAppearance);
+            } else if (!isEmpty(editTextModel.error())) {
+                textInputLayout.setError(editTextModel.error());
+                textInputLayout.setErrorTextAppearance(R.style.textInputLayoutErrorTextAppearance);
+            } else {
+                textInputLayout.setError(null);
+            }
+
             editText.setInputType(editTextModel.inputType());
             editText.setMaxLines(editTextModel.maxLines());
             editText.setSelection(editText.getText() == null ?

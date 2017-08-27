@@ -32,7 +32,7 @@ public class FormPresenterUnitTests {
     private FormRepository formRepository;
 
     @Mock
-    FormViewArguments formViewArguments;
+    private FormViewArguments formViewArguments;
 
     @Captor
     private ArgumentCaptor<List<FormSectionViewModel>> sectionsCaptor;

@@ -44,8 +44,8 @@ public class FormModule {
             @NonNull CodeGenerator codeGenerator,
             @NonNull CurrentDateProvider currentDateProvider) {
         if (formViewArguments.type().equals(FormViewArguments.Type.ENROLLMENT)) {
-            return new EnrollmentFormRepository(briteDatabase, codeGenerator,
-                    currentDateProvider, formViewArguments.uid());
+            return new EnrollmentFormRepository(briteDatabase, evaluator, rulesRepository,
+                    codeGenerator, currentDateProvider, formViewArguments.uid());
         } else if (formViewArguments.type().equals(FormViewArguments.Type.EVENT)) {
             return new EventRepository(briteDatabase, evaluator,
                     rulesRepository, formViewArguments.uid());

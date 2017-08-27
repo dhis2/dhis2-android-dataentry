@@ -23,6 +23,18 @@ public abstract class EditTextDoubleViewModel extends EditTextModel<Double> {
         return new AutoValue_EditTextDoubleViewModel(uid, label, mandatory,
                 value, hint, 1, InputType.TYPE_CLASS_NUMBER |
                 InputType.TYPE_NUMBER_FLAG_DECIMAL |
-                InputType.TYPE_NUMBER_FLAG_SIGNED);
+                InputType.TYPE_NUMBER_FLAG_SIGNED, null, null);
+    }
+
+    @NonNull
+    public EditTextDoubleViewModel withWarning(@NonNull String warning) {
+        return new AutoValue_EditTextDoubleViewModel(uid(), label(), mandatory(),
+                value(), hint(), maxLines(), inputType(), warning, error());
+    }
+
+    @NonNull
+    public EditTextDoubleViewModel withError(@NonNull String error) {
+        return new AutoValue_EditTextDoubleViewModel(uid(), label(), mandatory(),
+                value(), hint(), maxLines(), inputType(), warning(), error);
     }
 }

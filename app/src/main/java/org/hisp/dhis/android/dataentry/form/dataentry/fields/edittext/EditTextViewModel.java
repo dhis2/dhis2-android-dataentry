@@ -14,6 +14,18 @@ public abstract class EditTextViewModel extends EditTextModel<String> {
             @NonNull Boolean mandatory, @Nullable String value, @NonNull String hint,
             @NonNull Integer lines) {
         return new AutoValue_EditTextViewModel(uid, label, mandatory,
-                value, hint, lines, InputType.TYPE_CLASS_TEXT);
+                value, hint, lines, InputType.TYPE_CLASS_TEXT, null, null);
+    }
+
+    @NonNull
+    public EditTextViewModel withWarning(@NonNull String warning) {
+        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+                value(), hint(), maxLines(), inputType(), warning, error());
+    }
+
+    @NonNull
+    public EditTextViewModel withError(@NonNull String error) {
+        return new AutoValue_EditTextViewModel(uid(), label(), mandatory(),
+                value(), hint(), maxLines(), inputType(), warning(), error);
     }
 }

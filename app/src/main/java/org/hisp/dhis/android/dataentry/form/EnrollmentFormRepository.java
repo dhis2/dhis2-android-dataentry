@@ -15,6 +15,8 @@ import org.hisp.dhis.android.core.program.ProgramModel;
 import org.hisp.dhis.android.dataentry.commons.utils.CodeGenerator;
 import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 import org.hisp.dhis.rules.RuleEngine;
+import org.hisp.dhis.rules.RuleEngineContext;
+import org.hisp.dhis.rules.RuleExpressionEvaluator;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -58,6 +60,12 @@ class EnrollmentFormRepository implements FormRepository {
             "  JOIN ProgramStage ON Program.uid = ProgramStage.program AND ProgramStage.autoGenerateEvent = 1\n" +
             "WHERE Enrollment.uid = ?";
 
+    private static final String SELECT_PROGRAM = "SELECT \n" +
+            "  program\n" +
+            "FROM Enrollment\n" +
+            "WHERE uid = ?\n" +
+            "LIMIT 1;";
+
     @NonNull
     private final BriteDatabase briteDatabase;
 
@@ -68,9 +76,14 @@ class EnrollmentFormRepository implements FormRepository {
     private final CurrentDateProvider currentDateProvider;
 
     @NonNull
+    private final Flowable<RuleEngine> cachedRuleEngineFlowable;
+
+    @NonNull
     private final String enrollmentUid;
 
     EnrollmentFormRepository(@NonNull BriteDatabase briteDatabase,
+            @NonNull RuleExpressionEvaluator expressionEvaluator,
+            @NonNull RulesRepository rulesRepository,
             @NonNull CodeGenerator codeGenerator,
             @NonNull CurrentDateProvider currentDateProvider,
             @NonNull String enrollmentUid) {
@@ -78,12 +91,24 @@ class EnrollmentFormRepository implements FormRepository {
         this.codeGenerator = codeGenerator;
         this.currentDateProvider = currentDateProvider;
         this.enrollmentUid = enrollmentUid;
+
+        // We don't want to rebuild RuleEngine on each request, since metadata of
+        // the event is not changing throughout lifecycle of FormComponent.
+        this.cachedRuleEngineFlowable = enrollmentProgram()
+                .switchMap(program -> Flowable.zip(rulesRepository.rules(program),
+                        rulesRepository.ruleVariables(program), (rules, variables) ->
+                                RuleEngineContext.builder(expressionEvaluator)
+                                        .rules(rules)
+                                        .ruleVariables(variables)
+                                        .build().toEngineBuilder()
+                                        .build()))
+                .cacheWithInitialCapacity(1);
     }
 
     @NonNull
     @Override
     public Flowable<RuleEngine> ruleEngine() {
-        throw new UnsupportedOperationException();
+        return cachedRuleEngineFlowable;
     }
 
     @NonNull
@@ -182,5 +207,11 @@ class EnrollmentFormRepository implements FormRepository {
                 throw new OnErrorNotImplementedException(new Throwable("Unable to store event:" + event));
             }
         };
+    }
+
+    @NonNull
+    private Flowable<String> enrollmentProgram() {
+        return toV2Flowable(briteDatabase.createQuery(EnrollmentModel.TABLE, SELECT_PROGRAM, enrollmentUid)
+                .mapToOne(cursor -> cursor.getString(0)));
     }
 }
