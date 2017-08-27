@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.squareup.duktape.Duktape;
+
 import org.hisp.dhis.android.core.enrollment.EnrollmentModel;
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitModel;
@@ -13,6 +15,8 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityModel;
 import org.hisp.dhis.android.dataentry.commons.utils.CodeGenerator;
 import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 import org.hisp.dhis.android.dataentry.rules.DatabaseRule;
+import org.hisp.dhis.rules.android.DuktapeEvaluator;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +42,7 @@ public class EnrollmentFormRepositoryIntegrationTest {
     public DatabaseRule databaseRule = new DatabaseRule(Schedulers.trampoline());
 
     private FormRepository formRepository;
+    private Duktape duktape;
 
     @Before
     public void setUp() throws Exception {
@@ -71,8 +76,16 @@ public class EnrollmentFormRepositoryIntegrationTest {
 
         initMocks(this);
 
+        duktape = Duktape.create();
+
         formRepository = new EnrollmentFormRepository(databaseRule.briteDatabase(),
+                new DuktapeEvaluator(duktape), new RulesRepository(databaseRule.briteDatabase()),
                 codeGenerator, currentDateProvider, "enrollment_uid");
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        duktape.close();
     }
 
     @Test

@@ -170,7 +170,8 @@ class EnrollmentFormRepository implements FormRepository {
                     ReportStatus.toEnrollmentStatus(reportStatus).name());
             enrollment.put(EnrollmentModel.Columns.STATE, State.TO_UPDATE.name()); // TODO: Check if state is TO_POST
             // TODO: and if so, keep the TO_POST state
-            briteDatabase.update(EnrollmentModel.TABLE, enrollment, EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
+            briteDatabase.update(EnrollmentModel.TABLE, enrollment,
+                    EnrollmentModel.Columns.UID + " = ?", enrollmentUid);
         };
     }
 

@@ -28,6 +28,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import rx.exceptions.OnErrorNotImplementedException;
 import timber.log.Timber;
 
+@SuppressWarnings("PMD")
 final class DataEntryPresenterImpl implements DataEntryPresenter {
 
     @NonNull

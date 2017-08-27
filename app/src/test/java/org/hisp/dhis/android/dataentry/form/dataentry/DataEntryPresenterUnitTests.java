@@ -1,10 +1,13 @@
 package org.hisp.dhis.android.dataentry.form.dataentry;
 
 import org.hisp.dhis.android.dataentry.commons.schedulers.MockSchedulersProvider;
+import org.hisp.dhis.android.dataentry.commons.utils.CodeGenerator;
+import org.hisp.dhis.android.dataentry.commons.utils.Result;
 import org.hisp.dhis.android.dataentry.form.FormRepository;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.RowAction;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.text.TextViewModel;
+import org.hisp.dhis.rules.models.RuleEffect;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +18,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +31,12 @@ import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class DataEntryPresenterUnitTests {
+
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    CodeGenerator codeGenerator;
+
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    RuleEngineRepository ruleEngineRepository;
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     DataEntryStore dataEntryStore;
@@ -47,6 +57,7 @@ public class DataEntryPresenterUnitTests {
     ArgumentCaptor<RowAction> rowActionCaptor;
 
     PublishProcessor<List<FieldViewModel>> fields;
+    PublishProcessor<Result<RuleEffect>> effects;
     PublishProcessor<RowAction> rowActions;
     DataEntryPresenter dataEntryPresenter;
 
@@ -55,13 +66,15 @@ public class DataEntryPresenterUnitTests {
         MockitoAnnotations.initMocks(this);
 
         fields = PublishProcessor.create();
+        effects = PublishProcessor.create();
         rowActions = PublishProcessor.create();
 
         when(dataEntryRepository.list()).thenReturn(fields);
+        when(ruleEngineRepository.calculate()).thenReturn(effects);
         when(dataEntryView.rowActions()).thenReturn(rowActions);
 
-        dataEntryPresenter = new DataEntryPresenterImpl(dataEntryStore,
-                dataEntryRepository, formRepository, new MockSchedulersProvider());
+        dataEntryPresenter = new DataEntryPresenterImpl(codeGenerator, dataEntryStore,
+                dataEntryRepository, ruleEngineRepository, new MockSchedulersProvider());
     }
 
     @Test
@@ -85,6 +98,7 @@ public class DataEntryPresenterUnitTests {
 
         // first event
         fields.onNext(fieldViewModels);
+        effects.onNext(Result.success(new ArrayList<>()));
 
         verify(dataEntryView, times(1)).showFields();
         verify(dataEntryView.showFields()).accept(fieldsCaptor.capture());
@@ -96,6 +110,7 @@ public class DataEntryPresenterUnitTests {
 
         // second event
         fields.onNext(fieldViewModelsTwo);
+        effects.onNext(Result.success(new ArrayList<>()));
 
         verify(dataEntryView, times(2)).showFields();
         verify(dataEntryView.showFields(), times(2)).accept(fieldsCaptor.capture());

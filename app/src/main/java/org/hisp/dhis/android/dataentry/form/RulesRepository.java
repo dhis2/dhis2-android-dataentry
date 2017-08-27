@@ -40,7 +40,8 @@ import rx.Observable;
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
 import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
 
-class RulesRepository {
+@SuppressWarnings("PMD")
+final class RulesRepository {
     private static final String QUERY_RULES = "SELECT\n" +
             "  ProgramRule.uid, \n" +
             "  ProgramRule.programStage,\n" +

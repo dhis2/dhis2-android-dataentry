@@ -57,10 +57,10 @@ final class EditTextViewHolder extends RecyclerView.ViewHolder {
             editText.setText(editTextModel.value() == null ?
                     null : valueOf(editTextModel.value()));
 
-            if (!isEmpty(editTextModel.warning())) {
+            if (!isEmpty(editTextModel.warning())) { // NOPMD
                 textInputLayout.setError(editTextModel.warning());
                 textInputLayout.setErrorTextAppearance(R.style.textInputLayoutWarningTextAppearance);
-            } else if (!isEmpty(editTextModel.error())) {
+            } else if (!isEmpty(editTextModel.error())) { // NOPMD
                 textInputLayout.setError(editTextModel.error());
                 textInputLayout.setErrorTextAppearance(R.style.textInputLayoutErrorTextAppearance);
             } else {
