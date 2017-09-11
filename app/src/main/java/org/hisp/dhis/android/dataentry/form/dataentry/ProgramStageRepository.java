@@ -1,27 +1,24 @@
 package org.hisp.dhis.android.dataentry.form.dataentry;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.squareup.sqlbrite.BriteDatabase;
 
-import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValueModel;
-import org.hisp.dhis.android.core.user.UserCredentialsModel;
-import org.hisp.dhis.android.dataentry.commons.utils.CurrentDateProvider;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.FieldViewModelFactory;
-import org.hisp.dhis.android.dataentry.user.UserRepository;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
+import static org.hisp.dhis.android.dataentry.commons.utils.StringUtils.isEmpty;
 
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
@@ -33,7 +30,8 @@ final class ProgramStageRepository implements DataEntryRepository {
             "  Field.type,\n" +
             "  Field.mandatory,\n" +
             "  Field.optionSet,\n" +
-            "  Value.value\n" +
+            "  Value.value,\n" +
+            "  Option.name\n" +
             "FROM Event\n" +
             "  LEFT OUTER JOIN (\n" +
             "      SELECT\n" +
@@ -43,14 +41,18 @@ final class ProgramStageRepository implements DataEntryRepository {
             "        DataElement.optionSet AS optionSet,\n" +
             "        ProgramStageDataElement.sortOrder AS formOrder,\n" +
             "        ProgramStageDataElement.programStage AS stage,\n" +
-            "        ProgramStageDataElement.compulsory AS mandatory\n" +
+            "        ProgramStageDataElement.compulsory AS mandatory,\n" +
+            "        ProgramStageDataElement.programStageSection AS section\n" +
             "      FROM ProgramStageDataElement\n" +
             "        INNER JOIN DataElement ON DataElement.uid = ProgramStageDataElement.dataElement\n" +
             "    ) AS Field ON (Field.stage = Event.programStage)\n" +
             "  LEFT OUTER JOIN TrackedEntityDataValue AS Value ON (\n" +
             "    Value.event = Event.uid AND Value.dataElement = Field.id\n" +
             "  )\n" +
-            "WHERE Event.uid = ?\n" +
+            "  LEFT OUTER JOIN Option ON (\n" +
+            "    Field.optionSet = Option.optionSet AND Value.value = Option.code\n" +
+            "  )\n" +
+            " %s  " +
             "ORDER BY Field.formOrder ASC;";
 
     @NonNull
@@ -60,87 +62,53 @@ final class ProgramStageRepository implements DataEntryRepository {
     private final FieldViewModelFactory fieldFactory;
 
     @NonNull
-    private final Flowable<UserCredentialsModel> userCredentials;
-
-    @NonNull
-    private final CurrentDateProvider currentDateProvider;
-
-    @NonNull
     private final String eventUid;
 
+    @Nullable
+    private final String sectionUid;
+
     ProgramStageRepository(@NonNull BriteDatabase briteDatabase,
-            @NonNull UserRepository userRepository,
             @NonNull FieldViewModelFactory fieldFactory,
-            @NonNull CurrentDateProvider currentDateProvider,
-            @NonNull String eventUid) {
+            @NonNull String eventUid, @Nullable String sectionUid) {
         this.briteDatabase = briteDatabase;
         this.fieldFactory = fieldFactory;
-        this.currentDateProvider = currentDateProvider;
         this.eventUid = eventUid;
-
-        // we want to re-use results of the user credentials query
-        this.userCredentials = userRepository.credentials()
-                .cacheWithInitialCapacity(1);
-    }
-
-    @NonNull
-    @Override
-    public Flowable<Long> save(@NonNull String uid, @Nullable String value) {
-        return userCredentials.switchMap((userCredentials) -> {
-            long updated = update(uid, value);
-            if (updated > 0) {
-                return Flowable.just(updated);
-            }
-
-            return Flowable.just(insert(uid, value, userCredentials.username()));
-        });
+        this.sectionUid = sectionUid;
     }
 
     @NonNull
     @Override
     public Flowable<List<FieldViewModel>> list() {
         return toV2Flowable(briteDatabase
-                .createQuery(TrackedEntityDataValueModel.TABLE, QUERY, eventUid)
+                .createQuery(TrackedEntityDataValueModel.TABLE, prepareStatement())
                 .mapToList(this::transform));
     }
 
     @NonNull
     private FieldViewModel transform(@NonNull Cursor cursor) {
-        return fieldFactory.create(cursor.getString(0), cursor.getString(1),
-                ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
-                cursor.getString(4), cursor.getString(5));
-    }
+        String dataValue = cursor.getString(5);
+        String optionCodeName = cursor.getString(6);
 
-    private long update(@NonNull String uid, @Nullable String value) {
-        ContentValues dataValue = new ContentValues();
-
-        // update time stamp
-        dataValue.put(TrackedEntityDataValueModel.Columns.LAST_UPDATED,
-                BaseIdentifiableObject.DATE_FORMAT.format(currentDateProvider.currentDate()));
-        if (value == null) {
-            dataValue.putNull(TrackedEntityDataValueModel.Columns.VALUE);
-        } else {
-            dataValue.put(TrackedEntityDataValueModel.Columns.VALUE, value);
+        if (!isEmpty(optionCodeName)) {
+            dataValue = optionCodeName;
         }
 
-        // ToDo: write test cases for different events
-        return (long) briteDatabase.update(TrackedEntityDataValueModel.TABLE, dataValue,
-                TrackedEntityDataValueModel.Columns.DATA_ELEMENT + " = ? AND " +
-                        TrackedEntityDataValueModel.Columns.EVENT + " = ?", uid, eventUid);
+        return fieldFactory.create(cursor.getString(0), cursor.getString(1),
+                ValueType.valueOf(cursor.getString(2)), cursor.getInt(3) == 1,
+                cursor.getString(4), dataValue);
     }
 
-    private long insert(@NonNull String uid, @Nullable String value, @NonNull String storedBy) {
-        Date created = currentDateProvider.currentDate();
-        TrackedEntityDataValueModel dataValueModel =
-                TrackedEntityDataValueModel.builder()
-                        .created(created)
-                        .lastUpdated(created)
-                        .dataElement(uid)
-                        .event(eventUid)
-                        .value(value)
-                        .storedBy(storedBy)
-                        .build();
-        return briteDatabase.insert(TrackedEntityDataValueModel.TABLE,
-                dataValueModel.toContentValues());
+    @NonNull
+    @SuppressFBWarnings("VA_FORMAT_STRING_USES_NEWLINE")
+    private String prepareStatement() {
+        String where;
+        if (isEmpty(sectionUid)) {
+            where = String.format(Locale.US, "WHERE Event.uid = '%s'", eventUid);
+        } else {
+            where = String.format(Locale.US, "WHERE Event.uid = '%s' AND " +
+                    "Field.section = '%s'", eventUid, sectionUid);
+        }
+
+        return String.format(Locale.US, QUERY, where);
     }
 }

@@ -1,9 +1,10 @@
 package org.hisp.dhis.android.dataentry.selection;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -19,6 +21,8 @@ import com.jakewharton.rxbinding2.support.v7.widget.SearchViewQueryTextEvent;
 
 import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
+import org.hisp.dhis.android.dataentry.commons.ui.DividerDecoration;
+import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryStoreModule;
 
 import java.util.List;
 
@@ -28,21 +32,22 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 
 /**
  * A recommended way for use:
- *
+ * <p>
  * When calling:
- *  SelectionArgument arg = SelectionArgument.create("eUZ79clX7y1", "Diagnosis ICD10", SelectionArgument.Type.OPTION);
+ * SelectionArgument arg = SelectionArgument.create("eUZ79clX7y1", "Diagnosis ICD10", SelectionArgument.Type.OPTION);
  * SelectionDialogFragment dialog = SelectionDialogFragment.create(arg);
  * dialog.setTargetFragment(this, 1);
  * dialog.show(getFragmentManager(), "selectionDialogFragment");
  * (where  1 is the request code)
- *
+ * <p>
  * The fragment should implement onActivity like:
- *     @Override
- * public void onActivityResult(int requestCode, int resultCode, Intent data) {
+ *
+ * @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
  * super.onActivityResult(requestCode, resultCode, data);
  * if (requestCode == 1 && resultCode == SelectionDialogFragment.RESULT_CODE) {
  * SelectionViewModel model = data.getParcelableExtra(SelectionDialogFragment.SELECTION_RESULT);
@@ -50,28 +55,32 @@ import io.reactivex.functions.Consumer;
  * }
  * }
  */
-public class SelectionDialogFragment extends AppCompatDialogFragment
-        implements SelectionView, View.OnClickListener{
-
-    public static final String SELECTION_ARG = "arg:selection_arg";
-    public static final String SELECTION_RESULT = "arg:selection_result";
+public class SelectionDialogFragment extends AppCompatDialogFragment implements SelectionView {
+    private static final String OPTION_SELECTION_ARG = "arg:optionSelectionArgs";
+    private static final String SELECTION_ARG = "arg:selectionArg";
+    public static final String SELECTION_RESULT = "arg:selectionResult";
     public static final int RESULT_CODE = 0;
 
-    @BindView(R.id.selection_dialog_title)
+    @BindView(R.id.textview_selection_dialog_title)
     TextView titleView;
 
-    @BindView(R.id.selection_dialog_searchview)
+    @BindView(R.id.searchview_selection_dialog)
     SearchView searchView;
 
-    @BindView(R.id.selection_dialog_recyclerView)
+    @BindView(R.id.recyclerview_selection_dialog)
     RecyclerView selectionListView;
 
-    private Unbinder unbinder;
+    @Inject
+    SelectionPresenter presenter;
 
     @Inject
-    public SelectionPresenter presenter;
+    SelectionNavigator selectionNavigator;
 
-    public static SelectionDialogFragment create(SelectionArgument argument) {
+    private SelectionDialogAdapter selectionAdapter;
+    private Unbinder unbinder;
+
+    @NonNull
+    public static SelectionDialogFragment create(@NonNull SelectionArgument argument) {
         Bundle bundle = new Bundle();
         bundle.putParcelable(SELECTION_ARG, argument);
 
@@ -80,43 +89,63 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
         return dialogFragment;
     }
 
-    @Override
-    public Consumer<List<SelectionViewModel>> update() {
-        return selectionList -> ((SelectionDialogAdapter) selectionListView.getAdapter()).update(selectionList);
-    }
+    @NonNull
+    public static SelectionDialogFragment create(@NonNull OptionSelectionArgument argument) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(OPTION_SELECTION_ARG, argument);
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.selection_dialog_option, container, false);
-    }
+        SelectionDialogFragment dialogFragment = new SelectionDialogFragment();
+        dialogFragment.setArguments(bundle);
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        //This lets Android know that the Dialog should be resized when the soft keyboard is shown:
-        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        unbinder = ButterKnife.bind(this, view);
-
-        selectionListView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        selectionListView.setAdapter(new SelectionDialogAdapter(this));
+        return dialogFragment;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        SelectionArgument argument = getArguments().getParcelable(SELECTION_ARG);
-        if (argument == null) {
-            throw new IllegalStateException("SelectionArgument must be supplied!");
+
+        SelectionArgument selectionArgument = getArguments()
+                .getParcelable(SELECTION_ARG);
+        OptionSelectionArgument optionSelectionArgument = getArguments()
+                .getParcelable(OPTION_SELECTION_ARG);
+
+        if (optionSelectionArgument == null) {
+            ((DhisApp) context.getApplicationContext()).userComponent()
+                    .plus(new SelectionModule(selectionArgument, this))
+                    .inject(this);
+        } else {
+            ((DhisApp) context.getApplicationContext()).userComponent()
+                    .plus(new OptionSelectionModule(optionSelectionArgument, this),
+                            new DataEntryStoreModule(optionSelectionArgument.dataEntryArgs()))
+                    .inject(this);
         }
-        ((DhisApp) context.getApplicationContext()).userComponent().plus(new SelectionModule(argument)).inject(this);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_selection, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        unbinder = ButterKnife.bind(this, view);
+
+        Window window = getDialog().getWindow();
+        if (window != null) {
+            // this lets Android know that the Dialog should be
+            // resized when the soft keyboard is shown:
+            window.setSoftInputMode(WindowManager
+                    .LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        }
+
+        selectionAdapter = new SelectionDialogAdapter(LayoutInflater.from(getActivity()));
+        selectionListView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        selectionListView.setAdapter(selectionAdapter);
+        selectionListView.addItemDecoration(new DividerDecoration(ContextCompat.getDrawable(
+                selectionListView.getContext(), R.drawable.divider)));
     }
 
     @Override
@@ -131,36 +160,44 @@ public class SelectionDialogFragment extends AppCompatDialogFragment
         presenter.onAttach(this);
     }
 
-    @OnClick(R.id.selection_dialog_cancel)
-    public void onCancelClick() {
-        this.dismiss();
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
+    @NonNull
     @Override
-    public void setTitle(String title) {
-        titleView.setText(title);
-    }
-
-    @Override
-    public io.reactivex.Observable<SearchViewQueryTextEvent> subscribeToSearchView() {
+    public Observable<SearchViewQueryTextEvent> searchView() {
         return RxSearchView.queryTextChangeEvents(searchView);
     }
 
-    /**
-     * Called by the RecyclerView.ViewHolder.TextView onClick.
-     * The view is expected to contain the SelectionModelView as a tag.
-     * @param view
-     */
+    @NonNull
     @Override
-    public void onClick(View view) {
-        if(view instanceof SelectionView){
-            SelectionViewModel model = (SelectionViewModel) view.getTag();
-            if (model != null) {
-                Intent result = new Intent();
-                result.putExtra(SELECTION_RESULT, model);
-                getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_CODE, result);
-                this.dismiss();
-            }
-        }
+    public Observable<SelectionViewModel> searchResultClicks() {
+        return selectionAdapter.asObservable();
+    }
+
+    @NonNull
+    @Override
+    public Consumer<List<SelectionViewModel>> renderSearchResults() {
+        return viewModels -> selectionAdapter.update(viewModels);
+    }
+
+    @NonNull
+    @Override
+    public Consumer<String> renderTitle() {
+        return title -> titleView.setText(title);
+    }
+
+    @NonNull
+    @Override
+    public Consumer<SelectionViewModel> navigateTo() {
+        return viewModel -> selectionNavigator.navigateTo(viewModel);
+    }
+
+    @OnClick(R.id.button_selection_dialog_cancel)
+    public void onCancelClick() {
+        dismiss();
     }
 }

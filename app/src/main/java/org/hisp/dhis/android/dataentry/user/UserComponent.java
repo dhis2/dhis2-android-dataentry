@@ -3,12 +3,13 @@ package org.hisp.dhis.android.dataentry.user;
 import android.support.annotation.NonNull;
 
 import org.hisp.dhis.android.dataentry.commons.dagger.PerUser;
-import org.hisp.dhis.android.dataentry.dashboard.DashboardComponent;
-import org.hisp.dhis.android.dataentry.dashboard.DashboardModule;
+import org.hisp.dhis.android.dataentry.create.CreateItemsComponent;
+import org.hisp.dhis.android.dataentry.create.CreateItemsModule;
+import org.hisp.dhis.android.dataentry.dashboard.navigation.NavigationComponent;
+import org.hisp.dhis.android.dataentry.dashboard.navigation.NavigationModule;
 import org.hisp.dhis.android.dataentry.form.FormComponent;
 import org.hisp.dhis.android.dataentry.form.FormModule;
-import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryComponent;
-import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryModule;
+import org.hisp.dhis.android.dataentry.form.dataentry.DataEntryStoreModule;
 import org.hisp.dhis.android.dataentry.main.MainComponent;
 import org.hisp.dhis.android.dataentry.main.MainModule;
 import org.hisp.dhis.android.dataentry.main.home.HomeComponent;
@@ -17,6 +18,8 @@ import org.hisp.dhis.android.dataentry.reports.ReportsComponent;
 import org.hisp.dhis.android.dataentry.reports.ReportsModule;
 import org.hisp.dhis.android.dataentry.reports.search.SearchComponent;
 import org.hisp.dhis.android.dataentry.reports.search.SearchModule;
+import org.hisp.dhis.android.dataentry.selection.OptionSelectionComponent;
+import org.hisp.dhis.android.dataentry.selection.OptionSelectionModule;
 import org.hisp.dhis.android.dataentry.selection.SelectionComponent;
 import org.hisp.dhis.android.dataentry.selection.SelectionModule;
 import org.hisp.dhis.android.dataentry.service.ServiceComponent;
@@ -47,13 +50,15 @@ public interface UserComponent {
     @NonNull
     SelectionComponent plus(@NonNull SelectionModule selectionModule);
 
-    // ToDo: remove this!
     @NonNull
-    DataEntryComponent plus(@NonNull DataEntryModule dataEntryModule);
+    OptionSelectionComponent plus(@NonNull OptionSelectionModule optionSelectionModule,
+            @NonNull DataEntryStoreModule dataEntryStoreModule);
 
     @NonNull
     FormComponent plus(@NonNull FormModule formModule);
 
     @NonNull
-    DashboardComponent plus(@NonNull DashboardModule dashboardModule);
+    CreateItemsComponent plus(@NonNull CreateItemsModule createItemsModule);
+
+    NavigationComponent plus(@NonNull NavigationModule navigationModule);
 }

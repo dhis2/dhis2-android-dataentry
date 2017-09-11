@@ -9,7 +9,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,8 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
+import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
+import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.form.section.viewmodels.date.DatePickerDialogFragment;
@@ -74,7 +78,7 @@ public class FormFragment extends BaseFragment implements FormView {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_form, container, false);
     }
 
@@ -87,7 +91,19 @@ public class FormFragment extends BaseFragment implements FormView {
         viewPager.setAdapter(formSectionAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
+        setupActionBar();
         initReportDatePicker();
+    }
+
+    private void setupActionBar() {
+        AppCompatActivity activity = ((AppCompatActivity) getActivity());
+        if (activity != null) {
+            activity.setSupportActionBar(toolbar);
+            if (activity.getSupportActionBar() != null) {
+                activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                activity.getSupportActionBar().setHomeButtonEnabled(true);
+            }
+        }
     }
 
     @NonNull
@@ -109,9 +125,18 @@ public class FormFragment extends BaseFragment implements FormView {
         super.onAttach(context);
         FormViewArguments arguments = isNull(getArguments()
                 .getParcelable(FORM_VIEW_ARGUMENTS), "formViewArguments == null");
-        getUserComponent()
-                .plus(new FormModule(arguments))
+
+        ((DhisApp) getActivity().getApplicationContext())
+                .createFormComponent(new FormModule(arguments))
                 .inject(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        ((DhisApp) getActivity().getApplicationContext())
+                .releaseFormComponent();
     }
 
     @Override
@@ -129,7 +154,14 @@ public class FormFragment extends BaseFragment implements FormView {
     @NonNull
     @Override
     public Consumer<List<FormSectionViewModel>> renderSectionViewModels() {
-        return sectionViewModels -> formSectionAdapter.swapData(sectionViewModels);
+        return sectionViewModels -> {
+            formSectionAdapter.swapData(sectionViewModels);
+            if (sectionViewModels.size() == 0) {
+                Log.d("EMPTY", "Show empty state");
+                // TODO: Show empty state
+            }
+
+        };
     }
 
     @NonNull
@@ -150,14 +182,18 @@ public class FormFragment extends BaseFragment implements FormView {
         return eventStatus -> fab.setActivated(eventStatus == ReportStatus.COMPLETED);
     }
 
+    @NonNull
+    @Override
+    public Consumer<String> finishEnrollment() {
+        return enrollmentUid -> {
+            getActivity().finish();
+        };
+    }
+
     @Override
     public void renderStatusChangeSnackBar(@NonNull ReportStatus reportStatus) {
-        String snackBarMessage;
-        if (reportStatus == ReportStatus.COMPLETED) {
-            snackBarMessage = getString(R.string.complete);
-        } else {
-            snackBarMessage = getString(R.string.active);
-        }
+        String snackBarMessage = reportStatus == ReportStatus.COMPLETED ?
+                getString(R.string.complete) : getString(R.string.active);
 
         Snackbar.make(coordinatorLayout, snackBarMessage, Snackbar.LENGTH_LONG)
                 .setAction(getString(R.string.undo), v1 -> {
@@ -179,7 +215,7 @@ public class FormFragment extends BaseFragment implements FormView {
 
     private void initReportDatePicker() {
         reportDate.setOnClickListener(v -> {
-            DatePickerDialogFragment dialog = DatePickerDialogFragment.newInstance(false);
+            DatePickerDialogFragment dialog = DatePickerDialogFragment.create(false);
             dialog.show(getFragmentManager());
             dialog.setFormattedOnDateSetListener(publishReportDateChange());
         });
@@ -189,7 +225,7 @@ public class FormFragment extends BaseFragment implements FormView {
     private DatePickerDialogFragment.FormattedOnDateSetListener publishReportDateChange() {
         return date -> {
             if (onReportDateChanged != null) {
-                onReportDateChanged.onNext(date);
+                onReportDateChanged.onNext(BaseIdentifiableObject.DATE_FORMAT.format(date));
             }
         };
     }

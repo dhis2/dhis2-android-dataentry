@@ -1,6 +1,7 @@
 package org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.EditableFieldViewModel;
 
@@ -14,4 +15,10 @@ public abstract class EditTextModel<T> extends EditableFieldViewModel<T> {
 
     @NonNull
     public abstract Integer inputType();
+
+    @Nullable
+    public abstract String warning();
+
+    @Nullable
+    public abstract String error();
 }

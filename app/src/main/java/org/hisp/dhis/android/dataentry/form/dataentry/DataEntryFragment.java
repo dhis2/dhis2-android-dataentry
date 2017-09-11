@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.hisp.dhis.android.dataentry.DhisApp;
 import org.hisp.dhis.android.dataentry.R;
 import org.hisp.dhis.android.dataentry.commons.ui.BaseFragment;
 import org.hisp.dhis.android.dataentry.commons.utils.Preconditions;
@@ -54,15 +55,17 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
         DataEntryArguments args = Preconditions.isNull(getArguments()
                 .getParcelable(ARGUMENTS), "dataEntryArguments == null");
 
-        getUserComponent()
-                .plus(new DataEntryModule(context, args))
+        ((DhisApp) getActivity().getApplicationContext())
+                .formComponent()
+                .plus(new DataEntryModule(context, args),
+                        new DataEntryStoreModule(args))
                 .inject(this);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_data_entry, container, false);
     }
 
@@ -70,18 +73,13 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         bind(this, view);
         setUpRecyclerView();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dataEntryPresenter.onDetach();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         dataEntryPresenter.onAttach(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        dataEntryPresenter.onDetach();
     }
 
     @NonNull
@@ -97,7 +95,8 @@ public final class DataEntryFragment extends BaseFragment implements DataEntryVi
     }
 
     private void setUpRecyclerView() {
-        dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()));
+        dataEntryAdapter = new DataEntryAdapter(LayoutInflater.from(getActivity()),
+                getFragmentManager(), getArguments().getParcelable(ARGUMENTS));
         dataEntryAdapter.setHasStableIds(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),

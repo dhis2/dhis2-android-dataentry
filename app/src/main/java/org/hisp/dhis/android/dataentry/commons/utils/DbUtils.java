@@ -13,4 +13,23 @@ public final class DbUtils {
         String value = cursor.getString(column);
         return value == null ? fallback : value;
     }
+
+    @NonNull
+    public static String escapeSqlToken(@NonNull String sqlString) {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (sqlString.indexOf('\'') == -1) {
+            return stringBuilder.append(sqlString).toString();
+        }
+
+        int length = sqlString.length();
+        for (int i = 0; i < length; i++) {
+            char c = sqlString.charAt(i);
+            if (c == '\'') {
+                stringBuilder.append('\'');
+            }
+            stringBuilder.append(c);
+        }
+
+        return stringBuilder.toString();
+    }
 }

@@ -19,20 +19,15 @@
             app:cardCornerRadius="3dp"
             app:cardElevation="3dp">
 
-            <org.hisp.dhis.android.dataentry.commons.ui.FontEditText
+            <android.support.v7.widget.SearchView
                 android:id="@+id/edittext_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="4dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="4dp"
-                android:ellipsize="end"
-                android:hint="@string/search"
-                android:lines="1"
+                android:layout_margin="4dp"
                 android:textSize="@dimen/text_size_medium"
-                app:font="@string/font_name_regular"/>
+                app:defaultQueryHint="@string/search"
+                app:iconifiedByDefault="false"
+                app:queryBackground="@android:color/transparent"/>
 
         </android.support.v7.widget.CardView>
 

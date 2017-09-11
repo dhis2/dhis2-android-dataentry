@@ -5,9 +5,11 @@ import android.text.InputType;
 
 import org.hisp.dhis.android.core.common.ValueType;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.checkbox.CheckBoxViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.daterow.DateViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextDoubleViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextIntegerViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.edittext.EditTextViewModel;
+import org.hisp.dhis.android.dataentry.form.dataentry.fields.optionsrow.OptionsViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.radiobutton.RadioButtonViewModel;
 import org.hisp.dhis.android.dataentry.form.dataentry.fields.text.TextViewModel;
 import org.junit.Before;
@@ -20,7 +22,6 @@ import static org.assertj.core.api.Java6Assertions.fail;
 public class FieldViewModelFactoryTests {
     private static final String UID = "test_uid";
     private static final String LABEL = "test_label";
-    private static final String TEST_OPTION_SET = "test_option_set";
 
     private FieldViewModelFactory fieldViewModelFactory;
 
@@ -28,7 +29,8 @@ public class FieldViewModelFactoryTests {
     public void setUp() {
         fieldViewModelFactory = new FieldViewModelFactoryImpl(
                 "Enter text", "Enter long text", "Enter number", "Enter integer",
-                "Enter positive integer", "Enter negative integer", "Enter positive integer or zero");
+                "Enter positive integer", "Enter negative integer", "Enter positive integer or zero",
+                "Filter options", "Choose date");
     }
 
     @Test
@@ -235,6 +237,18 @@ public class FieldViewModelFactoryTests {
     }
 
     @Test
+    public void optionSetTypeIsMappedToOptionsViewModel() {
+        OptionsViewModel optionsViewModel = (OptionsViewModel) fieldViewModelFactory.create(UID,
+                LABEL, ValueType.TEXT, true, "test_option_set", "test_option_value");
+
+        assertThat(optionsViewModel.uid()).isEqualTo(UID);
+        assertThat(optionsViewModel.label()).isEqualTo(LABEL);
+        assertThat(optionsViewModel.mandatory()).isTrue();
+        assertThat(optionsViewModel.optionSet()).isEqualTo("test_option_set");
+        assertThat(optionsViewModel.value()).isEqualTo("test_option_value");
+    }
+
+    @Test
     public void trueOnlyTypeIsMappedToCheckBoxViewModel() throws Exception {
         CheckBoxViewModel viewModel = (CheckBoxViewModel) fieldViewModelFactory.create(UID,
                 LABEL, ValueType.TRUE_ONLY, true, null, String.valueOf(true));
@@ -243,6 +257,32 @@ public class FieldViewModelFactoryTests {
         assertThat(viewModel.label()).isEqualTo(LABEL);
         assertThat(viewModel.mandatory()).isEqualTo(true);
         assertThat(viewModel.value()).isEqualTo(CheckBoxViewModel.Value.CHECKED);
+    }
+
+    @Test
+    public void dateTypeIsMappedToDateViewModel() {
+        DateViewModel viewModel = (DateViewModel) fieldViewModelFactory.create(UID,
+                LABEL, ValueType.DATE, true, null, "2016-03-03");
+
+        assertThat(viewModel.uid()).isEqualTo(UID);
+        assertThat(viewModel.label()).isEqualTo(LABEL);
+        assertThat(viewModel.hint()).isEqualTo("Choose date");
+        assertThat(viewModel.mandatory()).isEqualTo(true);
+        assertThat(viewModel.value()).isEqualTo("2016-03-03");
+        assertThat(viewModel.isDateTime()).isFalse();
+    }
+
+    @Test
+    public void dateTimeTypeIsMappedToDateViewModel() {
+        DateViewModel viewModel = (DateViewModel) fieldViewModelFactory.create(UID,
+                LABEL, ValueType.DATETIME, true, null, "2016-03-03");
+
+        assertThat(viewModel.uid()).isEqualTo(UID);
+        assertThat(viewModel.label()).isEqualTo(LABEL);
+        assertThat(viewModel.hint()).isEqualTo("Choose date");
+        assertThat(viewModel.mandatory()).isEqualTo(true);
+        assertThat(viewModel.value()).isEqualTo("2016-03-03");
+        assertThat(viewModel.isDateTime()).isTrue();
     }
 
     @Test
@@ -258,8 +298,6 @@ public class FieldViewModelFactoryTests {
     @Test
     public void shouldReturnTextViewModelOnUnknownType() {
         assertThat(create(ValueType.LETTER)).isInstanceOf(TextViewModel.class);
-        assertThat(create(ValueType.DATE)).isInstanceOf(TextViewModel.class);
-        assertThat(create(ValueType.DATETIME)).isInstanceOf(TextViewModel.class);
         assertThat(create(ValueType.TIME)).isInstanceOf(TextViewModel.class);
         assertThat(create(ValueType.UNIT_INTERVAL)).isInstanceOf(TextViewModel.class);
         assertThat(create(ValueType.PERCENTAGE)).isInstanceOf(TextViewModel.class);
@@ -277,6 +315,6 @@ public class FieldViewModelFactoryTests {
     @NonNull
     private FieldViewModel create(@NonNull ValueType valueType) {
         return fieldViewModelFactory.create(UID, LABEL, valueType, false,
-                TEST_OPTION_SET, "test_value");
+                null, "test_value");
     }
 }

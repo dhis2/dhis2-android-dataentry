@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
 
     <!-- Base application theme. -->
@@ -48,7 +47,16 @@
     <!-- END SECTION: Lists -->
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="textInputLayoutWarningTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/color_accent</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="textInputLayoutErrorTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/color_material_red</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 
 </resources>

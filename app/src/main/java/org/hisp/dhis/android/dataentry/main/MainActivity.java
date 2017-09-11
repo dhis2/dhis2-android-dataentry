@@ -1,6 +1,7 @@
 package org.hisp.dhis.android.dataentry.main;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -23,7 +25,6 @@ import android.widget.TextView;
 
 import org.hisp.dhis.android.dataentry.Components;
 import org.hisp.dhis.android.dataentry.R;
-import org.hisp.dhis.android.dataentry.commons.ui.DummyFragment;
 import org.hisp.dhis.android.dataentry.main.home.HomeFragment;
 import org.hisp.dhis.android.dataentry.service.SyncService;
 
@@ -163,12 +164,29 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
         if (menuItem.getItemId() == R.id.drawer_item_home) {
             attachFragment(new HomeFragment());
-        } else {
-            attachFragment(new DummyFragment());
+        } else if (menuItem.getItemId() == R.id.drawer_item_log_out) {
+            showLogOutDialog();
         }
         drawerLayout.closeDrawers();
 
         return true;
+    }
+
+    private void showLogOutDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.log_out_title)
+                .setPositiveButton(
+                        R.string.log_out_button,
+                        (dialog, which) -> logOut())
+                .setNegativeButton(android.R.string.cancel, null)
+                .setMessage(R.string.log_out_message).show();
+    }
+
+    private void logOut() {
+        ProgressDialog dialog = ProgressDialog.show(this, "Logging out", "Deleting all data");
+        mainPresenter.logOut();
+        dialog.dismiss();
+        finish();
     }
 
     @NonNull
@@ -223,7 +241,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
             startService(new Intent(getApplicationContext(), SyncService.class));
             return true;
         }
-
         return super.onOptionsItemSelected(item);
 
     }

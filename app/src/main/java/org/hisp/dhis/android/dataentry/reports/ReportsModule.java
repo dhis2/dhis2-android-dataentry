@@ -32,7 +32,8 @@ public final class ReportsModule {
     ReportsNavigator navigator() {
         switch (reportsArguments.entityType()) {
             case ReportsArguments.TYPE_EVENTS:
-                return new SingleEventsNavigatorImpl(activity);
+                return new SingleEventsNavigatorImpl(activity,
+                        activity.getString(R.string.create_event));
             case ReportsArguments.TYPE_ENROLLMENTS:
                 return new EnrollmentsNavigatorImpl(activity);
             default:
@@ -60,8 +61,8 @@ public final class ReportsModule {
 
     @PerActivity
     @Provides
-    ReportsPresenter reportsPresenter(ReportsRepository reportsRepository,
-            SchedulerProvider schedulerProvider) {
+    ReportsPresenter reportsPresenter(@NonNull ReportsRepository reportsRepository,
+            @NonNull SchedulerProvider schedulerProvider) {
         return new ReportsPresenterImpl(reportsArguments, schedulerProvider, reportsRepository);
     }
 }

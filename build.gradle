@@ -18,7 +18,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.2'
+        classpath "com.android.tools.build:gradle:2.3.2"
 
         // provides insight on how many method references
         // are present in dex file
@@ -78,7 +78,7 @@ ext {
             dagger           : "2.8",
             timber           : "4.5.0",
             leakcanary       : "1.5",
-            dhis2sdk         : "0.1.9-SNAPSHOT",
+            dhis2sdk         : "0.3.0-SNAPSHOT",
             rxjava           : "2.1.0",
             rxandroid        : "2.0.1",
             rxbindings       : "2.0.0",

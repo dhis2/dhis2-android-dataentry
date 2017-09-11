@@ -17,6 +17,7 @@ import java.util.Locale;
 import io.reactivex.Flowable;
 
 import static hu.akarnokd.rxjava.interop.RxJavaInterop.toV2Flowable;
+import static org.hisp.dhis.android.dataentry.commons.utils.DbUtils.escapeSqlToken;
 
 @SuppressWarnings({
         "PMD.AvoidDuplicateLiterals"
@@ -44,7 +45,15 @@ final class SearchRepositoryImpl implements SearchRepository {
             "    ON (TrackedEntityAttributeValue.trackedEntityAttribute = InstanceAttribute.tea " +
             "    AND TrackedEntityAttributeValue.trackedEntityInstance = TrackedEntityInstance.uid) " +
             "WHERE TrackedEntityInstance.trackedEntity = '%s' AND NOT TrackedEntityInstance.state = 'TO_DELETE'" +
-            "  AND TrackedEntityAttributeValue.value LIKE '%%%s%%' AND length('%s') != 0 " +
+            "    AND TrackedEntityInstance.uid IN (" +
+            "       SELECT DISTINCT" +
+            "           trackedEntityInstance" +
+            "       FROM (TrackedEntityAttributeValue INNER JOIN ProgramTrackedEntityAttribute" +
+            "        ON ProgramTrackedEntityAttribute.trackedEntityAttribute = " +
+            "               TrackedEntityAttributeValue.trackedEntityAttribute" +
+            "           AND ProgramTrackedEntityAttribute.displayInList = 1)" + 
+            "       WHERE value LIKE '%%%s%%' AND length('%s') != 0 " +
+            "  )" +
             "ORDER BY datetime(TrackedEntityInstance.created) DESC," +
             "  TrackedEntityInstance.uid ASC," +
             "  InstanceAttribute.formOrder ASC;";
@@ -73,25 +82,6 @@ final class SearchRepositoryImpl implements SearchRepository {
                                 .map(values -> ReportViewModel.create(fromState(group.getKey().val1()),
                                         group.getKey().val0(), StringUtils.join(values))))
                         .toList().toFlowable());
-    }
-
-    @NonNull
-    private static String escapeSqlToken(@NonNull String sqlString) {
-        StringBuilder stringBuilder = new StringBuilder();
-        if (sqlString.indexOf('\'') == -1) {
-            return stringBuilder.append(sqlString).toString();
-        }
-
-        int length = sqlString.length();
-        for (int i = 0; i < length; i++) {
-            char c = sqlString.charAt(i);
-            if (c == '\'') {
-                stringBuilder.append('\'');
-            }
-            stringBuilder.append(c);
-        }
-
-        return stringBuilder.toString();
     }
 
     private ReportViewModel.Status fromState(String state) {
